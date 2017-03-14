@@ -34,9 +34,6 @@
 
 #include <builtin_interfaces/msg/time.hpp>
 
-// TODO(tfoote) 
-#error This has not been converted to ROS2 and will not compile
-
 #include <tf2/transform_datatypes.h>
 #include <tf2/exceptions.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
@@ -112,6 +109,9 @@ template<typename A, typename B>
  * \param a an object to convert from
  * \param b the object to convert to
  */
+
+ //TODO(dhood): re-instate if/when IsMessage message traits available in ROS 2
+ /*
 template <class A, class B>
   void convert(const A& a, B& b)
   {
@@ -126,6 +126,7 @@ template <class A>
     if(&a1 != &a2)
       a2 = a1;
   }
+  */
 
 
 }
