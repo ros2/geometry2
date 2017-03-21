@@ -48,7 +48,7 @@ TEST(TfGeometry, Frame)
   v1.pose.position.y = 2;
   v1.pose.position.z = 3;
   v1.pose.orientation.x = 1;
-  v1.header.stamp = builtin_interfaces::msg::Time(2);
+  v1.header.stamp = tf2::TimePoint(2);
   v1.header.frame_id = "A";
 
   // simple api
@@ -63,7 +63,7 @@ TEST(TfGeometry, Frame)
   
 
   // advanced api
-  geometry_msgs::msg::PoseStamped v_advanced = tf_buffer->transform(v1, "B", builtin_interfaces::msg::Time(2.0),
+  geometry_msgs::msg::PoseStamped v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(2.0),
 							      "A", tf2::Duration(3.0));
   EXPECT_NEAR(v_advanced.pose.position.x, -9, EPS);
   EXPECT_NEAR(v_advanced.pose.position.y, 18, EPS);
@@ -82,7 +82,7 @@ TEST(TfGeometry, Vector)
   v1.vector.x = 1;
   v1.vector.y = 2;
   v1.vector.z = 3;
-  v1.header.stamp = builtin_interfaces::msg::Time(2.0);
+  v1.header.stamp = tf2::TimePoint(2.0);
   v1.header.frame_id = "A";
 
   // simple api
@@ -92,7 +92,7 @@ TEST(TfGeometry, Vector)
   EXPECT_NEAR(v_simple.vector.z, -3, EPS);
 
   // advanced api
-  geometry_msgs::msg::Vector3Stamped v_advanced = tf_buffer->transform(v1, "B", builtin_interfaces::msg::Time(2.0),
+  geometry_msgs::msg::Vector3Stamped v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(2.0),
 								 "A", tf2::Duration(3.0));
   EXPECT_NEAR(v_advanced.vector.x, 1, EPS);
   EXPECT_NEAR(v_advanced.vector.y, -2, EPS);
@@ -106,7 +106,7 @@ TEST(TfGeometry, Point)
   v1.point.x = 1;
   v1.point.y = 2;
   v1.point.z = 3;
-  v1.header.stamp = builtin_interfaces::msg::Time(2.0);
+  v1.header.stamp = tf2::TimePoint(2.0);
   v1.header.frame_id = "A";
 
   // simple api
@@ -116,7 +116,7 @@ TEST(TfGeometry, Point)
   EXPECT_NEAR(v_simple.point.z, 27, EPS);
 
   // advanced api
-  geometry_msgs::msg::PointStamped v_advanced = tf_buffer->transform(v1, "B", builtin_interfaces::msg::Time(2.0),
+  geometry_msgs::msg::PointStamped v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(2.0),
 								 "A", tf2::Duration(3.0));
   EXPECT_NEAR(v_advanced.point.x, -9, EPS);
   EXPECT_NEAR(v_advanced.point.y, 18, EPS);
@@ -137,7 +137,7 @@ int main(int argc, char **argv){
   t.transform.translation.y = 20;
   t.transform.translation.z = 30;
   t.transform.rotation.x = 1;
-  t.header.stamp = builtin_interfaces::msg::Time(2.0);
+  t.header.stamp = tf2::TimePoint(2.0);
   t.header.frame_id = "A";
   t.child_frame_id = "B";
   tf_buffer->setTransform(t, "test");
