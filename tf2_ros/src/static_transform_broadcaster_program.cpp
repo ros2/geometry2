@@ -35,8 +35,6 @@
 
 #include "builtin_interfaces/msg/time.hpp"
 
-#include "tf2_ros/buffer_interface.h"//TODO(tfoote) Remove for temporary get_now_msg
-
 //TODO(tfoote replace these terrible macros)
 #define ROS_ERROR printf
 #define ROS_FATAL printf
@@ -70,7 +68,7 @@ int main(int argc, char ** argv)
       msg.transform.rotation.y = atof(argv[5]);
       msg.transform.rotation.z = atof(argv[6]);
       msg.transform.rotation.w = atof(argv[7]);
-      msg.header.stamp = tf2_ros::get_now_msg();
+      msg.header.stamp = rclcpp::Time::now();
       msg.header.frame_id = argv[8];
       msg.child_frame_id = argv[9];
     }
@@ -93,7 +91,7 @@ int main(int argc, char ** argv)
       msg.transform.rotation.z = quat.z();
       msg.transform.rotation.w = quat.w();
 
-      msg.header.stamp = tf2_ros::get_now_msg();
+      msg.header.stamp = rclcpp::Time::now();
       msg.header.frame_id = argv[7];
       msg.child_frame_id = argv[8];
     }
