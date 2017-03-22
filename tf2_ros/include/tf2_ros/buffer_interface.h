@@ -32,6 +32,7 @@
 #ifndef TF2_ROS_BUFFER_INTERFACE_H
 #define TF2_ROS_BUFFER_INTERFACE_H
 
+#include <rclcpp/rclcpp.hpp>
 #include <tf2_ros/visibility_control.h>
 #include <tf2/buffer_core.h>
 #include <tf2/transform_datatypes.h>
@@ -59,15 +60,6 @@ namespace tf2_ros
     int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
     tf2::TimePoint t = tf2::TimePoint(std::chrono::nanoseconds(d));
     return std::move(t);
-  }
-
-  // TODO(tfoote) replace this with something easier
-  inline builtin_interfaces::msg::Time get_now_msg()
-  {
-    // TODO(tfoote) update to use an rclcpp now in future implementation
-    // msg.header.stamp = builtin_interfaces::msg::Time.now();
-    auto now = std::chrono::system_clock::now();
-    return toMsg(now);
   }
 
   inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
