@@ -1,29 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
 project(tf2_eigen)
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-  geometry_msgs
-  tf2
-)
+find_package(ament_cmake REQUIRED)
 
-find_package(Eigen REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+
+find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
 add_definitions(${EIGEN_DEFINITIONS})
 
 include_directories(include)
 
-catkin_package(
-  INCLUDE_DIRS include ${catkin_INCLUDE_DIRS}
-  DEPENDS eigen)
-
 install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+        DESTINATION include/${PROJECT_NAME})
 
-
-if(CATKIN_ENABLE_TESTING)
-
-  catkin_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
-  target_link_libraries(tf2_eigen-test ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-
-endif()
+ament_export_include_directories(include)
+ament_package()
