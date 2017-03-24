@@ -34,11 +34,10 @@
 
 #include <chrono>
 #include <string>
+#include <tf2/time.h>
 
 namespace tf2
 {
-
-typedef std::chrono::system_clock::time_point TimePoint;
 
 /** \brief The data type which will be cross compatable with geometry_msgs
  * This is the tf2 datatype equivilant of a MessageStamped */
