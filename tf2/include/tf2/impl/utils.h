@@ -32,22 +32,22 @@ tf2::Quaternion toQuaternion(const tf2::Quaternion& q) {
   }
 
 /** Function needed for the generalization of toQuaternion
- * \param q a geometry_msgs::Quaternion
+ * \param q a geometry_msgs::msg::Quaternion
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
 inline
-tf2::Quaternion toQuaternion(const geometry_msgs::Quaternion& q) {
+tf2::Quaternion toQuaternion(const geometry_msgs::msg::Quaternion& q) {
     tf2::Quaternion res;
     fromMsg(q, res);
     return res;
   }
 
 /** Function needed for the generalization of toQuaternion
- * \param q a geometry_msgs::QuaternionStamped
+ * \param q a geometry_msgs::msg::QuaternionStamped
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
 inline
-tf2::Quaternion toQuaternion(const geometry_msgs::QuaternionStamped& q) {
+tf2::Quaternion toQuaternion(const geometry_msgs::msg::QuaternionStamped& q) {
     tf2::Quaternion res;
     fromMsg(q.quaternion, res);
     return res;
@@ -59,18 +59,18 @@ tf2::Quaternion toQuaternion(const geometry_msgs::QuaternionStamped& q) {
  */
 template<typename T>
   tf2::Quaternion toQuaternion(const tf2::Stamped<T>& t) {
-    geometry_msgs::QuaternionStamped q = toMsg<tf2::Stamped<T>, geometry_msgs::QuaternionStamped>(t);
+    geometry_msgs::msg::QuaternionStamped q = toMsg<tf2::Stamped<T>, geometry_msgs::msg::QuaternionStamped>(t);
     return toQuaternion(q);
   }
 
 /** Generic version of toQuaternion. It tries to convert the argument
- * to a geometry_msgs::Quaternion
+ * to a geometry_msgs::msg::Quaternion
  * \param t some object
  * \return a copy of the same quaternion as a tf2::Quaternion
  */
 template<typename T>
   tf2::Quaternion toQuaternion(const T& t) {
-    geometry_msgs::Quaternion q = toMsg<T, geometry_msgs::QuaternionStamped>(t);
+    geometry_msgs::msg::Quaternion q = toMsg<T, geometry_msgs::msg::QuaternionStamped>(t);
     return toQuaternion(q);
   }
 
