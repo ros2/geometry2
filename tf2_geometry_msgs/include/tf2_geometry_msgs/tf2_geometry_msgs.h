@@ -488,6 +488,39 @@ void fromMsg(const geometry_msgs::msg::TransformStamped& msg, geometry_msgs::msg
   out = msg;
 }
 
+/** \brief Convert a TransformStamped message to its equivalent tf2 representation.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param msg A TransformStamped message type.
+ * \param out The TransformStamped converted to the equivalent tf2 type.
+ */
+inline
+void fromMsg(const geometry_msgs::msg::TransformStamped& in, tf2::Stamped <tf2::Transform>& out)
+{
+  out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
+  out.frame_id_ = in.header.frame_id;
+  tf2::Transform tmp;
+  fromMsg(in.transform, tmp);
+  out.setData(tmp);
+}
+
+/** \brief Convert as stamped tf2 Transform type to its equivalent geometry_msgs representation.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in An instance of the tf2::Transform specialization of the tf2::Stamped template.
+ * \return The TransformStamped converted to a geometry_msgs TransformStamped message type.
+ */
+template <>
+inline
+geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform>& in)
+{
+  geometry_msgs::msg::TransformStamped out;
+  out.header.stamp = tf2_ros::toMsg(in.stamp_);
+  out.header.frame_id = in.frame_id_;
+  out.transform.translation.x = in.getOrigin().getX();
+  out.transform.translation.y = in.getOrigin().getY();
+  out.transform.translation.z = in.getOrigin().getZ();
+  out.transform.rotation = toMsg(in.getRotation());
+  return out;
+}
 
 /**********/
 /** Pose **/
