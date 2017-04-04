@@ -21,11 +21,6 @@ include_directories(include
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 
 
-
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
-
 # TODO(dhood): enable python support once ported to ROS 2
 # catkin_python_setup()
 
