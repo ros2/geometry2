@@ -118,6 +118,7 @@ template <class A, class B>
     //printf("In double type convert\n");
     impl::Converter<ros::message_traits::IsMessage<A>::value, ros::message_traits::IsMessage<B>::value>::convert(a, b);
   }
+  */
 
 template <class A>
   void convert(const A& a1, A& a2)
@@ -126,7 +127,6 @@ template <class A>
     if(&a1 != &a2)
       a2 = a1;
   }
-  */
 
 
 }
