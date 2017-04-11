@@ -10,11 +10,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-find_package(Eigen3 QUIET)
-if(NOT Eigen3_FOUND)
-  message("Did not find Eigen3 on system. Looking manually.")
-  include(${tf2_eigen_SOURCE_DIR}/config/FindEigen3.cmake)
-endif()
+find_package(Eigen3 REQUIRED)
 set(Eigen_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
 message("Using Eigen3 include dirs: ${Eigen_INCLUDE_DIR}")
 
