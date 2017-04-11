@@ -55,10 +55,10 @@ namespace tf2_ros
     return time_msg;
   }
 
-  inline const tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
+  inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
   {
     int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-    return tf2::Timepoint(std::chrono::nanoseconds(d));
+    return tf2::TimePoint(std::chrono::nanoseconds(d));
   }
 
   inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
