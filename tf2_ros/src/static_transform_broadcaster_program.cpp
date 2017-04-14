@@ -40,76 +40,91 @@
 #define ROS_FATAL printf
 #define ROS_INFO printf
 
+//TODO(clalancette re-enable this)
+// bool validateXmlRpcTf(XmlRpc::XmlRpcValue tf_data) {
+//   // Validate a TF stored in XML RPC format: ensures the appropriate fields
+//   // exist. Note this does not check data types.
+//   return tf_data.hasMember("child_frame_id") &&
+//          tf_data.hasMember("header") &&
+//          tf_data["header"].hasMember("frame_id") &&
+//          tf_data.hasMember("transform") &&
+//          tf_data["transform"].hasMember("translation") &&
+//          tf_data["transform"]["translation"].hasMember("x") &&
+//          tf_data["transform"]["translation"].hasMember("y") &&
+//          tf_data["transform"]["translation"].hasMember("z") &&
+//          tf_data["transform"].hasMember("rotation") &&
+//          tf_data["transform"]["rotation"].hasMember("x") &&
+//          tf_data["transform"]["rotation"].hasMember("y") &&
+//          tf_data["transform"]["rotation"].hasMember("z") &&
+//          tf_data["transform"]["rotation"].hasMember("w");
+// };
+
 int main(int argc, char ** argv)
 {
   //Initialize ROS
   rclcpp::init(argc, argv);
   auto node = rclcpp::node::Node::make_shared("static_transform_publisher");
-  // ros::init(argc, argv,"static_transform_publisher", ros::init_options::AnonymousName);
 
   tf2_ros::StaticTransformBroadcaster broadcaster(node);
+  geometry_msgs::msg::TransformStamped msg;
 
-  if(argc == 10 || argc == 9)
+  if(argc == 10)
   {
-    geometry_msgs::msg::TransformStamped msg;
-
-    if (argc == 10)
-    {
-      if (strcmp(argv[8], argv[9]) == 0)
-      {
-        ROS_FATAL("target_frame and source frame are the same (%s, %s) this cannot work", argv[8], argv[9]);
-        return 1;
-      }
-
-      msg.transform.translation.x = atof(argv[1]);
-      msg.transform.translation.y = atof(argv[2]);
-      msg.transform.translation.z = atof(argv[3]);
-      msg.transform.rotation.x = atof(argv[4]);
-      msg.transform.rotation.y = atof(argv[5]);
-      msg.transform.rotation.z = atof(argv[6]);
-      msg.transform.rotation.w = atof(argv[7]);
-      msg.header.stamp = rclcpp::Time::now();
-      msg.header.frame_id = argv[8];
-      msg.child_frame_id = argv[9];
-    }
-    else if (argc == 9)
-    {
-      if (strcmp(argv[7], argv[8]) == 0)
-      {
-        ROS_FATAL("target_frame and source frame are the same (%s, %s) this cannot work", argv[8], argv[9]);
-        return 1;
-      }
-
-      msg.transform.translation.x = atof(argv[1]);
-      msg.transform.translation.y = atof(argv[2]);
-      msg.transform.translation.z = atof(argv[3]);
-
-      tf2::Quaternion quat;
-      quat.setRPY(atof(argv[6]), atof(argv[5]), atof(argv[4]));
-      msg.transform.rotation.x = quat.x();
-      msg.transform.rotation.y = quat.y();
-      msg.transform.rotation.z = quat.z();
-      msg.transform.rotation.w = quat.w();
-
-      msg.header.stamp = rclcpp::Time::now();
-      msg.header.frame_id = argv[7];
-      msg.child_frame_id = argv[8];
-    }
-    rclcpp::WallRate loop_rate(0.2);
-    while (rclcpp::ok())
-    {
-      //TODO(tfoote) reimplement latching
-      ROS_INFO("LOOPING due to no latching at the moment\n");
-      broadcaster.sendTransform(msg);
-      rclcpp::spin_some(node);
-      loop_rate.sleep();  
-    }
-
-    // broadcaster.sendTransform(msg);
-    // ROS_INFO("Spinning until killed publishing %s to %s", msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
-    // rclcpp::spin(node);
-    return 0;
+    msg.transform.translation.x = atof(argv[1]);
+    msg.transform.translation.y = atof(argv[2]);
+    msg.transform.translation.z = atof(argv[3]);
+    msg.transform.rotation.x = atof(argv[4]);
+    msg.transform.rotation.y = atof(argv[5]);
+    msg.transform.rotation.z = atof(argv[6]);
+    msg.transform.rotation.w = atof(argv[7]);
+    msg.header.stamp = rclcpp::Time::now();
+    msg.header.frame_id = argv[8];
+    msg.child_frame_id = argv[9];
   }
+  else if (argc == 9)
+  {
+    msg.transform.translation.x = atof(argv[1]);
+    msg.transform.translation.y = atof(argv[2]);
+    msg.transform.translation.z = atof(argv[3]);
+
+    tf2::Quaternion quat;
+    quat.setRPY(atof(argv[6]), atof(argv[5]), atof(argv[4]));
+    msg.transform.rotation.x = quat.x();
+    msg.transform.rotation.y = quat.y();
+    msg.transform.rotation.z = quat.z();
+    msg.transform.rotation.w = quat.w();
+
+    msg.header.stamp = rclcpp::Time::now();
+    msg.header.frame_id = argv[7];
+    msg.child_frame_id = argv[8];
+  }
+  // else if (argc == 2) {
+  //   const std::string param_name = argv[1];
+  //   ROS_INFO_STREAM("Looking for TF in parameter: " << param_name);
+  //   XmlRpc::XmlRpcValue tf_data;
+
+  //   if (!ros::param::has(param_name) || !ros::param::get(param_name, tf_data)) {
+  //     ROS_FATAL_STREAM("Could not read TF from parameter server: " << param_name);
+  //     return -1;
+  //   }
+
+  //   // Check that all required members are present & of the right type.
+  //   if (!validateXmlRpcTf(tf_data)) {
+  //     ROS_FATAL_STREAM("Could not validate XmlRpcC for TF data: " << tf_data);
+  //     return -1;
+  //   }
+
+  //   msg.transform.translation.x = (double) tf_data["transform"]["translation"]["x"];
+  //   msg.transform.translation.y = (double) tf_data["transform"]["translation"]["y"];
+  //   msg.transform.translation.z = (double) tf_data["transform"]["translation"]["z"];
+  //   msg.transform.rotation.x = (double) tf_data["transform"]["rotation"]["x"];
+  //   msg.transform.rotation.y = (double) tf_data["transform"]["rotation"]["y"];
+  //   msg.transform.rotation.z = (double) tf_data["transform"]["rotation"]["z"];
+  //   msg.transform.rotation.w = (double) tf_data["transform"]["rotation"]["w"];
+  //   msg.header.stamp = ros::Time::now();
+  //   msg.header.frame_id = (std::string) tf_data["header"]["frame_id"];
+  //   msg.child_frame_id = (std::string) tf_data["child_frame_id"];
+  // }
   else
   {
     printf("A command line utility for manually sending a transform.\n");
@@ -117,10 +132,34 @@ int main(int argc, char ** argv)
     printf("Usage: static_transform_publisher x y z qx qy qz qw frame_id child_frame_id \n");
     printf("OR \n");
     printf("Usage: static_transform_publisher x y z yaw pitch roll frame_id child_frame_id \n");
+    printf("OR \n");
+    printf("Usage: static_transform_publisher /param_name \n");
     printf("\nThis transform is the transform of the coordinate frame from frame_id into the coordinate frame \n");
     printf("of the child_frame_id.  \n");
     ROS_ERROR("static_transform_publisher exited due to not having the right number of arguments");
     return -1;
   }
 
+  // Checks: frames should not be the same.
+  if (msg.header.frame_id == msg.child_frame_id)
+  {
+    ROS_FATAL("target_frame and source frame are the same (%s, %s) this cannot work",
+              msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
+    return 1;
+  }
+
+  rclcpp::WallRate loop_rate(0.2);
+  while (rclcpp::ok())
+  {
+    //TODO(tfoote) reimplement latching
+    ROS_INFO("LOOPING due to no latching at the moment\n");
+    broadcaster.sendTransform(msg);
+    rclcpp::spin_some(node);
+    loop_rate.sleep();
+  }
+
+  // broadcaster.sendTransform(msg);
+  // ROS_INFO("Spinning until killed publishing %s to %s", msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
+  // rclcpp::spin(node);
+  return 0;
 };

@@ -2,6 +2,32 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.15 (2017-01-24)
+-------------------
+
+0.5.14 (2017-01-16)
+-------------------
+* Typos.
+* Adds unit tests for TF loaded from parameter server.
+  This tests both success (loading a valid TF into the param server) and
+  failures (parameter does not exist, parameter contents are invalid).
+* Code linting & reorganization
+  - whitespace
+  - indentation
+  - re-organized code to remove duplications.
+  whitespace & indentation changes only.
+  simplified (de-duplicated) duplicate code.
+  missing a duplicate variable.
+  whitespace changes only.
+* Contributors: Felix Duvallet
+
+0.5.13 (2016-03-04)
+-------------------
+* Remove LGPL from license tags
+  LGPL was erroneously included in 2a38724. As there are no files with it
+  in the package.
+* Contributors: Jochen Sprickerhof
+
 0.5.12 (2015-08-05)
 -------------------
 * add utilities to get yaw, pitch, roll and identity transform

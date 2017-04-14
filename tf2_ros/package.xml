@@ -1,8 +1,8 @@
 <package format="2">
   <name>tf2_ros</name>
-  <version>0.5.12</version>
+  <version>0.5.15</version>
   <description>
-    This package contains the ROS bindings for the tf2 library, for both Python and C++. 
+    This package contains the ROS bindings for the tf2 library, for both Python and C++.
   </description>
   <author>Eitan Marder-Eppstein</author>
   <author>Wim Meeussen</author>
@@ -27,7 +27,8 @@
 
   <!-- TODO(tfoote) dependencies from unported sections restore when ported
   <depend>actionlib</depend>
-  <depend>actionlib_msgs</depend> -->
+  <depend>actionlib_msgs</depend>
+  <depend>xmlrpcpp</depend> -->
   <!-- <build_depend version_gte="1.11.1">message_filters</build_depend> -->
   <!-- <build_depend>rosgraph</build_depend> -->
   <!-- <build_depend>rospy</build_depend> -->
@@ -35,6 +36,8 @@
   <!-- <run_depend>message_filters</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>tf2_py</run_depend>-->
+
+  <!-- <test_depend>rostest</test_depend> -->
 
   <export>
     <build_type>ament_cmake</build_type>

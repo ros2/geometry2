@@ -34,21 +34,80 @@
 
 static const double EPS = 1e-3;
 
-
-TEST(TfEigen, ConvertVector)
+TEST(TfEigen, ConvertVector3dStamped)
 {
-  Eigen::Vector3d v(1,2,3);
+  const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3), ros::Time(5), "test");
 
-  Eigen::Vector3d v1 = v;
-  tf2::convert(v1, v1);
+  tf2::Stamped<Eigen::Vector3d> v1;
+  geometry_msgs::PointStamped p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
   EXPECT_EQ(v, v1);
+}
 
-  Eigen::Vector3d v2(3,4,5);
-  tf2::convert(v1, v2);
+TEST(TfEigen, ConvertVector3d)
+{
+  const Eigen::Vector3d v(1,2,3);
 
-  EXPECT_EQ(v, v2);
-  EXPECT_EQ(v1, v2);
+  Eigen::Vector3d v1;
+  geometry_msgs::Point p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
+
+  EXPECT_EQ(v, v1);
+}
+
+TEST(TfEigen, ConvertAffine3dStamped)
+{
+  const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+  const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, ros::Time(42), "test_frame");
+
+  tf2::Stamped<Eigen::Affine3d> v1;
+  geometry_msgs::PoseStamped p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
+
+  EXPECT_EQ(v.translation(), v1.translation());
+  EXPECT_EQ(v.rotation(), v1.rotation());
+  EXPECT_EQ(v.frame_id_, v1.frame_id_);
+  EXPECT_EQ(v.stamp_, v1.stamp_);
+}
+
+TEST(TfEigen, ConvertAffine3d)
+{
+  const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+
+  Eigen::Affine3d v1;
+  geometry_msgs::Pose p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
+
+  EXPECT_EQ(v.translation(), v1.translation());
+  EXPECT_EQ(v.rotation(), v1.rotation());
+}
+
+TEST(TfEigen, ConvertTransform)
+{
+  Eigen::Matrix4d tm;
+  
+  double alpha = M_PI/4.0;
+  double theta = M_PI/6.0;
+  double gamma = M_PI/12.0;
+  
+  tm << cos(theta)*cos(gamma),-cos(theta)*sin(gamma),sin(theta), 1, //
+  cos(alpha)*sin(gamma)+sin(alpha)*sin(theta)*cos(gamma),cos(alpha)*cos(gamma)-sin(alpha)*sin(theta)*sin(gamma),-sin(alpha)*cos(theta), 2, //
+  sin(alpha)*sin(gamma)-cos(alpha)*sin(theta)*cos(gamma),cos(alpha)*sin(theta)*sin(gamma)+sin(alpha)*cos(gamma),cos(alpha)*cos(theta), 3, //
+  0, 0, 0, 1;
+  
+  Eigen::Affine3d T(tm);
+  
+  geometry_msgs::TransformStamped msg = tf2::eigenToTransform(T);
+  Eigen::Affine3d Tback = tf2::transformToEigen(msg);
+  
+  EXPECT_TRUE(T.isApprox(Tback));
+  EXPECT_TRUE(tm.isApprox(Tback.matrix()));
+    
 }
 
 

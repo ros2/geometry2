@@ -83,6 +83,18 @@ TEST(tf2, setTransformValid)
   
 }
 
+TEST(tf2, setTransformInvalidQuaternion)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.child_frame_id = "child";
+  st.transform.rotation.w = 0;
+  EXPECT_FALSE(tfc.setTransform(st, "authority1"));
+  
+}
+
 TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
 {
   tf2::BufferCore tfc;
