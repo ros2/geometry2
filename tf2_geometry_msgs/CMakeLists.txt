@@ -6,19 +6,13 @@ if(NOT WIN32)
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
-ament_auto_find_build_dependencies()
-# Ensure that the required dependencies were successfully found
 set(required_dependencies
   "geometry_msgs"
   "orocos_kdl"
   "tf2"
   "tf2_ros"
 )
-foreach(dep ${required_dependencies})
-  if(NOT ${dep}_FOUND)
-    message(FATAL_ERROR "'${dep}' has not been successfully found")
-  endif()
-endforeach()
+ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
 include_directories(include
    ${orocos_kdl_INCLUDE_DIRS}
