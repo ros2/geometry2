@@ -62,7 +62,7 @@ KDL::Frame gmTransformToKDL(const geometry_msgs::msg::TransformStamped& t)
 // method to extract timestamp from object
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::Vector3Stamped& t) {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::Vector3Stamped& t) {return tf2_ros::fromMsg(t.header.stamp);}
 
 // method to extract frame id from object
 template <>
@@ -101,7 +101,7 @@ void fromMsg(const geometry_msgs::msg::Vector3Stamped& msg, geometry_msgs::msg::
 // method to extract timestamp from object
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::PointStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::PointStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 // method to extract frame id from object
 template <>
@@ -139,7 +139,7 @@ void fromMsg(const geometry_msgs::msg::PointStamped& msg, geometry_msgs::msg::Po
 // method to extract timestamp from object
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::PoseStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::PoseStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 // method to extract frame id from object
 template <>
@@ -204,7 +204,7 @@ void fromMsg(const geometry_msgs::msg::Quaternion& in, tf2::Quaternion& out)
 // method to extract timestamp from object
 template <>
 inline
-const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::QuaternionStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+tf2::TimePoint getTimestamp(const geometry_msgs::msg::QuaternionStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 // method to extract frame id from object
 template <>
@@ -267,7 +267,7 @@ void fromMsg(const geometry_msgs::msg::QuaternionStamped& in, tf2::Stamped<tf2::
 // method to extract timestamp from object
 template <>
 inline
-const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::TransformStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+tf2::TimePoint getTimestamp(const geometry_msgs::msg::TransformStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 // method to extract frame id from object
 template <>
