@@ -51,7 +51,7 @@ tf2::TimePoint getTimestamp(const sensor_msgs::PointCloud2& p) {return p.header.
 // method to extract frame id from object
 template <>
 inline
-const std::string& getFrameId(const sensor_msgs::PointCloud2 &p) {return p.header.frame_id;}
+std::string getFrameId(const sensor_msgs::PointCloud2 &p) {return p.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>

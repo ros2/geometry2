@@ -66,7 +66,7 @@ template <class T>
  * \return The frame_id associated with the data. 
  */
 template <class T>
-  const std::string& getFrameId(const T& t);
+  std::string getFrameId(const T& t);
 
 
 
@@ -79,7 +79,7 @@ template <class P>
 
 /* An implementation for Stamped<P> datatypes */
 template <class P>
-  const std::string& getFrameId(const tf2::Stamped<P>& t)
+  std::string getFrameId(const tf2::Stamped<P>& t)
   {
     return t.frame_id_;
   }

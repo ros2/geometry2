@@ -67,7 +67,7 @@ inline
 // method to extract frame id from object
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::Vector3Stamped& t) {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::Vector3Stamped& t) {return t.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>
@@ -106,7 +106,7 @@ inline
 // method to extract frame id from object
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::PointStamped& t)  {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::PointStamped& t)  {return t.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>
@@ -144,7 +144,7 @@ inline
 // method to extract frame id from object
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::PoseStamped& t)  {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::PoseStamped& t)  {return t.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>
@@ -209,7 +209,7 @@ tf2::TimePoint getTimestamp(const geometry_msgs::msg::QuaternionStamped& t)  {re
 // method to extract frame id from object
 template <>
 inline
-const std::string& getFrameId(const geometry_msgs::msg::QuaternionStamped& t)  {return t.header.frame_id;}
+std::string getFrameId(const geometry_msgs::msg::QuaternionStamped& t)  {return t.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>
@@ -272,7 +272,7 @@ tf2::TimePoint getTimestamp(const geometry_msgs::msg::TransformStamped& t)  {ret
 // method to extract frame id from object
 template <>
 inline
-const std::string& getFrameId(const geometry_msgs::msg::TransformStamped& t)  {return t.header.frame_id;}
+std::string getFrameId(const geometry_msgs::msg::TransformStamped& t)  {return t.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>
