@@ -31,6 +31,7 @@
  #define TF2_TIME_H
 
 #include <chrono>
+#include <cmath>
 #include <stdio.h>
 #include <string>
 #include <thread>
@@ -50,6 +51,23 @@ namespace tf2
   inline TimePoint get_now()
   {
     return std::chrono::system_clock::now();
+  }
+
+  inline Duration durationFromSec(double t)
+  {
+    uint32_t sec, nsec;
+    sec = (uint32_t)floor(t);
+    nsec = (uint32_t)std::round((t-sec) * 1e9);
+    // avoid rounding errors
+    sec += (nsec / 1000000000ul);
+    nsec %= 1000000000ul;
+    Duration d = std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
+    return d;
+  }
+
+  inline TimePoint timeFromSec(double t)
+  {
+    return get_now() + durationFromSec(t);
   }
 
   inline double durationToSec(const tf2::Duration & input){
