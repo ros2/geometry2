@@ -223,7 +223,7 @@ TEST(MessageFilter, multipleTargetFrames)
 
   EXPECT_EQ(0, n.count_); // frame1->frame3 exists, frame2->frame3 does not (yet)
 
-  //builtin_interfaces::msg::Time::setNow(builtin_interfaces::msg::Time::now() + tf2::Duration(1.0));
+  //builtin_interfaces::msg::Time::setNow(builtin_interfaces::msg::Time::now() + tf2::durationFromSec(1.0));
 
   bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
 
@@ -268,7 +268,7 @@ TEST(MessageFilter, outTheBackFailure)
 
   builtin_interfaces::msg::Time stamp(1);
   bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
-  bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp + tf2::Duration(10000), "frame1", "frame2"), "me");
+  bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp + tf2::durationFromSec(10000), "frame1", "frame2"), "me");
 
   geometry_msgs::PointStampedPtr msg(new geometry_msgs::PointStamped);
   msg->header.stamp = stamp;
@@ -295,7 +295,7 @@ TEST(MessageFilter, outTheBackFailure2)
   EXPECT_EQ(0, n.count_);
   EXPECT_EQ(0, n.failure_count_);
 
-  bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp + tf2::Duration(10000), "frame1", "frame2"), "me");
+  bc.setTransform(createTransform(Quaternion(0,0,0,1), Vector3(1,2,3), stamp + tf2::durationFromSec(10000), "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.failure_count_);
 }

@@ -134,7 +134,7 @@ public:
     if (using_specific_chain_)
     {
       std::cout << "Waiting for transform chain to become available between "<< framea_ << " and " << frameb_<< " " << std::flush;
-      while (rclcpp::ok() && !buffer_.canTransform(framea_, frameb_, tf2::TimePointZero, tf2::Duration(1.0e9)))
+      while (rclcpp::ok() && !buffer_.canTransform(framea_, frameb_, tf2::TimePointZero, tf2::durationFromSec(1.0)))
         std::cout << "." << std::flush;
       std::cout << std::endl;
      

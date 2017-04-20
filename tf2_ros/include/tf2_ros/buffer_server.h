@@ -69,7 +69,7 @@ namespace tf2_ros
        * \param check_period How often to check for changes to known transforms (via a timer event).
        */
       BufferServer(const Buffer& buffer, const std::string& ns,
-          bool auto_start = true, tf2::Duration check_period = tf2::Duration(0.01));
+          bool auto_start = true, tf2::Duration check_period = tf2::durationFromSec(0.01));
 
       /** \brief Start the action server.
        */

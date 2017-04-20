@@ -454,7 +454,7 @@ private:
     transform_message_count_ = 0;
     incoming_message_count_ = 0;
     dropped_message_count_ = 0;
-    time_tolerance_ = tf2::Duration(0.0);
+    time_tolerance_ = tf2::durationFromSec(0.0);
     warned_about_empty_frame_id_ = false;
     expected_success_count_ = 1;
 
