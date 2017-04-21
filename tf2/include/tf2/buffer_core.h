@@ -92,7 +92,6 @@ class BufferCore
 {
 public:
   /************* Constants ***********************/
-  static const int DEFAULT_CACHE_TIME = 10;  //!< The default amount of time to cache data in seconds
   TF2_PUBLIC
   static const uint32_t MAX_GRAPH_DEPTH = 1000UL;  //!< Maximum graph search depth (deeper graphs will be assumed to have loops)
 

@@ -63,6 +63,8 @@ int main(int argc, char ** argv)
 {
   //Initialize ROS
   rclcpp::init(argc, argv);
+
+  // TODO(clalancette): Anonymize the node name like it is in ROS1.
   auto node = rclcpp::node::Node::make_shared("static_transform_publisher");
 
   tf2_ros::StaticTransformBroadcaster broadcaster(node);
@@ -132,10 +134,10 @@ int main(int argc, char ** argv)
     printf("Usage: static_transform_publisher x y z qx qy qz qw frame_id child_frame_id \n");
     printf("OR \n");
     printf("Usage: static_transform_publisher x y z yaw pitch roll frame_id child_frame_id \n");
-    printf("OR \n");
-    printf("Usage: static_transform_publisher /param_name \n");
-    printf("\nThis transform is the transform of the coordinate frame from frame_id into the coordinate frame \n");
-    printf("of the child_frame_id.  \n");
+    //printf("OR \n");
+    //printf("Usage: static_transform_publisher /param_name \n");
+    //printf("\nThis transform is the transform of the coordinate frame from frame_id into the coordinate frame \n");
+    //printf("of the child_frame_id.  \n");
     ROS_ERROR("static_transform_publisher exited due to not having the right number of arguments");
     return -1;
   }
