@@ -1,31 +1,35 @@
 cmake_minimum_required(VERSION 3.5)
 project(tf2_eigen)
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-  geometry_msgs
-  tf2
-)
+if(NOT WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+endif()
 
-find_package(Eigen REQUIRED)
-include_directories(${EIGEN_INCLUDE_DIRS})
-add_definitions(${EIGEN_DEFINITIONS})
+find_package(ament_cmake REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
-include_directories(${catkin_INCLUDE_DIRS})
-
-include_directories(include)
-
-catkin_package(
-  INCLUDE_DIRS include
-  DEPENDS eigen)
+find_package(Eigen3 REQUIRED)
+set(Eigen_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
+message("Using Eigen3 include dirs: ${Eigen_INCLUDE_DIR}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+        DESTINATION include/${PROJECT_NAME})
 
-
-if(CATKIN_ENABLE_TESTING)
-
-  catkin_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
-  target_link_libraries(tf2_eigen-test ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
+  if(TARGET tf2_eigen-test)
+    target_include_directories(tf2_eigen-test PUBLIC
+      include
+      ${tf2_INCLUDE_DIRS}
+      ${tf2_ros_INCLUDE_DIRS}
+      ${Eigen_INCLUDE_DIR}
+    )
+  endif()
 endif()
+
+ament_export_include_directories(include)
+ament_export_dependencies(tf2_ros)
+ament_package()
