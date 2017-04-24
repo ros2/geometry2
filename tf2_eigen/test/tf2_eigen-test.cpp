@@ -36,7 +36,7 @@ TEST(TfEigen, ConvertVector3dStamped)
   const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3), ros::Time(5), "test");
 
   tf2::Stamped<Eigen::Vector3d> v1;
-  geometry_msgs::PointStamped p1;
+  geometry_msgs::msg::PointStamped p1;
   tf2::convert(v, p1);
   tf2::convert(p1, v1);
 
@@ -48,7 +48,7 @@ TEST(TfEigen, ConvertVector3d)
   const Eigen::Vector3d v(1,2,3);
 
   Eigen::Vector3d v1;
-  geometry_msgs::Point p1;
+  geometry_msgs::msg::Point p1;
   tf2::convert(v, p1);
   tf2::convert(p1, v1);
 
@@ -61,7 +61,7 @@ TEST(TfEigen, ConvertAffine3dStamped)
   const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, ros::Time(42), "test_frame");
 
   tf2::Stamped<Eigen::Affine3d> v1;
-  geometry_msgs::PoseStamped p1;
+  geometry_msgs::msg::PoseStamped p1;
   tf2::convert(v, p1);
   tf2::convert(p1, v1);
 
@@ -76,7 +76,7 @@ TEST(TfEigen, ConvertAffine3d)
   const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
 
   Eigen::Affine3d v1;
-  geometry_msgs::Pose p1;
+  geometry_msgs::msg::Pose p1;
   tf2::convert(v, p1);
   tf2::convert(p1, v1);
 
@@ -99,7 +99,7 @@ TEST(TfEigen, ConvertTransform)
 
   Eigen::Affine3d T(tm);
 
-  geometry_msgs::TransformStamped msg = tf2::eigenToTransform(T);
+  geometry_msgs::msg::TransformStamped msg = tf2::eigenToTransform(T);
   Eigen::Affine3d Tback = tf2::transformToEigen(msg);
 
   EXPECT_TRUE(T.isApprox(Tback));

@@ -54,9 +54,9 @@ Eigen::Affine3d transformToEigen(const geometry_msgs::msg::TransformStamped& t) 
  * \return The transform converted to a TransformStamped message.
  */
 inline
-geometry_msgs::TransformStamped eigenToTransform(const Eigen::Affine3d& T)
+geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Affine3d& T)
 {
-  geometry_msgs::TransformStamped t;
+  geometry_msgs::msg::TransformStamped t;
   t.transform.translation.x = T.translation().x();
   t.transform.translation.y = T.translation().y();
   t.transform.translation.z = T.translation().z();
@@ -81,7 +81,7 @@ geometry_msgs::TransformStamped eigenToTransform(const Eigen::Affine3d& T)
  */
 template <>
 inline
-void doTransform(const Eigen::Vector3d& t_in, Eigen::Vector3d& t_out, const geometry_msgs::TransformStamped& transform)
+void doTransform(const Eigen::Vector3d& t_in, Eigen::Vector3d& t_out, const geometry_msgs::msg::TransformStamped& transform)
 {
   t_out = Eigen::Vector3d(transformToEigen(transform) * t_in);
 }
@@ -92,9 +92,9 @@ void doTransform(const Eigen::Vector3d& t_in, Eigen::Vector3d& t_out, const geom
  * \return The vector converted to a Point message.
  */
 inline
-geometry_msgs::Point toMsg(const Eigen::Vector3d& in)
+geometry_msgs::msg::Point toMsg(const Eigen::Vector3d& in)
 {
-  geometry_msgs::Point msg;
+  geometry_msgs::msg::Point msg;
   msg.x = in.x();
   msg.y = in.y();
   msg.z = in.z();
@@ -107,7 +107,7 @@ geometry_msgs::Point toMsg(const Eigen::Vector3d& in)
  * \param out The point converted to a Eigen Vector3d.
  */
 inline
-void fromMsg(const geometry_msgs::Point& msg, Eigen::Vector3d& out)
+void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out)
 {
   out.x() = msg.x;
   out.y() = msg.y;
@@ -170,7 +170,7 @@ template <>
 inline
 void doTransform(const Eigen::Affine3d& t_in,
                  Eigen::Affine3d& t_out,
-                 const geometry_msgs::TransformStamped& transform) {
+                 const geometry_msgs::msg::TransformStamped& transform) {
   t_out = Eigen::Affine3d(transformToEigen(transform) * t_in);
 }
 
@@ -181,8 +181,8 @@ void doTransform(const Eigen::Affine3d& t_in,
  * \return The Eigen transform converted to a Pose message.
  */
 inline
-geometry_msgs::Pose toMsg(const Eigen::Affine3d& in) {
-  geometry_msgs::Pose msg;
+geometry_msgs::msg::Pose toMsg(const Eigen::Affine3d& in) {
+  geometry_msgs::msg::Pose msg;
   msg.position.x = in.translation().x();
   msg.position.y = in.translation().y();
   msg.position.z = in.translation().z();
@@ -199,7 +199,7 @@ geometry_msgs::Pose toMsg(const Eigen::Affine3d& in) {
  * \param out The pose converted to a Eigen Affine3d.
  */
 inline
-void fromMsg(const geometry_msgs::Pose& msg, Eigen::Affine3d& out) {
+void fromMsg(const geometry_msgs::msg::Pose& msg, Eigen::Affine3d& out) {
   out = Eigen::Affine3d(
       Eigen::Translation3d(msg.position.x, msg.position.y, msg.position.z) *
       Eigen::Quaterniond(msg.orientation.w,
@@ -266,22 +266,22 @@ namespace Eigen {
 // tf2::convert().
 
 inline
-geometry_msgs::Pose toMsg(const Eigen::Affine3d& in) {
+geometry_msgs::msg::Pose toMsg(const Eigen::Affine3d& in) {
   return tf2::toMsg(in);
 }
 
 inline
-void fromMsg(const geometry_msgs::Point& msg, Eigen::Vector3d& out) {
+void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out) {
   tf2::fromMsg(msg, out);
 }
 
 inline
-geometry_msgs::Point toMsg(const Eigen::Vector3d& in) {
+geometry_msgs::msg::Point toMsg(const Eigen::Vector3d& in) {
   return tf2::toMsg(in);
 }
 
 inline
-void fromMsg(const geometry_msgs::Pose& msg, Eigen::Affine3d& out) {
+void fromMsg(const geometry_msgs::msg::Pose& msg, Eigen::Affine3d& out) {
   tf2::fromMsg(msg, out);
 }
 
