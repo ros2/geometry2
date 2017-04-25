@@ -70,7 +70,7 @@ KDL::Frame gmTransformToKDL(const geometry_msgs::msg::TransformStamped& t)
  */
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::Vector3Stamped& t) {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::Vector3Stamped& t) {return tf2_ros::fromMsg(t.header.stamp);}
 
 /** \brief Extract a frame ID from the header of a Vector message.
  * This function is a specialization of the getFrameId template defined in tf2/convert.h.
@@ -79,7 +79,7 @@ inline
  */
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::Vector3Stamped& t) {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::Vector3Stamped& t) {return t.header.frame_id;}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Vector type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
@@ -134,7 +134,7 @@ void fromMsg(const geometry_msgs::msg::Vector3Stamped& msg, geometry_msgs::msg::
  */
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::PointStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::PointStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 /** \brief Extract a frame ID from the header of a Point message.
  * This function is a specialization of the getFrameId template defined in tf2/convert.h.
@@ -143,7 +143,7 @@ inline
  */
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::PointStamped& t)  {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::PointStamped& t)  {return t.header.frame_id;}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Point type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
@@ -197,7 +197,7 @@ void fromMsg(const geometry_msgs::msg::PointStamped& msg, geometry_msgs::msg::Po
  */
 template <>
 inline
-  const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::PoseStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+  tf2::TimePoint getTimestamp(const geometry_msgs::msg::PoseStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 /** \brief Extract a frame ID from the header of a Pose message.
  * This function is a specialization of the getFrameId template defined in tf2/convert.h.
@@ -206,7 +206,7 @@ inline
  */
 template <>
 inline
-  const std::string& getFrameId(const geometry_msgs::msg::PoseStamped& t)  {return t.header.frame_id;}
+  std::string getFrameId(const geometry_msgs::msg::PoseStamped& t)  {return t.header.frame_id;}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Pose type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
@@ -297,7 +297,7 @@ void fromMsg(const geometry_msgs::msg::Quaternion& in, tf2::Quaternion& out)
  */
 template <>
 inline
-const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::QuaternionStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+tf2::TimePoint getTimestamp(const geometry_msgs::msg::QuaternionStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 /** \brief Extract a frame ID from the header of a Quaternion message.
  * This function is a specialization of the getFrameId template defined in tf2/convert.h.
@@ -306,7 +306,7 @@ const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::QuaternionStamped& 
  */
 template <>
 inline
-const std::string& getFrameId(const geometry_msgs::msg::QuaternionStamped& t)  {return t.header.frame_id;}
+std::string getFrameId(const geometry_msgs::msg::QuaternionStamped& t)  {return t.header.frame_id;}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Quaternion type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
@@ -395,7 +395,7 @@ void fromMsg(const geometry_msgs::msg::QuaternionStamped& in, tf2::Stamped<tf2::
  */
 template <>
 inline
-const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::TransformStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
+tf2::TimePoint getTimestamp(const geometry_msgs::msg::TransformStamped& t)  {return tf2_ros::fromMsg(t.header.stamp);}
 
 /** \brief Extract a frame ID from the header of a Transform message.
  * This function is a specialization of the getFrameId template defined in tf2/convert.h.
@@ -404,7 +404,7 @@ const tf2::TimePoint& getTimestamp(const geometry_msgs::msg::TransformStamped& t
  */
 template <>
 inline
-const std::string& getFrameId(const geometry_msgs::msg::TransformStamped& t)  {return t.header.frame_id;}
+std::string getFrameId(const geometry_msgs::msg::TransformStamped& t)  {return t.header.frame_id;}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Transform type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
