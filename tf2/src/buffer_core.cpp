@@ -198,10 +198,10 @@ void BufferCore::clear()
 
 bool BufferCore::setTransform(const geometry_msgs::msg::TransformStamped& transform, const std::string & authority, bool is_static)
 {
-  tf2::Transform tf2_transform(tf2::Quaternion(transform.transform.rotation.w,
-                                               transform.transform.rotation.x,
+  tf2::Transform tf2_transform(tf2::Quaternion(transform.transform.rotation.x,
                                                transform.transform.rotation.y,
-                                               transform.transform.rotation.z),
+                                               transform.transform.rotation.z,
+                                               transform.transform.rotation.w),
                                tf2::Vector3(transform.transform.translation.x,
                                             transform.transform.translation.y,
                                             transform.transform.translation.z));
