@@ -61,7 +61,7 @@ namespace tf2_ros
        * \param timeout_padding The amount of time to allow passed the desired timeout on the client side for communication lag
        */
       TF2_ROS_PUBLIC
-      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding = tf2::Duration(2.0));
+      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding = tf2::durationFromSec(2.0));
 
       /** \brief Get the transform between two frames by frame ID.
        * \param target_frame The frame to which data should be transformed
