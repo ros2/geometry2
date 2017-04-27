@@ -67,7 +67,7 @@ namespace tf2
 
   inline TimePoint timeFromSec(double t)
   {
-    return get_now() + durationFromSec(t);
+    return tf2::TimePoint(durationFromSec(t));
   }
 
   inline double durationToSec(const tf2::Duration & input){
