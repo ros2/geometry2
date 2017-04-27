@@ -53,11 +53,11 @@ namespace tf2
     return std::chrono::system_clock::now();
   }
 
-  inline Duration durationFromSec(double t)
+  inline Duration durationFromSec(double t_sec)
   {
     uint32_t sec, nsec;
-    sec = (uint32_t)floor(t);
-    nsec = (uint32_t)std::round((t-sec) * 1e9);
+    sec = (uint32_t)floor(t_sec);
+    nsec = (uint32_t)std::round((t_sec-sec) * 1e9);
     // avoid rounding errors
     sec += (nsec / 1000000000ul);
     nsec %= 1000000000ul;
@@ -65,12 +65,12 @@ namespace tf2
     return d;
   }
 
-  inline TimePoint timeFromSec(double t)
+  inline TimePoint timeFromSec(double t_sec)
   {
-    return tf2::TimePoint(durationFromSec(t));
+    return tf2::TimePoint(durationFromSec(t_sec));
   }
 
-  inline double durationToSec(const tf2::Duration & input){
+  inline double durationToSec(const tf2::Duration& input){
     return (double)std::chrono::duration_cast<std::chrono::seconds>(input).count();
   }
 
