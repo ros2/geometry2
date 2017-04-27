@@ -40,7 +40,7 @@
 
 namespace tf2
 {
-  using Duration = std::chrono::duration<double, std::nano>;
+  using Duration = std::chrono::nanoseconds;
   using TimePoint = std::chrono::time_point<std::chrono::system_clock, Duration>;
 
 
