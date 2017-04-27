@@ -28,7 +28,6 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_tools')
 import rospy
 import tf2_py as tf2
 import yaml
@@ -61,7 +60,7 @@ def generate_dot(data):
     dot = 'digraph G {\n'
     for el in data: 
         map = data[el]
-        dot += '"'+map['parent']+'" -> "'+el+'"'
+        dot += '"'+map['parent']+'" -> "'+str(el)+'"'
         dot += '[label=" '
         dot += 'Broadcaster: '+map['broadcaster']+'\\n'
         dot += 'Average rate: '+str(map['rate'])+'\\n'

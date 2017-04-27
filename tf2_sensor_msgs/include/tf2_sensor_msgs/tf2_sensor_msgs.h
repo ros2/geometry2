@@ -46,12 +46,12 @@ namespace tf2
 // method to extract timestamp from object
 template <>
 inline
-const builtin_interfaces::msg::Time& getTimestamp(const sensor_msgs::PointCloud2& p) {return p.header.stamp;}
+tf2::TimePoint getTimestamp(const sensor_msgs::PointCloud2& p) {return p.header.stamp;}
 
 // method to extract frame id from object
 template <>
 inline
-const std::string& getFrameId(const sensor_msgs::PointCloud2 &p) {return p.header.frame_id;}
+std::string getFrameId(const sensor_msgs::PointCloud2 &p) {return p.header.frame_id;}
 
 // this method needs to be implemented by client library developers
 template <>

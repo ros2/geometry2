@@ -59,27 +59,27 @@ template <class T>
  * \return The timestamp associated with the data. 
  */
 template <class T>
-  const tf2::TimePoint& getTimestamp(const T& t);
+  tf2::TimePoint getTimestamp(const T& t);
 
 /**\brief Get the frame_id from data 
  * \param t The data input.
  * \return The frame_id associated with the data. 
  */
 template <class T>
-  const std::string& getFrameId(const T& t);
+  std::string getFrameId(const T& t);
 
 
 
 /* An implementation for Stamped<P> datatypes */
 template <class P>
-  const tf2::TimePoint& getTimestamp(const tf2::Stamped<P>& t)
+  tf2::TimePoint getTimestamp(const tf2::Stamped<P>& t)
   {
     return t.stamp_;
   }
 
 /* An implementation for Stamped<P> datatypes */
 template <class P>
-  const std::string& getFrameId(const tf2::Stamped<P>& t)
+  std::string getFrameId(const tf2::Stamped<P>& t)
   {
     return t.frame_id_;
   }
@@ -118,6 +118,7 @@ template <class A, class B>
     //printf("In double type convert\n");
     impl::Converter<ros::message_traits::IsMessage<A>::value, ros::message_traits::IsMessage<B>::value>::convert(a, b);
   }
+  */
 
 template <class A>
   void convert(const A& a1, A& a2)
@@ -126,7 +127,6 @@ template <class A>
     if(&a1 != &a2)
       a2 = a1;
   }
-  */
 
 
 }

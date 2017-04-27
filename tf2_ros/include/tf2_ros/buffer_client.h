@@ -44,6 +44,12 @@
 
 namespace tf2_ros
 {
+  /** \brief Action client-based implementation of the tf2_ros::BufferInterface abstract data type.
+   *
+   * BufferClient uses actionlib to coordinate waiting for available transforms.
+   *
+   * You can use this class with a tf2_ros::BufferServer and tf2_ros::TransformListener in a separate process.
+   */
   class BufferClient : public BufferInterface
   {
     public:
@@ -52,10 +58,10 @@ namespace tf2_ros
       /** \brief BufferClient constructor
        * \param ns The namespace in which to look for a BufferServer
        * \param check_frequency The frequency in Hz to check whether the BufferServer has completed a request
-       * \param timeout_paddind The amount of time to allow passed the desired timeout on the client side for communication lag
+       * \param timeout_padding The amount of time to allow passed the desired timeout on the client side for communication lag
        */
       TF2_ROS_PUBLIC
-      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding_ = tf2::Duration(2.0));
+      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding = tf2::Duration(2.0));
 
       /** \brief Get the transform between two frames by frame ID.
        * \param target_frame The frame to which data should be transformed
@@ -119,6 +125,10 @@ namespace tf2_ros
             const std::string& source_frame, const tf2::TimePoint& source_time,
             const std::string& fixed_frame, const tf2::Duration timeout = tf2::Duration(0.0), std::string* errstr = NULL) const;
 
+      /** \brief Block until the action server is ready to respond to requests.
+       * \param timeout Time to wait for the server.
+       * \return True if the server is ready, false otherwise.
+       */
       TF2_ROS_PUBLIC
       bool waitForServer(const tf2::Duration& timeout = tf2::Duration(0))
       {

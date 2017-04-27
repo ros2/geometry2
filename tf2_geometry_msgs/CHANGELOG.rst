@@ -2,6 +2,21 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.15 (2017-01-24)
+-------------------
+
+0.5.14 (2017-01-16)
+-------------------
+* Add doxygen documentation for tf2_geometry_msgs
+* Contributors: Jackie Kay
+
+0.5.13 (2016-03-04)
+-------------------
+* Add missing python_orocos_kdl dependency
+* make example into unit test
+* vector3 not affected by translation
+* Contributors: Daniel Claes, chapulina
+
 0.5.12 (2015-08-05)
 -------------------
 * Merge pull request `#112 <https://github.com/ros/geometry_experimental/issues/112>`_ from vrabaud/getYaw

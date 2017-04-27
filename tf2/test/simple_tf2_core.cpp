@@ -34,31 +34,22 @@
 #include "tf2/exceptions.h"
 #include "tf2/time.h"
 
-typedef std::chrono::system_clock::time_point TimePoint;
-
-void seed_rand()
-{
-  //Seed random number generator with current microseond count
-  srand((unsigned int)std::chrono::system_clock::now().time_since_epoch().count());
-};
-
-void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xvalues, std::vector<double>& yvalues, std::vector<double>&zvalues)
-{
-  seed_rand();
-  for ( uint64_t i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-  }
-}
-
-
-
 TEST(tf2, setTransformFail)
 {
   tf2::BufferCore tfc;
   geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 1;
+  st.child_frame_id = "foo";
+  st.transform.translation.x = 0;
+  st.transform.translation.y = 0;
+  st.transform.translation.z = 0;
+  st.transform.rotation.x = 0;
+  st.transform.rotation.y = 0;
+  st.transform.rotation.z = 0;
+  st.transform.rotation.w = 1;
   EXPECT_FALSE(tfc.setTransform(st, "authority1"));
   
 }
@@ -83,17 +74,37 @@ TEST(tf2, setTransformValid)
   
 }
 
+TEST(tf2, setTransformInvalidQuaternion)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 1;
+  st.child_frame_id = "child";
+  st.transform.translation.x = 0;
+  st.transform.translation.y = 0;
+  st.transform.translation.z = 0;
+  st.transform.rotation.x = 0;
+  st.transform.rotation.y = 0;
+  st.transform.rotation.z = 0;
+  st.transform.rotation.w = 0;
+  EXPECT_FALSE(tfc.setTransform(st, "authority1"));
+  
+}
+
 TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
 {
   tf2::BufferCore tfc;
-  EXPECT_THROW(tfc.lookupTransform("a", "b", TimePoint(std::chrono::seconds(1))), tf2::LookupException);
+  EXPECT_THROW(tfc.lookupTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))), tf2::LookupException);
   
 }
 
 TEST(tf2_canTransform, Nothing_Exists)
 {
   tf2::BufferCore tfc;
-  EXPECT_FALSE(tfc.canTransform("a", "b", TimePoint(std::chrono::seconds(1))));
+  EXPECT_FALSE(tfc.canTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))));
   
 }
 
@@ -114,7 +125,7 @@ TEST(tf2_lookupTransform, LookupException_One_Exists)
   st.transform.rotation.z = 0;
   st.transform.rotation.w = 1;
   EXPECT_TRUE(tfc.setTransform(st, "authority1"));
-  EXPECT_THROW(tfc.lookupTransform("foo", "bar", TimePoint(std::chrono::seconds(1))), tf2::LookupException);
+  EXPECT_THROW(tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(1))), tf2::LookupException);
   
 }
 
@@ -135,7 +146,7 @@ TEST(tf2_canTransform, One_Exists)
   st.transform.rotation.z = 0;
   st.transform.rotation.w = 1;
   EXPECT_TRUE(tfc.setTransform(st, "authority1"));
-  EXPECT_FALSE(tfc.canTransform("foo", "bar", TimePoint(std::chrono::seconds(1))));
+  EXPECT_FALSE(tfc.canTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(1))));
 }
 
 TEST(tf2_time, Display_Time_Point)

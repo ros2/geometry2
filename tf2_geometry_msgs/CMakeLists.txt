@@ -5,11 +5,14 @@ if(NOT WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
 endif()
 
-find_package(orocos_kdl)
-find_package(ament_cmake REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
+find_package(ament_cmake_auto REQUIRED)
+set(required_dependencies
+  "geometry_msgs"
+  "orocos_kdl"
+  "tf2"
+  "tf2_ros"
+)
+ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
 include_directories(include
    ${orocos_kdl_INCLUDE_DIRS}
@@ -20,11 +23,6 @@ include_directories(include
 
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 
-
-
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
 
 # TODO(dhood): enable python support once ported to ROS 2
 # catkin_python_setup()
@@ -46,5 +44,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #
 #
 # endif()
-ament_export_include_directories(include)
-ament_package()
+ament_auto_package()
