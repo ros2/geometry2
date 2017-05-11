@@ -156,6 +156,13 @@ TEST(tf2_time, Display_Time_Point)
   std::string s = tf2::displayTimePoint(t);
 }
 
+TEST(tf2_time, To_From_Sec)
+{
+  tf2::TimePoint t = tf2::get_now();
+  tf2::TimePoint t2 = tf2::timeFromSec(tf2::timeToSec(t));
+  EXPECT_EQ(t, t2);
+}
+
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
