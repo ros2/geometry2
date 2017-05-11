@@ -71,7 +71,13 @@ namespace tf2
   }
 
   inline double durationToSec(const tf2::Duration& input){
-    return (double)std::chrono::duration_cast<std::chrono::seconds>(input).count();
+    int count = input.count();
+    long int sec;
+    int64_t nsec;
+    nsec = count % 1000000000ul;
+    sec = (count - nsec) / 1000000000ul;
+    double nsec_double = 1e-9 * (double)nsec;
+    return (double)sec + nsec_double;
   }
 
   inline double timeToSec(const TimePoint& timepoint)

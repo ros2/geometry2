@@ -159,8 +159,14 @@ TEST(tf2_time, Display_Time_Point)
 TEST(tf2_time, To_From_Sec)
 {
   tf2::TimePoint t = tf2::get_now();
+  std::cout << t.time_since_epoch().count() << std::endl;
+  std::cout << "t: " << tf2::displayTimePoint(t) << std::endl;
   tf2::TimePoint t2 = tf2::timeFromSec(tf2::timeToSec(t));
+  std::cout << "t2: " << tf2::displayTimePoint(t2) << std::endl;
+  std::cout << t2.time_since_epoch().count() << std::endl;
+  auto diff = tf2::timeFromSec(tf2::timeToSec(t)) - t;
   EXPECT_EQ(t, t2);
+  //EXPECT_TRUE(tf2::durationToSec(diff) == 0);
 }
 
 
