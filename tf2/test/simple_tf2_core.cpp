@@ -158,15 +158,24 @@ TEST(tf2_time, Display_Time_Point)
 
 TEST(tf2_time, To_From_Sec)
 {
-  tf2::TimePoint t = tf2::get_now();
-  std::cout << t.time_since_epoch().count() << std::endl;
-  std::cout << "t: " << tf2::displayTimePoint(t) << std::endl;
-  tf2::TimePoint t2 = tf2::timeFromSec(tf2::timeToSec(t));
-  std::cout << "t2: " << tf2::displayTimePoint(t2) << std::endl;
-  std::cout << t2.time_since_epoch().count() << std::endl;
-  auto diff = tf2::timeFromSec(tf2::timeToSec(t)) - t;
-  EXPECT_EQ(t, t2);
-  //EXPECT_TRUE(tf2::durationToSec(diff) == 0);
+  // Exact representation of a time.
+  tf2::TimePoint t1 = tf2::get_now();
+
+  // Approximate representation of the time in seconds as a double (floating point error introduced).
+  double t1_sec = tf2::timeToSec(t1);
+
+  // Time point from the t1_sec approximation.
+  tf2::TimePoint t2 = tf2::timeFromSec(t1_sec);
+
+  // Check that the difference due to t1_sec being approximate is small.
+  tf2::Duration diff = t2 > t1 ? t2 - t1 : t1 - t2;
+  std::cout << "Difference (ns): " << diff.count() << std::endl;
+  EXPECT_TRUE(diff < tf2::Duration(std::chrono::nanoseconds(200)));
+
+  // No new floating point errors are expected after converting to and from time points.
+  double t2_sec = tf2::timeToSec(t2);
+  EXPECT_EQ(t1_sec, t2_sec);
+  EXPECT_EQ(tf2::timeFromSec(t1_sec), tf2::timeFromSec(t2_sec));
 }
 
 

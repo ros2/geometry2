@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string>
 #include <thread>
+#include <iostream>
 
 #include <tf2/visibility_control.h>
 
@@ -61,8 +62,7 @@ namespace tf2
     // avoid rounding errors
     sec += (nsec / 1000000000ul);
     nsec %= 1000000000ul;
-    Duration d = std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
-    return d;
+    return std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
   }
 
   inline TimePoint timeFromSec(double t_sec)
@@ -71,13 +71,18 @@ namespace tf2
   }
 
   inline double durationToSec(const tf2::Duration& input){
-    int count = input.count();
-    long int sec;
-    int64_t nsec;
+    int64_t count = input.count();
+    int32_t sec;
+    uint32_t nsec;
     nsec = count % 1000000000ul;
     sec = (count - nsec) / 1000000000ul;
     double nsec_double = 1e-9 * (double)nsec;
-    return (double)sec + nsec_double;
+    double sec_double = (double)sec;
+    fprintf(stdout, "sec_double: %0.16f\n", sec_double);
+    fprintf(stdout, "nsec_double: %0.16f\n", nsec_double);
+    double d = sec_double + nsec_double;
+    fprintf(stdout, "Returning double of: %0.16f\n", d);
+    return d;
   }
 
   inline double timeToSec(const TimePoint& timepoint)
