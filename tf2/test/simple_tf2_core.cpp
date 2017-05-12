@@ -178,6 +178,32 @@ TEST(tf2_time, To_From_Sec)
   EXPECT_EQ(tf2::timeFromSec(t1_sec), tf2::timeFromSec(t2_sec));
 }
 
+TEST(tf2_time, Negative_Durations)
+{
+  tf2::TimePoint t1 = tf2::get_now();
+  // Create a time in the past.
+  double expected_diff_sec = -0.7;
+  tf2::TimePoint t2 = tf2::timeFromSec(tf2::timeToSec(t1) + expected_diff_sec);
+
+  // Check durationToSec.
+  // Create a negative duration.
+  tf2::Duration duration = t2 - t1;
+  EXPECT_TRUE(duration.count() < 0);
+  std::cout << "Difference (ns): " << duration.count() << std::endl;
+  std::cout << "Difference (s): " << tf2::durationToSec(duration) << std::endl;
+
+  double error_sec = tf2::durationToSec(duration) - expected_diff_sec;
+  EXPECT_TRUE(std::abs(error_sec) < 0.001);
+
+  // Check durationFromSec.
+  tf2::Duration duration2 = tf2::durationFromSec(tf2::durationToSec(duration));
+  tf2::Duration error_duration = duration - duration2;
+  // Get the absolute difference between Durations.
+  error_duration = error_duration > tf2::Duration(0) ? error_duration : -error_duration;
+  std::cout << "Error (ns): " << error_duration.count() << std::endl;
+  EXPECT_TRUE(error_duration < tf2::Duration(std::chrono::nanoseconds(1)));
+}
+
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);

@@ -56,12 +56,12 @@ namespace tf2
 
   inline Duration durationFromSec(double t_sec)
   {
-    uint32_t sec, nsec;
-    sec = (uint32_t)floor(t_sec);
-    nsec = (uint32_t)std::round((t_sec-sec) * 1e9);
+    int32_t sec, nsec;
+    sec = (int32_t)floor(t_sec);
+    nsec = (int32_t)std::nearbyint((t_sec-sec) * 1e9);
     // avoid rounding errors
-    sec += (nsec / 1000000000ul);
-    nsec %= 1000000000ul;
+    sec += (nsec / 1000000000l);
+    nsec %= 1000000000l;
     return std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
   }
 
@@ -72,17 +72,14 @@ namespace tf2
 
   inline double durationToSec(const tf2::Duration& input){
     int64_t count = input.count();
-    int32_t sec;
-    uint32_t nsec;
-    nsec = count % 1000000000ul;
-    sec = (count - nsec) / 1000000000ul;
-    double nsec_double = 1e-9 * (double)nsec;
-    double sec_double = (double)sec;
-    fprintf(stdout, "sec_double: %0.16f\n", sec_double);
-    fprintf(stdout, "nsec_double: %0.16f\n", nsec_double);
-    double d = sec_double + nsec_double;
-    fprintf(stdout, "Returning double of: %0.16f\n", d);
-    return d;
+    int32_t sec, nsec;
+    nsec = count % 1000000000l;
+    sec = (count - nsec) / 1000000000l;
+
+    double sec_double, nsec_double;
+    nsec_double = 1e-9 * (double)nsec;
+    sec_double = (double)sec;
+    return sec_double + nsec_double;
   }
 
   inline double timeToSec(const TimePoint& timepoint)
