@@ -169,7 +169,6 @@ TEST(tf2_time, To_From_Sec)
 
   // Check that the difference due to t1_sec being approximate is small.
   tf2::Duration diff = t2 > t1 ? t2 - t1 : t1 - t2;
-  std::cout << "Difference (ns): " << diff.count() << std::endl;
   EXPECT_TRUE(diff < tf2::Duration(std::chrono::nanoseconds(200)));
 
   // No new floating point errors are expected after converting to and from time points.
@@ -208,7 +207,8 @@ TEST(tf2_time, To_From_Duration)
     // Get the absolute difference between Durations.
     error_duration = error_duration > tf2::Duration(0) ? error_duration : -error_duration;
     // Increased tolerance for larger differences.
-    int32_t tol_ns = std::abs(expected_diff_sec) > 100000 ? 5 : 1;
+    int32_t tol_ns = std::abs(expected_diff_sec) > 100000 ? 10 : 1;
+
     EXPECT_TRUE(error_duration < tf2::Duration(std::chrono::nanoseconds(tol_ns)));
   }
 }
