@@ -17,9 +17,11 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 
+  <!-- python support not yet ported
   <build_depend>python_orocos_kdl</build_depend>
 
   <exec_depend>python_orocos_kdl</exec_depend>
+  -->
 
   <!--<test_depend>rostest</test_depend> -->
 
