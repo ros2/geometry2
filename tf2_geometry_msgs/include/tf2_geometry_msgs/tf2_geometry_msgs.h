@@ -35,6 +35,7 @@
 #include <tf2/convert.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
+#include <tf2_ros/buffer_interface.h>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
