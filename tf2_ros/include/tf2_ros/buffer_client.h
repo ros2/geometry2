@@ -61,7 +61,7 @@ namespace tf2_ros
        * \param timeout_padding The amount of time to allow passed the desired timeout on the client side for communication lag
        */
       TF2_ROS_PUBLIC
-      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding = tf2::Duration(2.0));
+      BufferClient(std::string ns, double check_frequency = 10.0, tf2::Duration timeout_padding = tf2::durationFromSec(2.0));
 
       /** \brief Get the transform between two frames by frame ID.
        * \param target_frame The frame to which data should be transformed
@@ -76,7 +76,7 @@ namespace tf2_ros
       TF2_ROS_PUBLIC
       virtual geometry_msgs::TransformStamped
         lookupTransform(const std::string& target_frame, const std::string& source_frame,
-            const tf2::TimePoint& time, const tf2::Duration timeout = tf2::Duration(0.0)) const;
+            const tf2::TimePoint& time, const tf2::Duration timeout = tf2::durationFromSec(0.0)) const;
 
       /** \brief Get the transform between two frames by frame ID assuming fixed frame.
        * \param target_frame The frame to which data should be transformed
@@ -94,7 +94,7 @@ namespace tf2_ros
       virtual geometry_msgs::TransformStamped 
         lookupTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
             const std::string& source_frame, const tf2::TimePoint& source_time,
-            const std::string& fixed_frame, const tf2::Duration timeout = tf2::Duration(0.0)) const;
+            const std::string& fixed_frame, const tf2::Duration timeout = tf2::durationFromSec(0.0)) const;
 
       /** \brief Test if a transform is possible
        * \param target_frame The frame into which to transform
@@ -107,7 +107,7 @@ namespace tf2_ros
       TF2_ROS_PUBLIC
       virtual bool
         canTransform(const std::string& target_frame, const std::string& source_frame, 
-            const tf2::TimePoint& time, const tf2::Duration timeout = tf2::Duration(0.0), std::string* errstr = NULL) const;
+            const tf2::TimePoint& time, const tf2::Duration timeout = tf2::durationFromSec(0.0), std::string* errstr = NULL) const;
 
       /** \brief Test if a transform is possible
        * \param target_frame The frame into which to transform
@@ -123,14 +123,14 @@ namespace tf2_ros
       virtual bool
         canTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
             const std::string& source_frame, const tf2::TimePoint& source_time,
-            const std::string& fixed_frame, const tf2::Duration timeout = tf2::Duration(0.0), std::string* errstr = NULL) const;
+            const std::string& fixed_frame, const tf2::Duration timeout = tf2::durationFromSec(0.0), std::string* errstr = NULL) const;
 
       /** \brief Block until the action server is ready to respond to requests.
        * \param timeout Time to wait for the server.
        * \return True if the server is ready, false otherwise.
        */
       TF2_ROS_PUBLIC
-      bool waitForServer(const tf2::Duration& timeout = tf2::Duration(0))
+      bool waitForServer(const tf2::Duration& timeout = tf2::durationFromSec(0))
       {
         return client_.waitForServer(timeout);
       }

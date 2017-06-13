@@ -31,16 +31,18 @@
  #define TF2_TIME_H
 
 #include <chrono>
+#include <cmath>
 #include <stdio.h>
 #include <string>
 #include <thread>
+#include <iostream>
 
 #include <tf2/visibility_control.h>
 
 namespace tf2
 {
-  using Duration = std::chrono::duration<double, std::nano>;
-  using TimePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+  using Duration = std::chrono::nanoseconds;
+  using TimePoint = std::chrono::time_point<std::chrono::system_clock, Duration>;
 
 
   using IDuration = std::chrono::duration<int, std::nano>;
@@ -52,8 +54,32 @@ namespace tf2
     return std::chrono::system_clock::now();
   }
 
-  inline double durationToSec(const tf2::Duration & input){
-    return (double)std::chrono::duration_cast<std::chrono::seconds>(input).count();
+  inline Duration durationFromSec(double t_sec)
+  {
+    int32_t sec, nsec;
+    sec = static_cast<int32_t>(floor(t_sec));
+    nsec = static_cast<int32_t>(std::round((t_sec - sec) * 1e9));
+    // avoid rounding errors
+    sec += (nsec / 1000000000l);
+    nsec %= 1000000000l;
+    return std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
+  }
+
+  inline TimePoint timeFromSec(double t_sec)
+  {
+    return tf2::TimePoint(durationFromSec(t_sec));
+  }
+
+  inline double durationToSec(const tf2::Duration& input){
+    int64_t count = input.count();
+    int32_t sec, nsec;
+    nsec = static_cast<int32_t>(count % 1000000000l);
+    sec = static_cast<int32_t>((count - nsec) / 1000000000l);
+
+    double sec_double, nsec_double;
+    nsec_double = 1e-9 * static_cast<double>(nsec);
+    sec_double = static_cast<double>(sec);
+    return sec_double + nsec_double;
   }
 
   inline double timeToSec(const TimePoint& timepoint)
