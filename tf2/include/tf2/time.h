@@ -58,7 +58,7 @@ namespace tf2
   {
     int32_t sec, nsec;
     sec = static_cast<int32_t>(floor(t_sec));
-    nsec = static_cast<int32_t>(std::nearbyint((t_sec-sec) * 1e9));
+    nsec = static_cast<int32_t>(std::round((t_sec - sec) * 1e9));
     // avoid rounding errors
     sec += (nsec / 1000000000l);
     nsec %= 1000000000l;
