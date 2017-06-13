@@ -57,8 +57,8 @@ namespace tf2
   inline Duration durationFromSec(double t_sec)
   {
     int32_t sec, nsec;
-    sec = (int32_t)floor(t_sec);
-    nsec = (int32_t)std::nearbyint((t_sec-sec) * 1e9);
+    sec = static_cast<int32_t>(floor(t_sec));
+    nsec = static_cast<int32_t>(std::nearbyint((t_sec-sec) * 1e9));
     // avoid rounding errors
     sec += (nsec / 1000000000l);
     nsec %= 1000000000l;
@@ -73,12 +73,12 @@ namespace tf2
   inline double durationToSec(const tf2::Duration& input){
     int64_t count = input.count();
     int32_t sec, nsec;
-    nsec = (int32_t)(count % 1000000000l);
-    sec = (int32_t)((count - nsec) / 1000000000l);
+    nsec = static_cast<int32_t>(count % 1000000000l);
+    sec = static_cast<int32_t>((count - nsec) / 1000000000l);
 
     double sec_double, nsec_double;
-    nsec_double = 1e-9 * (double)nsec;
-    sec_double = (double)sec;
+    nsec_double = 1e-9 * static_cast<double>(nsec);
+    sec_double = static_cast<double>(sec);
     return sec_double + nsec_double;
   }
 
