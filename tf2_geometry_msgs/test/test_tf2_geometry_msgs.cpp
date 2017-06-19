@@ -46,6 +46,9 @@ TEST(TfGeometry, Frame)
   v1.pose.position.y = 2;
   v1.pose.position.z = 3;
   v1.pose.orientation.x = 1;
+  v1.pose.orientation.y = 0;
+  v1.pose.orientation.z = 0;
+  v1.pose.orientation.w = 0;
   v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
   v1.header.frame_id = "A";
 
