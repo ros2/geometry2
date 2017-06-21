@@ -58,7 +58,7 @@ TEST(Tf2Sensor, PointCloud2)
   cloud.header.frame_id = "A";
 
   // simple api
-  sensor_msgs::PointCloud2 cloud_simple = tf_buffer->transform(cloud, "B", tf2::Duration(2.0));
+  sensor_msgs::PointCloud2 cloud_simple = tf_buffer->transform(cloud, "B", tf2::durationFromSec(2.0));
   sensor_msgs::PointCloud2Iterator<float> iter_x_after(cloud_simple, "x");
   sensor_msgs::PointCloud2Iterator<float> iter_y_after(cloud_simple, "y");
   sensor_msgs::PointCloud2Iterator<float> iter_z_after(cloud_simple, "z");
@@ -68,7 +68,7 @@ TEST(Tf2Sensor, PointCloud2)
 
   // advanced api
   sensor_msgs::PointCloud2 cloud_advanced = tf_buffer->transform(cloud, "B", builtin_interfaces::msg::Time(2.0),
-                                                                 "A", tf2::Duration(3.0));
+                                                                 "A", tf2::durationFromSec(3.0));
   sensor_msgs::PointCloud2Iterator<float> iter_x_advanced(cloud_advanced, "x");
   sensor_msgs::PointCloud2Iterator<float> iter_y_advanced(cloud_advanced, "y");
   sensor_msgs::PointCloud2Iterator<float> iter_z_advanced(cloud_advanced, "z");
@@ -98,7 +98,7 @@ int main(int argc, char **argv){
   t.child_frame_id = "B";
   tf_buffer->setTransform(t, "test");
 
-  bool ret = RUN_ALL_TESTS();
+  int ret = RUN_ALL_TESTS();
   delete tf_buffer;
   return ret;
 }

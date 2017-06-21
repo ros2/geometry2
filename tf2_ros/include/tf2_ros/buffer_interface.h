@@ -39,7 +39,7 @@
 #include <tf2/exceptions.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <sstream>
-//TODO(tfoote)  review removal #include <tf2/convert.h>
+#include <tf2/convert.h>
 
 namespace tf2_ros
 {
@@ -58,7 +58,8 @@ namespace tf2_ros
   inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
   {
     int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-    return tf2::TimePoint(std::chrono::nanoseconds(d));
+    std::chrono::nanoseconds ns(d);
+    return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
   }
 
   inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
@@ -138,7 +139,6 @@ public:
 		 const std::string& source_frame, const tf2::TimePoint& source_time,
 		 const std::string& fixed_frame, const tf2::Duration timeout, std::string* errstr = NULL) const = 0;
 
-  // TODO(tfoote) restore transform methods
   /** \brief Transform an input into the target frame.
    * This function is templated and can take as input any valid mathematical object that tf knows
    * how to apply a transform to, by way of the templated math conversions interface.
@@ -150,14 +150,14 @@ public:
    * \param target_frame The string identifer for the frame to transform into.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    */
-  // template <class T>
-  //   T& transform(const T& in, T& out, 
-  //       	 const std::string& target_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   // do the transform
-  //   tf2::doTransform(in, out, lookupTransform(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout));
-  //   return out;
-  // }
+  template <class T>
+    T& transform(const T& in, T& out, 
+        	 const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    // do the transform
+    tf2::doTransform(in, out, lookupTransform(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout));
+    return out;
+  }
 
   /** \brief Transform an input into the target frame.
    * This function is templated and can take as input any valid mathematical object that tf knows
@@ -170,13 +170,13 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output.
    */
-  // template <class T>
-  //   T transform(const T& in, 
-  //       	const std::string& target_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   T out;
-  //   return transform(in, out, target_frame, timeout);
-  // }
+  template <class T>
+    T transform(const T& in, 
+        	const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    T out;
+    return transform(in, out, target_frame, timeout);
+  }
 
   /** \brief Transform an input into the target frame and convert to a specified output type.
    * It is templated on two types: the type of the input object and the type of the
@@ -195,14 +195,14 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output, converted to the specified type.
    */
-  // template <class A, class B>
-  //   B& transform(const A& in, B& out,
-  //       const std::string& target_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   A copy = transform(in, target_frame, timeout);
-  //   tf2::convert(copy, out);
-  //   return out;
-  // }
+  template <class A, class B>
+    B& transform(const A& in, B& out,
+        const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    A copy = transform(in, target_frame, timeout);
+    tf2::convert(copy, out);
+    return out;
+  }
 
   /** \brief Transform an input into the target frame (advanced).
    * This function is templated and can take as input any valid mathematical object that tf knows
@@ -219,17 +219,17 @@ public:
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    */
-  // template <class T>
-  //   T& transform(const T& in, T& out, 
-  //       	 const std::string& target_frame, const tf2::TimePoint& target_time,
-  //       	 const std::string& fixed_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   // do the transform
-  //   tf2::doTransform(in, out, lookupTransform(target_frame, target_time, 
-  //                                             tf2::getFrameId(in), tf2::getTimestamp(in), 
-  //                                             fixed_frame, timeout));
-  //   return out;
-  // }
+  template <class T>
+    T& transform(const T& in, T& out, 
+        	 const std::string& target_frame, const tf2::TimePoint& target_time,
+        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    // do the transform
+    tf2::doTransform(in, out, lookupTransform(target_frame, target_time, 
+                                              tf2::getFrameId(in), tf2::getTimestamp(in), 
+                                              fixed_frame, timeout));
+    return out;
+  }
 
   /** \brief Transform an input into the target frame (advanced).
    * This function is templated and can take as input any valid mathematical object that tf knows
@@ -246,14 +246,14 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output.
    */
-  // template <class T>
-  //   T transform(const T& in, 
-  //       	 const std::string& target_frame, const tf2::TimePoint& target_time,
-  //       	 const std::string& fixed_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   T out;
-  //   return transform(in, out, target_frame, target_time, fixed_frame, timeout);
-  // }
+  template <class T>
+    T transform(const T& in, 
+        	 const std::string& target_frame, const tf2::TimePoint& target_time,
+        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    T out;
+    return transform(in, out, target_frame, target_time, fixed_frame, timeout);
+  }
 
   /** \brief Transform an input into the target frame and convert to a specified output type (advanced).
    * It is templated on two types: the type of the input object and the type of the
@@ -276,16 +276,16 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output, converted to the specified output type.
    */
-  // template <class A, class B>
-  //   B& transform(const A& in, B& out, 
-  //       	 const std::string& target_frame, const tf2::TimePoint& target_time,
-  //       	 const std::string& fixed_frame, tf2::Duration timeout=tf2::Duration(0.0)) const
-  // {
-  //   // do the transform
-  //   A copy = transform(in, target_frame, target_time, fixed_frame, timeout);
-  //   tf2::convert(copy, out);
-  //   return out;
-  // }
+  template <class A, class B>
+    B& transform(const A& in, B& out, 
+        	 const std::string& target_frame, const tf2::TimePoint& target_time,
+        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  {
+    // do the transform
+    A copy = transform(in, target_frame, target_time, fixed_frame, timeout);
+    tf2::convert(copy, out);
+    return out;
+  }
 
  }; // class
 

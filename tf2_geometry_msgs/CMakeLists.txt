@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 project(tf2_geometry_msgs)
 
-if(NOT WIN32)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra)
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
@@ -27,21 +31,18 @@ link_directories(${orocos_kdl_LIBRARY_DIRS})
 # TODO(dhood): enable python support once ported to ROS 2
 # catkin_python_setup()
 
-# TODO(dhood): enable tests once ported to ROS 2
-# if(CATKIN_ENABLE_TESTING)
-#
-# find_package(catkin REQUIRED COMPONENTS geometry_msgs rostest tf2_ros tf2)
-#
-# add_executable(test_geometry_msgs EXCLUDE_FROM_ALL test/test_tf2_geometry_msgs.cpp)
-# target_link_libraries(test_geometry_msgs ${catkin_LIBRARIES} ${GTEST_LIBRARIES} ${orocos_kdl_LIBRARIES})
-# add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
-# add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_python.launch)
-#
-#
-# if(TARGET tests)
-#   add_dependencies(tests test_geometry_msgs)
-# endif()
-#
-#
-# endif()
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
+  if(TARGET test_tf2_geometry_msgs)
+    target_link_libraries(test_tf2_geometry_msgs
+      ${geometry_msgs_LIBRARIES}
+      ${orocos_kdl_LIBRARIES}
+      ${tf2_LIBRARIES}
+      ${tf2_ros_LIBRARIES}
+      ${GTEST_LIBRARIES}
+    )
+  endif()
+endif()
+
 ament_auto_package()
