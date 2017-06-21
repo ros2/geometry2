@@ -64,11 +64,11 @@ static PyTypeObject buffer_core_Type = {
 # else
   PyVarObject_HEAD_INIT(NULL, 0)
 #endif
-  "_tf2.BufferCore",               /*name*/
-  sizeof(buffer_core_t),           /*basicsize*/
+  "_tf2.BufferCore",         /* name */
+  sizeof(buffer_core_t),     /* basicsize */
 };
 
-static PyObject *transform_converter(const geometry_msgs::TransformStamped* transform)
+static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped* transform)
 {
   PyObject *pclass, *pargs, *pinst = NULL;
   pclass = PyObject_GetAttrString(pModulegeometrymsgs, "TransformStamped");
@@ -96,7 +96,7 @@ static PyObject *transform_converter(const geometry_msgs::TransformStamped* tran
 
   //we need to convert the time to python
   PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
-  PyObject *args = Py_BuildValue("ii", transform->header.stamp.sec, transform->header.stamp.nsec);
+  PyObject *args = Py_BuildValue("ii", transform->header.stamp.sec, transform->header.stamp.nanosec);
   PyObject *time_obj = PyObject_CallObject(rospy_time, args);
   Py_DECREF(args);
   Py_DECREF(rospy_time);
@@ -129,14 +129,30 @@ static PyObject *transform_converter(const geometry_msgs::TransformStamped* tran
   return pinst;
 }
 
-static int rostime_converter(PyObject *obj, builtin_interfaces::msg::Time *rt)
+static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
   PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
   if (tsr == NULL) {
     PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
     return 0;
   } else {
-    (*rt).fromSec(PyFloat_AsDouble(tsr));
+    *rt = tf2::timeFromSec(PyFloat_AsDouble(tsr));
+    Py_DECREF(tsr);
+    return 1;
+  }
+}
+
+static int rostime_converter_blt(PyObject *obj, builtin_interfaces::msg::Time *rt)
+{
+  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
+  if (tsr == NULL) {
+    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
+    return 0;
+  } else {
+    auto dbl = PyFloat_AsDouble(tsr);
+    auto sec = std::floor(dbl);
+    (*rt).sec = static_cast<int32_t>(sec);
+    (*rt).nanosec = static_cast<uint32_t>((dbl - sec) * 1000000000.0);
     Py_DECREF(tsr);
     return 1;
   }
@@ -149,7 +165,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
     return 0;
   } else {
-    (*rt).fromSec(PyFloat_AsDouble(tsr));
+    (*rt) = tf2::durationFromSec(PyFloat_AsDouble(tsr));
     Py_DECREF(tsr);
     return 1;
   }
@@ -157,9 +173,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 
 static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
 {
-  tf2::Duration cache_time;
-
-  cache_time.fromSec(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME);
+  tf2::Duration cache_time(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME);
 
   if (!PyArg_ParseTuple(args, "|O&", rosduration_converter, &cache_time))
     return -1;
@@ -195,7 +209,7 @@ static PyObject *canTransformCore(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint time;
   static const char *keywords[] = { "target_frame", "source_frame", "time", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char**)keywords, &target_frame, &source_frame, rostime_converter, &time))
@@ -210,7 +224,7 @@ static PyObject *canTransformFullCore(PyObject *self, PyObject *args, PyObject *
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char**)keywords,
@@ -242,7 +256,7 @@ static PyObject *_chain(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   std::vector< std::string > output;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
@@ -265,17 +279,19 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
   tf2::CompactFrameID target_id, source_id;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint time;
   std::string error_string;
 
   if (!PyArg_ParseTuple(args, "ss", &target_frame, &source_frame))
     return NULL;
   WRAP(target_id = bc->_validateFrameId("get_latest_common_time", target_frame));
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
-  int r = bc->_getLatestCommonTime(target_id, source_id, time, &error_string);
-  if (r == 0) {
+  auto r = bc->_getLatestCommonTime(target_id, source_id, time, &error_string);
+  if (r == tf2::TF2Error::NO_ERROR) {
     PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
-    PyObject *args = Py_BuildValue("ii", time.sec, time.nsec);
+    auto dbl = tf2::timeToSec(time);
+    auto sec = std::floor(dbl);
+    PyObject *args = Py_BuildValue("ii", static_cast<int32_t>(sec), static_cast<uint32_t>((dbl - sec) * 1000000000.0));
     PyObject *ob = PyObject_CallObject(rospy_time, args);
     Py_DECREF(args);
     Py_DECREF(rospy_time);
@@ -290,15 +306,15 @@ static PyObject *lookupTransformCore(PyObject *self, PyObject *args, PyObject *k
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint time;
   static const char *keywords[] = { "target_frame", "source_frame", "time", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char**)keywords, &target_frame, &source_frame, rostime_converter, &time))
     return NULL;
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, source_frame, time));
-  geometry_msgs::Vector3 origin = transform.transform.translation;
-  geometry_msgs::Quaternion rotation = transform.transform.rotation;
+  auto origin = transform.transform.translation;
+  auto rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
   //return Py_BuildValue("(ddd)(dddd)",
@@ -310,7 +326,7 @@ static PyObject *lookupTransformFullCore(PyObject *self, PyObject *args, PyObjec
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char**)keywords,
@@ -322,10 +338,10 @@ static PyObject *lookupTransformFullCore(PyObject *self, PyObject *args, PyObjec
                         &source_time,
                         &fixed_frame))
     return NULL;
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame));
-  geometry_msgs::Vector3 origin = transform.transform.translation;
-  geometry_msgs::Quaternion rotation = transform.transform.rotation;
+  auto origin = transform.transform.translation;
+  auto rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
 }
@@ -340,7 +356,7 @@ static PyObject *lookupTwistCore(PyObject *self, PyObject *args, PyObject *kw)
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&O&", (char**)keywords, &tracking_frame, &observation_frame, rostime_converter, &time, rosduration_converter, &averaging_interval))
     return NULL;
-  geometry_msgs::Twist twist;
+  geometry_msgs::msg::Twist twist;
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, time, averaging_interval));
 
   return Py_BuildValue("(ddd)(ddd)",
@@ -365,7 +381,7 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
                         rostime_converter, &time,
                         rosduration_converter, &averaging_interval))
     return NULL;
-  geometry_msgs::Twist twist;
+  geometry_msgs::msg::Twist twist;
   tf::Point pt(px, py, pz);
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, reference_frame, pt, reference_point_frame, time, averaging_interval));
 
@@ -410,11 +426,11 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
 
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
+  if (rostime_converter_blt(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
     return NULL;
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
@@ -453,11 +469,12 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
 
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
+  tf2::Duration tp;
+  if (rostime_converter_blt(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
     return NULL;
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
@@ -515,10 +532,11 @@ static PyObject *_allFramesAsDot(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   static const char *keywords[] = { "time", NULL };
-  ros::Time time;
+
+  tf2::TimePoint time;
   if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&", (char**)keywords, rostime_converter, &time))
     return NULL;
-  return PyString_FromString(bc->_allFramesAsDot(time.toSec()).c_str());
+  return stringToPython(bc->_allFramesAsDot(time).c_str());
 }
 
 

@@ -1,12 +1,22 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-from catkin_pkg.python_setup import generate_distutils_setup
+from setuptools import setup
 
-d = generate_distutils_setup(
-    packages=['tf2_py'],
-    package_dir={'': 'src'},
-    requires=['rospy', 'geometry_msgs', 'tf2_msgs']
+setup(
+    name='tf2_py',
+    version='0.5.15',
+    packages=[],
+    py_modules=[],
+    install_requires=['setuptools', 'geometry_msgs', 'tf2_msgs'],
+    maintainer='Tully Foote',
+    maintainer_email='tfoote@osrfoundation.org',
+    keywords=['ROS'],
+    classifiers=[
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD',
+        'Programming Language :: Python',
+        'Topic :: Software Development',
+    ],
+    description='Python API to access tf2 buffers.',
+    license='BSD'
 )
-
-setup(**d)
