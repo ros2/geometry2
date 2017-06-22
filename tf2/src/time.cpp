@@ -53,11 +53,12 @@ std::string tf2::displayTimePoint(const TimePoint& stamp)
 #else
     throw std::runtime_error(strerror(errno));
 #endif // _WIN32
-}
+  }
 
   char * buffer = new char[buff_size];
   int bytes_written = snprintf(buffer, buff_size, format_str, current_time);
   if (bytes_written < 0) {
+    delete[] buffer;
 #ifdef _WIN32
     // Using fixed buffer size since, strerrorlen_s not yet available
     const int errormsglen = 200;
