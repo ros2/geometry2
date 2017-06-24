@@ -108,15 +108,17 @@ target_link_libraries(tf2_echo
     )
 
 # Install rules
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 install(TARGETS
-  ${PROJECT_NAME}
   tf2_echo
   tf2_monitor
   # buffer_server
   static_transform_publisher
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY include/${PROJECT_NAME}/
