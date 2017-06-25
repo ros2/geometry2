@@ -21,14 +21,17 @@
   <url type="website">http://ros.org/wiki/tf2_py</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>builtin_interfaces</build_depend>
+  <build_depend>geometry_msgs</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tf2_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>builtin_interfaces</build_depend>
-  <build_depend>tf2_msgs</build_depend>
-  <exec_depend>tf2</exec_depend>
+  <build_depend>tf2_ros</build_depend>
+
   <exec_depend>rospy</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
