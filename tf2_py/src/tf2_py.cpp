@@ -2,7 +2,7 @@
 
 #include <tf2/buffer_core.h>
 #include <tf2/exceptions.h>
-
+#include <tf2_ros/buffer_interface.h>
 #include "python_compat.h"
 
 // Run x (a tf method, catching TF's exceptions and reraising them as Python exceptions)
@@ -137,22 +137,6 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
     return 0;
   } else {
     *rt = tf2::timeFromSec(PyFloat_AsDouble(tsr));
-    Py_DECREF(tsr);
-    return 1;
-  }
-}
-
-static int rostime_converter_blt(PyObject *obj, builtin_interfaces::msg::Time *rt)
-{
-  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
-  if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
-    return 0;
-  } else {
-    auto dbl = PyFloat_AsDouble(tsr);
-    auto sec = std::floor(dbl);
-    (*rt).sec = static_cast<int32_t>(sec);
-    (*rt).nanosec = static_cast<uint32_t>((dbl - sec) * 1000000000.0);
     Py_DECREF(tsr);
     return 1;
   }
@@ -422,6 +406,7 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
+  tf2::TimePoint time;
 
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
@@ -430,9 +415,11 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter_blt(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
-    return NULL;
 
+  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
+    return NULL;
+  transform.header.stamp = tf2_ros::toMsg(time);
+  
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
 
   PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
@@ -465,6 +452,7 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
+  tf2::TimePoint time;
 
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
@@ -474,8 +462,9 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
   tf2::Duration tp;
-  if (rostime_converter_blt(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
+  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
+  transform.header.stamp = tf2_ros::toMsg(time);
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
   PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
