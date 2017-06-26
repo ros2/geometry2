@@ -133,7 +133,7 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
   PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
   if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
+    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rclpy.Time or rclpy.Duration");
     return 0;
   } else {
     *rt = tf2::timeFromSec(PyFloat_AsDouble(tsr));
@@ -146,7 +146,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 {
   PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
   if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
+    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rclpy.Time or rclpy.Duration");
     return 0;
   } else {
     (*rt) = tf2::durationFromSec(PyFloat_AsDouble(tsr));
@@ -535,17 +535,17 @@ static struct PyMethodDef buffer_core_methods[] =
   {"all_frames_as_string", allFramesAsString, METH_VARARGS},
   {"set_transform", setTransform, METH_VARARGS},
   {"set_transform_static", setTransformStatic, METH_VARARGS},
-  {"can_transform_core", (PyCFunction)canTransformCore, METH_KEYWORDS},
-  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_KEYWORDS},
-  {"_chain", (PyCFunction)_chain, METH_KEYWORDS},
-  {"clear", (PyCFunction)clear, METH_KEYWORDS},
+  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS},
+  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_VARARGS | METH_KEYWORDS},
+  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS},
+  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS},
   {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS},
   {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS},
-  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_KEYWORDS},
+  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS},
   {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS},
-  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_KEYWORDS},
-  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_KEYWORDS},
-  //{"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_KEYWORDS},
+  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS},
+  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS},
+  //{"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_VARARGS | METH_KEYWORDS},
   //{"lookupTwistFullCore", lookupTwistFullCore, METH_VARARGS},
   //{"getTFPrefix", (PyCFunction)getTFPrefix, METH_VARARGS},
   {NULL,          NULL}
@@ -573,7 +573,7 @@ bool staticInit() {
   tf2_timeoutexception = stringToPython("tf2.TimeoutException");
 #endif
 
-  pModulerospy        = pythonImport("rospy");
+  pModulerospy        = pythonImport("rclpy");
   pModulegeometrymsgs = pythonImport("geometry_msgs.msg");
 
   if(pModulegeometrymsgs == NULL)
@@ -621,7 +621,7 @@ struct PyModuleDef tf_module = {
   module_methods         // methods
 };
 
-PyMODINIT_FUNC PyInit_tf2()
+PyMODINIT_FUNC PyInit__tf2()
 {
   if (!staticInit())
     return NULL;

@@ -21,23 +21,28 @@ find_package(tf2_ros REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_PATH})
 
-link_libraries(${PYTHON_LIBRARIES})
-
-add_library(${PROJECT_NAME} src/tf2_py.cpp)
+add_library(${PROJECT_NAME} SHARED src/tf2_py.cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME tf2 PREFIX "_" SUFFIX ".so")
 
 ament_target_dependencies(${PROJECT_NAME} 
+  "builtin_interfaces"
   "geometry_msgs"
-  "rclcpp"
-  "rclpy"
   "python"
+  "rclpy"
+  "tf2"
   "tf2_msgs"
   "tf2_ros"
 )
 
 ament_export_include_directories("include")
 ament_export_libraries(${PROJECT_NAME})
+ament_python_install_package(${PROJECT_NAME})
+
+install(TARGETS
+  ${PROJECT_NAME}
+  DESTINATION lib
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
