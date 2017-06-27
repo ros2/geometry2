@@ -69,7 +69,7 @@ public:
   {
     const tf2_msgs::msg::TFMessage& message = *(msg);
     //TODO(tfoote) recover authority info
-    std::string authority = "No authority availabil"; //msg_evt.getPublisherName(); // lookup the authority 
+    std::string authority = "No authority available"; //msg_evt.getPublisherName(); // lookup the authority
 
     double average_offset = 0;
     std::unique_lock<std::mutex> my_lock(map_mutex_);  
