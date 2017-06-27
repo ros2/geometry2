@@ -124,11 +124,11 @@ public:
     
   };
 
-  TFMonitor(bool using_specific_chain, std::string framea  = "", std::string frameb = ""):
-    framea_(framea), frameb_(frameb),
+  TFMonitor(rclcpp::node::Node::SharedPtr node, bool using_specific_chain,
+            std::string framea  = "", std::string frameb = ""):
+    node_(node), framea_(framea), frameb_(frameb),
     using_specific_chain_(using_specific_chain)
   {
-    node_ = rclcpp::node::Node::make_shared("tf_monitor");
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
     
     if (using_specific_chain_)
@@ -307,8 +307,9 @@ int main(int argc, char ** argv)
   auto run_func = [](rclcpp::node::Node::SharedPtr node) {
     return rclcpp::spin(node);
   };
+  TFMonitor monitor(nh, using_specific_chain, framea, frameb);
   std::thread spinner(run_func, nh);
-  TFMonitor monitor(using_specific_chain, framea, frameb);
+
   monitor.spin();
   spinner.join();
   return 0;
