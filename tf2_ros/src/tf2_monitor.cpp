@@ -69,7 +69,7 @@ public:
   {
     const tf2_msgs::msg::TFMessage& message = *(msg);
     //TODO(tfoote) recover authority info
-    std::string authority = "No authority available"; //msg_evt.getPublisherName(); // lookup the authority
+    std::string authority = "<no authority availabile>"; //msg_evt.getPublisherName(); // lookup the authority 
 
     double average_offset = 0;
     std::unique_lock<std::mutex> my_lock(map_mutex_);  
@@ -133,7 +133,7 @@ public:
     
     if (using_specific_chain_)
     {
-      std::cout << "Waiting for transform chain to become available between "<< framea_ << " and " << frameb_<< " " << std::flush;
+      std::cout << "Waiting for transform chain to become available between " << framea_ << " and " << frameb_<< " " << std::flush;
       while (rclcpp::ok() && !buffer_.canTransform(framea_, frameb_, tf2::TimePointZero, tf2::durationFromSec(1.0)))
         std::cout << "." << std::flush;
       std::cout << std::endl;
@@ -178,7 +178,7 @@ public:
       max_delay = std::max(max_delay, it->second[i]);
     }
     average_delay /= it->second.size();
-    ss << "Frame: " << it->first <<" published by "<< frame_authority << " Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
+    ss << "Frame: " << it->first << ", published by "<< frame_authority << ", Average Delay: " << average_delay << ", Max Delay: " << max_delay << std::endl;
     return ss.str();
   }
   
