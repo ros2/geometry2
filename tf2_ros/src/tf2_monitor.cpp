@@ -69,7 +69,7 @@ public:
   {
     const tf2_msgs::msg::TFMessage& message = *(msg);
     //TODO(tfoote) recover authority info
-    std::string authority = "No authority available"; //msg_evt.getPublisherName(); // lookup the authority
+    std::string authority = "<no authority available>"; //msg_evt.getPublisherName(); // lookup the authority
 
     double average_offset = 0;
     std::unique_lock<std::mutex> my_lock(map_mutex_);  
@@ -124,11 +124,14 @@ public:
     
   };
 
-  TFMonitor(bool using_specific_chain, std::string framea  = "", std::string frameb = ""):
-    framea_(framea), frameb_(frameb),
-    using_specific_chain_(using_specific_chain)
+  TFMonitor(
+    rclcpp::node::Node::SharedPtr node, bool using_specific_chain,
+    std::string framea  = "", std::string frameb = "")
+      : node_(node),
+        framea_(framea),
+        frameb_(frameb),
+        using_specific_chain_(using_specific_chain)
   {
-    node_ = rclcpp::node::Node::make_shared("tf_monitor");
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
     
     if (using_specific_chain_)
@@ -178,7 +181,7 @@ public:
       max_delay = std::max(max_delay, it->second[i]);
     }
     average_delay /= it->second.size();
-    ss << "Frame: " << it->first <<" published by "<< frame_authority << " Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
+    ss << "Frame: " << it->first << ", published by "<< frame_authority << ", Average Delay: " << average_delay << ", Max Delay: " << max_delay << std::endl;
     return ss.str();
   }
   
@@ -307,8 +310,9 @@ int main(int argc, char ** argv)
   auto run_func = [](rclcpp::node::Node::SharedPtr node) {
     return rclcpp::spin(node);
   };
+  TFMonitor monitor(nh, using_specific_chain, framea, frameb);
   std::thread spinner(run_func, nh);
-  TFMonitor monitor(using_specific_chain, framea, frameb);
+
   monitor.spin();
   spinner.join();
   return 0;
