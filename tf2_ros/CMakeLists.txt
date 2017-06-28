@@ -118,9 +118,9 @@ install(TARGETS
 # install executables
 install(TARGETS
   # buffer_server
+  static_transform_publisher
   tf2_echo
   tf2_monitor
-  static_transform_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 
