@@ -69,7 +69,7 @@ public:
   {
     const tf2_msgs::msg::TFMessage& message = *(msg);
     //TODO(tfoote) recover authority info
-    std::string authority = "<no authority availabile>"; //msg_evt.getPublisherName(); // lookup the authority 
+    std::string authority = "<no authority available>"; //msg_evt.getPublisherName(); // lookup the authority 
 
     double average_offset = 0;
     std::unique_lock<std::mutex> my_lock(map_mutex_);  
@@ -124,16 +124,19 @@ public:
     
   };
 
-  TFMonitor(rclcpp::node::Node::SharedPtr node, bool using_specific_chain,
-            std::string framea  = "", std::string frameb = ""):
-    node_(node), framea_(framea), frameb_(frameb),
-    using_specific_chain_(using_specific_chain)
+  TFMonitor(
+    rclcpp::node::Node::SharedPtr node, bool using_specific_chain,
+    std::string framea  = "", std::string frameb = "")
+      : node_(node),
+        framea_(framea),
+        frameb_(frameb),
+        using_specific_chain_(using_specific_chain)
   {
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
     
     if (using_specific_chain_)
     {
-      std::cout << "Waiting for transform chain to become available between " << framea_ << " and " << frameb_<< " " << std::flush;
+      std::cout << "Waiting for transform chain to become available between "<< framea_ << " and " << frameb_<< " " << std::flush;
       while (rclcpp::ok() && !buffer_.canTransform(framea_, frameb_, tf2::TimePointZero, tf2::durationFromSec(1.0)))
         std::cout << "." << std::flush;
       std::cout << std::endl;
