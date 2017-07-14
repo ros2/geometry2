@@ -151,10 +151,16 @@ int main(int argc, char ** argv)
   }
 
   rclcpp::WallRate loop_rate(0.2);
+  auto start = std::chrono::system_clock::from_time_t(0);
   while (rclcpp::ok())
   {
     //TODO(tfoote) reimplement latching
-    ROS_INFO("LOOPING due to no latching at the moment\n");
+    auto now = std::chrono::system_clock::now();
+    if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 30)
+    {
+      ROS_INFO("LOOPING due to no latching at the moment\n");
+      start = now;
+    }
     broadcaster.sendTransform(msg);
     rclcpp::spin_some(node);
     loop_rate.sleep();
