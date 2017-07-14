@@ -72,6 +72,8 @@ namespace tf2
 
   inline double durationToSec(const tf2::Duration& input){
     int64_t count = input.count();
+
+    // scale the nanoseconds separately for improved accuracy
     int32_t sec, nsec;
     nsec = static_cast<int32_t>(count % 1000000000l);
     sec = static_cast<int32_t>((count - nsec) / 1000000000l);
