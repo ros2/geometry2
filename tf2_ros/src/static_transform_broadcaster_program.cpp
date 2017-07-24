@@ -35,10 +35,7 @@
 
 #include "builtin_interfaces/msg/time.hpp"
 
-//TODO(tfoote replace these terrible macros)
-#define ROS_ERROR printf
-#define ROS_FATAL printf
-#define ROS_INFO printf
+#include "rcutils/logging_macros.h"
 
 //TODO(clalancette re-enable this)
 // bool validateXmlRpcTf(XmlRpc::XmlRpcValue tf_data) {
@@ -138,23 +135,22 @@ int main(int argc, char ** argv)
     //printf("Usage: static_transform_publisher /param_name \n");
     //printf("\nThis transform is the transform of the coordinate frame from frame_id into the coordinate frame \n");
     //printf("of the child_frame_id.  \n");
-    ROS_ERROR("static_transform_publisher exited due to not having the right number of arguments");
+    RCUTILS_LOG_ERROR("static_transform_publisher exited due to not having the right number of arguments");
     return -1;
   }
 
   // Checks: frames should not be the same.
   if (msg.header.frame_id == msg.child_frame_id)
   {
-    ROS_FATAL("target_frame and source frame are the same (%s, %s) this cannot work",
-              msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
+    RCUTILS_LOG_FATAL("target_frame and source frame are the same (%s, %s) this cannot work",
+                      msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
     return 1;
   }
 
   rclcpp::WallRate loop_rate(0.2);
   while (rclcpp::ok())
   {
-    //TODO(tfoote) reimplement latching
-    ROS_INFO("LOOPING due to no latching at the moment\n");
+    RCUTILS_LOG_INFO_THROTTLE(RCUTILS_STEADY_TIME, 30000 /* ms */, "LOOPING due to no latching at the moment");
     broadcaster.sendTransform(msg);
     rclcpp::spin_some(node);
     loop_rate.sleep();
