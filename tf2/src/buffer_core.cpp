@@ -608,9 +608,10 @@ geometry_msgs::msg::TransformStamped
   msg.transform.rotation.y = transform.getRotation().y();
   msg.transform.rotation.z = transform.getRotation().z();
   msg.transform.rotation.w = transform.getRotation().w();
-  std::chrono::time_point_cast<std::chrono::seconds>(time_out);
-  msg.header.stamp.sec = (uint32_t)std::chrono::time_point_cast<std::chrono::seconds>(time_out).time_since_epoch().count();
-  msg.header.stamp.nanosec = (uint32_t)std::chrono::time_point_cast<std::chrono::nanoseconds>(time_out).time_since_epoch().count() - msg.header.stamp.sec;
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(time_out.time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(time_out.time_since_epoch());
+  msg.header.stamp.sec = (int32_t)s.count();
+  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
   msg.header.frame_id = target_frame;
   msg.child_frame_id = source_frame;
 
@@ -634,8 +635,10 @@ geometry_msgs::msg::TransformStamped
   msg.transform.rotation.y = transform.getRotation().y();
   msg.transform.rotation.z = transform.getRotation().z();
   msg.transform.rotation.w = transform.getRotation().w();
-  msg.header.stamp.sec = (uint32_t)std::chrono::time_point_cast<std::chrono::seconds>(time_out).time_since_epoch().count();
-  msg.header.stamp.nanosec = (uint32_t)std::chrono::time_point_cast<std::chrono::nanoseconds>(time_out).time_since_epoch().count() - msg.header.stamp.sec;
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(time_out.time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(time_out.time_since_epoch());
+  msg.header.stamp.sec = (int32_t)s.count();
+  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
   msg.header.frame_id = target_frame;
   msg.child_frame_id = source_frame;
 
