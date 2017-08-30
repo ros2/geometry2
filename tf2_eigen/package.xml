@@ -3,9 +3,10 @@
   <name>tf2_eigen</name>
   <version>0.5.15</version>
   <description>tf2_eigen</description>
-  <author>Koji Terada</author>
   <maintainer email="terakoji@gmail.com">Koji Terada</maintainer>
   <license>BSD</license>
+
+  <author>Koji Terada</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
