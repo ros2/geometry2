@@ -274,7 +274,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   
   //TODO(tfoote) make anonymous 
-  rclcpp::node::Node::SharedPtr nh = rclcpp::node::Node::make_shared("tf_monitor_main");
+  rclcpp::node::Node::SharedPtr nh = rclcpp::node::Node::make_shared("tf2_monitor_main");
 
 
   std::string framea, frameb;
@@ -286,7 +286,7 @@ int main(int argc, char ** argv)
   else if (argc == 1)
     using_specific_chain = false;
   else{
-    ROS_INFO("TF_Monitor: usage: tf_monitor framea frameb");
+    ROS_INFO("TF_Monitor: usage: tf2_monitor framea frameb");
     return -1;
   }
   
@@ -297,7 +297,7 @@ int main(int argc, char ** argv)
   // {
   //   if (++iterations > 10)
   //   {
-  //     ROS_INFO("tf_monitor waiting for time to be published");
+  //     ROS_INFO("tf2_monitor waiting for time to be published");
   //     iterations = 0;
   //   }
   //   ros::WallDuration(0.1).sleep();
