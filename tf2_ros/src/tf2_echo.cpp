@@ -66,7 +66,7 @@ int main(int argc, char ** argv)
   // Allow 2 or 3 command line arguments
   if (argc < 3 || argc > 4)
   {
-    printf("Usage: tf_echo source_frame target_frame [echo_rate]\n\n");
+    printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
     printf("This will echo the transform from the coordinate frame of the source_frame\n");
     printf("to the coordinate frame of the target_frame. \n");
     printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
