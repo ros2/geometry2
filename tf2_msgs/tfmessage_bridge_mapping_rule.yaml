@@ -1,0 +1,5 @@
+-
+  ros1_package_name: 'tf'
+  ros1_message_name: 'tfMessage'
+  ros2_package_name: 'tf2_msgs'
+  ros2_message_name: 'TFMessage'
