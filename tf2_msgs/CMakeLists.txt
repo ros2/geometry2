@@ -28,4 +28,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES builtin_interfaces std_msgs geometry_msgs
 )
 
+install(
+  FILES tfmessage_bridge_mapping_rule.yaml
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_package()
