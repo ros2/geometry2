@@ -444,6 +444,6 @@ private:
 
 
 
-};
+}
 
 #endif //TF2_CORE_H
