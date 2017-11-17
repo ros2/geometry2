@@ -29,6 +29,8 @@
 
 #include <cstdio>
 #include <cstring>
+#include "rclcpp/clock.hpp"
+#include "rclcpp/time_source.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <tf2/LinearMath/Quaternion.h>
 #include "tf2_ros/static_transform_broadcaster.h"
@@ -64,6 +66,10 @@ int main(int argc, char ** argv)
   // TODO(clalancette): Anonymize the node name like it is in ROS1.
   auto node = rclcpp::node::Node::make_shared("static_transform_publisher");
 
+  rclcpp::TimeSource ts(node);
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);
+  ts.attachClock(clock);
+
   tf2_ros::StaticTransformBroadcaster broadcaster(node);
   geometry_msgs::msg::TransformStamped msg;
 
@@ -76,7 +82,7 @@ int main(int argc, char ** argv)
     msg.transform.rotation.y = atof(argv[5]);
     msg.transform.rotation.z = atof(argv[6]);
     msg.transform.rotation.w = atof(argv[7]);
-    msg.header.stamp = rclcpp::Time::now();
+    msg.header.stamp = clock->now();
     msg.header.frame_id = argv[8];
     msg.child_frame_id = argv[9];
   }
@@ -93,7 +99,7 @@ int main(int argc, char ** argv)
     msg.transform.rotation.z = quat.z();
     msg.transform.rotation.w = quat.w();
 
-    msg.header.stamp = rclcpp::Time::now();
+    msg.header.stamp = clock->now();
     msg.header.frame_id = argv[7];
     msg.child_frame_id = argv[8];
   }
@@ -120,7 +126,7 @@ int main(int argc, char ** argv)
   //   msg.transform.rotation.y = (double) tf_data["transform"]["rotation"]["y"];
   //   msg.transform.rotation.z = (double) tf_data["transform"]["rotation"]["z"];
   //   msg.transform.rotation.w = (double) tf_data["transform"]["rotation"]["w"];
-  //   msg.header.stamp = ros::Time::now();
+  //   msg.header.stamp = clock->now();
   //   msg.header.frame_id = (std::string) tf_data["header"]["frame_id"];
   //   msg.child_frame_id = (std::string) tf_data["child_frame_id"];
   // }
