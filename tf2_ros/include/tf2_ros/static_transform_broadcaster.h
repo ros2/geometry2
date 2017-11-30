@@ -52,7 +52,7 @@ class StaticTransformBroadcaster{
 public:
 
   TF2_ROS_PUBLIC
-  StaticTransformBroadcaster(rclcpp::node::Node::SharedPtr node);
+  StaticTransformBroadcaster(rclcpp::Node::SharedPtr node);
 
   /** \brief Send a TransformStamped message
    * The stamped data structure includes frame_id, and time, and parent_id already.  */
@@ -66,8 +66,8 @@ public:
 
 private:
   /// Internal reference to ros::Node
-  rclcpp::node::Node::SharedPtr node_;
-  rclcpp::publisher::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
+  rclcpp::Node::SharedPtr node_;
+  rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
   tf2_msgs::msg::TFMessage net_message_;
 
 };

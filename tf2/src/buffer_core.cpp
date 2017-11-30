@@ -60,6 +60,19 @@ void transformTF2ToMsg(const tf2::Transform& tf2, geometry_msgs::msg::Transform&
 }
 
 /** \brief convert Transform to Transform msg*/
+void transformTF2ToMsg(const tf2::Transform& tf2, geometry_msgs::msg::TransformStamped& msg, tf2::TimePoint stamp, const std::string& frame_id, const std::string& child_frame_id)
+{
+  transformTF2ToMsg(tf2, msg.transform);
+
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(stamp.time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(stamp.time_since_epoch());
+  msg.header.stamp.sec = (int32_t)s.count();
+  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
+
+  msg.header.frame_id = frame_id;
+  msg.child_frame_id = child_frame_id;
+}
+
 void transformTF2ToMsg(const tf2::Transform& tf2, geometry_msgs::msg::TransformStamped& msg, builtin_interfaces::msg::Time stamp, const std::string& frame_id, const std::string& child_frame_id)
 {
   transformTF2ToMsg(tf2, msg.transform);
@@ -77,6 +90,19 @@ void transformTF2ToMsg(const tf2::Quaternion& orient, const tf2::Vector3& pos, g
   msg.rotation.y = orient.y();
   msg.rotation.z = orient.z();
   msg.rotation.w = orient.w();
+}
+
+void transformTF2ToMsg(const tf2::Quaternion& orient, const tf2::Vector3& pos, geometry_msgs::msg::TransformStamped& msg, tf2::TimePoint stamp, const std::string& frame_id, const std::string& child_frame_id)
+{
+  transformTF2ToMsg(orient, pos, msg.transform);
+
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(stamp.time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(stamp.time_since_epoch());
+  msg.header.stamp.sec = (int32_t)s.count();
+  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
+
+  msg.header.frame_id = frame_id;
+  msg.child_frame_id = child_frame_id;
 }
 
 void transformTF2ToMsg(const tf2::Quaternion& orient, const tf2::Vector3& pos, geometry_msgs::msg::TransformStamped& msg, builtin_interfaces::msg::Time stamp, const std::string& frame_id, const std::string& child_frame_id)
@@ -338,14 +364,14 @@ tf2::TF2Error BufferCore::walkToTopParent(F& f, TimePoint time, CompactFrameID t
   if (source_id == target_id)
   {
     f.finalize(Identity, time);
-    return tf2::TF2Error::NO_ERROR;
+    return tf2::TF2Error::NO_ERRORS;
   }
 
   //If getting the latest get the latest common time
   if (time == TimePointZero)
   {
     tf2::TF2Error retval = getLatestCommonTime(target_id, source_id, time, error_string);
-    if (retval != tf2::TF2Error::NO_ERROR)
+    if (retval != tf2::TF2Error::NO_ERRORS)
     {
       return retval;
     }
@@ -385,7 +411,7 @@ tf2::TF2Error BufferCore::walkToTopParent(F& f, TimePoint time, CompactFrameID t
     if (frame == target_id)
     {
       f.finalize(TargetParentOfSource, time);
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::NO_ERRORS;
     }
 
     f.accum(true);
@@ -444,7 +470,7 @@ tf2::TF2Error BufferCore::walkToTopParent(F& f, TimePoint time, CompactFrameID t
       {
         frame_chain->swap(reverse_frame_chain);
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::NO_ERRORS;
     }
 
     f.accum(false);
@@ -508,7 +534,7 @@ tf2::TF2Error BufferCore::walkToTopParent(F& f, TimePoint time, CompactFrameID t
     }
   }
 
-  return tf2::TF2Error::NO_ERROR;
+  return tf2::TF2Error::NO_ERRORS;
 }
 
 
@@ -676,7 +702,7 @@ void BufferCore::lookupTransformImpl(const std::string& target_frame,
   std::string error_string;
   TransformAccum accum;
   tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string);
-  if (retval != tf2::TF2Error::NO_ERROR)
+  if (retval != tf2::TF2Error::NO_ERRORS)
   {
     switch (retval)
     {
@@ -815,7 +841,7 @@ bool BufferCore::canTransformNoLock(CompactFrameID target_id, CompactFrameID sou
   }
 
   CanTransformAccum accum;
-  if (walkToTopParent(accum, time, target_id, source_id, error_msg) == tf2::TF2Error::NO_ERROR)
+  if (walkToTopParent(accum, time, target_id, source_id, error_msg) == tf2::TF2Error::NO_ERRORS)
   {
     return true;
   }
@@ -988,7 +1014,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(CompactFrameID target_id, CompactF
       time = cache->getLatestTimestamp();
     else
       time = TimePointZero;
-    return tf2::TF2Error::NO_ERROR;
+    return tf2::TF2Error::NO_ERRORS;
   }
 
   std::vector<P_TimeAndFrameID> lct_cache;
@@ -1034,7 +1060,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(CompactFrameID target_id, CompactF
       {
         time = TimePointZero;
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::NO_ERRORS;
     }
 
     ++depth;
@@ -1094,7 +1120,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(CompactFrameID target_id, CompactF
       {
         time = TimePointZero;
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::NO_ERRORS;
     }
 
     ++depth;
@@ -1141,7 +1167,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(CompactFrameID target_id, CompactF
   }
 
   time = common_time;
-  return tf2::TF2Error::NO_ERROR;
+  return tf2::TF2Error::NO_ERRORS;
 }
 
 std::string BufferCore::allFramesAsYAML(TimePoint current_time) const
@@ -1558,7 +1584,7 @@ void BufferCore::_chainAsVector(const std::string & target_frame, TimePoint targ
   std::vector<CompactFrameID> source_frame_chain;
   tf2::TF2Error retval = walkToTopParent(accum, source_time, fixed_id, source_id, &error_string, &source_frame_chain);
 
-  if (retval != tf2::TF2Error::NO_ERROR)
+  if (retval != tf2::TF2Error::NO_ERRORS)
   {
     switch (retval)
     {
@@ -1578,7 +1604,7 @@ void BufferCore::_chainAsVector(const std::string & target_frame, TimePoint targ
     std::vector<CompactFrameID> target_frame_chain;
     retval = walkToTopParent(accum, target_time, target_id, fixed_id, &error_string, &target_frame_chain);
 
-    if (retval != tf2::TF2Error::NO_ERROR)
+    if (retval != tf2::TF2Error::NO_ERRORS)
     {
       switch (retval)
       {

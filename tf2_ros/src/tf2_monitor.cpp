@@ -51,8 +51,8 @@ public:
   std::string framea_, frameb_;
   bool using_specific_chain_;
   
-  rclcpp::node::Node::SharedPtr node_;
-  rclcpp::subscription::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_tf_, subscriber_tf_message_;
+  rclcpp::Node::SharedPtr node_;
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_tf_, subscriber_tf_message_;
   std::vector<std::string> chain_;
   std::map<std::string, std::string> frame_authority_map;
   std::map<std::string, std::vector<double> > delay_map;
@@ -125,7 +125,7 @@ public:
   };
 
   TFMonitor(
-    rclcpp::node::Node::SharedPtr node, bool using_specific_chain,
+    rclcpp::Node::SharedPtr node, bool using_specific_chain,
     std::string framea  = "", std::string frameb = "")
       : node_(node),
         framea_(framea),
@@ -274,7 +274,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   
   //TODO(tfoote) make anonymous 
-  rclcpp::node::Node::SharedPtr nh = rclcpp::node::Node::make_shared("tf2_monitor_main");
+  rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_monitor_main");
 
 
   std::string framea, frameb;
@@ -307,7 +307,7 @@ int main(int argc, char ** argv)
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
   // I (wjwwood) chose to use the lamda rather than the static cast solution.
-  auto run_func = [](rclcpp::node::Node::SharedPtr node) {
+  auto run_func = [](rclcpp::Node::SharedPtr node) {
     return rclcpp::spin(node);
   };
   TFMonitor monitor(nh, using_specific_chain, framea, frameb);

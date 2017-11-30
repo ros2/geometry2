@@ -39,8 +39,10 @@
 
 namespace tf2{
 
+#ifndef TF2ERROR_ENUM
+#define TF2ERROR_ENUM
 enum class TF2Error : std::uint8_t {
-  NO_ERROR = 0,
+  NO_ERRORS = 0,
   LOOKUP_ERROR = 1,
   CONNECTIVITY_ERROR = 2,
   EXTRAPOLATION_ERROR = 3,
@@ -48,6 +50,7 @@ enum class TF2Error : std::uint8_t {
   TIMEOUT_ERROR = 5,
   TRANSFORM_ERROR = 6
 };
+#endif // TF2ERROR_ENUM
 
 
 /** \brief A base class for all tf2 exceptions 

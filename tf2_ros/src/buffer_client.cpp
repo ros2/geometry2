@@ -106,7 +106,7 @@ namespace tf2_ros
   geometry_msgs::TransformStamped BufferClient::processResult(const tf2_msgs::LookupTransformResult& result) const
   {
     //if there's no error, then we'll just return the transform
-    if(result.error.error != result.error.NO_ERROR){
+    if(result.error.error != result.error.NO_ERRORS){
       //otherwise, we'll have to throw the appropriate exception
       if(result.error.error == result.error.LOOKUP_ERROR)
         throw tf2::LookupException(result.error.error_string);
