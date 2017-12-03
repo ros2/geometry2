@@ -67,7 +67,7 @@ public:
 private:
   /// Internal reference to ros::Node
   rclcpp::node::Node::SharedPtr node_;
-  rclcpp::publisher::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
+  rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
   tf2_msgs::msg::TFMessage net_message_;
 
 };
