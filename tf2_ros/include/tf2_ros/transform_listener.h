@@ -71,8 +71,8 @@ private:
   // ros::CallbackQueue tf_message_callback_queue_;
   std::thread* dedicated_listener_thread_;
   rclcpp::node::Node::SharedPtr node_;
-  rclcpp::subscription::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
-  rclcpp::subscription::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore& buffer_;
   bool using_dedicated_thread_;
   tf2::TimePoint last_update_;

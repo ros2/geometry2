@@ -52,7 +52,7 @@ public:
   bool using_specific_chain_;
   
   rclcpp::node::Node::SharedPtr node_;
-  rclcpp::subscription::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_tf_, subscriber_tf_message_;
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_tf_, subscriber_tf_message_;
   std::vector<std::string> chain_;
   std::map<std::string, std::string> frame_authority_map;
   std::map<std::string, std::vector<double> > delay_map;
