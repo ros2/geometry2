@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
   //TODO(tfoote) restore anonymous??
   // ros::init_options::AnonymousName);
 
-  rclcpp::node::Node::SharedPtr nh = rclcpp::node::Node::make_shared("tf2_echo");
+  rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_echo");
 
   double rate_hz;
   if (argc == 4)
@@ -92,7 +92,7 @@ int main(int argc, char ** argv)
     // ros::NodeHandle p_nh("~");
     // p_nh.param("rate", rate_hz, 1.0);
   }
-  rclcpp::rate::Rate rate(rate_hz);
+  rclcpp::Rate rate(rate_hz);
 
   //Instantiate a local listener
   echoListener echoListener;

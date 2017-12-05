@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
 
   // TODO(clalancette): Anonymize the node name like it is in ROS1.
-  auto node = rclcpp::node::Node::make_shared("static_transform_publisher");
+  auto node = rclcpp::Node::make_shared("static_transform_publisher");
 
   rclcpp::TimeSource ts(node);
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);

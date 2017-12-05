@@ -48,7 +48,7 @@ Buffer::Buffer(tf2::Duration cache_time, bool debug) :
   BufferCore(cache_time)
 {
   // TODO(tfoote) reenable 
-  // if(debug && !ros::service::exists("~tf2_frames", false))
+  // if(debug && !ros::exists("~tf2_frames", false))
   // {
   //   ros::NodeHandle n("~");
   //   frames_server_ = n.advertiseService("tf2_frames", &Buffer::getFrames, this);
