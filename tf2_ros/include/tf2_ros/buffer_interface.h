@@ -66,7 +66,7 @@ namespace tf2_ros
   {
     auto ns = std::chrono::duration<double, std::nano>(time_msg.nanosec);
     auto s = std::chrono::duration<double>(time_msg.sec);
-    return (s + std::chrono::duration_cast<std::chrono::seconds>(ns)).count();
+    return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
   }
 
 /** \brief Abstract interface for wrapping tf2::BufferCore in a ROS-based API.
