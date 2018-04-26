@@ -546,6 +546,16 @@ geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond& in) {
   return tf2::toMsg(in);
 }
 
+inline
+geometry_msgs::Twist toMsg(const Eigen::Matrix<double,6,1>& in) {
+  return tf2::toMsg(in);
+}
+
+inline
+void fromMsg(const geometry_msgs::Twist &msg, Eigen::Matrix<double,6,1>& out) {
+  tf2::fromMsg(msg, out);
+}
+
 } // namespace
 
 #endif // TF2_EIGEN_H
