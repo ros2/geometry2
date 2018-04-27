@@ -149,6 +149,33 @@ void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out)
   out.z() = msg.z;
 }
 
+/** \brief Convert an Eigen Vector3d type to a Vector3 message.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in The Eigen Vector3d to convert.
+ * \return The vector converted to a Vector3 message.
+ */
+inline
+geometry_msgs::msg::Vector3& toMsg(const Eigen::Vector3d& in, geometry_msgs::msg::Vector3& out)
+{
+  out.x = in.x();
+  out.y = in.y();
+  out.z = in.z();
+  return out;
+}
+
+/** \brief Convert a Vector3 message type to a Eigen-specific Vector3d type.
+ * This function is a specialization of the fromMsg template defined in tf2/convert.h
+ * \param msg The Vector3 message to convert.
+ * \param out The vector converted to a Eigen Vector3d.
+ */
+inline
+void fromMsg(const geometry_msgs::msg::Vector3& msg, Eigen::Vector3d& out)
+{
+  out.x() = msg.x;
+  out.y() = msg.y;
+  out.z() = msg.z;
+}
+
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
  * \param t_in The vector to transform, as a timestamped Eigen Vector3d data type.
@@ -547,12 +574,12 @@ geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond& in) {
 }
 
 inline
-geometry_msgs::Twist toMsg(const Eigen::Matrix<double,6,1>& in) {
+geometry_msgs::msg::Twist toMsg(const Eigen::Matrix<double,6,1>& in) {
   return tf2::toMsg(in);
 }
 
 inline
-void fromMsg(const geometry_msgs::Twist &msg, Eigen::Matrix<double,6,1>& out) {
+void fromMsg(const geometry_msgs::msg::Twist &msg, Eigen::Matrix<double,6,1>& out) {
   tf2::fromMsg(msg, out);
 }
 
