@@ -4,7 +4,7 @@
   <version>0.9.0</version>
   <description>tf2_eigen</description>
   <author>Koji Terada</author>
-  <maintainer email="terakoji@gmail.com">Koji Terada</maintainer>
+  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
