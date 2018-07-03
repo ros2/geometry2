@@ -667,9 +667,10 @@ void BufferCore::lookupTransformImpl(const std::string& target_frame,
     }
     else
       time_out = time;
+    return;
   }
 
-  //Identify case does not need to be validated above
+  // Identity case does not need to be validated
   CompactFrameID target_id = validateFrameId("lookupTransform argument target_frame", target_frame);
   CompactFrameID source_id = validateFrameId("lookupTransform argument source_frame", source_frame);
 
