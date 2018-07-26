@@ -125,7 +125,8 @@ TEST(TfGeometry, Point)
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
 
-  tf_buffer = new tf2_ros::Buffer();
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf_buffer = new tf2_ros::Buffer(clock);
   tf_buffer->setUsingDedicatedThread(true);
 
   // populate buffer

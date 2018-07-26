@@ -69,6 +69,12 @@ namespace tf2_ros
     return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
   }
 
+  inline double timeToSec(const rclcpp::Time & rclcpp_time)
+  {
+    auto ns = std::chrono::duration<double, std::nano>(rclcpp_time.nanoseconds());
+    return std::chrono::duration_cast<std::chrono::duration<double>>(ns).count();
+  }
+
 /** \brief Abstract interface for wrapping tf2::BufferCore in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.
  */
