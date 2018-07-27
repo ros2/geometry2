@@ -135,7 +135,7 @@ int main(int argc, char ** argv)
       }
       catch(tf2::TransformException& ex)
       {
-        std::cout << "Failure at "<< tf2_ros::timeToSec(clock->now()) << std::endl;
+        std::cout << "Failure at "<< clock->now().seconds() << std::endl;
         std::cout << "Exception thrown:" << ex.what()<< std::endl;
         std::cout << "The current list of frames is:" <<std::endl;
         std::cout << echoListener.buffer_.allFramesAsString()<<std::endl;
