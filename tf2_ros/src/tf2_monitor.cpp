@@ -59,8 +59,8 @@ public:
   std::map<std::string, std::vector<double> > authority_map;
   std::map<std::string, std::vector<double> > authority_frequency_map;
   
-  tf2_ros::Buffer buffer_;
   rclcpp::Clock::SharedPtr clock_;
+  tf2_ros::Buffer buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_;
 
   tf2_msgs::msg::TFMessage message_;
