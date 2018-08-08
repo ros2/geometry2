@@ -43,7 +43,8 @@ public:
   std::shared_ptr<tf2_ros::TransformListener> tfl_;
 
   //constructor with name
-  echoListener()
+  echoListener(rclcpp::Clock::SharedPtr clock) :
+    buffer_(clock)
   {
     tfl_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
   };
@@ -94,8 +95,9 @@ int main(int argc, char ** argv)
   }
   rclcpp::Rate rate(rate_hz);
 
+  rclcpp::Clock::SharedPtr clock = nh->get_clock();
   //Instantiate a local listener
-  echoListener echoListener;
+  echoListener echoListener(clock);
 
 
   std::string source_frameid = std::string(argv[1]);
@@ -133,7 +135,7 @@ int main(int argc, char ** argv)
       }
       catch(tf2::TransformException& ex)
       {
-        std::cout << "Failure at "<< tf2::displayTimePoint(tf2::get_now()) << std::endl;
+        std::cout << "Failure at "<< clock->now().seconds() << std::endl;
         std::cout << "Exception thrown:" << ex.what()<< std::endl;
         std::cout << "The current list of frames is:" <<std::endl;
         std::cout << echoListener.buffer_.allFramesAsString()<<std::endl;

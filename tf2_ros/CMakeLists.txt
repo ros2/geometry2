@@ -125,7 +125,11 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 
 # Tests
-# if(BUILD_TESTING)
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_buffer test/test_buffer.cpp)
+  target_link_libraries(test_buffer ${PROJECT_NAME})
+
 # TODO(tfoote) port tests to use ROS2 instead of ROS1 api.
 if (false)
 
@@ -170,6 +174,8 @@ add_rostest(test/transform_listener_unittest.launch)
 add_rostest(test/transform_listener_time_reset_test.launch)
 
 endif()
+endif()
+
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(rclcpp)

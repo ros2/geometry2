@@ -59,6 +59,7 @@ public:
   std::map<std::string, std::vector<double> > authority_map;
   std::map<std::string, std::vector<double> > authority_frequency_map;
   
+  rclcpp::Clock::SharedPtr clock_;
   tf2_ros::Buffer buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_;
 
@@ -77,7 +78,7 @@ public:
     {
       frame_authority_map[message.transforms[i].child_frame_id] = authority;
 
-      double offset = tf2::timeToSec(tf2::get_now()) - tf2_ros::timeToSec(message.transforms[i].header.stamp);
+      double offset = clock_->now().seconds() - tf2_ros::timeToSec(message.transforms[i].header.stamp);
       average_offset  += offset;
       
       std::map<std::string, std::vector<double> >::iterator it = delay_map.find(message.transforms[i].child_frame_id);
@@ -113,11 +114,11 @@ public:
     std::map<std::string, std::vector<double> >::iterator it3 = authority_frequency_map.find(authority);
     if (it3 == authority_frequency_map.end())
     {
-      authority_frequency_map[authority] = std::vector<double>(1,tf2::timeToSec(tf2::get_now()));
+      authority_frequency_map[authority] = std::vector<double>(1, clock_->now().seconds());
     }
     else
     {
-      it3->second.push_back(tf2::timeToSec(tf2::get_now()));
+      it3->second.push_back(clock_->now().seconds());
       if (it3->second.size() > 1000) 
         it3->second.erase(it3->second.begin());
     }
@@ -128,6 +129,8 @@ public:
     rclcpp::Node::SharedPtr node, bool using_specific_chain,
     std::string framea  = "", std::string frameb = "")
       : node_(node),
+        clock_(node->get_clock()),
+        buffer_(clock_),
         framea_(framea),
         frameb_(frameb),
         using_specific_chain_(using_specific_chain)
@@ -202,7 +205,7 @@ public:
     if (using_specific_chain_)
     {
       auto tmp = buffer_.lookupTransform(framea_, frameb_, tf2::TimePointZero);
-      double diff = tf2::timeToSec(tf2::get_now()) - tf2_ros::timeToSec(tmp.header.stamp);
+      double diff = clock_->now().seconds() - tf2_ros::timeToSec(tmp.header.stamp);
       avg_diff = lowpass * diff + (1-lowpass)*avg_diff;
       if (diff > max_diff) max_diff = diff;
     }
