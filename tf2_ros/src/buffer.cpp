@@ -61,7 +61,7 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time, bool de
   // Disable forward jump callbacks
   jump_threshold.min_forward.nanoseconds = 0;
   // Anything backwards is a jump
-  jump_threshold.min_backward.nanoseconds = 1;
+  jump_threshold.min_backward.nanoseconds = -1;
   // Callback if the clock changes too
   jump_threshold.on_clock_change = true;
 
