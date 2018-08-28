@@ -55,15 +55,15 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time, bool de
     throw std::invalid_argument("clock must be a valid instance");
   }
 
-  auto post_jump_cb = [this](const rclcpp::TimeJump & jump_info) { onTimeJump(jump_info); };
+  auto post_jump_cb = [this](const rcl_time_jump_t & jump_info) { onTimeJump(jump_info); };
 
-  rclcpp::JumpThreshold jump_threshold;
+  rcl_jump_threshold_t jump_threshold;
   // Disable forward jump callbacks
-  jump_threshold.min_forward_ = std::numeric_limits<decltype(jump_threshold.min_forward_)>::max();
+  jump_threshold.min_forward.nanoseconds = 0;
   // Anything backwards is a jump
-  jump_threshold.min_backward_ = 0;
+  jump_threshold.min_backward.nanoseconds = 1;
   // Callback if the clock changes too
-  jump_threshold.on_clock_change_ = true;
+  jump_threshold.on_clock_change = true;
 
   jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
 
@@ -97,15 +97,15 @@ Buffer::lookupTransform(const std::string& target_frame, const std::string& sour
   return lookupTransform(target_frame, source_frame, lookup_time);
 }
 
-void Buffer::onTimeJump(const rclcpp::TimeJump & jump_info)
+void Buffer::onTimeJump(const struct rcl_time_jump_t & time_jump)
 {
-  if (rclcpp::TimeJump::ROS_TIME_ACTIVATED == jump_info.jump_type_ ||
-      rclcpp::TimeJump::ROS_TIME_DEACTIVATED == jump_info.jump_type_)
+  if (RCL_ROS_TIME_ACTIVATED == time_jump.clock_change ||
+      RCL_ROS_TIME_DEACTIVATED == time_jump.clock_change)
   {
     ROS_WARN("Detected time source change. Clearing TF buffer.");
     clear();
   }
-  else if (jump_info.delta_.nanoseconds < 0.0)
+  else if (time_jump.delta.nanoseconds < 0)
   {
     ROS_WARN("Detected jump back in time. Clearing TF buffer.");
     clear();
