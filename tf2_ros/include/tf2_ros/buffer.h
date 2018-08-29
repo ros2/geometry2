@@ -133,7 +133,7 @@ namespace tf2_ros
   private:
     bool getFrames(tf2_msgs::srv::FrameGraph::Request& req, tf2_msgs::srv::FrameGraph::Response& res) ;
 
-    void onTimeJump(const rclcpp::TimeJump & jump);
+    void onTimeJump(const rcl_time_jump_t & jump);
 
     // conditionally error if dedicated_thread unset.
     bool checkAndErrorDedicatedThreadPresent(std::string* errstr) const;
