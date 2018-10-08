@@ -32,7 +32,10 @@
 #ifndef TF2_ROS_TRANSFORMLISTENER_H
 #define TF2_ROS_TRANSFORMLISTENER_H
 
+#include <future>
+#include <memory>
 #include <thread>
+
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -50,7 +53,7 @@ public:
   /**@brief Constructor for transform listener */
   TF2_ROS_PUBLIC
   TransformListener(tf2::BufferCore& buffer, bool spin_thread = true);
-  
+
   TF2_ROS_PUBLIC
   TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = true);
 
@@ -58,35 +61,21 @@ public:
   ~TransformListener();
 
 private:
-
-  /// Initialize this transform listener, subscribing, advertising services, etc.
-  void init();
-  void initThread();
-
   /// Callback function for ros message subscriptoin
   void subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
   void static_subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
   void subscription_callback_impl(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
-  std::thread* dedicated_listener_thread_;
+  std::unique_ptr<std::thread> dedicated_listener_thread_{nullptr};
   rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore& buffer_;
   bool using_dedicated_thread_;
   tf2::TimePoint last_update_;
- 
-  void dedicatedListenerThread()
-  {
-    while (using_dedicated_thread_)
-    {
-      break;
-      //TODO(tfoote) reenable callback queue processing 
-      //tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
-    }
-  };
-
+  std::promise<void> exit_signal_;
+  std::shared_future<void> future_;
 };
 }
 

@@ -29,54 +29,27 @@
 
 /** \author Tully Foote */
 
+#include <chrono>
+#include <functional>
+#include <string>
+#include <thread>
+
 #include "tf2_ros/transform_listener.h"
 
 
 using namespace tf2_ros;
 
-//TODO(tfoote replace these terrible macros)
-#define ROS_ERROR printf
-#define ROS_FATAL printf
-#define ROS_INFO printf
-#define ROS_WARN printf
-
-TransformListener::TransformListener(tf2::BufferCore& buffer, bool spin_thread):
-  dedicated_listener_thread_(NULL), buffer_(buffer), using_dedicated_thread_(false)
+TransformListener::TransformListener(tf2::BufferCore& buffer, bool spin_thread) :
+  TransformListener(buffer,
+                    //TODO(tfoote)make this anonymous
+                    rclcpp::Node::make_shared("transform_listener_impl"),
+                    spin_thread)
 {
-  //TODO(tfoote)make this anonymous
-  node_ = rclcpp::Node::make_shared("transform_listener_impl");
-  init();
-  if (spin_thread)
-    initThread();
 }
 
-TransformListener::TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread)
-: dedicated_listener_thread_(NULL)
-, node_(nh)
-, buffer_(buffer)
-, using_dedicated_thread_(false)
-{
-  init();
-  if (spin_thread)
-    initThread();
-}
-
-
-TransformListener::~TransformListener()
-{
-  using_dedicated_thread_ = false;
-  if (dedicated_listener_thread_)
-  {
-    dedicated_listener_thread_->join();
-    delete dedicated_listener_thread_;
-  }
-}
-
-void test_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg){
-  return;
-}
-
-void TransformListener::init()
+TransformListener::TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread) :
+  node_(nh),
+  buffer_(buffer)
 {
   rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
   custom_qos_profile.depth = 100;
@@ -84,29 +57,42 @@ void TransformListener::init()
   message_subscription_tf_ = node_->create_subscription<tf2_msgs::msg::TFMessage>("/tf", standard_callback, custom_qos_profile);
   std::function<void(const tf2_msgs::msg::TFMessage::SharedPtr)> static_callback = std::bind(&TransformListener::static_subscription_callback, this, std::placeholders::_1);
   message_subscription_tf_static_ = node_->create_subscription<tf2_msgs::msg::TFMessage>("/tf_static", static_callback, custom_qos_profile);
+
+  future_ = exit_signal_.get_future();
+
+  if (spin_thread)
+  {
+    // This lambda is required because `std::thread` cannot infer the correct
+    // rclcpp::spin, since there are more than one versions of it (overloaded).
+    // see: http://stackoverflow.com/a/27389714/671658
+    // I (wjwwood) chose to use the lamda rather than the static cast solution.
+    auto run_func = [this](rclcpp::Node::SharedPtr node) {
+      std::future_status status;
+      do {
+        rclcpp::spin_some(node);
+        status = future_.wait_for(std::chrono::milliseconds(0));
+      } while (status == std::future_status::timeout);
+    };
+    dedicated_listener_thread_ = std::make_unique<std::thread>(run_func, node_);
+    //Tell the buffer we have a dedicated thread to enable timeouts
+    buffer_.setUsingDedicatedThread(true);
+  }
 }
 
-void TransformListener::initThread()
+TransformListener::~TransformListener()
 {
-  using_dedicated_thread_ = true;
-  // This lambda is required because `std::thread` cannot infer the correct
-  // rclcpp::spin, since there are more than one versions of it (overloaded).
-  // see: http://stackoverflow.com/a/27389714/671658
-  // I (wjwwood) chose to use the lamda rather than the static cast solution.
-  auto run_func = [](rclcpp::Node::SharedPtr node) {
-    return rclcpp::spin(node);
-  };
-  dedicated_listener_thread_ = new std::thread(run_func, node_);
-  //Tell the buffer we have a dedicated thread to enable timeouts
-  buffer_.setUsingDedicatedThread(true);
+  exit_signal_.set_value();
+  if (dedicated_listener_thread_)
+  {
+    dedicated_listener_thread_->join();
+  }
 }
-
-
 
 void TransformListener::subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
   subscription_callback_impl(msg, false);
 }
+
 void TransformListener::static_subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
   subscription_callback_impl(msg, true);
@@ -117,18 +103,18 @@ void TransformListener::subscription_callback_impl(const tf2_msgs::msg::TFMessag
   const tf2_msgs::msg::TFMessage& msg_in = *msg;
   //TODO(tfoote) find a way to get the authority
   std::string authority = "Authority undetectable"; //msg_evt.getPublisherName(); // lookup the authority
-  for (unsigned int i = 0; i < msg_in.transforms.size(); i++)
+  for (unsigned int i = 0; i < msg_in.transforms.size(); ++i)
   {
     try
     {
       buffer_.setTransform(msg_in.transforms[i], authority, is_static);
     }
-    
+
     catch (tf2::TransformException& ex)
     {
       ///\todo Use error reporting
       std::string temp = ex.what();
-      ROS_ERROR("Failure to set recieved transform from %s to %s with error: %s\n", msg_in.transforms[i].child_frame_id.c_str(), msg_in.transforms[i].header.frame_id.c_str(), temp.c_str());
+      RCUTILS_LOG_ERROR("Failure to set received transform from %s to %s with error: %s\n", msg_in.transforms[i].child_frame_id.c_str(), msg_in.transforms[i].header.frame_id.c_str(), temp.c_str());
     }
   }
-};
+}
