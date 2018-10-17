@@ -84,6 +84,27 @@ geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Affine3d& T)
   return t;
 }
 
+/** \brief Convert an Eigen Isometry3d transform to the equivalent geometry_msgs message type.
+ * \param T The transform to convert, as an Eigen Isometry3d transform.
+ * \return The transform converted to a TransformStamped message.
+ */
+inline
+geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Isometry3d& T)
+{
+  geometry_msgs::msg::TransformStamped t;
+  t.transform.translation.x = T.translation().x();
+  t.transform.translation.y = T.translation().y();
+  t.transform.translation.z = T.translation().z();
+
+  Eigen::Quaterniond q(T.rotation());
+  t.transform.rotation.x = q.x();
+  t.transform.rotation.y = q.y();
+  t.transform.rotation.z = q.z();
+  t.transform.rotation.w = q.w();
+
+  return t;
+}
+
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h,
  * although it can not be used in tf2_ros::BufferInterface::transform because this
@@ -307,6 +328,31 @@ geometry_msgs::msg::Pose toMsg(const Eigen::Affine3d& in) {
   return msg;
 }
 
+/** \brief Convert a Eigen Isometry3d transform type to a Pose message.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in The Eigen Isometry3d to convert.
+ * \return The Eigen transform converted to a Pose message.
+ */
+inline
+geometry_msgs::msg::Pose toMsg(const Eigen::Isometry3d& in) {
+  geometry_msgs::msg::Pose msg;
+  msg.position.x = in.translation().x();
+  msg.position.y = in.translation().y();
+  msg.position.z = in.translation().z();
+  Eigen::Quaterniond q(in.linear());
+  msg.orientation.x = q.x();
+  msg.orientation.y = q.y();
+  msg.orientation.z = q.z();
+  msg.orientation.w = q.w();
+  if (msg.orientation.w < 0) {
+    msg.orientation.x *= -1;
+    msg.orientation.y *= -1;
+    msg.orientation.z *= -1;
+    msg.orientation.w *= -1;
+  }
+  return msg;
+}
+
 /** \brief Convert a Pose message transform type to a Eigen Affine3d.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param msg The Pose message to convert.
@@ -369,7 +415,7 @@ void fromMsg(const geometry_msgs::msg::Twist &msg, Eigen::Matrix<double,6,1>& ou
   out[5] = msg.angular.z;
 }
 
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen Affine3d transform.
+/** \brief Apply a geometry_msgs TransformStamped to a Eigen-specific affine transform data type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h,
  * although it can not be used in tf2_ros::BufferInterface::transform because this
  * function relies on the existence of a time stamp and a frame id in the type which should
