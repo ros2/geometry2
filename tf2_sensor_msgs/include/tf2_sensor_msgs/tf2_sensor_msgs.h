@@ -31,8 +31,9 @@
 #define TF2_SENSOR_MSGS_H
 
 #include <tf2/convert.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/point_cloud2_iterator.h>
+#include <tf2/time.h>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
 
@@ -46,7 +47,7 @@ namespace tf2
 // method to extract timestamp from object
 template <>
 inline
-tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2& p) {return p.header.stamp;}
+tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2& p) {return tf2_ros::fromMsg(p.header.stamp);}
 
 // method to extract frame id from object
 template <>
@@ -65,13 +66,13 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
                                                                      t_in.transform.rotation.w, t_in.transform.rotation.x,
                                                                      t_in.transform.rotation.y, t_in.transform.rotation.z);
 
-  sensor_msgs::msg::PointCloud2ConstIterator<float> x_in(p_in, "x");
-  sensor_msgs::msg::PointCloud2ConstIterator<float> y_in(p_in, "y");
-  sensor_msgs::msg::PointCloud2ConstIterator<float> z_in(p_in, "z");
+  sensor_msgs::PointCloud2ConstIterator<float> x_in(p_in, std::string("x"));
+  sensor_msgs::PointCloud2ConstIterator<float> y_in(p_in, std::string("y"));
+  sensor_msgs::PointCloud2ConstIterator<float> z_in(p_in, std::string("z"));
 
-  sensor_msgs::msg::PointCloud2Iterator<float> x_out(p_out, "x");
-  sensor_msgs::msg::PointCloud2Iterator<float> y_out(p_out, "y");
-  sensor_msgs::msg::PointCloud2Iterator<float> z_out(p_out, "z");
+  sensor_msgs::PointCloud2Iterator<float> x_out(p_out, std::string("x"));
+  sensor_msgs::PointCloud2Iterator<float> y_out(p_out, std::string("y"));
+  sensor_msgs::PointCloud2Iterator<float> z_out(p_out, std::string("z"));
 
   Eigen::Vector3f point;
   for(; x_in != x_in.end(); ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out) {

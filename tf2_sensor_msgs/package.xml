@@ -1,4 +1,4 @@
-<package>
+<package format="2">
   <name>tf2_sensor_msgs</name>
   <version>0.9.1</version>
   <description>
@@ -9,23 +9,20 @@
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/tf2_ros</url>
-    
-  <buildtool_depend version_gte="0.5.6">catkin</buildtool_depend>
 
-  <build_depend>cmake_modules</build_depend>
-  <build_depend>eigen</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_ros</build_depend>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
-  <run_depend>cmake_modules</run_depend>
-  <run_depend>eigen</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>tf2_ros</run_depend>
-  <run_depend>tf2</run_depend>
-  <run_depend>python_orocos_kdl</run_depend>
+  <depend>cmake_modules</depend>
+  <depend>Eigen3</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <!-- <depend>python_orocos_kdl</depend> -->
+  <!-- <test_depend>rostest</test_depend> -->
 
-  <test_depend>rostest</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
 
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
-
