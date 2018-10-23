@@ -27,9 +27,6 @@ include_directories(include
   ${Eigen3_INCLUDE_DIRS}
 )
 
-# TODO(SteveMacenski): port python
-# catkin_python_setup()
-
 # TODO enable tests
 #if(BUILD_TESTING)
 #  catkin_add_nosetests(test/test_tf2_sensor_msgs.py)
