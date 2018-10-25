@@ -82,7 +82,8 @@ int main(int argc, char **argv){
   ros::init(argc, argv, "test");
   ros::NodeHandle n;
 
-  tf_buffer = new tf2_ros::Buffer();
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf_buffer = new tf2_ros::Buffer(clock);
 
   // populate buffer
   geometry_msgs::TransformStamped t;
