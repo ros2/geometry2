@@ -41,14 +41,14 @@ static const double EPS = 1e-3;
 
 TEST(Tf2Sensor, PointCloud2)
 {
-  sensor_msgs::PointCloud2 cloud;
-  sensor_msgs::PointCloud2Modifier modifier(cloud);
+  sensor_msgs::msg::PointCloud2 cloud;
+  sensor_msgs::msg::PointCloud2Modifier modifier(cloud);
   modifier.setPointCloud2FieldsByString(2, "xyz", "rgb");
   modifier.resize(1);
 
-  sensor_msgs::PointCloud2Iterator<float> iter_x(cloud, "x");
-  sensor_msgs::PointCloud2Iterator<float> iter_y(cloud, "y");
-  sensor_msgs::PointCloud2Iterator<float> iter_z(cloud, "z");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_x(cloud, "x");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_y(cloud, "y");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_z(cloud, "z");
 
   *iter_x = 1;
   *iter_y = 2;
@@ -58,20 +58,20 @@ TEST(Tf2Sensor, PointCloud2)
   cloud.header.frame_id = "A";
 
   // simple api
-  sensor_msgs::PointCloud2 cloud_simple = tf_buffer->transform(cloud, "B", tf2::durationFromSec(2.0));
-  sensor_msgs::PointCloud2Iterator<float> iter_x_after(cloud_simple, "x");
-  sensor_msgs::PointCloud2Iterator<float> iter_y_after(cloud_simple, "y");
-  sensor_msgs::PointCloud2Iterator<float> iter_z_after(cloud_simple, "z");
+  sensor_msgs::msg::PointCloud2 cloud_simple = tf_buffer->transform(cloud, "B", tf2::durationFromSec(2.0));
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_x_after(cloud_simple, "x");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_y_after(cloud_simple, "y");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_z_after(cloud_simple, "z");
   EXPECT_NEAR(*iter_x_after, -9, EPS);
   EXPECT_NEAR(*iter_y_after, 18, EPS);
   EXPECT_NEAR(*iter_z_after, 27, EPS);
 
   // advanced api
-  sensor_msgs::PointCloud2 cloud_advanced = tf_buffer->transform(cloud, "B", builtin_interfaces::msg::Time(2.0),
+  sensor_msgs::msg::PointCloud2 cloud_advanced = tf_buffer->transform(cloud, "B", builtin_interfaces::msg::Time(2.0),
                                                                  "A", tf2::durationFromSec(3.0));
-  sensor_msgs::PointCloud2Iterator<float> iter_x_advanced(cloud_advanced, "x");
-  sensor_msgs::PointCloud2Iterator<float> iter_y_advanced(cloud_advanced, "y");
-  sensor_msgs::PointCloud2Iterator<float> iter_z_advanced(cloud_advanced, "z");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_x_advanced(cloud_advanced, "x");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_y_advanced(cloud_advanced, "y");
+  sensor_msgs::msg::PointCloud2Iterator<float> iter_z_advanced(cloud_advanced, "z");
   EXPECT_NEAR(*iter_x_advanced, -9, EPS);
   EXPECT_NEAR(*iter_y_advanced, 18, EPS);
   EXPECT_NEAR(*iter_z_advanced, 27, EPS);
@@ -82,10 +82,11 @@ int main(int argc, char **argv){
   ros::init(argc, argv, "test");
   ros::NodeHandle n;
 
-  tf_buffer = new tf2_ros::Buffer();
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf_buffer = new tf2_ros::Buffer(clock);
 
   // populate buffer
-  geometry_msgs::TransformStamped t;
+  geometry_msgs::msg::TransformStamped t;
   t.transform.translation.x = 10;
   t.transform.translation.y = 20;
   t.transform.translation.z = 30;

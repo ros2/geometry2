@@ -1,42 +1,49 @@
 cmake_minimum_required(VERSION 3.5)
 project(tf2_sensor_msgs)
 
-find_package(catkin REQUIRED COMPONENTS cmake_modules sensor_msgs tf2_ros tf2)
-find_package(Boost COMPONENTS thread REQUIRED)
-find_package(Eigen)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra)
+endif()
 
-catkin_package(
-   INCLUDE_DIRS include
-   CATKIN_DEPENDS sensor_msgs tf2_ros tf2
-   DEPENDS Eigen
+find_package(ament_cmake_auto REQUIRED)
+set(required_dependencies
+  "sensor_msgs"
+  #"python_orocos_kdl"
+  "tf2"
+  "tf2_ros"
+  "Eigen3"
 )
 
+ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
 include_directories(include
-   ${catkin_INCLUDE_DIRS}
+  ${sensor_msgs_INCLUDE_DIRS}
+  ${tf2_INCLUDE_DIRS}
+  ${tf2_ros_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
+# TODO enable tests
+#if(BUILD_TESTING)
+#  catkin_add_nosetests(test/test_tf2_sensor_msgs.py)
 
-catkin_python_setup()
+#find_package(catkin REQUIRED COMPONENTS
+#  sensor_msgs
+#  rostest
+#  tf2_ros
+#  tf2
+#)
+#include_directories(${EIGEN_INCLUDE_DIRS})
+#add_executable(test_tf2_sensor_msgs_cpp EXCLUDE_FROM_ALL test/test_tf2_sensor_msgs.cpp)
+#target_link_libraries(test_tf2_sensor_msgs_cpp ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+#if(TARGET tests)
+#  add_dependencies(tests test_tf2_sensor_msgs_cpp)
+#endif()
+#add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
+#endif()
 
-if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(test/test_tf2_sensor_msgs.py)
-
-find_package(catkin REQUIRED COMPONENTS sensor_msgs rostest tf2_ros tf2)
-
-include_directories(${EIGEN_INCLUDE_DIRS})
-
-add_executable(test_tf2_sensor_msgs_cpp EXCLUDE_FROM_ALL test/test_tf2_sensor_msgs.cpp)
-target_link_libraries(test_tf2_sensor_msgs_cpp ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-
-
-if(TARGET tests)
-  add_dependencies(tests test_tf2_sensor_msgs_cpp)
-endif()
-add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
-
-
-endif()
+ament_auto_package()
