@@ -15,10 +15,11 @@ set(required_dependencies
   #"python_orocos_kdl"
   "tf2"
   "tf2_ros"
-  "Eigen3"
 )
 
 ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
+
+find_package(Eigen3 REQUIRED)
 
 include_directories(include
   ${sensor_msgs_INCLUDE_DIRS}
