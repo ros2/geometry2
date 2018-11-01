@@ -13,7 +13,7 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>cmake_modules</depend>
-  <depend>Eigen3</depend>
+  <depend>eigen</depend>
   <depend>sensor_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
