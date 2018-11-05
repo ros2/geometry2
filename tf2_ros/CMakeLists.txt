@@ -16,6 +16,7 @@ find_package(ament_cmake REQUIRED)
 # find_package(actionlib_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
@@ -24,6 +25,7 @@ find_package(rmw)
 include_directories(include
   ${geometry_msgs_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS}
+  ${rclcpp_lifecycle_INCLUDE_DIRS}
   ${rmw_INCLUDE_DIRS}
   ${rmw_implementation_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
@@ -43,6 +45,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${rclcpp_LIBRARIES}
+  ${rclcpp_lifecycle_LIBRARIES}
   ${rmw_LIBRARIES}
   ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
@@ -70,6 +73,7 @@ target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${rclcpp_LIBRARIES}
+  ${rclcpp_lifecycle_LIBRARIES}
   ${rmw_LIBRARIES}
   ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
@@ -83,6 +87,7 @@ target_link_libraries(tf2_echo
   ${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${rclcpp_LIBRARIES}
+  ${rclcpp_lifecycle_LIBRARIES}
   ${rmw_LIBRARIES}
   ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
@@ -96,6 +101,7 @@ target_link_libraries(tf2_echo
     ${PROJECT_NAME}
     ${geometry_msgs_LIBRARIES}
     ${rclcpp_LIBRARIES}
+    ${rclcpp_lifecycle_LIBRARIES}
     ${rmw_LIBRARIES}
     ${rmw_implementation_LIBRARIES}
     ${tf2_LIBRARIES}

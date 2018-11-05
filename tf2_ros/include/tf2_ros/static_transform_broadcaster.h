@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2008, Willow Garage, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  *     * Neither the name of the Willow Garage, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,41 +36,52 @@
 
 
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "tf2_ros/visibility_control.h"
 
-namespace tf2_ros
-{
+namespace tf2_ros {
 
 
-/** \brief This class provides an easy way to publish coordinate frame transform information.  
- * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the 
- * necessary data needed for each message.  */
+    /** \brief This class provides an easy way to publish coordinate frame transform information.
+     * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the
+     * necessary data needed for each message.  */
 
-class StaticTransformBroadcaster{
-public:
+    class StaticTransformBroadcaster {
+      public:
 
-  TF2_ROS_PUBLIC
-  StaticTransformBroadcaster(rclcpp::Node::SharedPtr node);
+        TF2_ROS_PUBLIC
+        StaticTransformBroadcaster(rclcpp::Node::SharedPtr node);
 
-  /** \brief Send a TransformStamped message
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
-  TF2_ROS_PUBLIC
-  void sendTransform(const geometry_msgs::msg::TransformStamped & transform);
+        TF2_ROS_PUBLIC
+        StaticTransformBroadcaster(rclcpp_lifecycle::LifecycleNode::SharedPtr node);
 
-  /** \brief Send a vector of TransformStamped messages
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
-  TF2_ROS_PUBLIC
-  void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
+        /** \brief Send a TransformStamped message
+         * The stamped data structure includes frame_id, and time, and parent_id already.  */
+        TF2_ROS_PUBLIC
+        void sendTransform(const geometry_msgs::msg::TransformStamped& transform);
 
-private:
-  /// Internal reference to ros::Node
-  rclcpp::Node::SharedPtr node_;
-  rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
-  tf2_msgs::msg::TFMessage net_message_;
+        /** \brief Send a vector of TransformStamped messages
+         * The stamped data structure includes frame_id, and time, and parent_id already.  */
+        TF2_ROS_PUBLIC
+        void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped>& transforms);
 
-};
+      private:
+        /// Internal reference to rclcpp::Node
+        rclcpp::Node::SharedPtr node_;
+        rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
+        tf2_msgs::msg::TFMessage net_message_;
+
+        /// Internal reference to rclcpp_lifecycle::LifecycleNode
+        rclcpp_lifecycle::LifecycleNode::SharedPtr lf_node_;
+        rclcpp_lifecycle::LifecyclePublisher<tf2_msgs::msg::TFMessage>::SharedPtr lf_publisher_;
+
+        /// Discriminates node mode
+        bool lifecycle_ = false;
+
+    };
 
 }
 

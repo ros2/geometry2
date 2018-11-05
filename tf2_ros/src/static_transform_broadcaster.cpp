@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2008, Willow Garage, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  *     * Neither the name of the Willow Garage, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,41 +37,54 @@
 
 namespace tf2_ros {
 
-StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node):
-  node_(node)
-{
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 100;
-  // TODO(tfoote) latched equivalent
-  publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf_static", custom_qos_profile);
-}
-
-void StaticTransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped & msgtf)
-{
-  std::vector<geometry_msgs::msg::TransformStamped> v1;
-  v1.push_back(msgtf);
-  sendTransform(v1);
-}
-
-void StaticTransformBroadcaster::sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & msgtf)
-{
-  for (auto it_in = msgtf.begin(); it_in != msgtf.end(); ++it_in)
-  {
-    bool match_found = false;
-    for (auto it_msg = net_message_.transforms.begin(); it_msg != net_message_.transforms.end(); ++it_msg)
-    {
-      if (it_in->child_frame_id == it_msg->child_frame_id)
-      {
-        *it_msg = *it_in;
-        match_found = true;
-        break;
-      }
+    StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node):
+        node_(node) {
+        lifecycle_ = false;
+        rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
+        custom_qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+        custom_qos_profile.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+        custom_qos_profile.depth = 1;
+        // TODO(tfoote) check if this is latched equivalent
+        publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf_static", custom_qos_profile);
     }
-    if (! match_found)
-      net_message_.transforms.push_back(*it_in);
-  }
 
-  publisher_->publish(net_message_);
-}
+    StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp_lifecycle::LifecycleNode::SharedPtr node):
+        lf_node_(node) {
+        lifecycle_ = true;
+        rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
+        custom_qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
+        custom_qos_profile.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+        custom_qos_profile.depth = 1;
+        // TODO(tfoote) check if this is latched equivalent
+        lf_publisher_ = lf_node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf_static", custom_qos_profile);
+    }
+
+    void StaticTransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped& msgtf) {
+        std::vector<geometry_msgs::msg::TransformStamped> v1;
+        v1.push_back(msgtf);
+        sendTransform(v1);
+    }
+
+    void StaticTransformBroadcaster::sendTransform(const std::vector<geometry_msgs::msg::TransformStamped>& msgtf) {
+        for (auto it_in = msgtf.begin(); it_in != msgtf.end(); ++it_in) {
+            bool match_found = false;
+            for (auto it_msg = net_message_.transforms.begin(); it_msg != net_message_.transforms.end(); ++it_msg) {
+                if (it_in->child_frame_id == it_msg->child_frame_id) {
+                    *it_msg = *it_in;
+                    match_found = true;
+                    break;
+                }
+            }
+            if (! match_found) {
+                net_message_.transforms.push_back(*it_in);
+            }
+        }
+
+        if (!lifecycle_) {
+            publisher_->publish(net_message_);
+        } else {
+            lf_publisher_->publish(net_message_);
+        }
+    }
 
 }
