@@ -133,6 +133,11 @@ if(BUILD_TESTING)
   ament_add_gtest(test_buffer test/test_buffer.cpp)
   target_link_libraries(test_buffer ${PROJECT_NAME})
 
+  # Adds a tf2_ros message_filter unittest that uses
+  # multiple target frames and a non-zero time tolerance
+  ament_add_gtest(${PROJECT_NAME}_test_message_filter test/message_filter_test.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_message_filter ${PROJECT_NAME})
+
 # TODO(tfoote) port tests to use ROS2 instead of ROS1 api.
 if (false)
 
@@ -150,8 +155,6 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_msgs
   ${TF2_PY}
 )
-
-
 
 # tf2_ros_test_listener
 add_executable(${PROJECT_NAME}_test_listener EXCLUDE_FROM_ALL test/listener_unittest.cpp)
