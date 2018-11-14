@@ -61,7 +61,7 @@
 int main(int argc, char ** argv)
 {
   //Initialize ROS
-  rclcpp::init(argc, argv);
+  std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
   // TODO(clalancette): Anonymize the node name like it is in ROS1.
   auto node = rclcpp::Node::make_shared("static_transform_publisher");
@@ -73,35 +73,35 @@ int main(int argc, char ** argv)
   tf2_ros::StaticTransformBroadcaster broadcaster(node);
   geometry_msgs::msg::TransformStamped msg;
 
-  if(argc == 10)
+  if(args.size() == 10)
   {
-    msg.transform.translation.x = atof(argv[1]);
-    msg.transform.translation.y = atof(argv[2]);
-    msg.transform.translation.z = atof(argv[3]);
-    msg.transform.rotation.x = atof(argv[4]);
-    msg.transform.rotation.y = atof(argv[5]);
-    msg.transform.rotation.z = atof(argv[6]);
-    msg.transform.rotation.w = atof(argv[7]);
+    msg.transform.translation.x = atof(args[1].c_str());
+    msg.transform.translation.y = atof(args[2].c_str());
+    msg.transform.translation.z = atof(args[3].c_str());
+    msg.transform.rotation.x = atof(args[4].c_str());
+    msg.transform.rotation.y = atof(args[5].c_str());
+    msg.transform.rotation.z = atof(args[6].c_str());
+    msg.transform.rotation.w = atof(args[7].c_str());
     msg.header.stamp = clock->now();
-    msg.header.frame_id = argv[8];
-    msg.child_frame_id = argv[9];
+    msg.header.frame_id = args[8];
+    msg.child_frame_id = args[9];
   }
-  else if (argc == 9)
+  else if (args.size() == 9)
   {
-    msg.transform.translation.x = atof(argv[1]);
-    msg.transform.translation.y = atof(argv[2]);
-    msg.transform.translation.z = atof(argv[3]);
+    msg.transform.translation.x = atof(args[1].c_str());
+    msg.transform.translation.y = atof(args[2].c_str());
+    msg.transform.translation.z = atof(args[3].c_str());
 
     tf2::Quaternion quat;
-    quat.setRPY(atof(argv[6]), atof(argv[5]), atof(argv[4]));
+    quat.setRPY(atof(args[6].c_str()), atof(argv[5]), atof(argv[4]));
     msg.transform.rotation.x = quat.x();
     msg.transform.rotation.y = quat.y();
     msg.transform.rotation.z = quat.z();
     msg.transform.rotation.w = quat.w();
 
     msg.header.stamp = clock->now();
-    msg.header.frame_id = argv[7];
-    msg.child_frame_id = argv[8];
+    msg.header.frame_id = args[7];
+    msg.child_frame_id = args[8];
   }
   // else if (argc == 2) {
   //   const std::string param_name = argv[1];
