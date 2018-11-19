@@ -40,7 +40,7 @@
 #include <tf2_ros/transform_listener.h>
 
 uint8_t filter_callback_fired = 0;
-void filter_callback(const geometry_msgs::msg::PointStamped& msg)
+void filter_callback(const geometry_msgs::msg::PointStamped & msg)
 {
   filter_callback_fired++;
 }
@@ -65,7 +65,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   frames.push_back("map");
   filter.setTargetFrames(frames);
   // Set a non-zero time tolerance
-  filter.setTolerance(rclcpp::Duration(1,0));
+  filter.setTolerance(rclcpp::Duration(1, 0));
 
   // Publish static transforms so the frame transformations will always be valid
   tf2_ros::StaticTransformBroadcaster tfb(node);
@@ -96,7 +96,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   tfb.sendTransform(odom_to_base);
 
   rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub;
-  pub =  node->create_publisher<geometry_msgs::msg::PointStamped>("point");
+  pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point");
   geometry_msgs::msg::PointStamped point;
   point.header.stamp = rclcpp::Clock().now();
   point.header.frame_id = "base";
@@ -109,7 +109,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
     pub->publish(point);
     rclcpp::spin_some(node);
     loop_rate.sleep();
-    //RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired);
+    RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired);
     if (filter_callback_fired > 5) {
       break;
     }
@@ -119,7 +119,8 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   ASSERT_TRUE(filter_callback_fired);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();
