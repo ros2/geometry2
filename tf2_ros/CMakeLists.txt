@@ -7,7 +7,7 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(NOT ANDROID)
-set(TF2_PY tf2_py)
+  set(TF2_PY tf2_py)
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -20,14 +20,10 @@ find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
-find_package(rmw)
-
 include_directories(include
   ${geometry_msgs_INCLUDE_DIRS}
   ${message_filters_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS}
-  ${rmw_INCLUDE_DIRS}
-  ${rmw_implementation_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
   ${tf2_msgs_INCLUDE_DIRS}
   )
@@ -46,8 +42,6 @@ target_link_libraries(${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${message_filters_LIBRARIES}
   ${rclcpp_LIBRARIES}
-  ${rmw_LIBRARIES}
-  ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
   ${tf2_msgs_LIBRARIES}
   )
@@ -73,8 +67,6 @@ target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${rclcpp_LIBRARIES}
-  ${rmw_LIBRARIES}
-  ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
   ${tf2_msgs_LIBRARIES}
   )
@@ -86,8 +78,6 @@ target_link_libraries(tf2_echo
   ${PROJECT_NAME}
   ${geometry_msgs_LIBRARIES}
   ${rclcpp_LIBRARIES}
-  ${rmw_LIBRARIES}
-  ${rmw_implementation_LIBRARIES}
   ${tf2_LIBRARIES}
   ${tf2_msgs_LIBRARIES}
   )
@@ -99,8 +89,6 @@ target_link_libraries(tf2_echo
     ${PROJECT_NAME}
     ${geometry_msgs_LIBRARIES}
     ${rclcpp_LIBRARIES}
-    ${rmw_LIBRARIES}
-    ${rmw_implementation_LIBRARIES}
     ${tf2_LIBRARIES}
     ${tf2_msgs_LIBRARIES}
     )
