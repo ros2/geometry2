@@ -545,6 +545,8 @@ private:
     , reason_(reason)
     , success_(success)
     {}
+
+
     virtual CallResult call()
     {
       if (success_)
@@ -555,8 +557,10 @@ private:
       {
         filter_->signalFailure(event_, reason_);
       }
+
       return Success;
     }
+
   private:
     MEvent event_;
     MessageFilter* filter_;
@@ -569,8 +573,7 @@ private:
   {
     // TODO(clalancette): reenable this once we have underlying support for callback queues
 #if 0
-    if (callback_queue_)
-    {
+    if (callback_queue_) {
       ros::CallbackInterfacePtr cb(new CBQueueCallback(this, evt, false, reason));
       callback_queue_->addCallback(cb, (uint64_t)this);
     }
@@ -667,6 +670,7 @@ private:
   message_filters::Connection message_connection_;
   message_filters::Connection message_connection_failure;
 };
+
 } // namespace tf2
 
 #endif
