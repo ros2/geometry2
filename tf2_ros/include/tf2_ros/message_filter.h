@@ -129,6 +129,7 @@ public:
     node_(node)
   {
     init();
+
     setTargetFrame(target_frame);
   }
 
@@ -150,7 +151,9 @@ public:
     node_(node)
   {
     init();
+
     setTargetFrame(target_frame);
+
     connectInput(f);
   }
 
@@ -347,7 +350,6 @@ public:
 
       // Add the message to our list
       info.event = evt;
-
       messages_.push_back(info);
       ++message_count_;
     }
@@ -533,14 +535,65 @@ private:
     }
   }
 
-  void messageDropped(const MEvent & evt, FilterFailureReason reason)
+  // TODO(clalancette): reenable this once we have underlying support for callback queues
+#if 0
+  struct CBQueueCallback : public ros::CallbackInterface
   {
-    signalFailure(evt, reason);
+    CBQueueCallback(MessageFilter* filter, const MEvent& event, bool success, FilterFailureReason reason)
+    : event_(event)
+    , filter_(filter)
+    , reason_(reason)
+    , success_(success)
+    {}
+    virtual CallResult call()
+    {
+      if (success_)
+      {
+        filter_->signalMessage(event_);
+      }
+      else
+      {
+        filter_->signalFailure(event_, reason_);
+      }
+      return Success;
+    }
+  private:
+    MEvent event_;
+    MessageFilter* filter_;
+    FilterFailureReason reason_;
+    bool success_;
+  };
+#endif
+
+  void messageDropped(const MEvent& evt, FilterFailureReason reason)
+  {
+    // TODO(clalancette): reenable this once we have underlying support for callback queues
+#if 0
+    if (callback_queue_)
+    {
+      ros::CallbackInterfacePtr cb(new CBQueueCallback(this, evt, false, reason));
+      callback_queue_->addCallback(cb, (uint64_t)this);
+    }
+    else
+#endif
+    {
+      signalFailure(evt, reason);
+    }
   }
 
   void messageReady(const MEvent & evt)
   {
-    this->signalMessage(evt);
+    // TODO(clalancette): reenable this once we have underlying support for callback queues
+#if 0
+    if (callback_queue_) {
+      ros::CallbackInterfacePtr cb(new CBQueueCallback(this, evt, true, filter_failure_reasons::Unknown));
+      callback_queue_->addCallback(cb, (uint64_t)this);
+    }
+    else
+#endif
+    {
+      this->signalMessage(evt);
+    }
   }
 
   void signalFailure(const MEvent & evt, FilterFailureReason reason)
