@@ -584,16 +584,16 @@ private:
 
     MEvent event;
     V_TransformableRequestHandle handles;
-    uint32_t success_count;
+    uint64_t success_count;
   };
   typedef std::list<MessageInfo> L_MessageInfo;
   L_MessageInfo messages_;
 
   ///< The number of messages in the list.  Used because \<container\>.size() may have linear cost
-  uint32_t message_count_;
+  uint64_t message_count_;
   ///< The mutex used for locking message list operations
   std::mutex messages_mutex_;
-  uint32_t expected_success_count_;
+  uint64_t expected_success_count_;
 
   bool warned_about_empty_frame_id_;
 
