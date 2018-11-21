@@ -320,8 +320,8 @@ public:
       // If this message is about to push us past our queue size, erase the oldest message
       if (queue_size_ != 0 && message_count_ + 1 > queue_size_) {
 
-        // While we're using the reference keep a shared lock on the messages.
-        std::lock_guard<std::mutex> guard_lock(messages_mutex_);
+        // While we're using the reference keep a lock on the messages.
+        std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
         ++dropped_message_count_;
         const MessageInfo & front = messages_.front();
@@ -339,13 +339,6 @@ public:
 
         messageDropped(front.event, filter_failure_reasons::Unknown);
 
-        // Unlock the shared lock and get a unique lock. Upgradeable lock is used in transformable.
-        // There can only be one upgrade lock. It's important the cancelTransformableRequest not deadlock with transformable.
-        // They both require the transformable_requests_mutex_ in BufferCore.
-        // shared_lock.unlock();
-
-        // There is a very slight race condition if an older message arrives in this gap.
-        // std::unique_lock<std::mutex> unique_lock(messages_mutex_);
         messages_.pop_front();
         --message_count_;
       }
@@ -353,8 +346,6 @@ public:
       // Add the message to our list
       info.event = evt;
 
-      // Lock access to the messages_ before modifying them.
-      std::unique_lock<std::mutex> unique_lock(messages_mutex_);
       messages_.push_back(info);
       ++message_count_;
     }
