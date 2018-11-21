@@ -36,6 +36,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include <message_filters/connection.h>
 #include <message_filters/message_traits.h>
 #include <message_filters/simple_filter.h>
@@ -174,10 +175,11 @@ public:
 
     TF2_ROS_MESSAGEFILTER_DEBUG(
       "Successful Transforms: %llu, Discarded due to age: %llu, Transform messages received: %llu, Messages received: %llu, Total dropped: %llu",
-      (long long unsigned int)successful_transform_count_,
-      (long long unsigned int)failed_out_the_back_count_, (long long unsigned int)transform_message_count_,
-      (long long unsigned int)incoming_message_count_,
-      (long long unsigned int)dropped_message_count_);
+      static_cast<long long unsigned int>(successful_transform_count_),
+      static_cast<long long unsigned int>(failed_out_the_back_count_),
+      static_cast<long long unsigned int>(transform_message_count_),
+      static_cast<long long unsigned int>(incoming_message_count_),
+      static_cast<long long unsigned int>(dropped_message_count_));
   }
 
   /**
@@ -375,13 +377,13 @@ public:
    * \brief Register a callback to be called when a message is about to be dropped
    * \param callback The callback to call
    */
-      #if 0
+#if 0
   message_filters::Connection registerFailureCallback(const FailureCallback & callback)
   {
     message_connection_failure.disconnect();
     message_connection_failure = this->registerCallback(callback, this);
   }
-      #endif
+#endif
 
   virtual void setQueueSize(uint32_t new_queue_size)
   {
@@ -514,15 +516,15 @@ private:
         return;
       }
 
-      double dropped_pct = (double)dropped_message_count_ /
-        (double)(incoming_message_count_ - message_count_);
+      double dropped_pct = static_cast<double>(dropped_message_count_) /
+        static_cast<double>(incoming_message_count_ - message_count_);
       if (dropped_pct > 0.95) {
         TF2_ROS_MESSAGEFILTER_WARN(
           "Dropped %.2f%% of messages so far. Please turn the [%s.message_notifier] rosconsole logger to DEBUG for more information.", dropped_pct * 100,
           "tf2_ros_message_filter");
         next_failure_warning_ = rclcpp::Clock::now() + rclcpp::Duration(60, 0);
 
-        if ((double)failed_out_the_back_count_ / (double)dropped_message_count_ > 0.5) {
+        if (static_cast<double>(failed_out_the_back_count_) / static_cast<double>(dropped_message_count_) > 0.5) {
           TF2_ROS_MESSAGEFILTER_WARN(
             "  The majority of dropped messages were due to messages growing older than the TF cache time.  The last message's timestamp was: %f, and the last frame_id was: %s",
             last_out_the_back_stamp_.seconds(), last_out_the_back_frame_.c_str());
