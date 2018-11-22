@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.9.2 (2018-11-22)
+------------------
 * Use ros2 time (`#67 <https://github.com/ros2/geometry2/issues/67>`_)
   * Buffer constructor accepts a clock
   * Use rclcpp::Time::seconds()
