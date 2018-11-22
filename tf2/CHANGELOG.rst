@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.10.0 (2018-11-22)
+-------------------
 * Merge pull request `#65 <https://github.com/ros2/geometry2/issues/65>`_ from bsinno/bugfix/fix_identity_transform_behaviour
   Fix bug in lookupTransform()
 * Fix lookupTransform() behaviour when transforming from a frame to itself

@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.10.0 (2018-11-22)
+-------------------
 * Port tf2 ros message filter with ros2 tf2 and message filters (`#81 <https://github.com/ros2/geometry2/issues/81>`_)
   * Port tf2 message filter to ros2
   - remove APIs to node callback queue due to no callback queue
