@@ -2,6 +2,21 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Port tf2 ros message filter with ros2 tf2 and message filters (`#81 <https://github.com/ros2/geometry2/issues/81>`_)
+  * Port tf2 message filter to ros2
+  - remove APIs to node callback queue due to no callback queue
+  in ros2 now
+  - Change failure callback register with failure prompting due to
+  no corresponding boost signal2 in C++11 and later
+  - Fix expected transform count in case of time tolerance
+  - Upgrade all message counts to 64 bitThis should resolve C4267 warnings about downgrading a size_t.
+* Export tf2 dependency from tf2_ros (`#72 <https://github.com/ros2/geometry2/issues/72>`_)
+* rclcpp time jump callback signature (`#69 <https://github.com/ros2/geometry2/issues/69>`_)
+* Use ros2 time (`#67 <https://github.com/ros2/geometry2/issues/67>`_)
+* Contributors: Carl Delsey, Ethan Gao, Shane Loretz
+
 0.5.15 (2017-01-24)
 -------------------
 * tf2_ros: add option to unregister TransformListener (`#201 <https://github.com/ros/geometry2/issues/201>`_)

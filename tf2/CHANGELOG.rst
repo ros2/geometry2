@@ -2,6 +2,15 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#65 <https://github.com/ros2/geometry2/issues/65>`_ from bsinno/bugfix/fix_identity_transform_behaviour
+  Fix bug in lookupTransform()
+* Fix lookupTransform() behaviour when transforming from a frame to itself
+* revert now unnecessary message initializations (`#64 <https://github.com/ros2/geometry2/issues/64>`_)
+* use console_bridge_vendor (`#63 <https://github.com/ros2/geometry2/issues/63>`_)
+* Contributors: Alessandro Bottero, Mikael Arguedas, Tully Foote
+
 0.5.15 (2017-01-24)
 -------------------
 

@@ -2,6 +2,11 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use add_compile_options instead of setting only cxx flags
+* Contributors: Mikael Arguedas
+
 0.5.15 (2017-01-24)
 -------------------
 

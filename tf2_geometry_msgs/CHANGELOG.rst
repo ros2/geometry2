@@ -2,6 +2,14 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use ros2 time (`#67 <https://github.com/ros2/geometry2/issues/67>`_)
+  * Buffer constructor accepts a clock
+  * Use rclcpp::Time::seconds()
+* revert now unnecessary message initializations (`#64 <https://github.com/ros2/geometry2/issues/64>`_)
+* Contributors: Mikael Arguedas, Shane Loretz
+
 0.5.15 (2017-01-24)
 -------------------
 
