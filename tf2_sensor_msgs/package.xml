@@ -12,7 +12,6 @@
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
-  <depend>cmake_modules</depend>
   <depend>eigen</depend>
   <depend>sensor_msgs</depend>
   <depend>tf2</depend>
