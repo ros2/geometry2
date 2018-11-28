@@ -19,6 +19,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_msgs REQUIRED)
+
+include_directories(${tf2_msgs_INCLUDE_DIRS})
 
 add_library(tf2_filter src/tf2_filter.cpp)
 target_include_directories(tf2_filter PUBLIC
@@ -26,7 +29,7 @@ target_include_directories(tf2_filter PUBLIC
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(
   tf2_filter
-  "tf2_ros"
+  tf2_ros tf2_msgs
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -57,6 +60,7 @@ install(TARGETS tf2_filter_node
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_gtest REQUIRED)
   # the following line skips the linter which checks for copyrights
   # remove the line when a copyright and license is present in all source files
   set(ament_cmake_copyright_FOUND TRUE)
@@ -64,6 +68,12 @@ if(BUILD_TESTING)
   # remove the line when this package is a git repo
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+
+  ament_add_gtest(test_filter test/test_filter.cpp)
+  target_link_libraries(test_filter ${DEPENDENCY_LIBS} tf2_filter)
+  target_include_directories(test_filter PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 endif()
 
 ament_export_include_directories(
