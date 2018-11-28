@@ -29,6 +29,9 @@
 
 #include <cstdio>
 #include <cstring>
+#include <string>
+#include <vector>
+
 #include "rclcpp/clock.hpp"
 #include "rclcpp/time_source.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -73,7 +76,7 @@ int main(int argc, char ** argv)
   tf2_ros::StaticTransformBroadcaster broadcaster(node);
   geometry_msgs::msg::TransformStamped msg;
 
-  if(args.size() == 10)
+  if (args.size() == 10)
   {
     msg.transform.translation.x = atof(args[1].c_str());
     msg.transform.translation.y = atof(args[2].c_str());
@@ -93,7 +96,7 @@ int main(int argc, char ** argv)
     msg.transform.translation.z = atof(args[3].c_str());
 
     tf2::Quaternion quat;
-    quat.setRPY(atof(args[6].c_str()), atof(argv[5]), atof(argv[4]));
+    quat.setRPY(atof(args[6].c_str()), atof(args[5].c_str()), atof(args[4].c_str()));
     msg.transform.rotation.x = quat.x();
     msg.transform.rotation.y = quat.y();
     msg.transform.rotation.z = quat.z();
@@ -103,8 +106,8 @@ int main(int argc, char ** argv)
     msg.header.frame_id = args[7];
     msg.child_frame_id = args[8];
   }
-  // else if (argc == 2) {
-  //   const std::string param_name = argv[1];
+  // else if (args.size() == 2) {
+  //   const std::string param_name = args[1];
   //   ROS_INFO_STREAM("Looking for TF in parameter: " << param_name);
   //   XmlRpc::XmlRpcValue tf_data;
 
