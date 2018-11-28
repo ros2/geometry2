@@ -8,30 +8,29 @@
 
 namespace tf2_filter
 {
+typedef std::unordered_set<std::string> TargetSet;
+typedef std::map<std::string, TargetSet> FilterMap;
 
-  typedef std::unordered_set<std::string> TargetSet;
-  typedef std::map<std::string, TargetSet> FilterMap;
-
-  class TF2Filter
+class TF2Filter
+{
+public:
+  TF2Filter(const FilterMap & relevant_transforms)
+  : relevant_transforms_(relevant_transforms)
   {
-  public:
-    TF2Filter(const FilterMap& relevant_transforms)
-    : relevant_transforms_(relevant_transforms)
-    {
-    }
-    virtual ~TF2Filter()
-    {
-    }
+  }
+  virtual ~TF2Filter()
+  {
+  }
 
-    /**
-    * Return those transforms from the input that are relevant. If none are
-    * relevant, returns an empty pointer.
-    */
-    tf2_msgs::msg::TFMessage::SharedPtr filter(const tf2_msgs::msg::TFMessage::SharedPtr msg);
+  /**
+  * Return those transforms from the input that are relevant. If none are
+  * relevant, returns an empty pointer.
+  */
+  tf2_msgs::msg::TFMessage::SharedPtr filter(const tf2_msgs::msg::TFMessage::SharedPtr msg);
 
-  private:
-    FilterMap relevant_transforms_;
-  };
+private:
+  FilterMap relevant_transforms_;
+};
 }  // namespace tf2_filter
 
 #endif  // TF2_FILTER__TF2_FILTER_HPP_
