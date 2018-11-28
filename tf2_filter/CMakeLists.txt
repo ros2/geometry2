@@ -64,9 +64,6 @@ if(BUILD_TESTING)
   # the following line skips the linter which checks for copyrights
   # remove the line when a copyright and license is present in all source files
   set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # remove the line when this package is a git repo
-  set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 
   ament_add_gtest(test_filter test/test_filter.cpp)
@@ -75,6 +72,7 @@ if(BUILD_TESTING)
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 endif()
+
 
 ament_export_include_directories(
   include
