@@ -51,6 +51,16 @@ TEST_F(TF2FilterTest, filter_empty)
   ASSERT_FALSE(filter.filter(msg));
 }
 
+TEST_F(TF2FilterTest, filter_empty_set)
+{
+  FilterMap map;
+  map["base_link"] = TargetSet();
+  TF2Filter filter(map);
+
+  ASSERT_FALSE(filter.filter(msg));
+}
+
+
 TEST_F(TF2FilterTest, filter_single)
 {
   TargetSet ts;
@@ -60,7 +70,33 @@ TEST_F(TF2FilterTest, filter_single)
 
   TF2Filter filter = TF2Filter(map);
   ASSERT_TRUE(filter.filter(msg));
+
+  msg->transforms[0].child_frame_id = "arm2";
+  ASSERT_FALSE(filter.filter(msg));
+
+  msg->transforms[0].child_frame_id = "arm1a";
+  ASSERT_FALSE(filter.filter(msg));
+
 }
+
+TEST_F(TF2FilterTest, filter_double)
+{
+  TargetSet ts;
+  ts.emplace("arm1");
+  ts.emplace("leg1");
+  FilterMap map;
+  map["base_link"] = ts;
+
+  TF2Filter filter = TF2Filter(map);
+  ASSERT_TRUE(filter.filter(msg));
+
+  msg->transforms[0].child_frame_id = "arm2";
+  ASSERT_FALSE(filter.filter(msg));
+
+  msg->transforms[0].child_frame_id = "leg1";
+  ASSERT_TRUE(filter.filter(msg));
+}
+
 
 int main(int argc, char ** argv)
 {
