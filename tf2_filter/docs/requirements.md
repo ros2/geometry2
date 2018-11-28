@@ -3,9 +3,20 @@
 ## Overall Goal
 
 The goal of this package is to reduce bandwidth between machines and CPU
-load on TF-data receivers.
+load on transform users.
 
-## Use Cases
+## Terms
+
+ * *Frame ID:* The unique identifier of a coordinate frame.
+ * *Transform:* Translation and rotation relating two coordinate frames.
+ * *Transform chain:* A series of transforms without breaks, to relate
+ coordinate frames.
+ * *Transform user:* The node that makes use of transforms to realize
+ functionality.
+ * *Filter:* A pair of frame_id's, the specifies a transform chain of
+ interest for the user.
+
+## System Use Cases
 
 1) A semi-autonomous drone swarm, where drones receive information about
 other drones
@@ -14,31 +25,35 @@ transformations, and also sends its map-pose, mainly for debugging
 
 ## Assumptions
 
- * Receivers do not actually need all TF data. Otherwise there's nothing to filter.
- * Once a transform exists, its constituent links stay the same (simplicity)
- * Latency is important (otherwise we would use the buffer_server)
- * Bandwidth is scarce (otherwise we would send everything)
+ * The user of the filtered transform is not on the same machine as the
+ generator. Otherwise there are better approaches to exchange the data.
+ * TF users do not actually need all data. Otherwise there's nothing to filter.
+ * Once a transform chain exists, its constituent links stay the same (simplicity)
+ * Latency is important (otherwise we would use the `buffer_server`)
+ * Bandwidth and/or CPU is scarce (otherwise we would send everything)
 
-# Requirements List
+# Requirements
 
-## Product filter output as TFMessage on a configurable topic
 
-TFMessage is the standard data-type, and we might need multiple
-filters, hence a configurable topic.
+## Data
 
-This make it so that we can simply remap /tf for the target node,
-and it will receive the filtered input instead of the standard
-topic.
+ * As a user, I want the output to be TFMessage, so that I can simply remap
+/tf->/tf_filtered for the target node and everything else stays the same.
+ * As a CPU-limited user, I would like to receive a transform chain collapsed
+ to a single transform so that I don't have to compute it myself.
 
-## Support multiple filters per node
+## Configuration
 
-Maybe not initially, but would make sense efficiency-wise, to reduce
-resource use for inbound data processing.
+ * As an integrator I want to specify to be able to specify the target chain
+ in the configuration, so that the target nodes don't have to be modified.
 
-## Specify a specific chain to filter at configuration time
+ * As a developer, I also want to be able to specify the chain using a service,
+ so that I can modify it at runtime, e.g., based on node-internal information.
 
-Simplest case: Target chain is specified in a configuration file.
+   *Note:* `buffer_server` uses an action. For that use-case, I think an action
+   is overkill, but for this case it might actually make more sense, because
+   it would provide a built-in means to stop a particular filter.
 
-## Specify chain to filter using a service
-
-At runtime, make a service request to specify which chain to filter.
+  * As a system engineer, I want one filter node to be able to process
+  multiple transform chains so that the resource use associated with receiving
+  and processing incoming data occurs only once.
