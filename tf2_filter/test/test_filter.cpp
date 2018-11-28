@@ -18,6 +18,7 @@
 
 using tf2_filter::TF2Filter;
 using tf2_filter::FilterMap;
+using tf2_filter::TargetSet;
 using tf2_msgs::msg::TFMessage;
 using geometry_msgs::msg::TransformStamped;
 
@@ -48,6 +49,13 @@ TEST_F(TF2FilterTest, filter_empty)
   TF2Filter filter(map);
 
   ASSERT_FALSE(filter.filter(msg));
+
+  TargetSet ts;
+  ts.emplace("arm1");
+  map["base_link"] = ts;
+
+  filter = TF2Filter(map);
+  ASSERT_TRUE(filter.filter(msg));
 
   // basic test
   // ASSERT_FALSE(buffer.canTransform("foo", "bar", builtin_interfaces::msg::Time(101, 0)));
