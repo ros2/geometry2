@@ -23,7 +23,7 @@ find_package(tf2_msgs REQUIRED)
 
 include_directories(${tf2_msgs_INCLUDE_DIRS})
 
-add_library(tf2_filter src/tf2_filter.cpp)
+add_library(tf2_filter src/tf2_filter.cpp src/tf2_filter_config.cpp)
 target_include_directories(tf2_filter PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)

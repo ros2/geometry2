@@ -15,10 +15,12 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include "tf2_filter/tf2_filter.hpp"
+#include "tf2_filter/tf2_filter_config.hpp"
 
 using tf2_filter::TF2Filter;
 using tf2_filter::FilterMap;
 using tf2_filter::TargetSet;
+using tf2_filter::filtermap_from_frames;
 using tf2_msgs::msg::TFMessage;
 using geometry_msgs::msg::TransformStamped;
 
@@ -76,7 +78,6 @@ TEST_F(TF2FilterTest, filter_single)
 
   msg->transforms[0].child_frame_id = "arm1a";
   ASSERT_FALSE(filter.filter(msg));
-
 }
 
 TEST_F(TF2FilterTest, filter_double)
@@ -97,6 +98,11 @@ TEST_F(TF2FilterTest, filter_double)
   ASSERT_TRUE(filter.filter(msg));
 }
 
+TEST_F(TF2FilterTest, map_from_frames)
+{
+  FilterMap filters = filtermap_from_frames({"base_link", "arm1"});
+  ASSERT_TRUE(filters.find("base_link") != filters.end());
+}
 
 int main(int argc, char ** argv)
 {
