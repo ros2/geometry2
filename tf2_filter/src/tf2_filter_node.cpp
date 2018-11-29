@@ -16,10 +16,11 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_filter/tf2_filter.hpp>
+#include <tf2_filter/tf2_filter_config.hpp>
 
 using std::placeholders::_1;
 
-namespace
+namespace tf2_filter
 {
 class TF2FilterNode : public rclcpp::Node
 {
@@ -29,33 +30,31 @@ public:
         "/tf", std::bind(&TF2FilterNode::tf_cb, this, _1))),
     tf_filter_out_(this->create_publisher<tf2_msgs::msg::TFMessage>(
         "/tf_filtered")),
-    filter_(nullptr)
+    filter_(filtermap_from_param(this->get_parameter("frames")))
   {
   }
 
 protected:
   void tf_cb(const tf2_msgs::msg::TFMessage::SharedPtr msg)
   {
-    if (filter_) {
-      tf2_msgs::msg::TFMessage::SharedPtr filtered(filter_->filter(msg));
-      if (filtered) {
-        tf_filter_out_->publish(filtered);
-      }
+    tf2_msgs::msg::TFMessage::SharedPtr filtered(filter_.filter(msg));
+    if (filtered) {
+      tf_filter_out_->publish(filtered);
     }
   }
 
 private:
   const rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr tf_in_;
   const rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr tf_filter_out_;
-  tf2_filter::TF2Filter * filter_;
+  tf2_filter::TF2Filter filter_;
 };
-}  // namespace
+}  // namespace tf2_filter
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::spin(std::make_shared<TF2FilterNode>());
+  rclcpp::spin(std::make_shared<tf2_filter::TF2FilterNode>());
 
   rclcpp::shutdown();
 
