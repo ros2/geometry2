@@ -21,7 +21,7 @@ namespace tf2_filter
 {
 typedef std::vector<std::string> s_array;
 
-FilterMap filtermap_from_params(const rclcpp::Parameter & param)
+FilterMap filtermap_from_param(const rclcpp::Parameter & param)
 {
   if (param.get_type() ==
     rcl_interfaces::msg::ParameterType::PARAMETER_STRING_ARRAY)

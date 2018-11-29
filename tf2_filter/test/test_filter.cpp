@@ -21,6 +21,7 @@ using tf2_filter::TF2Filter;
 using tf2_filter::FilterMap;
 using tf2_filter::TargetSet;
 using tf2_filter::filtermap_from_frames;
+using tf2_filter::filtermap_from_param;
 using tf2_msgs::msg::TFMessage;
 using geometry_msgs::msg::TransformStamped;
 
@@ -62,7 +63,6 @@ TEST_F(TF2FilterTest, filter_empty_set)
   ASSERT_FALSE(filter.filter(msg));
 }
 
-
 TEST_F(TF2FilterTest, filter_single)
 {
   TargetSet ts;
@@ -101,7 +101,23 @@ TEST_F(TF2FilterTest, filter_double)
 TEST_F(TF2FilterTest, map_from_frames)
 {
   FilterMap filters = filtermap_from_frames({"base_link", "arm1"});
+  TargetSet targets = {"arm1"};
   ASSERT_TRUE(filters.find("base_link") != filters.end());
+  ASSERT_EQ(filters["base_link"], targets);
+}
+
+TEST_F(TF2FilterTest, map_from_param)
+{
+  rcl_interfaces::msg::Parameter pmsg;
+  pmsg.name = "frames";
+  pmsg.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING_ARRAY;
+  pmsg.value.string_array_value = {"base_link", "arm1"};
+
+  FilterMap filters = filtermap_from_param(
+    rclcpp::Parameter::from_parameter_msg(pmsg));
+  TargetSet targets = {"arm1"};
+  ASSERT_TRUE(filters.find("base_link") != filters.end());
+  ASSERT_EQ(filters["base_link"], targets);
 }
 
 int main(int argc, char ** argv)

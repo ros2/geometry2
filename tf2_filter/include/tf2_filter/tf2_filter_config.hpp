@@ -26,7 +26,7 @@ namespace tf2_filter
 /** Create a filter map from the list in param.
  * The value is expected to be a string array (see filtermap_from_frames).
 */
-FilterMap filtermap_from_params(const rclcpp::Parameter & param);
+FilterMap filtermap_from_param(const rclcpp::Parameter & param);
 
 /**
  * Create a filter map from the list of frames.
