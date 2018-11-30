@@ -34,6 +34,7 @@ using tf2_filter::filtermap_from_param;
 using tf2_msgs::msg::TFMessage;
 using geometry_msgs::msg::TransformStamped;
 using std::chrono::milliseconds;
+using rclcpp::executors::SingleThreadedExecutor;
 
 TFMessage::SharedPtr msg;
 
@@ -66,12 +67,16 @@ public:
         std::bind(&TF2FilterNodeTest::tf_cb, this, _1));
     pub = node->create_publisher<TFMessage>("/tf");
 
-    // give it some time, then check that we are operational
-    rclcpp::spin_some(node);
+    exec = std::make_shared<SingleThreadedExecutor>();
+    exec->add_node(node);
+}
+
+void wait_until_operational()
+{
+    // check that we are operational
     size_t check_pub = 0, check_sub = 0;
     unsigned int count = 0;
     do {
-      rclcpp::spin_some(node);
       // goes to 1 once our publisher is subscribed to
       check_pub = node->count_subscribers("/tf");
       // goes to 1 once our subscriber is connected
@@ -89,6 +94,8 @@ public:
   }
   ~TF2FilterNodeTest()
   {
+    exec->cancel();
+    thread.join();
     pub.reset();
     sub.reset();
     node.reset();
@@ -102,11 +109,9 @@ public:
     if (ready) {
       return msg_;
     } else {
-      const unsigned int tries = 10;
+      const unsigned int tries = 100;
       for (unsigned int i = 0; i < tries; ++i) {
-        rclcpp::spin_some(node);
-        RCLCPP_INFO(node->get_logger(), "Waiting");
-        receive_cv_.wait_for(lck, timeout);
+        receive_cv_.wait_for(lck, timeout/10);
         if(ready) {
           return msg_;
         }
@@ -130,9 +135,25 @@ public:
     }
   }
 
+  void start_spin() {
+    thread = std::thread([this]() -> void {
+      try {
+        this->exec->spin();
+      } catch(const std::exception& ex) {
+        std::cerr << ex.what() << std::endl;
+      }
+    });
+  }
+
 protected:
   virtual void SetUp()
   {
+    exec->cancel();
+    if (thread.joinable()) {
+      thread.join();
+    }
+
+
     ready = false;
 
     // create test message
@@ -142,12 +163,17 @@ protected:
     tf.header.frame_id = "base_link";
     tf.child_frame_id = "arm1";
     msg->transforms.push_back(tf);
+
+    start_spin();
+    wait_until_operational();
   }
 
   bool ready;
   std::recursive_timed_mutex mtx_;
   std::condition_variable_any receive_cv_;
   TFMessage::SharedPtr msg_;
+  SingleThreadedExecutor::SharedPtr exec;
+  std::thread thread;
 };
 }  // namespace
 
@@ -158,6 +184,15 @@ TEST_F(TF2FilterNodeTest, filter_normal)
   TFMessage::SharedPtr new_msg(get_new(milliseconds(100)));
   ASSERT_TRUE(new_msg);
 }
+
+TEST_F(TF2FilterNodeTest, filter_not_matching)
+{
+  msg->transforms[0].header.frame_id = "world";
+  pub->publish(msg);
+  TFMessage::SharedPtr new_msg(get_new(milliseconds(100)));
+  ASSERT_FALSE(new_msg);
+}
+
 
 /*TEST_F(TF2FilterNodeTest, filter_empty_set)
 {
