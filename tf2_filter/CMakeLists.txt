@@ -47,6 +47,11 @@ install(
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+install(
+  FILES scripts/tf2_filter_example_publisher.py
+  DESTINATION bin
+)
+
 
 add_executable(tf2_filter_node src/tf2_filter_node.cpp src/tf2_filter_node_impl.cpp)
 target_include_directories(tf2_filter_node PUBLIC

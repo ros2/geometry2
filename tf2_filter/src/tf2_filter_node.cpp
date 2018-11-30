@@ -14,16 +14,29 @@
 
 #include <cstdio>
 #include <memory>
+#include <vector>
+#include <string>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_filter/tf2_filter.hpp>
 #include <tf2_filter/tf2_filter_config.hpp>
 #include <tf2_filter/tf2_filter_node.hpp>
+#include <iostream>
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::spin(std::make_shared<tf2_filter::TF2FilterNode>("tf2_filter"));
+  std::vector<std::string> frames;
+  for(int i = 1; i < argc; ++i) {
+    frames.emplace_back(argv[i]);
+  }
+
+  std::vector<rclcpp::Parameter> params = {
+    rclcpp::Parameter("frames", rclcpp::ParameterValue(frames))
+  };
+  std::cout << "Initial parameters from CLI: " << params << std::endl;
+  rclcpp::spin(std::make_shared<tf2_filter::TF2FilterNode>(
+    "tf2_filter", "", false, params));
 
   rclcpp::shutdown();
 
