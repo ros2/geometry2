@@ -15,3 +15,7 @@ For chains with multiple links, simple give all links in order as arguments.
 ## Example
 
 You can run `tf2_filter_example_publisher.py` to give you an example /tf stream (with empty transforms...). It publishes two transforms. With the TF2Filter invocation above, only one will remain.
+
+# License
+
+tf2_filter is licensed under the [Apache Public License v2](LICENSE).
