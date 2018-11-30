@@ -48,7 +48,7 @@ install(
   RUNTIME DESTINATION bin
 )
 
-add_executable(tf2_filter_node src/tf2_filter_node.cpp)
+add_executable(tf2_filter_node src/tf2_filter_node.cpp src/tf2_filter_node_impl.cpp)
 target_include_directories(tf2_filter_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -71,6 +71,14 @@ if(BUILD_TESTING)
   target_include_directories(test_filter PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
+
+  ament_add_gtest(test_filter_node test/test_filter_node.cpp
+    src/tf2_filter_node_impl.cpp)
+  target_link_libraries(test_filter_node ${DEPENDENCY_LIBS} ${rclcpp_LIBS} tf2_filter)
+  target_include_directories(test_filter_node PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    ${rclcpp_INCLUDE_DIRS})
 endif()
 
 

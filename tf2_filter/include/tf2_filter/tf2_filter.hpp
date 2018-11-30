@@ -41,6 +41,7 @@ public:
   /**
   * Return those transforms from the input that are relevant. If none are
   * relevant, returns an empty pointer.
+  * TODO (lui3si): Check whether using UniquePtr is more appropriate.
   */
   tf2_msgs::msg::TFMessage::SharedPtr filter(const tf2_msgs::msg::TFMessage::SharedPtr msg);
 
