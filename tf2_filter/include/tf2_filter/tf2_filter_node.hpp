@@ -33,7 +33,7 @@ public:
     const std::string & name, const std::string & ns = "",
     bool use_intraprocess_comms = false,
     const std::vector<rclcpp::Parameter> & initial_params = {});
-  virtual ~TF2FilterNode();
+  virtual ~TF2FilterNode() = default;
 
 protected:
   void tf_cb(const tf2_msgs::msg::TFMessage::SharedPtr msg);

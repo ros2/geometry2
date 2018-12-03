@@ -35,9 +35,6 @@ TF2FilterNode::TF2FilterNode(
   filter_(filtermap_from_param(this->get_parameter("frames")))
 {
 }
-TF2FilterNode::~TF2FilterNode()
-{
-}
 
 void TF2FilterNode::tf_cb(const tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
