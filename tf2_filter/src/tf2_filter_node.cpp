@@ -27,7 +27,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
 
   std::vector<std::string> frames;
-  for(int i = 1; i < argc; ++i) {
+  for (int i = 1; i < argc; ++i) {
     frames.emplace_back(argv[i]);
   }
 
@@ -36,7 +36,7 @@ int main(int argc, char ** argv)
   };
   std::cout << "Initial parameters from CLI: " << params << std::endl;
   rclcpp::spin(std::make_shared<tf2_filter::TF2FilterNode>(
-    "tf2_filter", "", false, params));
+      "tf2_filter", "", false, params));
 
   rclcpp::shutdown();
 

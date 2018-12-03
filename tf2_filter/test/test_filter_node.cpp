@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Robert Bosch GmbH
+// Copyright 2018 Robert Bosch GmbH
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ TFMessage::SharedPtr msg;
 TF2FilterNode::SharedPtr node;
 rclcpp::Subscription<TFMessage>::SharedPtr sub;
 rclcpp::Publisher<TFMessage>::SharedPtr pub;
+
 using std::placeholders::_1;
 typedef std::recursive_timed_mutex MutexT;
-
 
 namespace
 {
@@ -69,10 +69,10 @@ public:
 
     exec = std::make_shared<SingleThreadedExecutor>();
     exec->add_node(node);
-}
+  }
 
-void wait_until_operational()
-{
+  void wait_until_operational()
+  {
     // check that we are operational
     size_t check_pub = 0, check_sub = 0;
     unsigned int count = 0;
@@ -87,7 +87,7 @@ void wait_until_operational()
       }
       ++count;
     } while ((check_pub < 1 || check_sub < 1) && count < 10);
-    if(count > 10) {
+    if (count > 10) {
       throw std::runtime_error("Connection setup not completed in time");
     }
     RCLCPP_INFO(node->get_logger(), "Node setup finished");
@@ -109,12 +109,9 @@ void wait_until_operational()
     if (ready) {
       return msg_;
     } else {
-      const unsigned int tries = 100;
-      for (unsigned int i = 0; i < tries; ++i) {
-        receive_cv_.wait_for(lck, timeout/10);
-        if(ready) {
-          return msg_;
-        }
+      receive_cv_.wait_for(lck, timeout);
+      if (ready) {
+        return msg_;
       }
     }
 
@@ -135,14 +132,15 @@ void wait_until_operational()
     }
   }
 
-  void start_spin() {
+  void start_spin()
+  {
     thread = std::thread([this]() -> void {
-      try {
-        this->exec->spin();
-      } catch(const std::exception& ex) {
-        std::cerr << ex.what() << std::endl;
-      }
-    });
+          try {
+            this->exec->spin();
+          } catch (const std::exception & ex) {
+            std::cerr << ex.what() << std::endl;
+          }
+        });
   }
 
 protected:
