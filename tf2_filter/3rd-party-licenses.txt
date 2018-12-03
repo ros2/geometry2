@@ -1,0 +1,3 @@
+This package does not contain 3rd party code.
+
+If, in the future, someone adds any, please list it here.
