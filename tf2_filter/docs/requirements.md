@@ -38,7 +38,7 @@ load on transform users.
 
 ## Configuration
 
-  * As an integrator I want to specify to be able to specify the target chain in the configuration, so that the target nodes don't have to be modified.
+  * As an integrator, I want to specify to be able to specify the target chain in the configuration, so that the target nodes don't have to be modified.
 
   * As a developer, I also want to be able to specify the (or a) chain at runtime, so that I can specify it based on runtime information.
 
