@@ -4,7 +4,7 @@
   <name>tf2_filter</name>
   <version>0.1.0</version>
   <description>Filter TF2 streams to certain transforms.</description>
-  <maintainer email="ingo.luetkebohle@de.bosch.com">Luetkebohle Ingo (CR/AEX3)</maintainer>
+  <maintainer email="ingo.luetkebohle@de.bosch.com">Luetkebohle Ingo</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
