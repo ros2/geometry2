@@ -18,4 +18,4 @@ You can run `tf2_filter_example_publisher.py` to give you an example /tf stream 
 
 # License
 
-tf2_filter is licensed under the [Apache Public License v2](LICENSE).
+tf2_filter is open-sourced under the Apache-2.0 license. See the [LICENSE](LICENSE) file for details.
