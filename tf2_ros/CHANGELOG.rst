@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.10.1 (2018-12-06)
+-------------------
 * Allow static_transform_publisher to be run with ros arguments ros2`#80 <https://github.com/ros2/geometry2/issues/80>`_ (`#82 <https://github.com/ros2/geometry2/issues/82>`_)
 * Contributors: Lucas Walter
 
