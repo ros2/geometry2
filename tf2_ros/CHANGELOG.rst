@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Allow static_transform_publisher to be run with ros arguments ros2`#80 <https://github.com/ros2/geometry2/issues/80>`_ (`#82 <https://github.com/ros2/geometry2/issues/82>`_)
+* Contributors: Lucas Walter
+
 0.10.0 (2018-11-22)
 -------------------
 * Port tf2 ros message filter with ros2 tf2 and message filters (`#81 <https://github.com/ros2/geometry2/issues/81>`_)
