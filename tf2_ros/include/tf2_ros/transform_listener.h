@@ -52,7 +52,7 @@ public:
   TransformListener(tf2::BufferCore& buffer, bool spin_thread = true);
   
   TF2_ROS_PUBLIC
-  TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = true);
+  TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = false);
 
   TF2_ROS_PUBLIC
   ~TransformListener();
