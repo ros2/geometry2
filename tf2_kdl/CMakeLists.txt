@@ -11,17 +11,13 @@ find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_msgs REQUIRED)
-if(APPLE)
-  find_package(eigen3 REQUIRED)
-else()
-  find_package(eigen REQUIRED)
-endif()
+find_package(Eigen3 REQUIRED)
 
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 include_directories(include ${rclpy_INCLUDE_DIRS}
                     ${rmw_implementation_INCLUDE_DIRS}
                     ${std_msgs_INCLUDE_DIRS}
-                    ${Eigen_INCLUDE_DIRS}
+                    ${Eigen3_INCLUDE_DIRS}
                     ${GTEST_INCLUDE_DIRS}
 )
 
@@ -54,6 +50,6 @@ install(PROGRAMS scripts/test.py
 #   endif()
 # endif()
 
-ament_export_include_directories(include ${Eigen_INCLUDE_DIRS})
-ament_export_dependencies(Eigen orocos_kdl)
+ament_export_include_directories(include ${Eigen3_INCLUDE_DIRS})
+ament_export_dependencies(Eigen3 orocos_kdl)
 ament_package()
