@@ -371,7 +371,7 @@ public:
       std::string>);
 
     (*header)["callerid"] = "unknown";
-    Time t = rclcpp::Clock.now();
+    Time t = rclcpp::Clock().now();
     add(MEvent(message, header, t));
   }
 
@@ -510,10 +510,10 @@ private:
   void checkFailures()
   {
     if (!next_failure_warning_.nanoseconds()) {
-      next_failure_warning_ = rclcpp::Clock.now() + rclcpp::Duration(15, 0);
+      next_failure_warning_ = rclcpp::Clock().now() + rclcpp::Duration(15, 0);
     }
 
-    if (rclcpp::Clock.now() >= next_failure_warning_) {
+    if (rclcpp::Clock().now() >= next_failure_warning_) {
       if (incoming_message_count_ - message_count_ == 0) {
         return;
       }
@@ -524,7 +524,7 @@ private:
         TF2_ROS_MESSAGEFILTER_WARN(
           "Dropped %.2f%% of messages so far. Please turn the [%s.message_notifier] rosconsole logger to DEBUG for more information.", dropped_pct * 100,
           "tf2_ros_message_filter");
-        next_failure_warning_ = rclcpp::Clock.now() + rclcpp::Duration(60, 0);
+        next_failure_warning_ = rclcpp::Clock().now() + rclcpp::Duration(60, 0);
 
         if (static_cast<double>(failed_out_the_back_count_) / static_cast<double>(dropped_message_count_) > 0.5) {
           TF2_ROS_MESSAGEFILTER_WARN(
