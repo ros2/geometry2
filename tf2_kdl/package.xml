@@ -12,17 +12,16 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>eigen3</build_depend> <!-- needed by kdl interally -->
+  <build_depend>eigen</build_depend> <!-- needed by kdl interally -->
   <build_depend>orocos_kdl</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tf2_ros</build_depend>
 
   <run_depend>cmake_modules</run_depend> <!-- needed for eigen -->
-  <run_depend>eigen3</run_depend>
+  <run_depend>eigen</run_depend>
   <run_depend>orocos_kdl</run_depend>
   <run_depend>tf2</run_depend>
   <run_depend>tf2_ros</run_depend>
-
   <test_depend>ament_cmake_gtest</test_depend>
 
 </package>
