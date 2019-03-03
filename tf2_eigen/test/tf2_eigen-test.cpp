@@ -56,35 +56,23 @@
 // {
 //   const Eigen::Vector3d v(1,2,3);
 
-TEST(TfEigen, TransformQuaterion) {
- const tf2::Stamped<Eigen::Quaterniond> in(Eigen::Quaterniond(Eigen::AngleAxisd(1, Eigen::Vector3d::UnitX())), ros::Time(5), "test");
- const Eigen::Isometry3d iso(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitY()));
- const Eigen::Affine3d affine(iso);
- const tf2::Stamped<Eigen::Quaterniond> expected(Eigen::Quaterniond(Eigen::AngleAxisd(1, Eigen::Vector3d::UnitZ())), ros::Time(10), "expected");
+//   Eigen::Vector3d v1;
+//   geometry_msgs::msg::Point p1;
+//   tf2::convert(v, p1);
+//   tf2::convert(p1, v1);
 
- geometry_msgs::msg::TransformStamped trafo = tf2::eigenToTransform(affine);
- trafo.header.stamp = ros::Time(10);
- trafo.header.frame_id = "expected";
+//   EXPECT_EQ(v, v1);
+// }
 
 // TEST(TfEigen, ConvertAffine3dStamped)
 // {
 //   const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
 //   const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(std::chrono::seconds(42)), "test_frame");
 
- EXPECT_TRUE(out.isApprox(expected));
- EXPECT_EQ(expected.stamp_, out.stamp_);
- EXPECT_EQ(expected.frame_id_, out.frame_id_);
-
- // the same using Isometry
- trafo = tf2::eigenToTransform(iso);
- trafo.header.stamp = ros::Time(10);
- trafo.header.frame_id = "expected";
- tf2::doTransform(in, out, trafo);
-
- EXPECT_TRUE(out.isApprox(expected));
- EXPECT_EQ(expected.stamp_, out.stamp_);
- EXPECT_EQ(expected.frame_id_, out.frame_id_);
-}
+//   tf2::Stamped<Eigen::Affine3d> v1;
+//   geometry_msgs::msg::PoseStamped p1;
+//   tf2::convert(v, p1);
+//   tf2::convert(p1, v1);
 
 //   EXPECT_EQ(v.translation(), v1.translation());
 //   EXPECT_EQ(v.rotation(), v1.rotation());
@@ -92,25 +80,9 @@ TEST(TfEigen, TransformQuaterion) {
 //   EXPECT_EQ(v.stamp_, v1.stamp_);
 // }
 
-TEST(TfEigen, ConvertIsometry3dStamped)
-{
-  const Eigen::Isometry3d v_nonstamped(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
-  const tf2::Stamped<Eigen::Isometry3d> v(v_nonstamped, ros::Time(42), "test_frame");
-
-  tf2::Stamped<Eigen::Isometry3d> v1;
-  geometry_msgs::msg::PoseStamped p1;
-  tf2::convert(v, p1);
-  tf2::convert(p1, v1);
-
-  EXPECT_EQ(v.translation(), v1.translation());
-  EXPECT_EQ(v.rotation(), v1.rotation());
-  EXPECT_EQ(v.frame_id_, v1.frame_id_);
-  EXPECT_EQ(v.stamp_, v1.stamp_);
-}
-
-TEST(TfEigen, ConvertAffine3d)
-{
-  const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+// TEST(TfEigen, ConvertAffine3d)
+// {
+//   const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
 
 //   Eigen::Affine3d v1;
 //   geometry_msgs::msg::Pose p1;
@@ -120,19 +92,6 @@ TEST(TfEigen, ConvertAffine3d)
 //   EXPECT_EQ(v.translation(), v1.translation());
 //   EXPECT_EQ(v.rotation(), v1.rotation());
 // }
-
-TEST(TfEigen, ConvertIsometry3d)
-{
-  const Eigen::Isometry3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
-
-  Eigen::Isometry3d v1;
-  geometry_msgs::msg::Pose p1;
-  tf2::convert(v, p1);
-  tf2::convert(p1, v1);
-
-  EXPECT_EQ(v.translation(), v1.translation());
-  EXPECT_EQ(v.rotation(), v1.rotation());
-}
 
 TEST(TfEigen, ConvertTransform)
 {
@@ -164,8 +123,6 @@ TEST(TfEigen, ConvertTransform)
   EXPECT_TRUE(I.isApprox(Iback));
   EXPECT_TRUE(tm.isApprox(Iback.matrix()));
 }
-
-
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
