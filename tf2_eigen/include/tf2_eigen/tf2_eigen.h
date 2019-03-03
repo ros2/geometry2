@@ -517,12 +517,12 @@ geometry_msgs::msg::Pose toMsg(const Eigen::Isometry3d& in) {
 }
 
 inline
-void fromMsg(const geometry_msgs::Point& msg, Eigen::Vector3d& out) {
+void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out) {
   tf2::fromMsg(msg, out);
 }
 
 inline
-geometry_msgs::Point toMsg(const Eigen::Vector3d& in) {
+geometry_msgs::msg::Point toMsg(const Eigen::Vector3d& in) {
   return tf2::toMsg(in);
 }
 
