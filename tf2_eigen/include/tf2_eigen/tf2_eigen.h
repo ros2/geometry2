@@ -542,16 +542,6 @@ geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond& in) {
   return tf2::toMsg(in);
 }
 
-inline
-void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out) {
-  tf2::fromMsg(msg, out);
-}
-
-inline
-geometry_msgs::msg::Point toMsg(const Eigen::Vector3d& in) {
-  return tf2::toMsg(in);
-}
-
 } // namespace
 
 #endif // TF2_EIGEN_H
