@@ -283,7 +283,7 @@ geometry_msgs::msg::QuaternionStamped toMsg(const Stamped<Eigen::Quaterniond>& i
 inline
 void fromMsg(const geometry_msgs::msg::QuaternionStamped& msg, Stamped<Eigen::Quaterniond>& out) {
   out.frame_id_ = msg.header.frame_id;
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2_ros::toMsg(msg.header.stamp);
   fromMsg(msg.quaternion, static_cast<Eigen::Quaterniond&>(out));
 }
 
@@ -299,7 +299,7 @@ void doTransform(const tf2::Stamped<Eigen::Quaterniond>& t_in,
      tf2::Stamped<Eigen::Quaterniond>& t_out,
      const geometry_msgs::msg::TransformStamped& transform) {
   t_out.frame_id_ = transform.header.frame_id;
-  t_out.stamp_ = tf2_ros::fromMsg(transform.header.stamp);
+  t_out.stamp_ = tf2_ros::toMsg(transform.header.stamp);
   doTransform(static_cast<const Eigen::Quaterniond&>(t_in), static_cast<Eigen::Quaterniond&>(t_out), transform);
 }
 
@@ -490,7 +490,7 @@ void fromMsg(const geometry_msgs::msg::PoseStamped& msg, tf2::Stamped<Eigen::Aff
 inline
 void fromMsg(const geometry_msgs::msg::PoseStamped& msg, tf2::Stamped<Eigen::Isometry3d>& out)
 {
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2_ros::toMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   fromMsg(msg.pose, static_cast<Eigen::Isometry3d&>(out));
 }
@@ -539,6 +539,16 @@ void fromMsg(const geometry_msgs::msg::Pose& msg, Eigen::Isometry3d& out) {
 
 inline
 geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond& in) {
+  return tf2::toMsg(in);
+}
+
+inline
+void fromMsg(const geometry_msgs::msg::Point& msg, Eigen::Vector3d& out) {
+  tf2::fromMsg(msg, out);
+}
+
+inline
+geometry_msgs::msg::Point toMsg(const Eigen::Vector3d& in) {
   return tf2::toMsg(in);
 }
 
