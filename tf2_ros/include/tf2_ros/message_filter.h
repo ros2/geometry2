@@ -119,17 +119,34 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The ros2 node whose callback queue we should add callbacks to
+   * \param node The ros2 node whose whose logging interface will be used for any log messages
    */
   MessageFilter(
     tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::Node::SharedPtr & node)
+  : MessageFilter(bc, target_frame, queue_size, node->get_node_logging_interface(),
+      node->get_node_clock_interface())
+  {
+  }
+
+  /**
+   * \brief Constructor
+   *
+   * \param bc The tf2::BufferCore this filter should use
+   * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
+   * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
+   * \param node The logging interface to use for any log messages
+   */
+  MessageFilter(
+    tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
+    const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
   : bc_(bc),
     queue_size_(queue_size),
-    node_(node)
+    node_logging_(node_logging),
+    node_clock_(node_clock)
   {
     init();
-
     setTargetFrame(target_frame);
   }
 
@@ -140,23 +157,40 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The ros2 node whose callback queue we should add callbacks to
+   * \param node The ros2 node whose whose logging interface will be used for any log messages
    */
   template<class F>
   MessageFilter(
     F & f, tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::Node::SharedPtr & node)
-  : bc_(bc),
-    queue_size_(queue_size),
-    node_(node)
+  : MessageFilter(f, bc, target_frame, queue_size, node->get_node_logging_interface(),
+      node->get_node_clock_interface())
   {
-    init();
-
-    setTargetFrame(target_frame);
-
-    connectInput(f);
   }
 
+  /**
+   * \brief Constructor
+   *
+   * \param f The filter to connect this filter's input to.  Often will be a message_filters::Subscriber.
+   * \param bc The tf2::BufferCore this filter should use
+   * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
+   * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
+   * \param node The logging interface to use for any log messages
+   */
+  template<class F>
+  MessageFilter(
+    F & f, tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
+    const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
+  : bc_(bc),
+    queue_size_(queue_size),
+    node_logging_(node_logging),
+    node_clock_(node_clock)
+  {
+    init();
+    setTargetFrame(target_frame);
+    connectInput(f);
+  }
 
   /**
    * \brief Connect this filter's input to another filter's output.  If this filter is already connected, disconnects first.
@@ -371,7 +405,7 @@ public:
       std::string>);
 
     (*header)["callerid"] = "unknown";
-    Time t = node_->now();
+    Time t = node_clock_->get_clock()->now();
     add(MEvent(message, header, t));
   }
 
@@ -510,10 +544,10 @@ private:
   void checkFailures()
   {
     if (!next_failure_warning_.nanoseconds()) {
-      next_failure_warning_ = node_->now() + rclcpp::Duration(15, 0);
+      next_failure_warning_ = node_clock_->get_clock()->now() + rclcpp::Duration(15, 0);
     }
 
-    if (node_->now() >= next_failure_warning_) {
+    if (node_clock_->get_clock()->now() >= next_failure_warning_) {
       if (incoming_message_count_ - message_count_ == 0) {
         return;
       }
@@ -524,7 +558,7 @@ private:
         TF2_ROS_MESSAGEFILTER_WARN(
           "Dropped %.2f%% of messages so far. Please turn the [%s.message_notifier] rosconsole logger to DEBUG for more information.", dropped_pct * 100,
           "tf2_ros_message_filter");
-        next_failure_warning_ = node_->now() + rclcpp::Duration(60, 0);
+        next_failure_warning_ = node_clock_->get_clock()->now() + rclcpp::Duration(60, 0);
 
         if (static_cast<double>(failed_out_the_back_count_) / static_cast<double>(dropped_message_count_) > 0.5) {
           TF2_ROS_MESSAGEFILTER_WARN(
@@ -605,7 +639,7 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
-    RCLCPP_INFO(node_->get_logger(), "[%s] Drop message: frame '%s' at time %.3f for reason(%d)",
+    RCLCPP_INFO(node_logging_->get_logger(), "[%s] Drop message: frame '%s' at time %.3f for reason(%d)",
       __func__, frame_id.c_str(), stamp.seconds(), reason);
   }
 
@@ -620,7 +654,10 @@ private:
     return in;
   }
 
-  const rclcpp::Node::SharedPtr node_;
+  ///< The node logging interface to use for any log messages
+  const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_;
+  ///< The node clock interface to use to get the clock to use
+  const rclcpp::node_interfaces::NodeClockInterface::SharedPtr node_clock_;
   ///< The Transformer used to determine if transformation data is available
   tf2::BufferCore & bc_;
   ///< The frames we need to be able to transform to before a message is ready
