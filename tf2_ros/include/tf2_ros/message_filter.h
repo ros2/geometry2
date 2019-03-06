@@ -119,7 +119,7 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The ros2 node whose whose logging interface will be used for any log messages
+   * \param node The ros2 node to use for logging and clock operations
    */
   MessageFilter(
     tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
@@ -135,7 +135,8 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The logging interface to use for any log messages
+   * \param node_logging The logging interface to use for any log messages
+   * \param node_clock The clock interface to use to get the node clock
    */
   MessageFilter(
     tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
@@ -157,7 +158,7 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The ros2 node whose whose logging interface will be used for any log messages
+   * \param node The ros2 node to use for logging and clock operations
    */
   template<class F>
   MessageFilter(
@@ -175,7 +176,8 @@ public:
    * \param bc The tf2::BufferCore this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
-   * \param node The logging interface to use for any log messages
+   * \param node_logging The logging interface to use for any log messages
+   * \param node_clock The clock interface to use to get the node clock
    */
   template<class F>
   MessageFilter(
