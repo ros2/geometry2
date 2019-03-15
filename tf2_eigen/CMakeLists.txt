@@ -15,8 +15,8 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 find_package(Eigen3 REQUIRED)
-set(Eigen_INCLUDE_DIRS "${EIGEN3_INCLUDE_DIR}")
-message(STATUS "Using Eigen3 include dirs: ${Eigen_INCLUDE_DIRS}")
+set(Eigen_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
+message(STATUS "Using Eigen3 include dirs: ${Eigen_INCLUDE_DIR}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
@@ -27,11 +27,11 @@ if(BUILD_TESTING)
   if(TARGET tf2_eigen-test)
     target_include_directories(tf2_eigen-test PUBLIC
       include)
-    set(Eigen)
     ament_target_dependencies(tf2_eigen-test
-      tf2
-      tf2_ros
-      Eigen)
+      "tf2"
+      "tf2_ros")
+    target_include_directories(tf2_eigen-test PUBLIC
+      ${Eigen_INCLUDE_DIR})
   endif()
 endif()
 
