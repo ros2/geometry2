@@ -13,10 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-
 find_package(Eigen3 REQUIRED)
-set(Eigen_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
-message(STATUS "Using Eigen3 include dirs: ${Eigen_INCLUDE_DIR}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
@@ -31,7 +28,7 @@ if(BUILD_TESTING)
       "tf2"
       "tf2_ros")
     target_include_directories(tf2_eigen-test PUBLIC
-      ${Eigen_INCLUDE_DIR})
+      ${EIGEN3_INCLUDE_DIR})
   endif()
 endif()
 
