@@ -15,6 +15,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 find_package(Eigen3 REQUIRED)
+message(STATUS "Using Eigen3 include dirs: ${EIGEN3_INCLUDE_DIR}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
