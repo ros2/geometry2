@@ -34,7 +34,7 @@
 #* 
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-from rclpy.action.client import ActionClient, ClientGoalHandle
+from rclpy.action.client import ActionClient
 from rclpy.duration import Duration
 from rclpy.clock import Clock
 from time import sleep
@@ -82,8 +82,8 @@ class BufferClient(tf2_ros.BufferInterface):
         goal = LookupTransform.Goal()
         goal.target_frame = target_frame
         goal.source_frame = source_frame
-        goal.source_time = time
-        goal.timeout = timeout
+        goal.source_time = time.to_msg()
+        goal.timeout = timeout.to_msg()
         goal.advanced = False
 
         return self.__process_goal(goal)
@@ -105,9 +105,9 @@ class BufferClient(tf2_ros.BufferInterface):
         goal = LookupTransform.Goal()
         goal.target_frame = target_frame
         goal.source_frame = source_frame
-        goal.source_time = source_time
-        goal.timeout = timeout
-        goal.target_time = target_time
+        goal.source_time = source_time.to_msg()
+        goal.timeout = timeout.to_msg()
+        goal.target_time = target_time.to_msg()
         goal.fixed_frame = fixed_frame
         goal.advanced = True
 
@@ -172,23 +172,28 @@ class BufferClient(tf2_ros.BufferInterface):
         def unblock(future):
             nonlocal event
             event.set()
-
+            
         send_goal_future = self.action_client.send_goal_async(goal)
         send_goal_future.add_done_callback(unblock)
-
         
         def unblock_by_timeout():
             nonlocal send_goal_future, goal, event
             clock = Clock()
             start_time = clock.now()
-            while not :
-                if clock.now() > start_time + goal.timeout + self.timeout_padding:
+            timeout = Duration.from_msg(goal.timeout)
+            timeout_padding = Duration(seconds=self.timeout_padding)
+            while not send_goal_future.done() and not event.is_set():
+                if clock.now() > start_time + timeout + timeout_padding:
                     break
                 # TODO(vinnamkim): rclpy.Rate is not ready 
                 # See https://github.com/ros2/rclpy/issues/186
                 #r = rospy.Rate(self.check_frequency)
                 sleep(1.0 / self.check_frequency)
+
             event.set()
+        
+        t = threading.Thread(target=unblock_by_timeout)
+        t.start()
 
         event.wait()
 
@@ -199,10 +204,14 @@ class BufferClient(tf2_ros.BufferInterface):
         if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server")
 
-        if send_goal_future.result().status() != GoalStatus.SUCCEEDED:
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with SUCCEEDED status. Something is likely wrong with the server.")
+        goal_handle = send_goal_future.result()
         
-        return self.__process_result(send_goal_future.result())
+        if not goal_handle.accepted:
+            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with accepted status. Something is likely wrong with the server.")
+
+        response = self.action_client._get_result(goal_handle)
+
+        return self.__process_result(response.result)
 
     def __process_result(self, result):
         if result == None or result.error == None:

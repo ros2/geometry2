@@ -1,65 +1,59 @@
-# Copyright 2017 Open Source Robotics Foundation, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# ***********************************************************
+# * Software License Agreement (BSD License)
+# *
+# *  Copyright (c) 2009, Willow Garage, Inc.
+# *  All rights reserved.
+# *
+# *  Redistribution and use in source and binary forms, with or without
+# *  modification, are permitted provided that the following conditions
+# *  are met:
+# *
+# *   * Redistributions of source code must retain the above copyright
+# *     notice, this list of conditions and the following disclaimer.
+# *   * Redistributions in binary form must reproduce the above
+# *     copyright notice, this list of conditions and the following
+# *     disclaimer in the documentation and/or other materials provided
+# *     with the distribution.
+# *   * Neither the name of Willow Garage, Inc. nor the names of its
+# *     contributors may be used to endorse or promote products derived
+# *     from this software without specific prior written permission.
+# *
+# *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# *  POSSIBILITY OF SUCH DAMAGE.
+# *
+# * Author: Vinnam Kim vinnam.kim@gmail.com
+# ***********************************************************
 
-import time
 import unittest
 import rclpy
 
-from rclpy.action import ActionServer
 from tf2_ros.buffer import Buffer
-from tf2_msgs.action import LookupTransform
-from geometry_msgs.msg import TransformStamped
-from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
+from geometry_msgs.msg import TransformStamped, PointStamped
 
-TIME_FUDGE = 0.3
-
-class TestBufferClient(unittest.TestCase):
+class TestBuffer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.context = rclpy.context.Context()
-        rclpy.init(context=cls.context)
-        cls.executor = SingleThreadedExecutor(context=cls.context)
-        cls.node = rclpy.create_node('TestBuffer', context=cls.context)
+        pass
 
     @classmethod
     def tearDownClass(cls):
-        cls.node.destroy_node()
-        rclpy.shutdown(context=cls.context)
-
-    def setUp(self):
-        self.feedback = None
-
-    def feedback_callback(self, feedback):
-        self.feedback = feedback
-
-    def timed_spin(self, duration):
-        start_time = time.time()
-        while (time.time() - start_time) < duration:
-            rclpy.spin_once(self.node, executor=self.executor, timeout_sec=0.1)
-
-    def execute_goal_callback(self, goal_handle):
-        print('execute_goal_callback')
-        goal_handle.set_succeeded()
-        return LookupTransform.Result()
+        pass
 
     def test_can_transform_valid_transform(self):
         buffer = Buffer()
         clock = rclpy.clock.Clock()
         rclpy_time = clock.now()
         
-        from builtin_interfaces.msg import Time
-
         transform = TransformStamped()
         transform.header.frame_id = "foo"
         transform.header.stamp = rclpy_time.to_msg()
@@ -71,10 +65,12 @@ class TestBufferClient(unittest.TestCase):
         transform.transform.rotation.x = 0.0
         transform.transform.rotation.y = 0.0
         transform.transform.rotation.z = 0.0
-        print(dir(buffer))
-        self.assertTrue(buffer.set_transform(transform, "unittest"))
-        self.assertTrue(buffer.can_transform("bar", "foo", rclpy_time))
-        output = buffer.lookupTransform("foo", "bar", rclpy_time)
+        
+        self.assertEqual(buffer.set_transform(transform, "unittest"), None)
+
+        self.assertEqual(buffer.can_transform("foo", "bar", rclpy_time), True)
+        
+        output = buffer.lookup_transform("foo", "bar", rclpy_time)
         self.assertEqual(transform.child_frame_id, output.child_frame_id)
         self.assertEqual(transform.transform.translation.x, output.transform.translation.x)
         self.assertEqual(transform.transform.translation.y, output.transform.translation.y)

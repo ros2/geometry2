@@ -46,7 +46,7 @@ class BufferInterface:
         self.registration = tf2_ros.TransformRegistration()
 
     # transform, simple api
-    def transform(self, object_stamped, target_frame, timeout = Duration(), new_type = None):
+    def transform(self, object_stamped, target_frame, timeout=Duration(), new_type = None):
         """
         Transform an input into the target frame.
 
@@ -70,7 +70,7 @@ class BufferInterface:
         return convert(res, new_type)
 
     # transform, advanced api
-    def transform_full(self, object_stamped, target_frame, target_time, fixed_frame, timeout=Time(), new_type = None):
+    def transform_full(self, object_stamped, target_frame, target_time, fixed_frame, timeout=Duration(), new_type = None):
         """
         Transform an input into the target frame (advanced API).
 
@@ -99,7 +99,7 @@ class BufferInterface:
 
         return convert(res, new_type)
 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=Time()):
+    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
@@ -114,7 +114,7 @@ class BufferInterface:
         """
         raise NotImplementedException()
 
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Time()):
+    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
@@ -132,7 +132,7 @@ class BufferInterface:
         raise NotImplementedException()        
 
     # can, simple api
-    def can_transform(self, target_frame, source_frame, time, timeout=Time()):
+    def can_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible.
 
@@ -148,7 +148,7 @@ class BufferInterface:
         raise NotImplementedException()        
     
     # can, advanced api
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Time()):
+    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible (advanced API).
 
