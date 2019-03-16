@@ -34,36 +34,39 @@
 #* 
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-PKG = 'tf2_ros'
-import roslib; roslib.load_manifest(PKG)
-import rospy
-import actionlib
+from rclpy.action.client import ActionClient
+from rclpy.duration import Duration
+from rclpy.clock import Clock
+from time import sleep
 import tf2_py as tf2
 import tf2_ros
 
-from tf2_msgs.msg import LookupTransformAction, LookupTransformGoal
+from tf2_msgs.action import LookupTransform
 from actionlib_msgs.msg import GoalStatus
 
 class BufferClient(tf2_ros.BufferInterface):
     """
     Action client-based implementation of BufferInterface.
     """
-    def __init__(self, ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0)):
+    def __init__(self, node, ns, check_frequency = 10.0, timeout_padding = Duration(seconds=2.0)):
         """
         .. function:: __init__(ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0))
 
             Constructor.
-
+            
+            :param node: The ROS2 node.
             :param ns: The namespace in which to look for a BufferServer.
             :param check_frequency: How frequently to check for updates to known transforms.
             :param timeout_padding: A constant timeout to add to blocking calls.
         """
         tf2_ros.BufferInterface.__init__(self)
-        self.client = actionlib.SimpleActionClient(ns, LookupTransformAction)
+
+        self.client = ActionClient(node, LookupTransform, ns)
+        self.node = node
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
 
-    def wait_for_server(self, timeout = rospy.Duration()):
+    def wait_for_server(self, timeout = Duration()):
         """
         Block until the action server is ready to respond to requests. 
 
@@ -74,7 +77,7 @@ class BufferClient(tf2_ros.BufferInterface):
         return self.client.wait_for_server(timeout)
 
     # lookup, simple api 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
@@ -85,7 +88,7 @@ class BufferClient(tf2_ros.BufferInterface):
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
-        goal = LookupTransformGoal()
+        goal = LookupTransform.Goal()
         goal.target_frame = target_frame;
         goal.source_frame = source_frame;
         goal.source_time = time;
@@ -95,7 +98,7 @@ class BufferClient(tf2_ros.BufferInterface):
         return self.__process_goal(goal)
 
     # lookup, advanced api 
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
@@ -108,7 +111,7 @@ class BufferClient(tf2_ros.BufferInterface):
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
-        goal = LookupTransformGoal()
+        goal = LookupTransform.Goal()
         goal.target_frame = target_frame;
         goal.source_frame = source_frame;
         goal.source_time = source_time;
@@ -120,7 +123,7 @@ class BufferClient(tf2_ros.BufferInterface):
         return self.__process_goal(goal)
 
     # can, simple api
-    def can_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def can_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible.
 
@@ -140,7 +143,7 @@ class BufferClient(tf2_ros.BufferInterface):
 
     
     # can, advanced api
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible (advanced API).
 
@@ -171,13 +174,16 @@ class BufferClient(tf2_ros.BufferInterface):
 
     def __process_goal(self, goal):
         self.client.send_goal(goal)
-        r = rospy.Rate(self.check_frequency)
+        # TODO(vinnamkim): rclpy.Rate is not ready 
+        # See https://github.com/ros2/rclpy/issues/186
+        #r = rospy.Rate(self.check_frequency)
         timed_out = False
-        start_time = rospy.Time.now()
+        clock = Clock()
+        start_time = clock.now()
         while not rospy.is_shutdown() and not self.__is_done(self.client.get_state()) and not timed_out:
-            if rospy.Time.now() > start_time + goal.timeout + self.timeout_padding:
+            if clock.now() > start_time + goal.timeout + self.timeout_padding:
                 timed_out = True
-            r.sleep()
+            sleep(self.check_frequency / 1000.0)
 
         #This shouldn't happen, but could in rare cases where the server hangs
         if timed_out:
