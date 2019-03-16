@@ -2,7 +2,6 @@
 
 #include <tf2/buffer_core.h>
 #include <tf2/exceptions.h>
-#include <tf2_ros/buffer_interface.h>
 #include "python_compat.h"
 
 // Run x (a tf method, catching TF's exceptions and reraising them as Python exceptions)
@@ -127,6 +126,18 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   Py_DECREF(protation);
 
   return pinst;
+}
+
+static builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
+{
+  std::chrono::nanoseconds ns = \
+    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
+  std::chrono::seconds s = \
+    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
+  builtin_interfaces::msg::Time time_msg;
+  time_msg.sec = (int32_t)s.count();
+  time_msg.nanosec = (uint32_t)(ns.count() % 1000000000ull);
+  return time_msg;
 }
 
 static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
@@ -418,7 +429,7 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
 
   if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
-  transform.header.stamp = tf2_ros::toMsg(time);
+  transform.header.stamp = toMsg(time);
   
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
 
@@ -464,7 +475,7 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   tf2::Duration tp;
   if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
-  transform.header.stamp = tf2_ros::toMsg(time);
+  transform.header.stamp = toMsg(time);
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
   PyObject *translation = pythonBorrowAttrString(mtransform, "translation");

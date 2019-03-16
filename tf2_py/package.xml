@@ -27,11 +27,9 @@
   <build_depend>rclpy</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tf2_msgs</build_depend>
-  <build_depend>tf2_ros</build_depend>
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>tf2</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
