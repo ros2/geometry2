@@ -27,12 +27,14 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_ros')
-import rospy
+import rclpy
 import tf2_py as tf2
 import tf2_ros
-from tf2_msgs.srv import FrameGraph, FrameGraphResponse
-import rosgraph.masterapi
+from tf2_msgs.srv import FrameGraph
+# TODO(vinnamkim): It seems rosgraph is not ready
+# import rosgraph.masterapi
+from time import sleep
+from rclpy.duration import Duration
 
 class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     """
@@ -59,19 +61,19 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         else:
             tf2.BufferCore.__init__(self)
         tf2_ros.BufferInterface.__init__(self)
-
-        if debug:
-            #Check to see if the service has already been advertised in this node
-            try:
-                m = rosgraph.masterapi.Master(rospy.get_name())
-                m.lookupService('~tf2_frames')
-            except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):   
-                self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
+        
+        # if debug:
+        #     #Check to see if the service has already been advertised in this node
+        #     try:
+        #         m = rosgraph.masterapi.Master(rospy.get_name())
+        #         m.lookupService('~tf2_frames')
+        #     except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):   
+        #         self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
 
     def __get_frames(self, req):
-       return FrameGraphResponse(self.all_frames_as_yaml()) 
+       return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
@@ -86,7 +88,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         self.can_transform(target_frame, source_frame, time, timeout)
         return self.lookup_transform_core(target_frame, source_frame, time)
 
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
@@ -103,7 +105,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
 
 
-    def can_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0), return_debug_tuple=False):
+    def can_transform(self, target_frame, source_frame, time, timeout=Duration(), return_debug_tuple=False):
         """
         Check if a transform from the source frame to the target frame is possible.
 
@@ -115,19 +117,24 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: True if the transform is possible, false otherwise.
         :rtype: bool
         """
-        if timeout != rospy.Duration(0.0):
-            start_time = rospy.Time.now()
-            r= rospy.Rate(20)
-            while (rospy.Time.now() < start_time + timeout and 
+        clock = rclpy.timer.Clock()
+        if timeout != Duration():
+            start_time = clock.now()
+            # TODO(vinnamkim): rclpy.Rate is not ready 
+            # See https://github.com/ros2/rclpy/issues/186
+            # r = rospy.Rate(20)
+            while (clock.now() < start_time + timeout and 
                    not self.can_transform_core(target_frame, source_frame, time)[0] and
-                   (rospy.Time.now()+rospy.Duration(3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
-                r.sleep()
+                   (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
+                # r.sleep()
+                sleep(0.02)
+
         core_result = self.can_transform_core(target_frame, source_frame, time)
         if return_debug_tuple:
             return core_result
         return core_result[0]
 
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0),
+    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration(),
 
                            return_debug_tuple=False):
         """
@@ -145,13 +152,17 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: True if the transform is possible, false otherwise.
         :rtype: bool
         """
-        if timeout != rospy.Duration(0.0):
-            start_time = rospy.Time.now()
-            r= rospy.Rate(20)
-            while (rospy.Time.now() < start_time + timeout and 
+        clock = rclpy.timer.Clock()
+        if timeout != Duration():
+            start_time = clock.now()
+            # TODO(vinnamkim): rclpy.Rate is not ready 
+            # See https://github.com/ros2/rclpy/issues/186
+            # r = rospy.Rate(20)
+            while (clock.now() < start_time + timeout and 
                    not self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0] and
-                   (rospy.Time.now()+rospy.Duration(3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
-                r.sleep()
+                   (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
+                # r.sleep()
+                sleep(0.02)
         core_result = self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
         if return_debug_tuple:
             return core_result

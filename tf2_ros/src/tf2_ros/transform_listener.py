@@ -27,28 +27,29 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_ros')
-import rospy
+from rclpy.node import Node
 import tf2_ros
 from tf2_msgs.msg import TFMessage
 
-class TransformListener():
+class TransformListener(Node):
     """
     :class:`TransformListener` is a convenient way to listen for coordinate frame transformation info.
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer):
+    def __init__(self, buffer, name=None):
         """
-        .. function:: __init__(buffer)
+        .. function:: __init__(buffer, name=None)
 
             Constructor.
 
             :param buffer: The buffer to propagate changes to when tf info updates.
+            :param name: The name of ROS2 node.
         """
+        super().__init__('transform_listener_impl' if name is None else name)
         self.buffer = buffer
-        self.tf_sub = rospy.Subscriber("tf", TFMessage, self.callback)
-        self.tf_static_sub = rospy.Subscriber("tf_static", TFMessage, self.static_callback)
+        self.tf_sub = self.create_subscription(TFMessage, 'tf', self.callback)
+        self.tf_static_sub = self.create_subscription(TFMessage, 'tf_static', self.static_callback)
     
     def __del__(self):
         self.unregister()
@@ -57,8 +58,8 @@ class TransformListener():
         """
         Unregisters all tf subscribers.
         """
-        self.tf_sub.unregister()
-        self.tf_static_sub.unregister()
+        self.destroy_subscription(self.tf_sub)
+        self.destroy_subscription(self.tf_static_sub)
 
     def callback(self, data):
         who = data._connection_header.get('callerid', "default_authority")

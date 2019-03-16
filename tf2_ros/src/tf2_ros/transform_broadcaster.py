@@ -30,18 +30,19 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import rospy
+from rclpy.node import Node
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import TransformStamped
 
 
-class TransformBroadcaster:
+class TransformBroadcaster(Node):
     """
     :class:`TransformBroadcaster` is a convenient way to send transformation updates on the ``"/tf"`` message topic.
     """
 
-    def __init__(self):
-        self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=100)
+    def __init__(self, name=None):
+        super().__init__('transform_broadcaster_impl' if name is None else name)
+        self.pub_tf = self.create_publisher(TFMessage, "/tf")
 
     def sendTransform(self, transform):
         """
@@ -51,6 +52,6 @@ class TransformBroadcaster:
         """
         if not isinstance(transform, list):
             transform = [transform]
-        self.pub_tf.publish(TFMessage(transform))
+        self.pub_tf.publish(TFMessage(transforms=transform))
 
 
