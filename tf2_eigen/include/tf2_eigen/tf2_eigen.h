@@ -353,6 +353,22 @@ geometry_msgs::msg::Pose toMsg(const Eigen::Isometry3d& in) {
   return msg;
 }
 
+/** \brief Convert a Eigen::Vector3d type to a geometry_msgs::msg::Vector3.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * The function was renamed to toMsg2 to avoid overloading conflicts with definitions above.
+ *
+ * \param in The Eigen::Vector3d to convert.
+ * \return The Eigen::Vector3d converted to a geometry_msgs::msg::Vector3 message.
+ */
+inline
+geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d& in) {
+  geometry_msgs::msg::Vector3 msg;
+  msg.x = in(0);
+  msg.y = in(1);
+  msg.z = in(2);
+  return msg;
+}
+
 /** \brief Convert a Pose message transform type to a Eigen Affine3d.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param msg The Pose message to convert.
