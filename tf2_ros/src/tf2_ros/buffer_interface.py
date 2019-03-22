@@ -33,6 +33,7 @@ import tf2_ros
 from copy import deepcopy
 from std_msgs.msg import Header
 from rclpy.time import Time
+from rclpy.duration import Duration
 
 class BufferInterface:
     """
@@ -45,7 +46,7 @@ class BufferInterface:
         self.registration = tf2_ros.TransformRegistration()
 
     # transform, simple api
-    def transform(self, object_stamped, target_frame, timeout = Time(), new_type = None):
+    def transform(self, object_stamped, target_frame, timeout = Duration(), new_type = None):
         """
         Transform an input into the target frame.
 

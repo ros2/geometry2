@@ -21,6 +21,7 @@
   <url type="website">http://ros.org/wiki/tf2_py</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>python_cmake_module</buildtool_depend>
 
   <build_depend>builtin_interfaces</build_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -32,6 +33,7 @@
   <exec_depend>tf2</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
   
   <export>
     <build_type>ament_cmake</build_type>

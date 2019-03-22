@@ -34,12 +34,13 @@
 #* 
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-from rclpy.action.client import ActionClient
+from rclpy.action.client import ActionClient, ClientGoalHandle
 from rclpy.duration import Duration
 from rclpy.clock import Clock
 from time import sleep
 import tf2_py as tf2
 import tf2_ros
+import threading
 
 from tf2_msgs.action import LookupTransform
 from actionlib_msgs.msg import GoalStatus
@@ -61,21 +62,11 @@ class BufferClient(tf2_ros.BufferInterface):
         """
         tf2_ros.BufferInterface.__init__(self)
 
-        self.client = ActionClient(node, LookupTransform, ns)
         self.node = node
+        self.action_client = ActionClient(node, LookupTransform, action_name=ns)
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
-
-    def wait_for_server(self, timeout = Duration()):
-        """
-        Block until the action server is ready to respond to requests. 
-
-        :param timeout: Time to wait for the server.
-        :return: True if the server is ready, false otherwise.
-        :rtype: bool
-        """
-        return self.client.wait_for_server(timeout)
-
+    
     # lookup, simple api 
     def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
@@ -89,11 +80,11 @@ class BufferClient(tf2_ros.BufferInterface):
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
         goal = LookupTransform.Goal()
-        goal.target_frame = target_frame;
-        goal.source_frame = source_frame;
-        goal.source_time = time;
-        goal.timeout = timeout;
-        goal.advanced = False;
+        goal.target_frame = target_frame
+        goal.source_frame = source_frame
+        goal.source_time = time
+        goal.timeout = timeout
+        goal.advanced = False
 
         return self.__process_goal(goal)
 
@@ -112,13 +103,13 @@ class BufferClient(tf2_ros.BufferInterface):
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
         goal = LookupTransform.Goal()
-        goal.target_frame = target_frame;
-        goal.source_frame = source_frame;
-        goal.source_time = source_time;
-        goal.timeout = timeout;
-        goal.target_time = target_time;
-        goal.fixed_frame = fixed_frame;
-        goal.advanced = True;
+        goal.target_frame = target_frame
+        goal.source_frame = source_frame
+        goal.source_time = source_time
+        goal.timeout = timeout
+        goal.target_time = target_time
+        goal.fixed_frame = fixed_frame
+        goal.advanced = True
 
         return self.__process_goal(goal)
 
@@ -173,27 +164,45 @@ class BufferClient(tf2_ros.BufferInterface):
         return False
 
     def __process_goal(self, goal):
-        self.client.send_goal(goal)
-        # TODO(vinnamkim): rclpy.Rate is not ready 
-        # See https://github.com/ros2/rclpy/issues/186
-        #r = rospy.Rate(self.check_frequency)
-        timed_out = False
-        clock = Clock()
-        start_time = clock.now()
-        while not rospy.is_shutdown() and not self.__is_done(self.client.get_state()) and not timed_out:
-            if clock.now() > start_time + goal.timeout + self.timeout_padding:
-                timed_out = True
-            sleep(self.check_frequency / 1000.0)
+        if not self.action_client.server_is_ready():
+            raise tf2.TimeoutException("The BufferServer is not ready")
+        
+        event = threading.Event()
+
+        def unblock(future):
+            nonlocal event
+            event.set()
+
+        send_goal_future = self.action_client.send_goal_async(goal)
+        send_goal_future.add_done_callback(unblock)
+
+        
+        def unblock_by_timeout():
+            nonlocal send_goal_future, goal, event
+            clock = Clock()
+            start_time = clock.now()
+            while not :
+                if clock.now() > start_time + goal.timeout + self.timeout_padding:
+                    break
+                # TODO(vinnamkim): rclpy.Rate is not ready 
+                # See https://github.com/ros2/rclpy/issues/186
+                #r = rospy.Rate(self.check_frequency)
+                sleep(1.0 / self.check_frequency)
+            event.set()
+
+        event.wait()
+
+        if send_goal_future.exception() is not None:
+            raise send_goal_future.exception()
 
         #This shouldn't happen, but could in rare cases where the server hangs
-        if timed_out:
-            self.client.cancel_goal()
+        if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server")
 
-        if self.client.get_state() != GoalStatus.SUCCEEDED:
+        if send_goal_future.result().status() != GoalStatus.SUCCEEDED:
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with SUCCEEDED status. Something is likely wrong with the server.")
-
-        return self.__process_result(self.client.get_result())
+        
+        return self.__process_result(send_goal_future.result())
 
     def __process_result(self, result):
         if result == None or result.error == None:

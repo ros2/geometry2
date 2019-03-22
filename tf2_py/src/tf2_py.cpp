@@ -44,7 +44,9 @@
   } \
   } while (0)
 
-static PyObject *pModulerospy = NULL;
+static PyObject *pModulerclpy = NULL;
+static PyObject *pModulerclpytime = NULL;
+static PyObject *pModulebuiltininterfacesmsgs = NULL;
 static PyObject *pModulegeometrymsgs = NULL;
 static PyObject *tf2_exception = NULL;
 static PyObject *tf2_connectivityexception = NULL, *tf2_lookupexception = NULL, *tf2_extrapolationexception = NULL, 
@@ -94,24 +96,32 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   }
 
   //we need to convert the time to python
-  PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
-  PyObject *args = Py_BuildValue("ii", transform->header.stamp.sec, transform->header.stamp.nanosec);
-  PyObject *time_obj = PyObject_CallObject(rospy_time, args);
+  PyObject *builtin_interfaces_time = PyObject_GetAttrString(pModulebuiltininterfacesmsgs, "Time");
+  PyObject *args = PyTuple_New(0);
+  PyObject *kwargs = PyDict_New();
+  PyObject *sec = Py_BuildValue("i", transform->header.stamp.sec);
+  PyObject *nanosec = Py_BuildValue("i", transform->header.stamp.nanosec);
+  PyDict_SetItemString(kwargs, "sec", sec);
+  PyDict_SetItemString(kwargs, "nanosec", nanosec);
+
+  PyObject *time_obj = PyObject_Call(builtin_interfaces_time, args, kwargs);
+
+  Py_DECREF(builtin_interfaces_time);
   Py_DECREF(args);
-  Py_DECREF(rospy_time);
+  Py_DECREF(kwargs);
+  Py_DECREF(sec);
+  Py_DECREF(nanosec);
 
   PyObject* pheader = PyObject_GetAttrString(pinst, "header");
   PyObject_SetAttrString(pheader, "stamp", time_obj);
   Py_DECREF(time_obj);
-
+  
   PyObject_SetAttrString(pheader, "frame_id", stringToPython(transform->header.frame_id));
   Py_DECREF(pheader);
-
   PyObject *ptransform = PyObject_GetAttrString(pinst, "transform");
   PyObject *ptranslation = PyObject_GetAttrString(ptransform, "translation");
   PyObject *protation = PyObject_GetAttrString(ptransform, "rotation");
   Py_DECREF(ptransform);
-
   PyObject_SetAttrString(pinst, "child_frame_id", stringToPython(transform->child_frame_id));
 
   PyObject_SetAttrString(ptranslation, "x", PyFloat_FromDouble(transform->transform.translation.x));
@@ -124,7 +134,6 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   PyObject_SetAttrString(protation, "z", PyFloat_FromDouble(transform->transform.rotation.z));
   PyObject_SetAttrString(protation, "w", PyFloat_FromDouble(transform->transform.rotation.w));
   Py_DECREF(protation);
-
   return pinst;
 }
 
@@ -140,30 +149,57 @@ static builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
   return time_msg;
 }
 
+static tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
+{
+  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
+  std::chrono::nanoseconds ns(d);
+  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
+}
+
 static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
-  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
-  if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rclpy.Time or rclpy.Duration");
-    return 0;
-  } else {
-    *rt = tf2::timeFromSec(PyFloat_AsDouble(tsr));
-    Py_DECREF(tsr);
+  if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+    PyObject *sec = pythonBorrowAttrString(obj, "sec");
+    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    builtin_interfaces::msg::Time msg;
+    msg.sec = PyLong_AsLong(sec);
+    msg.nanosec = PyLong_AsUnsignedLong(nanosec);
+    *rt = fromMsg(msg);
     return 1;
   }
+
+  if(PyObject_HasAttrString(obj, "nanoseconds")) {
+    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    const int64_t d = PyLong_AsLongLong(nanoseconds);
+    const std::chrono::nanoseconds ns(d);
+    *rt = tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
+    return 1;
+  }
+  
+  PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
+  return 0;
 }
 
 static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 {
-  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
-  if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rclpy.Time or rclpy.Duration");
-    return 0;
-  } else {
-    (*rt) = tf2::durationFromSec(PyFloat_AsDouble(tsr));
-    Py_DECREF(tsr);
+  if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+    PyObject *sec = pythonBorrowAttrString(obj, "sec");
+    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    *rt = std::chrono::seconds(PyLong_AsLong(sec)) + 
+      std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
     return 1;
   }
+
+  if(PyObject_HasAttrString(obj, "nanoseconds")) {
+    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    const int64_t d = PyLong_AsLongLong(nanoseconds);
+    const std::chrono::nanoseconds ns(d);
+    *rt = std::chrono::duration_cast<tf2::Duration>(ns);
+    return 1;
+  }
+  
+  PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
+  return 0;
 }
 
 static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
@@ -283,13 +319,22 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
   auto r = bc->_getLatestCommonTime(target_id, source_id, time, &error_string);
   if (r == tf2::TF2Error::NO_ERROR) {
-    PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
+    PyObject *rclpy_time = PyObject_GetAttrString(pModulerclpytime, "Time");
     auto dbl = tf2::timeToSec(time);
     auto sec = std::floor(dbl);
-    PyObject *args = Py_BuildValue("ii", static_cast<int32_t>(sec), static_cast<uint32_t>((dbl - sec) * 1000000000.0));
-    PyObject *ob = PyObject_CallObject(rospy_time, args);
+    PyObject *args = PyTuple_New(0);
+    PyObject *kwargs = PyDict_New();
+    PyObject *seconds = Py_BuildValue("i", static_cast<int32_t>(sec));
+    PyObject *nanoseconds = Py_BuildValue("i", static_cast<uint32_t>((dbl - sec) * 1000000000.0));
+    PyDict_SetItemString(kwargs, "seconds", seconds);
+    PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds);
+    
+    PyObject *ob = PyObject_Call(rclpy_time, args, kwargs);
+    Py_DECREF(seconds);
+    Py_DECREF(nanoseconds);
     Py_DECREF(args);
-    Py_DECREF(rospy_time);
+    Py_DECREF(kwargs);
+    Py_DECREF(rclpy_time);
     return ob;
   } else {
     PyErr_SetString(tf2_exception, error_string.c_str());
@@ -308,8 +353,6 @@ static PyObject *lookupTransformCore(PyObject *self, PyObject *args, PyObject *k
     return NULL;
   geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, source_frame, time));
-  auto origin = transform.transform.translation;
-  auto rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
   //return Py_BuildValue("(ddd)(dddd)",
@@ -335,8 +378,6 @@ static PyObject *lookupTransformFullCore(PyObject *self, PyObject *args, PyObjec
     return NULL;
   geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame));
-  auto origin = transform.transform.translation;
-  auto rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
 }
@@ -389,11 +430,13 @@ static inline int checkTranslationType(PyObject* o)
 {
   PyTypeObject *translation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Vector3");
   int type_check = PyObject_TypeCheck(o, translation_type);
+  Py_XDECREF((PyObject*)translation_type);
   int attr_check = PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
                    PyObject_HasAttrString(o, "z");
   if (!type_check) {
     PyErr_WarnEx(PyExc_UserWarning, "translation should be of type Vector3", 1);
+    return type_check;
   }
   return attr_check;
 }
@@ -402,6 +445,7 @@ static inline int checkRotationType(PyObject* o)
 {
   PyTypeObject *rotation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Quaternion");
   int type_check = PyObject_TypeCheck(o, rotation_type);
+  Py_XDECREF((PyObject*)rotation_type);
   int attr_check = PyObject_HasAttrString(o, "w") &&
                    PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
@@ -426,7 +470,6 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-
   if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
   transform.header.stamp = toMsg(time);
@@ -438,7 +481,6 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
     PyErr_SetString(PyExc_TypeError, "transform.translation must have members x, y, z");
     return NULL;
   }
-
   transform.transform.translation.x = PyFloat_AsDouble(pythonBorrowAttrString(translation, "x"));
   transform.transform.translation.y = PyFloat_AsDouble(pythonBorrowAttrString(translation, "y"));
   transform.transform.translation.z = PyFloat_AsDouble(pythonBorrowAttrString(translation, "z"));
@@ -448,12 +490,11 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
     PyErr_SetString(PyExc_TypeError, "transform.rotation must have members w, x, y, z");
     return NULL;
   }
-
   transform.transform.rotation.x = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "x"));
   transform.transform.rotation.y = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "y"));
   transform.transform.rotation.z = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "z"));
   transform.transform.rotation.w = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "w"));
-
+  
   bc->setTransform(transform, authority);
   Py_RETURN_NONE;
 }
@@ -584,12 +625,32 @@ bool staticInit() {
   tf2_timeoutexception = stringToPython("tf2.TimeoutException");
 #endif
 
-  pModulerospy        = pythonImport("rclpy");
+  pModulerclpy        = pythonImport("rclpy");
+  pModulerclpytime = pythonImport("rclpy.time");
+  pModulebuiltininterfacesmsgs = pythonImport("builtin_interfaces.msg");
   pModulegeometrymsgs = pythonImport("geometry_msgs.msg");
+
+  if(pModulerclpy == NULL)
+  {
+    printf("Cannot load rclpy module");
+    return false;
+  }
+
+  if(pModulerclpytime == NULL) 
+  {
+    printf("Cannot load rclpy.time.Time module");
+    return false;
+  }
 
   if(pModulegeometrymsgs == NULL)
   {
     printf("Cannot load geometry_msgs module");
+    return false;
+  }
+
+  if(pModulebuiltininterfacesmsgs == NULL)
+  {
+    printf("Cannot load builtin_interfaces module");
     return false;
   }
 

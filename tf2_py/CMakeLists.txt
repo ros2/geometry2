@@ -9,8 +9,9 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra)
 endif()
-
+set(CMAKE_BUILD_TYPE Debug)
 find_package(ament_cmake REQUIRED)
+find_package(python_cmake_module REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(PythonLibs 3 REQUIRED)
@@ -45,6 +46,10 @@ install(TARGETS
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  find_package(ament_cmake_pytest REQUIRED)
+
+  ament_add_pytest_test(tf2_py_test test)
 endif()
 
 ament_package()
