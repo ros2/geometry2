@@ -39,6 +39,7 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/visibility_control.h"
 
+
 namespace tf2_ros{
 
 /** \brief This class provides an easy way to request and receive coordinate frame transform information.
@@ -55,6 +56,12 @@ public:
   TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = true);
 
   TF2_ROS_PUBLIC
+  TransformListener(tf2::BufferCore& buffer,
+                           const rclcpp::node_interfaces::NodeBaseInterface::SharedPtr & node_base,
+                           const rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr & node_topics,
+                           bool spin_thread = true);
+
+  TF2_ROS_PUBLIC
   ~TransformListener();
 
 private:
@@ -63,6 +70,24 @@ private:
   void init();
   void initThread();
 
+  template<
+    typename MessageT,
+    typename CallbackT,
+    typename Alloc = std::allocator<void>,
+    typename SubscriptionT = rclcpp::Subscription<
+      typename rclcpp::subscription_traits::has_message_type<CallbackT>::type, Alloc>>
+  std::shared_ptr<SubscriptionT>
+  create_subscription(
+    const std::string & topic_name,
+    CallbackT && callback,
+    const rmw_qos_profile_t & qos_profile = rmw_qos_profile_default,
+    rclcpp::callback_group::CallbackGroup::SharedPtr group = nullptr,
+    bool ignore_local_publications = false,
+    typename rclcpp::message_memory_strategy::MessageMemoryStrategy<
+      typename rclcpp::subscription_traits::has_message_type<CallbackT>::type, Alloc>::SharedPtr
+    msg_mem_strat = nullptr,
+    std::shared_ptr<Alloc> allocator = nullptr );
+
   /// Callback function for ros message subscriptoin
   void subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
   void static_subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
@@ -70,7 +95,9 @@ private:
 
   // ros::CallbackQueue tf_message_callback_queue_;
   std::thread* dedicated_listener_thread_;
-  rclcpp::Node::SharedPtr node_;
+  const rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_;
+  const rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_;
+
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore& buffer_;
