@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.0 (2019-04-14)
+-------------------
+* Updated to use node inteface pointers in the MessageFilter class. (`#96 <https://github.com/ros2/geometry2/pull/96>`_)
+* Updated message_filter.h. (`#91 <https://github.com/ros2/geometry2/issues/91>`_)
+* Contributors: Michael Jeronimo, Sagnik Basu
+
 0.10.1 (2018-12-06)
 -------------------
 * Allow static_transform_publisher to be run with ros arguments ros2`#80 <https://github.com/ros2/geometry2/issues/80>`_ (`#82 <https://github.com/ros2/geometry2/issues/82>`_)

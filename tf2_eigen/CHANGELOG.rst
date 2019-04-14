@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.0 (2019-04-14)
+-------------------
+* Updated to use ament_target_dependencies where possible. (`#98 <https://github.com/ros2/geometry2/issues/98>`_)
+* Contributors: ivanpauno
+
 0.10.1 (2018-12-06)
 -------------------
 
