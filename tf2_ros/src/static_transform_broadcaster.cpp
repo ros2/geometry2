@@ -37,8 +37,8 @@
 
 namespace tf2_ros {
 
-StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node):
-  StaticTransformBroadcaster(node->get_node_topics_interface())
+StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node)
+: StaticTransformBroadcaster(node->get_node_topics_interface())
 {}
 
 void StaticTransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped & msgtf)
