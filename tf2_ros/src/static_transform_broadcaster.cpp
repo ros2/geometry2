@@ -37,14 +37,9 @@
 
 namespace tf2_ros {
 
-StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node):
-  node_(node)
-{
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 100;
-  // TODO(tfoote) latched equivalent
-  publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf_static", custom_qos_profile);
-}
+StaticTransformBroadcaster::StaticTransformBroadcaster(rclcpp::Node::SharedPtr node)
+: StaticTransformBroadcaster(node->get_node_topics_interface())
+{}
 
 void StaticTransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped & msgtf)
 {
