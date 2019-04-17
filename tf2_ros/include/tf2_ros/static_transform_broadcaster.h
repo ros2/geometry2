@@ -57,7 +57,6 @@ public:
   template<class AllocatorT = std::allocator<void>>
   StaticTransformBroadcaster(
     rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface)
-  : node_topics_interface_(node_topics_interface)
   {
     rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
     custom_qos_profile.depth = 100;
@@ -82,7 +81,6 @@ public:
 
 private:
   /// Internal reference to ros::Node
-  rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface_;
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
   tf2_msgs::msg::TFMessage net_message_;
 
