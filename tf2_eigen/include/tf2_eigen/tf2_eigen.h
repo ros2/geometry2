@@ -224,12 +224,12 @@ void doTransform(const Eigen::Isometry3d& t_in,
  */
 inline
 geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond& in) {
- geometry_msgs::msg::Quaternion msg;
- msg.w = in.w();
- msg.x = in.x();
- msg.y = in.y();
- msg.z = in.z();
- return msg;
+  geometry_msgs::msg::Quaternion msg;
+  msg.w = in.w();
+  msg.x = in.x();
+  msg.y = in.y();
+  msg.z = in.z();
+  return msg;
 }
 
 /** \brief Convert a Quaternion message type to a Eigen-specific Quaterniond type.
