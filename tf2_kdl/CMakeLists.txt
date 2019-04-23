@@ -17,6 +17,9 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+# ament_python_install_package(${PROJECT_NAME}
+#     PACKAGE_DIR src/${PROJECT_NAME})
+
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 include_directories(include ${rclpy_INCLUDE_DIRS}
                     ${rmw_implementation_INCLUDE_DIRS}
@@ -34,25 +37,26 @@ install(PROGRAMS scripts/test.py
 )
 
 
-# if(BUILD_TESTING)
-#   # find_package(ament_cmake REQUIRED COMPONENTS rostest tf2 tf2_ros tf2_msgs)
-#   add_executable(test_kdl EXCLUDE_FROM_ALL test/test_tf2_kdl.cpp)
-#   find_package (Threads)
-#   target_link_libraries(test_kdl ${rclpy_LIBRARIES}
-#                                 ${rmw_implementation_LIBRARIES}
-#                                 ${GTEST_LIBRARIES}
-#                                 ${orocos_kdl_LIBRARIES}
-#                                 ${GTEST_LIBRARIES}
-#                                 ${CMAKE_THREAD_LIBS_INIT}
-# )
-#
-#   ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
-#   ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_python.launch)
-#
-#   if(TARGET tests)
-#     add_dependencies(tests test_kdl)
-#   endif()
-# endif()
+if(BUILD_TESTING)
+  # find_package(ament_cmake REQUIRED COMPONENTS rostest tf2 tf2_ros tf2_msgs)
+  find_package(ament_cmake_gtest REQUIRED)
+  find_package (Threads)
+  # add_executable(test_kdl EXCLUDE_FROM_ALL test/test_tf2_kdl.cpp)
+
+  ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
+  target_link_libraries(test_kdl ${rclpy_LIBRARIES}
+                                ${rmw_implementation_LIBRARIES}
+                                ${GTEST_LIBRARIES}
+                                ${orocos_kdl_LIBRARIES}
+                                ${CMAKE_THREAD_LIBS_INIT})
+
+  # ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
+  # ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_python.launch)
+  # 
+  # if(TARGET tests)
+  #   add_dependencies(tests test_kdl)
+  # endif()
+endif()
 
 ament_export_include_directories(include ${Eigen3_INCLUDE_DIRS})
 ament_export_dependencies(Eigen3 orocos_kdl)
