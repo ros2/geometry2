@@ -82,6 +82,24 @@ tf2::TimePoint timePointFromTime(const builtin_interfaces::msg::Time& t)
     std::chrono::nanoseconds(t.nanosec));
 }
 
+/** \brief Convert TimePoint to the equivalent builtin_interfaces::msg::Time.
+ * \param t The TimePoint to convert, as builtin_interfaces::msg::Time type.
+ * \return The builtin_interfaces::msg::Time conversion.
+ */
+inline
+builtin_interfaces::msg::Time timeFromTimePoint(const tf2::TimePoint& t)
+{
+  builtin_interfaces::msg::Time time;
+  // taken from durationToSec, time.h:
+  int64_t count = t.time_since_epoch().count(); // get the ticks of the duration
+  int32_t sec, nsec;
+  nsec = static_cast<int32_t>(count % 1000000000l);
+  sec = static_cast<int32_t>((count - nsec) / 1000000000l);
+  time.sec = sec;
+  time.nanosec = nsec;
+  return time;
+}
+
 // ---------------------
 // Vector
 // ---------------------
@@ -107,7 +125,7 @@ inline
 geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<KDL::Vector>& in)
 {
   geometry_msgs::msg::PointStamped msg;
-  msg.header.stamp = in.stamp_;
+  msg.header.stamp = timeFromTimePoint(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point.x = in[0];
   msg.point.y = in[1];
@@ -123,7 +141,7 @@ geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<KDL::Vector>& in)
 inline
 void fromMsg(const geometry_msgs::msg::PointStamped& msg, tf2::Stamped<KDL::Vector>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = timePointFromTime(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out[0] = msg.point.x;
   out[1] = msg.point.y;
@@ -155,7 +173,7 @@ inline
 geometry_msgs::msg::TwistStamped toMsg(const tf2::Stamped<KDL::Twist>& in)
 {
   geometry_msgs::msg::TwistStamped msg;
-  msg.header.stamp = in.stamp_;
+  msg.header.stamp = timeFromTimePoint(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.twist.linear.x = in.vel[0];
   msg.twist.linear.y = in.vel[1];
@@ -174,7 +192,7 @@ geometry_msgs::msg::TwistStamped toMsg(const tf2::Stamped<KDL::Twist>& in)
 inline
 void fromMsg(const geometry_msgs::msg::TwistStamped& msg, tf2::Stamped<KDL::Twist>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = timePointFromTime(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.vel[0] = msg.twist.linear.x;
   out.vel[1] = msg.twist.linear.y;
@@ -210,7 +228,7 @@ inline
 geometry_msgs::msg::WrenchStamped toMsg(const tf2::Stamped<KDL::Wrench>& in)
 {
   geometry_msgs::msg::WrenchStamped msg;
-  msg.header.stamp = in.stamp_;
+  msg.header.stamp = timeFromTimePoint(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.wrench.force.x = in.force[0];
   msg.wrench.force.y = in.force[1];
@@ -229,7 +247,7 @@ geometry_msgs::msg::WrenchStamped toMsg(const tf2::Stamped<KDL::Wrench>& in)
 inline
 void fromMsg(const geometry_msgs::msg::WrenchStamped& msg, tf2::Stamped<KDL::Wrench>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = timePointFromTime(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.force[0] = msg.wrench.force.x;
   out.force[1] = msg.wrench.force.y;
@@ -267,7 +285,7 @@ inline
 geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
 {
   geometry_msgs::msg::PoseStamped msg;
-  msg.header.stamp = in.stamp_;
+  msg.header.stamp = timeFromTimePoint(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose.position.x = in.p[0];
   msg.pose.position.y = in.p[1];
@@ -284,7 +302,7 @@ geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
 inline
 void fromMsg(const geometry_msgs::msg::PoseStamped& msg, tf2::Stamped<KDL::Frame>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = timePointFromTime(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.p[0] = msg.pose.position.x;
   out.p[1] = msg.pose.position.y;

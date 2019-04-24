@@ -25,8 +25,7 @@ include_directories(include ${rclpy_INCLUDE_DIRS}
                     ${rmw_implementation_INCLUDE_DIRS}
                     ${std_msgs_INCLUDE_DIRS}
                     ${Eigen3_INCLUDE_DIRS}
-                    ${GTEST_INCLUDE_DIRS}
-)
+                    ${GTEST_INCLUDE_DIRS})
 
 install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION include/${PROJECT_NAME}
@@ -38,11 +37,16 @@ install(PROGRAMS scripts/test.py
 
 
 if(BUILD_TESTING)
-  # find_package(ament_cmake REQUIRED COMPONENTS rostest tf2 tf2_ros tf2_msgs)
   find_package(ament_cmake_gtest REQUIRED)
   find_package (Threads)
-  # add_executable(test_kdl EXCLUDE_FROM_ALL test/test_tf2_kdl.cpp)
+  find_package(Eigen3 REQUIRED)
+  find_package(tf2 REQUIRED)
+  find_package(tf2_ros REQUIRED)
+  find_package(tf2_msgs REQUIRED)
 
+  set(Eigen_INCLUDE_DIR "${EIGEN3_INCLUDE_DIR}")
+  include_directories(${Eigen_INCLUDE_DIR})
+  
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_link_libraries(test_kdl ${rclpy_LIBRARIES}
                                 ${rmw_implementation_LIBRARIES}
@@ -50,6 +54,11 @@ if(BUILD_TESTING)
                                 ${orocos_kdl_LIBRARIES}
                                 ${CMAKE_THREAD_LIBS_INIT})
 
+  ament_target_dependencies(test_kdl
+    tf2
+    tf2_ros
+    tf2_msgs)
+    
   # ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
   # ament_add_gtest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_python.launch)
   # 
