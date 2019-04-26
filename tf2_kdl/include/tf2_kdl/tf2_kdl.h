@@ -39,7 +39,9 @@
 #include <geometry_msgs/msg/wrench_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <builtin_interfaces/msg/time.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
+static const float NSEC_PER_SECOND = 1e+9;
 
 namespace tf2
 {
