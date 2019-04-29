@@ -46,6 +46,7 @@ if(BUILD_TESTING)
   
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_include_directories(test_kdl PUBLIC
+                                include
                                 ${tf2_INCLUDE_DIRS}
                                 ${tf2_ros_INCLUDE_DIRS}
                                 ${EIGEN3_INCLUDE_DIRS}
