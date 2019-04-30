@@ -37,7 +37,7 @@
 #include "tf2_ros/buffer.h"
 #include <tf2/convert.h>
 
-tf2_ros::Buffer* tf_buffer;
+std::unique_ptr<tf2_ros::Buffer> tf_buffer;
 static const double EPS = 1e-3;
 
 TEST(TfKDL, Frame)
@@ -108,11 +108,8 @@ TEST(TfKDL, ConvertVector)
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
 
-  // rclcpp::init(argc, argv);
-  // auto node = rclcpp::Node::make_shared("test");
-  rclcpp::init(argc, argv);
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf_buffer = new tf2_ros::Buffer(clock);
+  tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
 
   // populate buffer
   geometry_msgs::msg::TransformStamped t;
@@ -127,6 +124,6 @@ int main(int argc, char **argv){
   tf_buffer->setTransform(t, "test");
 
   int retval = RUN_ALL_TESTS();
-  // // delete tf_buffer;
+  tf_buffer.reset();
   return retval;
 }
