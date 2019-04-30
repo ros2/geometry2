@@ -50,7 +50,7 @@ namespace tf2
  */
  inline
  Eigen::Isometry3d transformToEigen(const geometry_msgs::msg::Transform& t) {
- return Eigen::Isometry3d(Eigen::Translation3d(t.translation.x, t.translation.y, t.translation.z)
+   return Eigen::Isometry3d(Eigen::Translation3d(t.translation.x, t.translation.y, t.translation.z)
 			 * Eigen::Quaterniond(t.rotation.w, t.rotation.x, t.rotation.y, t.rotation.z));
 }
 
