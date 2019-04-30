@@ -29,6 +29,14 @@
 
 /** \author Wim Meeussen */
 
+#ifdef _MSC_VER
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#endif
+
+// To get M_PI, especially on Windows.
+#include <math.h>
 
 #include <tf2_kdl/tf2_kdl.h>
 #include <kdl/frames_io.hpp>
