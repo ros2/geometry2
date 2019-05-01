@@ -132,6 +132,5 @@ int main(int argc, char **argv){
   tf_buffer->setTransform(t, "test");
 
   int retval = RUN_ALL_TESTS();
-  tf_buffer.reset();
   return retval;
 }
