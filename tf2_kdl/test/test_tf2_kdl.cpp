@@ -125,8 +125,8 @@ int main(int argc, char **argv){
   t.transform.translation.y = 20;
   t.transform.translation.z = 30;
   t.transform.rotation.x = 1;
-  t.header.stamp.sec = 2.0;
-  t.header.stamp.nanosec = 0.0;
+  t.header.stamp.sec = 2;
+  t.header.stamp.nanosec = 0;
   t.header.frame_id = "A";
   t.child_frame_id = "B";
   tf_buffer->setTransform(t, "test");
