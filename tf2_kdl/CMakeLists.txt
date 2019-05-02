@@ -17,8 +17,8 @@ find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 
-# ament_python_install_package(${PROJECT_NAME}
-#     PACKAGE_DIR src/${PROJECT_NAME})
+ament_python_install_package(${PROJECT_NAME}
+     PACKAGE_DIR src/${PROJECT_NAME})
 
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 include_directories(include ${rclpy_INCLUDE_DIRS}
@@ -43,7 +43,6 @@ if(BUILD_TESTING)
   find_package(tf2 REQUIRED)
   find_package(tf2_ros REQUIRED)
   find_package(tf2_msgs REQUIRED)
-  
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_include_directories(test_kdl PUBLIC
                                 include
@@ -53,7 +52,7 @@ if(BUILD_TESTING)
                                 ${rclcpp_INCLUDE_DIRS}
                                 ${orocos_kdl_INCLUDE_DIRS}
   )
-    
+
   target_link_libraries(test_kdl ${rclpy_LIBRARIES}
   		                          ${rclcpp_LIBRARIES}
                                 ${rmw_implementation_LIBRARIES}
@@ -64,7 +63,7 @@ if(BUILD_TESTING)
   ament_target_dependencies(test_kdl
     tf2
     tf2_ros
-    tf2_msgs)    
+    tf2_msgs)
 endif()
 
 ament_export_include_directories(include ${Eigen3_INCLUDE_DIRS})
