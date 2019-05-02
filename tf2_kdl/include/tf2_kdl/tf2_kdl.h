@@ -42,8 +42,6 @@
 #include <builtin_interfaces/msg/time.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 
-static const float NSEC_PER_SECOND = 1e+9;
-
 namespace tf2
 {
 /** \brief Convert a timestamped transform to the equivalent KDL data type.
