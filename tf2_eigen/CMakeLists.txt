@@ -34,6 +34,6 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-ament_export_include_directories(include)
+ament_export_include_directories(include ${EIGEN3_INCLUDE_DIR})
 ament_export_dependencies(tf2_ros)
 ament_package()
