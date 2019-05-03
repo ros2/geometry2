@@ -64,9 +64,10 @@ public:
 
     using MessageT = tf2_msgs::msg::TFMessage;
     using PublisherT = ::rclcpp::Publisher<MessageT, AllocatorT>;
+    rclcpp::PublisherEventCallbacks callbacks;
     publisher_ = rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
       node_topics_interface.get(), "/tf_static",
-      custom_qos_profile, false, std::make_shared<AllocatorT>());
+      custom_qos_profile, callbacks, nullptr, false, std::make_shared<AllocatorT>());
   }
 
   /** \brief Send a TransformStamped message
