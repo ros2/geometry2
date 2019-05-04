@@ -27,9 +27,8 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_kdl')
 import PyKDL
-import rospy
+import rclpy
 import tf2_ros
 from geometry_msgs.msg import PointStamped
 
