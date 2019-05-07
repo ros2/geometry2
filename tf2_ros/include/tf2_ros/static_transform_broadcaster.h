@@ -58,16 +58,13 @@ public:
   StaticTransformBroadcaster(
     rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface)
   {
-    rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-    custom_qos_profile.depth = 100;
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(100));
     // TODO(tfoote) latched equivalent
 
     using MessageT = tf2_msgs::msg::TFMessage;
     using PublisherT = ::rclcpp::Publisher<MessageT, AllocatorT>;
-    rclcpp::PublisherEventCallbacks callbacks;
     publisher_ = rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
-      node_topics_interface.get(), "/tf_static",
-      custom_qos_profile, callbacks, nullptr, false, std::make_shared<AllocatorT>());
+      node_topics_interface, "/tf_static", qos);
   }
 
   /** \brief Send a TransformStamped message

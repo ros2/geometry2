@@ -96,7 +96,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   tfb.sendTransform(odom_to_base);
 
   rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub;
-  pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point");
+  pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point", 10);
   geometry_msgs::msg::PointStamped point;
   point.header.stamp = rclcpp::Clock().now();
   point.header.frame_id = "base";
