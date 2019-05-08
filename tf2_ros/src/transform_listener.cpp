@@ -35,6 +35,7 @@
 
 #include "tf2_ros/transform_listener.h"
 
+#include "rclcpp/create_subscription.hpp"
 
 using namespace tf2_ros;
 
@@ -57,23 +58,6 @@ TransformListener::TransformListener(
 {
 }
 
-TransformListener::TransformListener(
-  tf2::BufferCore & buffer,
-  const rclcpp::node_interfaces::NodeBaseInterface::SharedPtr & node_base,
-  const rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr & node_topics,
-  bool spin_thread)
-: dedicated_listener_thread_(NULL),
-  node_base_(node_base),
-  node_topics_(node_topics),
-  buffer_(buffer),
-  using_dedicated_thread_(false)
-{
-  init();
-  if (spin_thread) {
-    initThread();
-  }
-}
-
 TransformListener::~TransformListener()
 {
   using_dedicated_thread_ = false;
@@ -83,97 +67,28 @@ TransformListener::~TransformListener()
   }
 }
 
-void test_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
-{
-}
-
-void TransformListener::init()
-{
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 100;
-  std::function<void(const tf2_msgs::msg::TFMessage::SharedPtr)> standard_callback = std::bind(
-    &TransformListener::subscription_callback, this, std::placeholders::_1);
-  message_subscription_tf_ = create_subscription<tf2_msgs::msg::TFMessage>("/tf", standard_callback,
-      custom_qos_profile);
-  std::function<void(const tf2_msgs::msg::TFMessage::SharedPtr)> static_callback = std::bind(
-    &TransformListener::static_subscription_callback, this, std::placeholders::_1);
-  message_subscription_tf_static_ = create_subscription<tf2_msgs::msg::TFMessage>("/tf_static",
-      static_callback,
-      custom_qos_profile);
-}
-
-void TransformListener::initThread()
+void TransformListener::initThread(
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface)
 {
   using_dedicated_thread_ = true;
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
   // I (wjwwood) chose to use the lamda rather than the static cast solution.
-  auto run_func = [](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base) {
-      return rclcpp::spin(node_base);
+  auto run_func = [](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
+      return rclcpp::spin(node_base_interface);
     };
-  dedicated_listener_thread_ = new std::thread(run_func, node_base_);
+  dedicated_listener_thread_ = new std::thread(run_func, node_base_interface);
   // Tell the buffer we have a dedicated thread to enable timeouts
   buffer_.setUsingDedicatedThread(true);
 }
 
-template<
-  typename MessageT,
-  typename CallbackT,
-  typename Alloc,
-  typename SubscriptionT>
-std::shared_ptr<SubscriptionT>
-TransformListener::create_subscription(
-  const std::string & topic_name,
-  CallbackT && callback,
-  const rmw_qos_profile_t & qos_profile,
-  rclcpp::callback_group::CallbackGroup::SharedPtr group,
-  bool ignore_local_publications,
-  typename rclcpp::message_memory_strategy::MessageMemoryStrategy<
-    typename rclcpp::subscription_traits::has_message_type<CallbackT>::type, Alloc>::SharedPtr
-  msg_mem_strat,
-  std::shared_ptr<Alloc> allocator)
-{
-  using CallbackMessageT = typename rclcpp::subscription_traits::has_message_type<CallbackT>::type;
-
-  if (!allocator) {
-    allocator = std::make_shared<Alloc>();
-  }
-
-  if (!msg_mem_strat) {
-    using rclcpp::message_memory_strategy::MessageMemoryStrategy;
-    msg_mem_strat = MessageMemoryStrategy<CallbackMessageT, Alloc>::create_default();
-  }
-
-  return rclcpp::create_subscription<MessageT, CallbackT, Alloc, CallbackMessageT, SubscriptionT>(
-    node_topics_.get(),
-    topic_name,
-    std::forward<CallbackT>(callback),
-    qos_profile,
-    nullptr,
-    false,
-    false,
-    msg_mem_strat,
-    allocator);
-}
-
-void TransformListener::subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
-{
-  subscription_callback_impl(msg, false);
-}
-void TransformListener::static_subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
-{
-  subscription_callback_impl(msg, true);
-}
-
-void TransformListener::subscription_callback_impl(
-  const tf2_msgs::msg::TFMessage::SharedPtr msg,
-  bool is_static)
+void TransformListener::subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static)
 {
   const tf2_msgs::msg::TFMessage & msg_in = *msg;
   // TODO(tfoote) find a way to get the authority
   std::string authority = "Authority undetectable";  // msg_evt.getPublisherName();  // lookup the authority
-  for (unsigned int i = 0; i < msg_in.transforms.size(); i++) {
+  for (auto i = 0u; i < msg_in.transforms.size(); i++) {
     try {
       buffer_.setTransform(msg_in.transforms[i], authority, is_static);
     } catch (tf2::TransformException & ex) {

@@ -43,9 +43,8 @@
 namespace tf2_ros
 {
 
-
-/** \brief This class provides an easy way to publish coordinate frame transform information.  
- * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the 
+/** \brief This class provides an easy way to publish coordinate frame transform information.
+ * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the
  * necessary data needed for each message.  */
 
 class StaticTransformBroadcaster{
@@ -58,11 +57,14 @@ public:
   StaticTransformBroadcaster(
     rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface)
   {
-    auto qos = rclcpp::QoS(rclcpp::KeepLast(100));
-    // TODO(tfoote) latched equivalent
-
     using MessageT = tf2_msgs::msg::TFMessage;
     using PublisherT = ::rclcpp::Publisher<MessageT, AllocatorT>;
+
+    rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
+    custom_qos_profile.depth = 100;
+    // TODO(tfoote) latched equivalent
+    rclcpp::PublisherEventCallbacks callbacks;
+
     publisher_ = rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
       node_topics_interface, "/tf_static", qos);
   }

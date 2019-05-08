@@ -37,11 +37,9 @@
 
 namespace tf2_ros {
 
-TransformBroadcaster::TransformBroadcaster(rclcpp::Node::SharedPtr node) :
-  node_(node)
-{
-  publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf", 100);
-};
+TransformBroadcaster::TransformBroadcaster(rclcpp::Node::SharedPtr node)
+: TransformBroadcaster(node->get_node_topics_interface())
+{}
 
 void TransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped & msgtf)
 {
@@ -49,7 +47,6 @@ void TransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStam
   v1.push_back(msgtf);
   sendTransform(v1);
 }
-
 
 void TransformBroadcaster::sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & msgtf)
 {
@@ -60,6 +57,5 @@ void TransformBroadcaster::sendTransform(const std::vector<geometry_msgs::msg::T
   }
   publisher_->publish(message);
 }
-
 
 }
