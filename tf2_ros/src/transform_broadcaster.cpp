@@ -40,9 +40,7 @@ namespace tf2_ros {
 TransformBroadcaster::TransformBroadcaster(rclcpp::Node::SharedPtr node) :
   node_(node)
 {
-  rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-  custom_qos_profile.depth = 100;
-  publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf", custom_qos_profile);
+  publisher_ = node_->create_publisher<tf2_msgs::msg::TFMessage>("/tf", 100);
 };
 
 void TransformBroadcaster::sendTransform(const geometry_msgs::msg::TransformStamped & msgtf)
