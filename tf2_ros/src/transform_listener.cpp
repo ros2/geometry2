@@ -46,16 +46,10 @@ using namespace tf2_ros;
 #define ROS_WARN printf
 
 TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
-: TransformListener(buffer, rclcpp::Node::make_shared("transform_listener_impl"), spin_thread)
+: buffer_(buffer),
+  optional_default_node_(rclcpp::Node::make_shared("transform_listener_impl"))
 {
-}
-
-TransformListener::TransformListener(
-  tf2::BufferCore & buffer, rclcpp::Node::SharedPtr nh,
-  bool spin_thread)
-: TransformListener(buffer, nh->get_node_base_interface(),
-    nh->get_node_topics_interface(), spin_thread)
-{
+  init(optional_default_node_, spin_thread);
 }
 
 TransformListener::~TransformListener()

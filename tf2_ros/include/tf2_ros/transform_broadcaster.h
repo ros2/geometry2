@@ -47,25 +47,16 @@ namespace tf2_ros
 
 class TransformBroadcaster{
 public:
-  /** \brief Constructor (needs a ros::Node reference) */
-  TF2_ROS_PUBLIC
-  TransformBroadcaster(rclcpp::Node::SharedPtr node);
-
   /** \brief Node interface constructor */
-  template<class AllocatorT = std::allocator<void>>
+  template<class NodeT, class AllocatorT = std::allocator<void>>
   TransformBroadcaster(
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface)
+    NodeT && node,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT>())
   {
-    using MessageT = tf2_msgs::msg::TFMessage;
-    using PublisherT = ::rclcpp::Publisher<MessageT, AllocatorT>;
-
-    rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-    custom_qos_profile.depth = 100;
-    rclcpp::PublisherEventCallbacks  callbacks;
-
-    publisher_ = rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
-      node_topics_interface.get(), "/tf",
-      custom_qos_profile, callbacks, nullptr, false, std::make_shared<AllocatorT>());
+    publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
+      std::forward<NodeT>(node), "/tf", qos, options);
   };
 
   /** \brief Send a StampedTransform

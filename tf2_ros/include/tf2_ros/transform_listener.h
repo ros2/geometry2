@@ -54,69 +54,66 @@ public:
   TF2_ROS_PUBLIC
   explicit TransformListener(tf2::BufferCore & buffer, bool spin_thread = true);
 
-  TF2_ROS_PUBLIC
-  TransformListener(tf2::BufferCore & buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = true);
-
-  template<class AllocatorT = std::allocator<void>>
+  template<class NodeT, class AllocatorT = std::allocator<void>>
   TransformListener(
     tf2::BufferCore & buffer,
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface,
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface,
-    bool spin_thread = true)
-  : dedicated_listener_thread_(NULL),
-    buffer_(buffer),
-    using_dedicated_thread_(false)
+    NodeT && node,
+    bool spin_thread = true,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+  : buffer_(buffer)
   {
-    using MessageT = tf2_msgs::msg::TFMessage;
-    using CallbackT = std::function<void(const std::shared_ptr<MessageT>)>;
-    using CallbackMessageT =
-      typename rclcpp::subscription_traits::has_message_type<CallbackT>::type;
-    using rclcpp::message_memory_strategy::MessageMemoryStrategy;
-
-    CallbackT standard_callback = std::bind(
-      &TransformListener::subscription_callback, this, std::placeholders::_1, false);
-    CallbackT static_callback = std::bind(
-      &TransformListener::subscription_callback, this, std::placeholders::_1, true);
-
-    rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-    custom_qos_profile.depth = 100;
-
-    auto msg_mem_strat = MessageMemoryStrategy<MessageT, AllocatorT>::create_default();
-
-    rclcpp::SubscriptionEventCallbacks callbacks;
-
-    auto allocator = std::make_shared<AllocatorT>();
-
-    message_subscription_tf_ =
-      rclcpp::create_subscription<MessageT, CallbackT, AllocatorT, CallbackMessageT>(
-        node_topics_interface.get(), "/tf", std::move(standard_callback), custom_qos_profile,
-        callbacks, nullptr, false, false, msg_mem_strat, allocator);
-    message_subscription_tf_static_ =
-      rclcpp::create_subscription<MessageT, CallbackT, AllocatorT, CallbackMessageT>(
-        node_topics_interface.get(), "/tf_static", std::move(static_callback), custom_qos_profile,
-        callbacks, nullptr, false, false, msg_mem_strat, allocator);
-
-    if (spin_thread) {
-      initThread(node_base_interface);
-    }
+    init(node, spin_thread, qos, options);
   }
 
   TF2_ROS_PUBLIC
   virtual ~TransformListener();
 
 private:
+  template<class NodeT, class AllocatorT = std::allocator<void>>
+  void init(
+    NodeT && node,
+    bool spin_thread,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+  {
+    using callback_t = std::function<void(tf2_msgs::msg::TFMessage::SharedPtr)>;
+    callback_t cb = std::bind(&TransformListener::subscription_callback, this, std::placeholders::_1, false);
+    callback_t static_cb = std::bind(&TransformListener::subscription_callback, this, std::placeholders::_1, true);
+
+    message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+      std::forward<NodeT>(node),
+      "/tf",
+      qos,
+      std::move(cb),
+      options);
+    message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+      std::forward<NodeT>(node),
+      "/tf_static",
+      qos,
+      std::move(static_cb),
+      options);
+
+    if (spin_thread) {
+      initThread(node->get_node_base_interface());
+    }
+  }
+
   void initThread(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
 
   /// Callback function for ros message subscriptoin
-  void subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
+  void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
-  std::thread * dedicated_listener_thread_;
+  std::thread * dedicated_listener_thread_ = nullptr;
 
+  rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
-  bool using_dedicated_thread_;
+  bool using_dedicated_thread_ = false;
   tf2::TimePoint last_update_;
 
   void dedicatedListenerThread()
