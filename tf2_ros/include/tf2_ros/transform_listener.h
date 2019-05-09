@@ -105,6 +105,7 @@ private:
   void initThread(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
 
   /// Callback function for ros message subscriptoin
+  TF2_ROS_PUBLIC
   void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
