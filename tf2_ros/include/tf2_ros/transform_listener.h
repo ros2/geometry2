@@ -84,13 +84,13 @@ private:
     callback_t static_cb = std::bind(&TransformListener::subscription_callback, this, std::placeholders::_1, true);
 
     message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-      std::forward<NodeT>(node),
+      node,
       "/tf",
       qos,
       std::move(cb),
       options);
     message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-      std::forward<NodeT>(node),
+      node,
       "/tf_static",
       qos,
       std::move(static_cb),
