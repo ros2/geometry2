@@ -101,6 +101,7 @@ private:
     }
   }
 
+  TF2_ROS_PUBLIC
   void initThread(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
 
   /// Callback function for ros message subscriptoin
