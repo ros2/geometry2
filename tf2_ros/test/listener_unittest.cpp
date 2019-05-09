@@ -56,18 +56,11 @@ TEST(tf2_ros_transform, transform_listener)
 {
   tf2_ros::Buffer buffer;
   tf2_ros::TransformListener tfl(buffer);
+  
 
 }
 
 
-TEST(tf2_ros_transform, transform_listener_custom_rclcpp_node)
-{
-  tf2_ros::Buffer buffer;
-  tf2_ros::TransformListener tfl(buffer);
-
-
-
-}
 
 
 int main(int argc, char **argv){
