@@ -27,50 +27,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef NODE_WRAPPER_HPP_
+#define NODE_WRAPPER_HPP_
+
 #include <gtest/gtest.h>
-#include <tf2_ros/static_transform_broadcaster.h>
+#include <rclcpp/rclcpp.hpp>
 
-#include "node_wrapper.hpp"
-
-class CustomNode : public rclcpp::Node
+class NodeWrapper
 {
 public:
-  CustomNode()
-  : rclcpp::Node("tf2_ros_test_static_transform_broadcaster_node")
+  explicit NodeWrapper(const std::string & name)
+  : node(std::make_shared<rclcpp::Node>(name))
   {}
 
-  void init_tf_broadcaster()
-  {
-    tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(shared_from_this());
-  }
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
+  get_node_base_interface() {return this->node->get_node_base_interface();}
+
+  rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr
+  get_node_topics_interface() {return this->node->get_node_topics_interface();}
 
 private:
-  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_broadcaster_;
+  rclcpp::Node::SharedPtr node;
 };
 
-TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_rclcpp_node)
-{
-  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-
-  tf2_ros::StaticTransformBroadcaster tfb(node);
-}
-
-TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_custom_rclcpp_node)
-{
-  auto node = std::make_shared<NodeWrapper>("tf2_ros_message_filter");
-
-  tf2_ros::StaticTransformBroadcaster tfb(node);
-}
-
-TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_as_member)
-{
-  auto custom_node = std::make_shared<CustomNode>();
-  custom_node->init_tf_broadcaster();
-}
-
-int main(int argc, char ** argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  rclcpp::init(argc, argv);
-  return RUN_ALL_TESTS();
-}
+#endif  // NODE_WRAPPER_HPP_

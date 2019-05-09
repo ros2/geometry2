@@ -28,25 +28,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <rclcpp/rclcpp.hpp>
 #include <tf2_ros/transform_listener.h>
 
-class NodeWrapper
-{
-public:
-  explicit NodeWrapper(const std::string & name)
-  : node(std::make_shared<rclcpp::Node>(name))
-  {}
-
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-  get_node_base_interface() {return this->node->get_node_base_interface();}
-
-  rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr
-  get_node_topics_interface() {return this->node->get_node_topics_interface();}
-
-private:
-  rclcpp::Node::SharedPtr node;
-};
+#include "node_wrapper.hpp"
 
 class CustomNode : public rclcpp::Node
 {
