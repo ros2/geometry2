@@ -12,18 +12,16 @@ endif()
 find_package(ament_cmake)
 find_package(rosidl_default_generators REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-#find_package(actionlib_msgs REQUIRED)
+find_package(action_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
-
-## TODO(tfoote) add actions back
-#add_action_files(DIRECTORY action FILES LookupTransform.action)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TF2Error.msg"
   "msg/TFMessage.msg"
   "srv/FrameGraph.srv"
-  DEPENDENCIES builtin_interfaces std_msgs geometry_msgs
+  "action/LookupTransform.action"
+  DEPENDENCIES builtin_interfaces std_msgs geometry_msgs action_msgs
 )
 
 install(
