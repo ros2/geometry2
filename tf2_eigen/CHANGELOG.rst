@@ -2,8 +2,8 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.1 (2019-05-09)
+-------------------
 * also export Eigen3 include directories (`#102 <https://github.com/ros2/geometry2/issues/102>`_)
 * Contributors: Marcus Scheunemann
 

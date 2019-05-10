@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.1 (2019-05-09)
+-------------------
 * use node interfaces throughout tf2_ros (`#108 <https://github.com/ros2/geometry2/issues/108>`_)
 * changes to avoid deprecated API's (`#107 <https://github.com/ros2/geometry2/issues/107>`_)
 * Fix call to create_publisher after API changed (`#105 <https://github.com/ros2/geometry2/issues/105>`_)
