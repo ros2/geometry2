@@ -114,9 +114,15 @@ TEST(TfEigen, ConvertTransform)
   EXPECT_TRUE(T.isApprox(Tback));
   EXPECT_TRUE(tm.isApprox(Tback.matrix()));
 
+  // same for Isometry
+  Eigen::Isometry3d I(tm);
+
+  msg = tf2::eigenToTransform(T);
+  Eigen::Isometry3d Iback = tf2::transformToEigen(msg);
+
+  EXPECT_TRUE(I.isApprox(Iback));
+  EXPECT_TRUE(tm.isApprox(Iback.matrix()));
 }
-
-
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);

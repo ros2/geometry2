@@ -33,12 +33,14 @@
 #define TF2_KDL_H
 
 #include <tf2/convert.h>
+#include <tf2_ros/buffer_interface.h>
 #include <kdl/frames.hpp>
-#include <geometry_msgs/PointStamped.h>
-#include <geometry_msgs/TwistStamped.h>
-#include <geometry_msgs/WrenchStamped.h>
-#include <geometry_msgs/PoseStamped.h>
-
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/twist_stamped.hpp>
+#include <geometry_msgs/msg/wrench_stamped.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <builtin_interfaces/msg/time.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 namespace tf2
 {
@@ -47,7 +49,7 @@ namespace tf2
  * \return The transform message converted to an KDL Frame.
  */
 inline
-KDL::Frame transformToKDL(const geometry_msgs::TransformStamped& t)
+KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped& t)
   {
     return KDL::Frame(KDL::Rotation::Quaternion(t.transform.rotation.x, t.transform.rotation.y,
 						t.transform.rotation.z, t.transform.rotation.w),
@@ -59,9 +61,9 @@ KDL::Frame transformToKDL(const geometry_msgs::TransformStamped& t)
  * \return The transform converted to a TransformStamped message.
  */
 inline
-geometry_msgs::TransformStamped kdlToTransform(const KDL::Frame& k)
+geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame& k)
 {
-  geometry_msgs::TransformStamped t;
+  geometry_msgs::msg::TransformStamped t;
   t.transform.translation.x = k.p.x();
   t.transform.translation.y = k.p.y();
   t.transform.translation.z = k.p.z();
@@ -80,9 +82,9 @@ geometry_msgs::TransformStamped kdlToTransform(const KDL::Frame& k)
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<KDL::Vector>& t_in, tf2::Stamped<KDL::Vector>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<KDL::Vector>& t_in, tf2::Stamped<KDL::Vector>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<KDL::Vector>(transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<KDL::Vector>(transformToKDL(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 /** \brief Convert a stamped KDL Vector type to a PointStamped message.
@@ -91,10 +93,10 @@ inline
  * \return The vector converted to a PointStamped message.
  */
 inline
-geometry_msgs::PointStamped toMsg(const tf2::Stamped<KDL::Vector>& in)
+geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<KDL::Vector>& in)
 {
-  geometry_msgs::PointStamped msg;
-  msg.header.stamp = in.stamp_;
+  geometry_msgs::msg::PointStamped msg;
+  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point.x = in[0];
   msg.point.y = in[1];
@@ -108,9 +110,9 @@ geometry_msgs::PointStamped toMsg(const tf2::Stamped<KDL::Vector>& in)
  * \param out The point converted to a timestamped KDL Vector.
  */
 inline
-void fromMsg(const geometry_msgs::PointStamped& msg, tf2::Stamped<KDL::Vector>& out)
+void fromMsg(const geometry_msgs::msg::PointStamped& msg, tf2::Stamped<KDL::Vector>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out[0] = msg.point.x;
   out[1] = msg.point.y;
@@ -128,9 +130,9 @@ void fromMsg(const geometry_msgs::PointStamped& msg, tf2::Stamped<KDL::Vector>& 
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<KDL::Twist>& t_in, tf2::Stamped<KDL::Twist>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<KDL::Twist>& t_in, tf2::Stamped<KDL::Twist>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<KDL::Twist>(transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<KDL::Twist>(transformToKDL(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 /** \brief Convert a stamped KDL Twist type to a TwistStamped message.
@@ -139,10 +141,10 @@ inline
  * \return The twist converted to a TwistStamped message.
  */
 inline
-geometry_msgs::TwistStamped toMsg(const tf2::Stamped<KDL::Twist>& in)
+geometry_msgs::msg::TwistStamped toMsg(const tf2::Stamped<KDL::Twist>& in)
 {
-  geometry_msgs::TwistStamped msg;
-  msg.header.stamp = in.stamp_;
+  geometry_msgs::msg::TwistStamped msg;
+  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.twist.linear.x = in.vel[0];
   msg.twist.linear.y = in.vel[1];
@@ -159,9 +161,9 @@ geometry_msgs::TwistStamped toMsg(const tf2::Stamped<KDL::Twist>& in)
  * \param out The twist converted to a timestamped KDL Twist.
  */
 inline
-void fromMsg(const geometry_msgs::TwistStamped& msg, tf2::Stamped<KDL::Twist>& out)
+void fromMsg(const geometry_msgs::msg::TwistStamped& msg, tf2::Stamped<KDL::Twist>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.vel[0] = msg.twist.linear.x;
   out.vel[1] = msg.twist.linear.y;
@@ -183,9 +185,9 @@ void fromMsg(const geometry_msgs::TwistStamped& msg, tf2::Stamped<KDL::Twist>& o
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<KDL::Wrench>& t_in, tf2::Stamped<KDL::Wrench>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<KDL::Wrench>& t_in, tf2::Stamped<KDL::Wrench>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<KDL::Wrench>(transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<KDL::Wrench>(transformToKDL(transform) * t_in,  tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 /** \brief Convert a stamped KDL Wrench type to a WrenchStamped message.
@@ -194,10 +196,10 @@ inline
  * \return The wrench converted to a WrenchStamped message.
  */
 inline
-geometry_msgs::WrenchStamped toMsg(const tf2::Stamped<KDL::Wrench>& in)
+geometry_msgs::msg::WrenchStamped toMsg(const tf2::Stamped<KDL::Wrench>& in)
 {
-  geometry_msgs::WrenchStamped msg;
-  msg.header.stamp = in.stamp_;
+  geometry_msgs::msg::WrenchStamped msg;
+  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.wrench.force.x = in.force[0];
   msg.wrench.force.y = in.force[1];
@@ -214,9 +216,9 @@ geometry_msgs::WrenchStamped toMsg(const tf2::Stamped<KDL::Wrench>& in)
  * \param out The wrench converted to a timestamped KDL Wrench.
  */
 inline
-void fromMsg(const geometry_msgs::WrenchStamped& msg, tf2::Stamped<KDL::Wrench>& out)
+void fromMsg(const geometry_msgs::msg::WrenchStamped& msg, tf2::Stamped<KDL::Wrench>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.force[0] = msg.wrench.force.x;
   out.force[1] = msg.wrench.force.y;
@@ -240,9 +242,9 @@ void fromMsg(const geometry_msgs::WrenchStamped& msg, tf2::Stamped<KDL::Wrench>&
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<KDL::Frame>& t_in, tf2::Stamped<KDL::Frame>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<KDL::Frame>& t_in, tf2::Stamped<KDL::Frame>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<KDL::Frame>(transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<KDL::Frame>(transformToKDL(transform) * t_in,  tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 /** \brief Convert a stamped KDL Frame type to a Pose message.
@@ -251,10 +253,10 @@ inline
  * \return The frame converted to a PoseStamped message.
  */
 inline
-geometry_msgs::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
+geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
 {
-  geometry_msgs::PoseStamped msg;
-  msg.header.stamp = in.stamp_;
+  geometry_msgs::msg::PoseStamped msg;
+  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose.position.x = in.p[0];
   msg.pose.position.y = in.p[1];
@@ -269,9 +271,9 @@ geometry_msgs::PoseStamped toMsg(const tf2::Stamped<KDL::Frame>& in)
  * \param out The pose converted to a timestamped KDL Frame.
  */
 inline
-void fromMsg(const geometry_msgs::PoseStamped& msg, tf2::Stamped<KDL::Frame>& out)
+void fromMsg(const geometry_msgs::msg::PoseStamped& msg, tf2::Stamped<KDL::Frame>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out.p[0] = msg.pose.position.x;
   out.p[1] = msg.pose.position.y;
