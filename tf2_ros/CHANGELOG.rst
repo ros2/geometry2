@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use node interfaces throughout tf2_ros (`#108 <https://github.com/ros2/geometry2/issues/108>`_)
+* changes to avoid deprecated API's (`#107 <https://github.com/ros2/geometry2/issues/107>`_)
+* Fix call to create_publisher after API changed (`#105 <https://github.com/ros2/geometry2/issues/105>`_)
+* Use node interfaces for static transform broadcaster (`#104 <https://github.com/ros2/geometry2/issues/104>`_)
+* Contributors: Emerson Knapp, Karsten Knese, William Woodall
+
 0.11.0 (2019-04-14)
 -------------------
 * Updated to use node inteface pointers in the MessageFilter class. (`#96 <https://github.com/ros2/geometry2/pull/96>`_)

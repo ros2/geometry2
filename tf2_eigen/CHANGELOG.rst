@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* also export Eigen3 include directories (`#102 <https://github.com/ros2/geometry2/issues/102>`_)
+* Contributors: Marcus Scheunemann
+
 0.11.0 (2019-04-14)
 -------------------
 * Updated to use ament_target_dependencies where possible. (`#98 <https://github.com/ros2/geometry2/issues/98>`_)
