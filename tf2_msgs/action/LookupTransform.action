@@ -1,11 +1,11 @@
 #Simple API
 string target_frame
 string source_frame
-time source_time
-duration timeout
+builtin_interfaces/Time source_time
+builtin_interfaces/Duration timeout
 
 #Advanced API
-time target_time
+builtin_interfaces/Time target_time
 string fixed_frame
 
 #Whether or not to use the advanced API
