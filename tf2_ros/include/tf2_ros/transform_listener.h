@@ -29,9 +29,11 @@
 
 /** \author Tully Foote */
 
-#ifndef TF2_ROS_TRANSFORMLISTENER_H
-#define TF2_ROS_TRANSFORMLISTENER_H
+#ifndef TF2_ROS__TRANSFORM_LISTENER_H_
+#define TF2_ROS__TRANSFORM_LISTENER_H_
 
+#include <memory>
+#include <string>
 #include <thread>
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -39,55 +41,92 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/visibility_control.h"
 
-namespace tf2_ros{
+
+namespace tf2_ros
+{
 
 /** \brief This class provides an easy way to request and receive coordinate frame transform information.
  */
 class TransformListener
 {
-
 public:
   /**@brief Constructor for transform listener */
   TF2_ROS_PUBLIC
-  TransformListener(tf2::BufferCore& buffer, bool spin_thread = true);
-  
-  TF2_ROS_PUBLIC
-  TransformListener(tf2::BufferCore& buffer, rclcpp::Node::SharedPtr nh, bool spin_thread = true);
+  explicit TransformListener(tf2::BufferCore & buffer, bool spin_thread = true);
+
+  template<class NodeT, class AllocatorT = std::allocator<void>>
+  TransformListener(
+    tf2::BufferCore & buffer,
+    NodeT && node,
+    bool spin_thread = true,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+  : buffer_(buffer)
+  {
+    init(node, spin_thread, qos, options);
+  }
 
   TF2_ROS_PUBLIC
-  ~TransformListener();
+  virtual ~TransformListener();
 
 private:
+  template<class NodeT, class AllocatorT = std::allocator<void>>
+  void init(
+    NodeT && node,
+    bool spin_thread,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+  {
+    using callback_t = std::function<void(tf2_msgs::msg::TFMessage::SharedPtr)>;
+    callback_t cb = std::bind(&TransformListener::subscription_callback, this, std::placeholders::_1, false);
+    callback_t static_cb = std::bind(&TransformListener::subscription_callback, this, std::placeholders::_1, true);
 
-  /// Initialize this transform listener, subscribing, advertising services, etc.
-  void init();
-  void initThread();
+    message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+      node,
+      "/tf",
+      qos,
+      std::move(cb),
+      options);
+    message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+      node,
+      "/tf_static",
+      qos,
+      std::move(static_cb),
+      options);
+
+    if (spin_thread) {
+      initThread(node->get_node_base_interface());
+    }
+  }
+
+  TF2_ROS_PUBLIC
+  void initThread(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
 
   /// Callback function for ros message subscriptoin
-  void subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
-  void static_subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
-  void subscription_callback_impl(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
+  TF2_ROS_PUBLIC
+  void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
-  std::thread* dedicated_listener_thread_;
-  rclcpp::Node::SharedPtr node_;
+  std::thread * dedicated_listener_thread_ = nullptr;
+
+  rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
-  tf2::BufferCore& buffer_;
-  bool using_dedicated_thread_;
+  tf2::BufferCore & buffer_;
+  bool using_dedicated_thread_ = false;
   tf2::TimePoint last_update_;
- 
+
   void dedicatedListenerThread()
   {
-    while (using_dedicated_thread_)
-    {
+    while (using_dedicated_thread_) {
       break;
-      //TODO(tfoote) reenable callback queue processing 
-      //tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
+      // TODO(tfoote) reenable callback queue processing
+      // tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
     }
-  };
-
+  }
 };
-}
+}  // namespace tf2_ros
 
-#endif //TF_TRANSFORMLISTENER_H
+#endif  // TF2_ROS__TRANSFORM_LISTENER_H_

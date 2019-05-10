@@ -126,6 +126,14 @@ if(BUILD_TESTING)
   ament_add_gtest(${PROJECT_NAME}_test_message_filter test/message_filter_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_message_filter ${PROJECT_NAME})
 
+  ament_add_gtest(${PROJECT_NAME}_test_transform_listener test/test_transform_listener.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_transform_listener ${PROJECT_NAME})
+
+  ament_add_gtest(${PROJECT_NAME}_test_static_transform_broadcaster test/test_static_transform_broadcaster.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_static_transform_broadcaster ${PROJECT_NAME})
+
+  ament_add_gtest(${PROJECT_NAME}_test_transform_broadcaster test/test_transform_broadcaster.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_transform_broadcaster ${PROJECT_NAME})
 # TODO(tfoote) port tests to use ROS2 instead of ROS1 api.
 if (false)
 

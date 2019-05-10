@@ -43,29 +43,24 @@
 namespace tf2_ros
 {
 
-
-/** \brief This class provides an easy way to publish coordinate frame transform information.  
- * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the 
+/** \brief This class provides an easy way to publish coordinate frame transform information.
+ * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the
  * necessary data needed for each message.  */
 
 class StaticTransformBroadcaster{
 public:
-
-  TF2_ROS_PUBLIC
-  StaticTransformBroadcaster(rclcpp::Node::SharedPtr node);
-
-  template<class AllocatorT = std::allocator<void>>
+  /** \brief Node interface constructor */
+  template<class NodeT, class AllocatorT = std::allocator<void>>
   StaticTransformBroadcaster(
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics_interface)
+    NodeT && node,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT>())
   {
-    auto qos = rclcpp::QoS(rclcpp::KeepLast(100));
     // TODO(tfoote) latched equivalent
-
-    using MessageT = tf2_msgs::msg::TFMessage;
-    using PublisherT = ::rclcpp::Publisher<MessageT, AllocatorT>;
-    publisher_ = rclcpp::create_publisher<MessageT, AllocatorT, PublisherT>(
-      node_topics_interface, "/tf_static", qos);
-  }
+    publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
+      node, "/tf_static", qos, options);
+  };
 
   /** \brief Send a TransformStamped message
    * The stamped data structure includes frame_id, and time, and parent_id already.  */

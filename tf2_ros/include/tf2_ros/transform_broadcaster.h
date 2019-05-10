@@ -41,21 +41,29 @@
 namespace tf2_ros
 {
 
-/** \brief This class provides an easy way to publish coordinate frame transform information.  
- * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the 
+/** \brief This class provides an easy way to publish coordinate frame transform information.
+ * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the
  * necessary data needed for each message.  */
 
 class TransformBroadcaster{
 public:
-  /** \brief Constructor (needs a ros::Node reference) */
-  TF2_ROS_PUBLIC
-  TransformBroadcaster(rclcpp::Node::SharedPtr node);
+  /** \brief Node interface constructor */
+  template<class NodeT, class AllocatorT = std::allocator<void>>
+  TransformBroadcaster(
+    NodeT && node,
+    const rclcpp::QoS & qos = rclcpp::QoS(100),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options =
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT>())
+  {
+    publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
+      node, "/tf", qos, options);
+  };
 
-  /** \brief Send a StampedTransform 
+  /** \brief Send a StampedTransform
    * The stamped data structure includes frame_id, and time, and parent_id already.  */
   //  void sendTransform(const StampedTransform & transform);
 
-  /** \brief Send a vector of StampedTransforms 
+  /** \brief Send a vector of StampedTransforms
    * The stamped data structure includes frame_id, and time, and parent_id already.  */
   //void sendTransform(const std::vector<StampedTransform> & transforms);
 
@@ -70,8 +78,6 @@ public:
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
 private:
-  /// Internal reference to ros::Node
-  rclcpp::Node::SharedPtr node_;
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
 
 };
