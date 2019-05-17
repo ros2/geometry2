@@ -42,6 +42,7 @@
 uint8_t filter_callback_fired = 0;
 void filter_callback(const geometry_msgs::msg::PointStamped & msg)
 {
+  (void)msg;
   filter_callback_fired++;
 }
 

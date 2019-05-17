@@ -128,12 +128,12 @@ public:
   TFMonitor(
     rclcpp::Node::SharedPtr node, bool using_specific_chain,
     std::string framea  = "", std::string frameb = "")
-      : node_(node),
-        clock_(node->get_clock()),
-        buffer_(clock_),
-        framea_(framea),
+      : framea_(framea),
         frameb_(frameb),
-        using_specific_chain_(using_specific_chain)
+        using_specific_chain_(using_specific_chain),
+        node_(node),
+        clock_(node->get_clock()),
+        buffer_(clock_)
   {
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
     
