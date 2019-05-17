@@ -60,7 +60,7 @@ public:
     // TODO(tfoote) latched equivalent
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
       node, "/tf_static", qos, options);
-  };
+  }
 
   /** \brief Send a TransformStamped message
    * The stamped data structure includes frame_id, and time, and parent_id already.  */
