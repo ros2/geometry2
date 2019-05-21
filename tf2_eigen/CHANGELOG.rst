@@ -2,6 +2,18 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Port tf2_kdl (`#90 <https://github.com/ros2/geometry2/issues/90>`_)
+  * tf2_eigen, leftover from the cherry-pick
+  While cherry-picking changes to get isometry3d in
+  * Update tf2_eigen, add toMsg2
+  Convert a Eigen::Vector3d type to a geometry_msgs::msg::Vector3
+  while avoiding overloading issues with previous definitions
+  * Default to C++14
+  * Define _USE_MATH_DEFINES so Windows gets M_PI symbol.
+* Contributors: Víctor Mayoral Vilches
+
 0.11.1 (2019-05-09)
 -------------------
 * also export Eigen3 include directories (`#102 <https://github.com/ros2/geometry2/issues/102>`_)
