@@ -142,10 +142,10 @@ public:
     tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
     const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
-  : bc_(bc),
-    queue_size_(queue_size),
-    node_logging_(node_logging),
-    node_clock_(node_clock)
+  : node_logging_(node_logging),
+    node_clock_(node_clock),
+    bc_(bc),
+    queue_size_(queue_size)
   {
     init();
     setTargetFrame(target_frame);
@@ -460,6 +460,9 @@ private:
     const std::string & source_frame,
     tf2::TimePoint time, tf2::TransformableResult result)
   {
+    (void)target_frame;
+    (void)source_frame;
+    (void)time;
     namespace mt = message_filters::message_traits;
 
     // find the message this request is associated with

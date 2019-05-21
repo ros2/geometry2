@@ -47,7 +47,7 @@
 namespace tf2_ros
 {
 
-Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time, bool debug) :
+Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
   BufferCore(cache_time), clock_(clock)
 {
   if (nullptr == clock_)
@@ -193,6 +193,7 @@ Buffer::canTransform(const std::string& target_frame, const tf2::TimePoint& targ
 
 bool Buffer::getFrames(tf2_msgs::srv::FrameGraph::Request& req, tf2_msgs::srv::FrameGraph::Response& res) 
 {
+  (void)req;
   res.frame_yaml = allFramesAsYAML();
   return true;
 }
