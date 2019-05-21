@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.2 (2019-05-20)
+-------------------
 * Remove stray semicolon which causes compiler error when using -Werror=pedantic (`#112 <https://github.com/ros2/geometry2/issues/112>`_)
 * Contributors: Michael Jeronimo
 

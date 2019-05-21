@@ -2,8 +2,8 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.2 (2019-05-20)
+-------------------
 * Port tf2_kdl (`#90 <https://github.com/ros2/geometry2/issues/90>`_)
 * Contributors: Víctor Mayoral Vilches
 
