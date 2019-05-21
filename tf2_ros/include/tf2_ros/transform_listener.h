@@ -61,8 +61,7 @@ public:
     const rclcpp::QoS & qos = rclcpp::QoS(100),
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
-  : buffer_(buffer),
-    stop_thread_(false)
+  : buffer_(buffer)
   {
     init(node, spin_thread, qos, options);
   }
@@ -117,7 +116,7 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
-  std::atomic<bool> stop_thread_;
+  std::atomic<bool> stop_thread_{false};
   tf2::TimePoint last_update_;
 };
 }  // namespace tf2_ros
