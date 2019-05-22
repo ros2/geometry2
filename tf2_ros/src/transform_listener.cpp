@@ -59,7 +59,6 @@ TransformListener::~TransformListener()
 void TransformListener::initThread(
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface)
 {
-  using_dedicated_thread_ = true;
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
@@ -72,6 +71,8 @@ void TransformListener::initThread(
     [](std::thread * t) {
       t->join();
       delete t;
+      // TODO(tfoote) reenable callback queue processing
+      // tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
     });
   // Tell the buffer we have a dedicated thread to enable timeouts
   buffer_.setUsingDedicatedThread(true);
