@@ -109,7 +109,7 @@ private:
   void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
-  std::thread * dedicated_listener_thread_ = nullptr;
+  std::unique_ptr<std::thread> dedicated_listener_thread_ = nullptr;
 
   rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
