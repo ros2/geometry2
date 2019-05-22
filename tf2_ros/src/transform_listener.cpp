@@ -54,10 +54,6 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
 
 TransformListener::~TransformListener()
 {
-  using_dedicated_thread_ = false;
-  if (dedicated_listener_thread_) {
-    dedicated_listener_thread_->join();
-  }
 }
 
 void TransformListener::initThread(
@@ -71,7 +67,12 @@ void TransformListener::initThread(
   auto run_func = [](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
       return rclcpp::spin(node_base_interface);
     };
-  dedicated_listener_thread_ = std::make_unique<std::thread>(run_func, node_base_interface);
+  dedicated_listener_thread_ = thread_ptr(
+    new std::thread(run_func, node_base_interface),
+    [](std::thread * t) {
+      t->join();
+      delete t;
+    });
   // Tell the buffer we have a dedicated thread to enable timeouts
   buffer_.setUsingDedicatedThread(true);
 }
