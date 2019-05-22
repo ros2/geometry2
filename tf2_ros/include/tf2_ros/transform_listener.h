@@ -41,7 +41,6 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/visibility_control.h"
 
-
 namespace tf2_ros
 {
 
@@ -109,23 +108,15 @@ private:
   void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
-  std::thread * dedicated_listener_thread_ = nullptr;
+  using thread_ptr =
+    std::unique_ptr<std::thread, std::function<void(std::thread *)>>;
+  thread_ptr dedicated_listener_thread_;
 
   rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
-  bool using_dedicated_thread_ = false;
   tf2::TimePoint last_update_;
-
-  void dedicatedListenerThread()
-  {
-    while (using_dedicated_thread_) {
-      break;
-      // TODO(tfoote) reenable callback queue processing
-      // tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
-    }
-  }
 };
 }  // namespace tf2_ros
 
