@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.3 (2019-05-24)
+-------------------
 * stop spinning TransformListener thread node in destructor (`#114 <https://github.com/ros2/geometry2/issues/114>`_)
 * Store dedicated transform listener thread as a std::unique_ptr (`#111 <https://github.com/ros2/geometry2/issues/111>`_)
 * enable pedantic for tf2_ros (`#115 <https://github.com/ros2/geometry2/issues/115>`_)
