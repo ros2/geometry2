@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* stop spinning TransformListener thread node in destructor (`#114 <https://github.com/ros2/geometry2/issues/114>`_)
+* Store dedicated transform listener thread as a std::unique_ptr (`#111 <https://github.com/ros2/geometry2/issues/111>`_)
+* enable pedantic for tf2_ros (`#115 <https://github.com/ros2/geometry2/issues/115>`_)
+* Contributors: Hunter L. Allen, Karsten Knese, bpwilcox
+
 0.11.2 (2019-05-20)
 -------------------
 * Remove stray semicolon which causes compiler error when using -Werror=pedantic (`#112 <https://github.com/ros2/geometry2/issues/112>`_)

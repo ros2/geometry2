@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.11.2 (2019-05-20)
 -------------------
 * Port tf2_kdl (`#90 <https://github.com/ros2/geometry2/issues/90>`_)
