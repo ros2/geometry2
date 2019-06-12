@@ -33,7 +33,9 @@ include_directories(include
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
+  src/async_wait_for_transform.cpp
   src/buffer.cpp
+  src/gated_callback_caller.cpp
   src/transform_listener.cpp
   # src/buffer_client.cpp
   # src/buffer_server.cpp
@@ -123,6 +125,9 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_buffer test/test_buffer.cpp)
   target_link_libraries(test_buffer ${PROJECT_NAME})
+
+  ament_add_gtest(test_async_wait_for_transform test/test_async_wait_for_transform.cpp)
+  target_link_libraries(test_async_wait_for_transform ${PROJECT_NAME})
 
   # Adds a tf2_ros message_filter unittest that uses
   # multiple target frames and a non-zero time tolerance
