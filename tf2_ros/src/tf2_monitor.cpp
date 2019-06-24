@@ -264,7 +264,7 @@ public:
 int main(int argc, char ** argv)
 {
   //Initialize ROS
-  rclcpp::init(argc, argv);
+  std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
   
   //TODO(tfoote) make anonymous 
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_monitor_main");
@@ -272,11 +272,11 @@ int main(int argc, char ** argv)
 
   std::string framea, frameb;
   bool using_specific_chain = true;
-  if (argc == 3){
-    framea = argv[1];
-    frameb = argv[2];
+  if (args.size() == 3){
+    framea = args[1];
+    frameb = args[2];
   }
-  else if (argc == 1)
+  else if (args.size() == 1)
     using_specific_chain = false;
   else{
     RCLCPP_INFO(nh->get_logger(), "TF_Monitor: usage: tf2_monitor framea frameb");
