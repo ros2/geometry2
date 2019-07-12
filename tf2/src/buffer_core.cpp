@@ -592,7 +592,6 @@ struct TransformAccum
   tf2::Vector3 result_vec;
 };
 
-
 geometry_msgs::msg::TransformStamped 
   BufferCore::lookupTransform(const std::string& target_frame, const std::string& source_frame,
       const TimePoint& time) const
@@ -927,6 +926,13 @@ void BufferCore::createConnectivityErrorString(CompactFrameID source_frame, Comp
   *out = std::string("Could not find a connection between '"+lookupFrameString(target_frame)+"' and '"+
                      lookupFrameString(source_frame)+"' because they are not part of the same tree."+
                      "Tf has two or more unconnected trees.");
+}
+
+std::vector<std::string> BufferCore::getAllFrameNames() const
+{
+  std::vector<std::string> frames;
+  _getFrameStrings(frames);
+  return frames;
 }
 
 std::string BufferCore::allFramesAsString() const
