@@ -56,6 +56,56 @@ TEST(tf2, setTransformValid)
   
 }
 
+TEST(tf2, setTransformValidWithCallback)
+{
+  tf2::BufferCore buffer;
+
+  // Input
+  const std::string target_frame = "foo";
+  const std::string source_frame = "bar";
+  const tf2::TimePoint time_point = tf2::timeFromSec(1.0);
+
+  tf2::TransformableRequestHandle received_request_handle;
+  std::string received_target_frame = "";
+  std::string received_source_frame = "";
+  tf2::TimePoint received_time_point;
+  bool transform_available = false;
+
+  auto cb_handle = buffer.addTransformableCallback(
+    [&received_request_handle, &received_target_frame, &received_source_frame, &received_time_point, &transform_available](
+      tf2::TransformableRequestHandle request_handle,
+      const std::string & target_frame,
+      const std::string & source_frame,
+      tf2::TimePoint time,
+      tf2::TransformableResult result)
+    {
+      received_request_handle = request_handle;
+      received_target_frame = target_frame;
+      received_source_frame = source_frame;
+      received_time_point = time;
+      transform_available = tf2::TransformAvailable == result;
+    });
+
+  tf2::TransformableRequestHandle request_handle = buffer.addTransformableRequest(
+    cb_handle, target_frame, source_frame, time_point);
+  ASSERT_NE(request_handle, 0u);
+  
+  geometry_msgs::msg::TransformStamped transform_msg;
+  transform_msg.header.frame_id = target_frame;
+  transform_msg.header.stamp = builtin_interfaces::msg::Time();
+  transform_msg.header.stamp.sec = 1;
+  transform_msg.header.stamp.nanosec = 0;
+  transform_msg.child_frame_id = source_frame;
+  transform_msg.transform.rotation.w = 1;
+  EXPECT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+
+  // Setting the transform should trigger the callback
+  EXPECT_EQ(received_target_frame, target_frame);
+  EXPECT_EQ(received_source_frame, source_frame);
+  EXPECT_EQ(received_time_point, time_point);
+  EXPECT_TRUE(transform_available);
+}
+
 TEST(tf2, setTransformInvalidQuaternion)
 {
   tf2::BufferCore tfc;

@@ -1433,6 +1433,11 @@ void BufferCore::testTransformableRequests()
       }
 
       transformable_requests_.erase(transformable_requests_.end() - 1);
+
+      // If we've removed the last element, then the iterator is invalid
+      if (0u == transformable_requests_.size()) {
+        it = transformable_requests_.end();
+      }
     }
     else
     {
