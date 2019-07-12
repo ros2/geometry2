@@ -34,6 +34,7 @@ include_directories(include
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
   src/buffer.cpp
+  src/create_timer_ros.cpp
   src/transform_listener.cpp
   # src/buffer_client.cpp
   # src/buffer_server.cpp
