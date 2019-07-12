@@ -34,6 +34,7 @@
 
 #include <exception>
 #include <limits>
+#include <mutex>
 #include <sstream>
 #include <thread>
 
@@ -48,7 +49,7 @@ namespace tf2_ros
 {
 
 Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
-  BufferCore(cache_time), clock_(clock)
+  BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
 {
   if (nullptr == clock_)
   {
@@ -190,6 +191,73 @@ Buffer::canTransform(const std::string& target_frame, const tf2::TimePoint& targ
   return retval; 
 }
 
+TransformStampedFuture
+Buffer::waitForTransform(const std::string& target_frame, const std::string& source_frame, const tf2::TimePoint& time,
+                         const tf2::Duration& timeout, TransformReadyCallback callback)
+{
+  if (nullptr == timer_interface_) {
+    throw CreateTimerInterfaceException("timer interface not set before call to waitForTransform");
+  }
+
+  auto promise = std::make_shared<std::promise<geometry_msgs::msg::TransformStamped>>();
+  TransformStampedFuture future(promise->get_future());
+
+  auto cb_handle = addTransformableCallback([&, promise, callback, future](
+    tf2::TransformableRequestHandle request_handle, const std::string& target_frame,
+    const std::string& source_frame, tf2::TimePoint time, tf2::TransformableResult result)
+    {
+      (void) request_handle;
+
+      if (result == tf2::TransformAvailable) {
+      geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(target_frame, source_frame, time);
+        promise->set_value(msg_stamped);
+      } else {
+        promise->set_exception(std::make_exception_ptr<tf2::LookupException>(
+            "Failed to transform from " + source_frame + " to " + target_frame));
+      }
+      callback(future);
+    });
+
+  auto handle = addTransformableRequest(cb_handle, target_frame, source_frame, time);
+  if (0 == handle) {
+    // Immediately transformable
+    geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(target_frame, source_frame, time);
+    promise->set_value(msg_stamped);
+  } else if (0xffffffffffffffffULL == handle) {
+    // Never transformable
+    promise->set_exception(std::make_exception_ptr<tf2::LookupException>(
+          "Failed to transform from " + source_frame + " to " + target_frame));
+  } else {
+    std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
+    auto timer_handle = timer_interface_->createTimer(
+      clock_,
+      timeout,
+      std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
+
+    // Save association between timer and request handle
+    timer_to_request_map_[timer_handle] = handle;
+  }
+  return future;
+}
+
+void
+Buffer::timerCallback(const TimerHandle & timer_handle,
+                      std::shared_ptr<std::promise<geometry_msgs::msg::TransformStamped>> promise,
+                      TransformStampedFuture future,
+                      TransformReadyCallback callback)
+{
+  tf2::TransformableRequestHandle request_handle;
+  {
+    std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
+    request_handle = timer_to_request_map_.at(timer_handle);
+    timer_to_request_map_.erase(timer_handle);
+  }
+  cancelTransformableRequest(request_handle);
+  promise->set_exception(
+    std::make_exception_ptr<tf2::TimeoutException>(std::string("Timed out waiting for transform")));
+  callback(future);
+  timer_interface_->remove(timer_handle);
+}
 
 bool Buffer::getFrames(tf2_msgs::srv::FrameGraph::Request& req, tf2_msgs::srv::FrameGraph::Response& res) 
 {

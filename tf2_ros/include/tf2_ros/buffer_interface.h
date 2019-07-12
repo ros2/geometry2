@@ -34,7 +34,6 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_ros/visibility_control.h>
-#include <tf2/buffer_core.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2/exceptions.h>
 #include <geometry_msgs/msg/transform_stamped.hpp>
@@ -43,6 +42,9 @@
 
 namespace tf2_ros
 {
+  using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
+  using TransformReadyCallback = std::function<void(const TransformStampedFuture&)>;
+
   inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
   {
     std::chrono::nanoseconds ns = \
@@ -69,13 +71,12 @@ namespace tf2_ros
     return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
   }
 
-/** \brief Abstract interface for wrapping tf2::BufferCore in a ROS-based API.
+/** \brief Abstract interface for wrapping tf2::BufferCoreInterface in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.
  */
 class BufferInterface
 {
 public:
-
   /** \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed
    * \param source_frame The frame where the data originated
