@@ -41,7 +41,8 @@
 #include <message_filters/message_traits.h>
 #include <message_filters/simple_filter.h>
 #include <rclcpp/rclcpp.hpp>
-#include <tf2/buffer_core.h>
+
+#include <tf2_ros/buffer.h>
 
 #define TF2_ROS_MESSAGEFILTER_DEBUG(fmt, ...) \
   RCUTILS_LOG_DEBUG_NAMED("tf2_ros_message_filter", \
@@ -99,7 +100,7 @@ public:
    tf_filter.registerCallback(&MyClass::myCallback, this);
  \endverbatim
  */
-template<class M>
+template<class M, class BufferT = tf2_ros::Buffer>
 class MessageFilter : public MessageFilterBase, public message_filters::SimpleFilter<M>
 {
 public:
@@ -116,35 +117,39 @@ public:
   /**
    * \brief Constructor
    *
-   * \param bc The tf2::BufferCore this filter should use
+   * \param buffer The buffer this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
    * \param node The ros2 node to use for logging and clock operations
    */
   MessageFilter(
-    tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::Node::SharedPtr & node)
-  : MessageFilter(bc, target_frame, queue_size, node->get_node_logging_interface(),
+  : MessageFilter(buffer, target_frame, queue_size, node->get_node_logging_interface(),
       node->get_node_clock_interface())
   {
+    static_assert(std::is_base_of<tf2::BufferCoreInterface, BufferT>::value,
+                  "Buffer type must implement tf2::BufferCoreInterface");
+    static_assert(std::is_base_of<tf2_ros::AsyncBufferInterface, BufferT>::value,
+                  "Buffer type must implement tf2_ros::AsyncBufferInterface");
   }
 
   /**
    * \brief Constructor
    *
-   * \param bc The tf2::BufferCore this filter should use
+   * \param buffer The buffer this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
    * \param node_logging The logging interface to use for any log messages
    * \param node_clock The clock interface to use to get the node clock
    */
   MessageFilter(
-    tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
     const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
   : node_logging_(node_logging),
     node_clock_(node_clock),
-    bc_(bc),
+    buffer_(buffer),
     queue_size_(queue_size)
   {
     init();
@@ -155,16 +160,16 @@ public:
    * \brief Constructor
    *
    * \param f The filter to connect this filter's input to.  Often will be a message_filters::Subscriber.
-   * \param bc The tf2::BufferCore this filter should use
+   * \param buffer The buffer this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
    * \param node The ros2 node to use for logging and clock operations
    */
   template<class F>
   MessageFilter(
-    F & f, tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    F & f, BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::Node::SharedPtr & node)
-  : MessageFilter(f, bc, target_frame, queue_size, node->get_node_logging_interface(),
+  : MessageFilter(f, buffer, target_frame, queue_size, node->get_node_logging_interface(),
       node->get_node_clock_interface())
   {
   }
@@ -173,7 +178,7 @@ public:
    * \brief Constructor
    *
    * \param f The filter to connect this filter's input to.  Often will be a message_filters::Subscriber.
-   * \param bc The tf2::BufferCore this filter should use
+   * \param buffer The buffer this filter should use
    * \param target_frame The frame this filter should attempt to transform to.  To use multiple frames, pass an empty string here and use the setTargetFrames() function.
    * \param queue_size The number of messages to queue up before throwing away old ones.  0 means infinite (dangerous).
    * \param node_logging The logging interface to use for any log messages
@@ -181,12 +186,12 @@ public:
    */
   template<class F>
   MessageFilter(
-    F & f, tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
+    F & f, BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
     const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
   : node_logging_(node_logging),
     node_clock_(node_clock),
-    bc_(bc),
+    buffer_(buffer),
     queue_size_(queue_size)
   {
     init();
@@ -278,15 +283,6 @@ public:
 
     TF2_ROS_MESSAGEFILTER_DEBUG("%s", "Cleared");
 
-    bc_.removeTransformableCallback(callback_handle_);
-    callback_handle_ = bc_.addTransformableCallback(std::bind(&MessageFilter::transformable,
-        this,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3,
-        std::placeholders::_4,
-        std::placeholders::_5));
-
     messages_.clear();
     message_count_ = 0;
 
@@ -324,30 +320,52 @@ public:
       V_string::iterator end = target_frames_copy.end();
       for (; it != end; ++it) {
         const std::string & target_frame = *it;
-        tf2::TransformableRequestHandle handle = bc_.addTransformableRequest(callback_handle_,
-            target_frame, frame_id, tf2::timeFromSec(
-              stamp.seconds()));
-        if (handle == 0xffffffffffffffffULL) {
+        auto future = buffer_.waitForTransform(
+            target_frame,
+            frame_id,
+            tf2::timeFromSec(stamp.seconds()),
+            tf2::Duration(),
+            std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
+
+        try {
+          const auto status = future.wait_for(std::chrono::seconds(0));
+          if (status == std::future_status::ready) {
+            future.get();
+            // Transform is available
+            ++info.success_count;
+          }
+          else {
+            info.handles.push_back(next_handle_index_++);
+          }
+        }
+        catch (...) {
           // never transformable
           messageDropped(evt, filter_failure_reasons::OutTheBack);
           return;
-        } else if (handle == 0) {
-          ++info.success_count;
-        } else {
-          info.handles.push_back(handle);
         }
 
         if (time_tolerance_.nanoseconds()) {
-          handle = bc_.addTransformableRequest(callback_handle_, target_frame, frame_id, tf2::timeFromSec(
-                (stamp + time_tolerance_).seconds()));
-          if (handle == 0xffffffffffffffffULL) {
+          future = buffer_.waitForTransform(
+              target_frame,
+              frame_id,
+              tf2::timeFromSec((stamp + time_tolerance_).seconds()),
+              tf2::Duration(),
+              std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
+          try {
+            const auto status = future.wait_for(std::chrono::seconds(0));
+            if (status == std::future_status::ready) {
+              future.get();
+              // Transform is available
+              ++info.success_count;
+            }
+            else {
+              info.handles.push_back(next_handle_index_++);
+            }
+          }
+          catch (...) {
             // never transformable
             messageDropped(evt, filter_failure_reasons::OutTheBack);
             return;
-          } else if (handle == 0) {
-            ++info.success_count;
-          } else {
-            info.handles.push_back(handle);
           }
         }
       }
@@ -371,12 +389,6 @@ public:
           message_count_,
           (mt::FrameId<M>::value(*front.event.getMessage())).c_str(),
           mt::TimeStamp<M>::value(*front.event.getMessage()).seconds());
-
-        V_TransformableRequestHandle::const_iterator it = front.handles.begin();
-        V_TransformableRequestHandle::const_iterator end = front.handles.end();
-        for (; it != end; ++it) {
-          bc_.cancelTransformableRequest(*it);
-        }
 
         messageDropped(front.event, filter_failure_reasons::Unknown);
 
@@ -445,24 +457,10 @@ private:
     time_tolerance_ = rclcpp::Duration(0, 0);
     warned_about_empty_frame_id_ = false;
     expected_success_count_ = 1;
-
-    callback_handle_ = bc_.addTransformableCallback(std::bind(&MessageFilter::transformable,
-        this,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3,
-        std::placeholders::_4,
-        std::placeholders::_5));
   }
 
-  void transformable(
-    tf2::TransformableRequestHandle request_handle, const std::string & target_frame,
-    const std::string & source_frame,
-    tf2::TimePoint time, tf2::TransformableResult result)
+  void transformReadyCallback(const tf2_ros::TransformStampedFuture& future, const uint64_t handle)
   {
-    (void)target_frame;
-    (void)source_frame;
-    (void)time;
     namespace mt = message_filters::message_traits;
 
     // find the message this request is associated with
@@ -470,8 +468,7 @@ private:
     typename L_MessageInfo::iterator msg_end = messages_.end();
     for (; msg_it != msg_end; ++msg_it) {
       MessageInfo & info = *msg_it;
-      V_TransformableRequestHandle::const_iterator handle_it = std::find(
-        info.handles.begin(), info.handles.end(), request_handle);
+      auto handle_it = std::find(info.handles.begin(), info.handles.end(), handle);
       if (handle_it != info.handles.end()) {
         // found msg_it
         ++info.success_count;
@@ -493,21 +490,29 @@ private:
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
 
-    if (result == tf2::TransformAvailable) {
+    bool transform_available = true;
+    try {
+      future.get();
+    } catch (...)
+    {
+      transform_available = false;
+    }
+
+    if (transform_available) {
       std::unique_lock<std::mutex> frames_lock(target_frames_mutex_);
       // make sure we can still perform all the necessary transforms
       typename V_string::iterator it = target_frames_.begin();
       typename V_string::iterator end = target_frames_.end();
       for (; it != end; ++it) {
         const std::string & target = *it;
-        if (!bc_.canTransform(target, frame_id, tf2::timeFromSec(stamp.seconds()))) {
+        if (!buffer_.canTransform(target, frame_id, tf2::timeFromSec(stamp.seconds()), NULL)) {
           can_transform = false;
           break;
         }
 
         if (time_tolerance_.nanoseconds()) {
-          if (!bc_.canTransform(target, frame_id,
-            tf2::timeFromSec((stamp + time_tolerance_).seconds())))
+          if (!buffer_.canTransform(target, frame_id,
+            tf2::timeFromSec((stamp + time_tolerance_).seconds()), NULL))
           {
             can_transform = false;
             break;
@@ -664,7 +669,7 @@ private:
   ///< The node clock interface to use to get the clock to use
   const rclcpp::node_interfaces::NodeClockInterface::SharedPtr node_clock_;
   ///< The Transformer used to determine if transformation data is available
-  tf2::BufferCore & bc_;
+  BufferT & buffer_;
   ///< The frames we need to be able to transform to before a message is ready
   V_string target_frames_;
   std::string target_frames_string_;
@@ -672,16 +677,15 @@ private:
   std::mutex target_frames_mutex_;
   ///< The maximum number of messages we queue up
   uint32_t queue_size_;
-  tf2::TransformableCallbackHandle callback_handle_;
 
-  typedef std::vector<tf2::TransformableRequestHandle> V_TransformableRequestHandle;
+  uint64_t next_handle_index_ = 0;
   struct MessageInfo
   {
     MessageInfo()
     : success_count(0) {}
 
     MEvent event;
-    V_TransformableRequestHandle handles;
+    std::vector<uint64_t> handles;
     uint64_t success_count;
   };
   typedef std::list<MessageInfo> L_MessageInfo;

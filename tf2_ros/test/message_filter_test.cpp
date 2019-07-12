@@ -35,6 +35,7 @@
 #include <message_filters/simple_filter.h>
 #include <message_filters/message_traits.h>
 #include <tf2_ros/buffer.h>
+#include <tf2_ros/create_timer_ros.h>
 #include <tf2_ros/message_filter.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
@@ -50,11 +51,16 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
 
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+    node->get_node_base_interface(),
+    node->get_node_timers_interface());
+
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
   sub.subscribe(node, "point");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
+  buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::TransformListener tfl(buffer);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
   filter.connectInput(sub);
