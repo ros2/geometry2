@@ -54,7 +54,7 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
 
 TransformListener::~TransformListener()
 {
-  if (spin_thread_) {
+  if (executor_) {
   executor_->cancel();
   }
 }
@@ -63,7 +63,6 @@ void TransformListener::initThread(
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface)
 {
   executor_ = std::make_unique<rclcpp::executors::SingleThreadedExecutor>();
-  spin_thread_ = true;
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
