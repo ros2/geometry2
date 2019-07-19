@@ -834,18 +834,23 @@ bool BufferCore::canTransform(const std::string& target_frame, const std::string
                            const TimePoint& time, std::string* error_msg) const
 {
   // Short circuit if target_frame == source_frame
-  if (target_frame == source_frame)
-    return true;
-
-  if (warnFrameId("canTransform argument target_frame", target_frame))
-    return false;
-  if (warnFrameId("canTransform argument source_frame", source_frame))
-    return false;
+  if (target_frame == source_frame) return true;
 
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
-  CompactFrameID target_id = lookupFrameNumber(target_frame);
-  CompactFrameID source_id = lookupFrameNumber(source_frame);
+  CompactFrameID target_id, source_id;
+
+  try {
+    target_id = validateFrameId("canTransform", target_frame);
+    source_id = validateFrameId("canTransform", source_frame);
+  }
+  catch (TransformException &e)
+  {
+    if (error_msg){
+      *error_msg = e.what();
+    }
+    return false;
+  }
 
   return canTransformNoLock(target_id, source_id, time, error_msg);
 }
