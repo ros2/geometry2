@@ -338,8 +338,8 @@ public:
             info.handles.push_back(next_handle_index_++);
           }
         }
-        catch (...) {
-          // never transformable
+        catch (std::exception & e)  {
+          TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
           messageDropped(evt, filter_failure_reasons::OutTheBack);
           return;
         }
@@ -362,10 +362,9 @@ public:
               info.handles.push_back(next_handle_index_++);
             }
           }
-          catch (...) {
-            // never transformable
+          catch (std::exception & e)  {
+            TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
             messageDropped(evt, filter_failure_reasons::OutTheBack);
-            return;
           }
         }
       }
@@ -649,8 +648,23 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
-    RCLCPP_INFO(node_logging_->get_logger(), "[%s] Drop message: frame '%s' at time %.3f for reason(%d)",
-      __func__, frame_id.c_str(), stamp.seconds(), reason);
+
+    std::string reason_string;
+    switch (reason){
+      case filter_failure_reasons::Unknown:
+        reason_string = "Unknown";
+          break;
+      case filter_failure_reasons::OutTheBack:
+        reason_string = "OutTheBack";
+        break;
+      case filter_failure_reasons::EmptyFrameID:
+        reason_string = "EmptyFrameID";
+        break;
+    }
+    RCLCPP_INFO(
+      node_logging_->get_logger(),
+      "Message Filter dropping message: frame '%s' at time %.3f because %s",
+      __func__, frame_id.c_str(), stamp.seconds(), reason_string.c_str());
   }
 
   static std::string stripSlash(const std::string & in)
