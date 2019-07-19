@@ -66,7 +66,10 @@ void TransformListener::initThread(
   // see: http://stackoverflow.com/a/27389714/671658
   // I (wjwwood) chose to use the lamda rather than the static cast solution.
   auto run_func = [&](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
-      while (!stop_thread_ && rclcpp::ok()) {rclcpp::spin_some(node_base_interface);}
+      auto executor = std::make_unique<rclcpp::executors::SingleThreadedExecutor>();
+      executor->add_node(node_base_interface);
+      while (!stop_thread_ && rclcpp::ok()) {executor->spin_once(std::chrono::milliseconds(10));}
+      executor->remove_node(node_base_interface);
     };
   dedicated_listener_thread_ = thread_ptr(
     new std::thread(run_func, node_base_interface),
