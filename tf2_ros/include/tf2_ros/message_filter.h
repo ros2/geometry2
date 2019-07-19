@@ -664,7 +664,7 @@ private:
     RCLCPP_INFO(
       node_logging_->get_logger(),
       "Message Filter dropping message: frame '%s' at time %.3f because %s",
-      __func__, frame_id.c_str(), stamp.seconds(), reason_string.c_str());
+      frame_id.c_str(), stamp.seconds(), reason_string.c_str());
   }
 
   static std::string stripSlash(const std::string & in)
