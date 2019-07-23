@@ -60,17 +60,24 @@ TransformListener::~TransformListener()
 void TransformListener::initThread(
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface)
 {
-  stop_thread_ = false;
+  stop_thread_ = false; // unused
+
+  auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
   // I (wjwwood) chose to use the lamda rather than the static cast solution.
-  auto run_func = [&](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
-      while (!stop_thread_ && rclcpp::ok()) {rclcpp::spin_some(node_base_interface);}
+  auto run_func =
+    [executor](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
+      executor->add_node(node_base_interface);
+      executor->spin();
+      executor->remove_node(node_base_interface);
     };
   dedicated_listener_thread_ = thread_ptr(
     new std::thread(run_func, node_base_interface),
-    [](std::thread * t) {
+    [executor](std::thread * t) {
+      executor->cancel();
       t->join();
       delete t;
       // TODO(tfoote) reenable callback queue processing
