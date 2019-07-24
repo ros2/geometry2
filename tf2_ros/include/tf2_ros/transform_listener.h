@@ -116,7 +116,6 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
-  std::unique_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
   tf2::TimePoint last_update_;
 };
 }  // namespace tf2_ros
