@@ -14,23 +14,15 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_filters</build_depend>
-  <build_depend>rclcpp</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_msgs</build_depend>
 
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_filters</exec_depend>
-  <exec_depend>rclcpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>tf2</exec_depend>
-  <exec_depend>tf2_msgs</exec_depend>
 
-  <build_export_depend>message_filters</build_export_depend>
-  <build_export_depend>rclcpp</build_export_depend>
-  <build_export_depend>tf2</build_export_depend>
-  <build_export_depend>tf2_msgs</build_export_depend>
+  <depend>message_filters</depend>
+  <depend>rclcpp</depend>
+  <depend>tf2</depend>
+  <depend>tf2_msgs</depend>
 
   <!-- TODO(tfoote) dependencies from unported sections restore when ported
   <depend>actionlib</depend>
