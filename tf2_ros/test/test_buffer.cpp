@@ -38,7 +38,7 @@
 
 using namespace tf2;
 
-class MockCreateTimer : public tf2_ros::CreateTimerInterface
+class MockCreateTimer final : public tf2_ros::CreateTimerInterface
 {
 public:
   MockCreateTimer()

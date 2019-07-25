@@ -54,6 +54,8 @@ public:
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
     rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers);
 
+  virtual ~CreateTimerROS() = default;
+
   /**
    * \brief Create a new timer.
    *
