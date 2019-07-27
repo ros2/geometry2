@@ -76,7 +76,7 @@ CreateTimerROS::reset(const TimerHandle & timer_handle)
   std::lock_guard<std::mutex> lock(timers_map_mutex_);
   try {
     timers_map_.at(timer_handle)->reset();
-  } catch (const std::out_of_range) {
+  } catch (const std::out_of_range &) {
     throw InvalidTimerHandleException("Invalid timer handle in reset()");
   }
 }
@@ -87,7 +87,7 @@ CreateTimerROS::remove(const TimerHandle & timer_handle)
   std::lock_guard<std::mutex> lock(timers_map_mutex_);
   try {
     cancelNoLock(timer_handle);
-  } catch (const InvalidTimerHandleException) {
+  } catch (const InvalidTimerHandleException &) {
     throw InvalidTimerHandleException("Invalid timer handle in remove()");
   }
   timers_map_.erase(timer_handle);
@@ -98,7 +98,7 @@ CreateTimerROS::cancelNoLock(const TimerHandle & timer_handle)
 {
   try {
     timers_map_.at(timer_handle)->cancel();
-  } catch (const std::out_of_range) {
+  } catch (const std::out_of_range &) {
     throw InvalidTimerHandleException("Invalid timer handle in cancel()");
   }
 }
