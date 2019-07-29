@@ -184,10 +184,10 @@ public:
     F & f, tf2::BufferCore & bc, const std::string & target_frame, uint32_t queue_size,
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
     const rclcpp::node_interfaces::NodeClockInterface::SharedPtr & node_clock)
-  : bc_(bc),
-    queue_size_(queue_size),
-    node_logging_(node_logging),
-    node_clock_(node_clock)
+  : node_logging_(node_logging),
+    node_clock_(node_clock),
+    bc_(bc),
+    queue_size_(queue_size)
   {
     init();
     setTargetFrame(target_frame);
