@@ -39,12 +39,6 @@
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-//TODO(tfoote replace these terrible macros)
-#define ROS_ERROR printf
-#define ROS_FATAL printf
-#define ROS_WARN printf
-#define ROS_INFO printf
-
 class TFMonitor
 {
 public:
@@ -148,7 +142,7 @@ public:
         buffer_._chainAsVector(frameb_, tf2::TimePointZero, framea_, tf2::TimePointZero, frameb_, chain_);
       }
       catch(tf2::TransformException& ex){
-        ROS_WARN("Transform Exception %s", ex.what());
+        RCLCPP_WARN(node->get_logger(), "Transform Exception %s", ex.what());
         return;
       } 
 
@@ -285,7 +279,7 @@ int main(int argc, char ** argv)
   else if (argc == 1)
     using_specific_chain = false;
   else{
-    ROS_INFO("TF_Monitor: usage: tf2_monitor framea frameb");
+    RCLCPP_INFO(nh->get_logger(), "TF_Monitor: usage: tf2_monitor framea frameb");
     return -1;
   }
   
@@ -296,7 +290,7 @@ int main(int argc, char ** argv)
   // {
   //   if (++iterations > 10)
   //   {
-  //     ROS_INFO("tf2_monitor waiting for time to be published");
+  //     RCLCPP_INFO(nh->get_logger(), "tf2_monitor waiting for time to be published");
   //     iterations = 0;
   //   }
   //   ros::WallDuration(0.1).sleep();
