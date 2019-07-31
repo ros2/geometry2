@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.11.4 (2019-07-31)
+-------------------
 * Allow tf2_monitor to be run with ROS command line args (`#140 <https://github.com/ros2/geometry2/issues/140>`_)
 * Drop misleading ROS logging macros from tf2_monitor (`#139 <https://github.com/ros2/geometry2/issues/139>`_)
 * Reduce CPU usage with an ABI compatible fix (`#133 <https://github.com/ros2/geometry2/issues/133>`_)
