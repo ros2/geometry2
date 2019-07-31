@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Allow tf2_monitor to be run with ROS command line args (`#140 <https://github.com/ros2/geometry2/issues/140>`_)
+* Drop misleading ROS logging macros from tf2_monitor (`#139 <https://github.com/ros2/geometry2/issues/139>`_)
+* Reduce CPU usage with an ABI compatible fix (`#133 <https://github.com/ros2/geometry2/issues/133>`_)
+* Fix the MessageFilter init order(`#137 <https://github.com/ros2/geometry2/issues/137>`_)
+* Contributors: Chris Lalancette, Dan Rose, Scott K Logan
+
 0.11.3 (2019-05-24)
 -------------------
 * stop spinning TransformListener thread node in destructor (`#114 <https://github.com/ros2/geometry2/issues/114>`_)
