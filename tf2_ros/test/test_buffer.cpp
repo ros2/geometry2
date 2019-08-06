@@ -223,6 +223,52 @@ TEST(test_buffer, wait_for_transform_timeout)
   EXPECT_TRUE(callback_timeout);
 }
 
+// Regression test for https://github.com/ros2/geometry2/issues/141
+TEST(test_buffer, wait_for_transform_race)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  auto mock_create_timer = std::make_shared<MockCreateTimer>();
+  buffer.setCreateTimerInterface(mock_create_timer);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  bool callback_timeout = false;
+  auto future = buffer.waitForTransform(
+    "foo",
+    "bar",
+    tf2_time, tf2::durationFromSec(1.0),
+    [&callback_timeout](const tf2_ros::TransformStampedFuture & future)
+    {
+      try {
+        // We don't expect this throw, even though a timeout will occur
+        future.get();
+      } catch (...) {
+        callback_timeout = true;
+      }
+    });
+
+  auto status = future.wait_for(std::chrono::milliseconds(1));
+  EXPECT_EQ(status, std::future_status::timeout);
+
+  // Set the valid transform during the timeout
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
+  transform.child_frame_id = "bar";
+  transform.transform.rotation.w = 1.0;
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  // Fake a time out (race with setTransform above)
+  mock_create_timer->execute_timers();
+
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
+  status = future.wait_for(std::chrono::milliseconds(1));
+  EXPECT_EQ(status, std::future_status::ready);
+  EXPECT_FALSE(callback_timeout);
+}
+
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
