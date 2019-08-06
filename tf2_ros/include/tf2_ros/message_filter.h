@@ -324,7 +324,7 @@ public:
             target_frame,
             frame_id,
             tf2::timeFromSec(stamp.seconds()),
-            tf2::Duration(),
+            tf2::Duration::max(),
             std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
 
         try {
@@ -349,7 +349,7 @@ public:
               target_frame,
               frame_id,
               tf2::timeFromSec((stamp + time_tolerance_).seconds()),
-              tf2::Duration(),
+              tf2::Duration::max(),
               std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
           try {
             const auto status = future.wait_for(std::chrono::seconds(0));
