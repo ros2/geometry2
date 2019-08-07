@@ -266,7 +266,7 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
                       TransformReadyCallback callback)
 {
   bool timer_is_valid = false;
-  tf2::TransformableRequestHandle request_handle;
+  tf2::TransformableRequestHandle request_handle = 0u;
   {
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
     auto timer_and_request_it = timer_to_request_map_.find(timer_handle);
