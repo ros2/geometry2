@@ -47,6 +47,72 @@ void filter_callback(const geometry_msgs::msg::PointStamped & msg)
   filter_callback_fired++;
 }
 
+TEST(tf2_ros_message_filter, construction_and_destruction)
+{
+
+  auto node = rclcpp::Node::make_shared("test_message_filter_node");
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+
+  // Node constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  }
+
+  // Node constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer, "map", 10, node, std::chrono::milliseconds(100));
+  }
+
+  // Node interface constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+  }
+
+  // Node interface constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer,
+      "map",
+      10,
+      node->get_node_logging_interface(),
+      node->get_node_clock_interface(),
+      std::chrono::seconds(42));
+  }
+
+  message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
+  // Filter + node constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, buffer, "map", 10, node);
+  }
+
+  // Filter + node constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub, buffer, "map", 10, node, std::chrono::hours(1));
+  }
+
+  // Filter + node interface constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub, buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+  }
+
+  // Filter + node interface constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub,
+      buffer,
+      "map",
+      10,
+      node->get_node_logging_interface(),
+      node->get_node_clock_interface(),
+      std::chrono::microseconds(0));
+  }
+}
+
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
