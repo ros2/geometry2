@@ -36,6 +36,7 @@
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <Eigen/Eigen>
 #include <Eigen/Geometry>
+#include <tf2_ros/buffer_interface.h>
 
 namespace tf2
 {
