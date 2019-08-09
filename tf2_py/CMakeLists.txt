@@ -28,7 +28,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME tf2 PREFIX "_" SUFF
 ament_target_dependencies(${PROJECT_NAME} 
   "builtin_interfaces"
   "geometry_msgs"
-  "python"
   "rclpy"
   "tf2"
   "tf2_msgs"
