@@ -868,7 +868,7 @@ bool BufferCore::canTransform(const std::string& target_frame, const TimePoint& 
   if (warnFrameId("canTransform argument fixed_frame", fixed_frame))
     return false;
 
-  return canTransform(fixed_frame, source_frame, source_time, error_msg);
+  return canTransform(target_frame, fixed_frame, target_time) && canTransform(fixed_frame, source_frame, source_time, error_msg);
 }
 
 
