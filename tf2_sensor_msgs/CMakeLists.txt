@@ -19,6 +19,7 @@ set(required_dependencies
 
 ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
+find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 include_directories(include

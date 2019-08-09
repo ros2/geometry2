@@ -13,7 +13,6 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>builtin_interfaces</depend>
-  <depend>eigen</depend> <!-- needed by kdl interally -->
   <depend>geometry_msgs</depend>
   <depend>orocos_kdl</depend>
   <depend>tf2</depend>

@@ -14,8 +14,8 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
+find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
-message(STATUS "Using Eigen3 include dirs: ${EIGEN3_INCLUDE_DIR}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
@@ -30,10 +30,13 @@ if(BUILD_TESTING)
       "tf2"
       "tf2_ros")
     target_include_directories(tf2_eigen-test PUBLIC
-      ${EIGEN3_INCLUDE_DIR})
+      ${Eigen3_INCLUDE_DIRS})
   endif()
 endif()
 
-ament_export_include_directories(include ${EIGEN3_INCLUDE_DIR})
-ament_export_dependencies(tf2_ros)
+ament_export_include_directories(include)
+ament_export_dependencies(
+  eigen3_cmake_module
+  Eigen3
+  tf2_ros)
 ament_package()
