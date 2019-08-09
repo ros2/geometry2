@@ -16,7 +16,6 @@ find_package(tf2_ros REQUIRED)
 
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
-message(STATUS "Using Eigen3 include dirs: ${Eigen3_INCLUDE_DIRS}")
 
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
