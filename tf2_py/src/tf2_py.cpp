@@ -519,7 +519,7 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  tf2::Duration tp;
+
   if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
   transform.header.stamp = toMsg(time);
