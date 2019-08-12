@@ -107,11 +107,11 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
 
   PyObject *time_obj = PyObject_Call(builtin_interfaces_time, args, kwargs);
 
-  Py_DECREF(builtin_interfaces_time);
-  Py_DECREF(args);
-  Py_DECREF(kwargs);
-  Py_DECREF(sec);
   Py_DECREF(nanosec);
+  Py_DECREF(sec);
+  Py_DECREF(kwargs);
+  Py_DECREF(args);
+  Py_DECREF(builtin_interfaces_time);
 
   PyObject* pheader = PyObject_GetAttrString(pinst, "header");
   PyObject_SetAttrString(pheader, "stamp", time_obj);
@@ -333,10 +333,10 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
     PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds);
     
     PyObject *ob = PyObject_Call(rclpy_time, args, kwargs);
-    Py_DECREF(seconds);
     Py_DECREF(nanoseconds);
-    Py_DECREF(args);
+    Py_DECREF(seconds);
     Py_DECREF(kwargs);
+    Py_DECREF(args);
     Py_DECREF(rclpy_time);
     return ob;
   } else {
