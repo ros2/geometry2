@@ -88,9 +88,7 @@ void TransformListener::initThread(
   buffer_.setUsingDedicatedThread(true);
 }
 
-void TransformListener::subscription_callback(
-  const tf2_msgs::msg::TFMessage::SharedPtr msg,
-  bool is_static)
+void TransformListener::subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static)
 {
   const tf2_msgs::msg::TFMessage & msg_in = *msg;
   // TODO(tfoote) find a way to get the authority
