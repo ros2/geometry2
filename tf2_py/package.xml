@@ -23,10 +23,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>python_cmake_module</buildtool_depend>
 
+  <build_depend>geometry_msgs</build_depend>
+
   <depend>tf2</depend>
 
-  <exec_depend>rclpy</exec_depend>
   <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_pytest</test_depend>

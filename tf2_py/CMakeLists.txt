@@ -12,6 +12,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 
 find_package(python_cmake_module REQUIRED)
@@ -47,8 +48,9 @@ if(WIN32)
 endif()
 
 ament_target_dependencies(${PROJECT_NAME}
-  "PythonExtra"
+  "geometry_msgs"
   "tf2"
+  "PythonExtra"
 )
 
 install(TARGETS
