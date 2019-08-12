@@ -2,6 +2,7 @@
 
 #include <tf2/buffer_core.h>
 #include <tf2/exceptions.h>
+
 #include "python_compat.h"
 
 // Run x (a tf method, catching TF's exceptions and reraising them as Python exceptions)
@@ -65,8 +66,8 @@ static PyTypeObject buffer_core_Type = {
 # else
   PyVarObject_HEAD_INIT(NULL, 0)
 #endif
-  "_tf2.BufferCore",         /* name */
-  sizeof(buffer_core_t),     /* basicsize */
+  "_tf2.BufferCore",               /*name*/
+  sizeof(buffer_core_t),           /*basicsize*/
 };
 
 static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped* transform)
@@ -115,9 +116,10 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   PyObject* pheader = PyObject_GetAttrString(pinst, "header");
   PyObject_SetAttrString(pheader, "stamp", time_obj);
   Py_DECREF(time_obj);
-  
+
   PyObject_SetAttrString(pheader, "frame_id", stringToPython(transform->header.frame_id));
   Py_DECREF(pheader);
+
   PyObject *ptransform = PyObject_GetAttrString(pinst, "transform");
   PyObject *ptranslation = PyObject_GetAttrString(ptransform, "translation");
   PyObject *protation = PyObject_GetAttrString(ptransform, "rotation");
@@ -134,6 +136,7 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   PyObject_SetAttrString(protation, "z", PyFloat_FromDouble(transform->transform.rotation.z));
   PyObject_SetAttrString(protation, "w", PyFloat_FromDouble(transform->transform.rotation.w));
   Py_DECREF(protation);
+
   return pinst;
 }
 
@@ -472,6 +475,7 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
   if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
+
   transform.header.stamp = toMsg(time);
   
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
@@ -481,6 +485,7 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
     PyErr_SetString(PyExc_TypeError, "transform.translation must have members x, y, z");
     return NULL;
   }
+
   transform.transform.translation.x = PyFloat_AsDouble(pythonBorrowAttrString(translation, "x"));
   transform.transform.translation.y = PyFloat_AsDouble(pythonBorrowAttrString(translation, "y"));
   transform.transform.translation.z = PyFloat_AsDouble(pythonBorrowAttrString(translation, "z"));
@@ -490,11 +495,12 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
     PyErr_SetString(PyExc_TypeError, "transform.rotation must have members w, x, y, z");
     return NULL;
   }
+
   transform.transform.rotation.x = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "x"));
   transform.transform.rotation.y = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "y"));
   transform.transform.rotation.z = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "z"));
   transform.transform.rotation.w = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "w"));
-  
+
   bc->setTransform(transform, authority);
   Py_RETURN_NONE;
 }
@@ -573,7 +579,6 @@ static PyObject *_allFramesAsDot(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   static const char *keywords[] = { "time", NULL };
-
   tf2::TimePoint time;
   if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&", (char**)keywords, rostime_converter, &time))
     return NULL;

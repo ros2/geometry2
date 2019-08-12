@@ -54,14 +54,13 @@ class BufferClient(tf2_ros.BufferInterface):
         .. function:: __init__(ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0))
 
             Constructor.
-            
+
             :param node: The ROS2 node.
             :param ns: The namespace in which to look for a BufferServer.
             :param check_frequency: How frequently to check for updates to known transforms.
             :param timeout_padding: A constant timeout to add to blocking calls.
         """
         tf2_ros.BufferInterface.__init__(self)
-
         self.node = node
         self.action_client = ActionClient(node, LookupTransform, action_name=ns)
         self.check_frequency = check_frequency

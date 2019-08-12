@@ -61,7 +61,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         else:
             tf2.BufferCore.__init__(self)
         tf2_ros.BufferInterface.__init__(self)
-        
+
         # if debug:
         #     #Check to see if the service has already been advertised in this node
         #     try:
