@@ -313,22 +313,21 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
   tf2::CompactFrameID target_id, source_id;
-  tf2::TimePoint time;
+  tf2::TimePoint tf2_time;
   std::string error_string;
 
   if (!PyArg_ParseTuple(args, "ss", &target_frame, &source_frame))
     return NULL;
   WRAP(target_id = bc->_validateFrameId("get_latest_common_time", target_frame));
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
-  auto r = bc->_getLatestCommonTime(target_id, source_id, time, &error_string);
+  const tf2::TF2Error r = bc->_getLatestCommonTime(target_id, source_id, tf2_time, &error_string);
   if (r == tf2::TF2Error::NO_ERROR) {
     PyObject *rclpy_time = PyObject_GetAttrString(pModulerclpytime, "Time");
-    auto dbl = tf2::timeToSec(time);
-    auto sec = std::floor(dbl);
+    const builtin_interfaces::msg::Time time_msg = toMsg(tf2_time);
     PyObject *args = PyTuple_New(0);
     PyObject *kwargs = PyDict_New();
-    PyObject *seconds = Py_BuildValue("i", static_cast<int32_t>(sec));
-    PyObject *nanoseconds = Py_BuildValue("i", static_cast<uint32_t>((dbl - sec) * 1000000000.0));
+    PyObject *seconds = Py_BuildValue("i", time_msg.sec);
+    PyObject *nanoseconds = Py_BuildValue("i", time_msg.nanosec);
     PyDict_SetItemString(kwargs, "seconds", seconds);
     PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds);
     
