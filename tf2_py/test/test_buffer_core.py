@@ -37,7 +37,6 @@
 import time
 import unittest
 import rclpy
-from rclpy.executors import SingleThreadedExecutor
 from geometry_msgs.msg import TransformStamped
 from test_tf2_py._tf2_py import BufferCore
 from test_tf2_py._tf2_py import LookupException

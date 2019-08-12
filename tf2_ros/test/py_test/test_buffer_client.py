@@ -1,4 +1,4 @@
-# Copyright 2017 Open Source Robotics Foundation, Inc.
+# Copyright 2019 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@ import unittest
 import rclpy
 import threading
 
-from rclpy.action import ActionServer
 from tf2_ros.buffer_client import BufferClient
 from geometry_msgs.msg import TransformStamped
 from tf2_msgs.action import LookupTransform
 from tf2_py import BufferCore, TransformException, TimeoutException, \
     LookupException, InvalidArgumentException, ExtrapolationException, ConnectivityException
-from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
+from rclpy.executors import SingleThreadedExecutor
 from tf2_msgs.msg import TF2Error
 
 

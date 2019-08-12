@@ -46,7 +46,6 @@ class StaticTransformBroadcaster(Node):
             depth=1,
             durability=QoSDurabilityPolicy.RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL)
         self.pub_tf = self.create_publisher(TFMessage, "/tf_static", qos_profile=latching_qos)
-        #self.pub_tf = rospy.Publisher("/tf_static", TFMessage, queue_size=100, latch=True)
 
     def sendTransform(self, transform):
         if not isinstance(transform, list):
