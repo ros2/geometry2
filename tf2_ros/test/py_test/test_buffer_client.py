@@ -183,7 +183,7 @@ class TestBufferClient(unittest.TestCase):
 
         self.assertEqual(build_transform(
             'foo', 'bar', rclpy.time.Time().to_msg()), result)
-    
+
     def test_lookup_transform_fail(self):
         buffer_client = BufferClient(
             self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)

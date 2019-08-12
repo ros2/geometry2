@@ -53,7 +53,7 @@ class TestBuffer(unittest.TestCase):
         buffer = Buffer()
         clock = rclpy.clock.Clock()
         rclpy_time = clock.now()
-        
+
         transform = TransformStamped()
         transform.header.frame_id = "foo"
         transform.header.stamp = rclpy_time.to_msg()
@@ -65,11 +65,11 @@ class TestBuffer(unittest.TestCase):
         transform.transform.rotation.x = 0.0
         transform.transform.rotation.y = 0.0
         transform.transform.rotation.z = 0.0
-        
+
         self.assertEqual(buffer.set_transform(transform, "unittest"), None)
 
         self.assertEqual(buffer.can_transform("foo", "bar", rclpy_time), True)
-        
+
         output = buffer.lookup_transform("foo", "bar", rclpy_time)
         self.assertEqual(transform.child_frame_id, output.child_frame_id)
         self.assertEqual(transform.transform.translation.x, output.transform.translation.x)

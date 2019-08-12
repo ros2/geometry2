@@ -46,7 +46,7 @@ if(WIN32)
   set_properties(${PROJECT_NAME} "_RELWITHDEBINFO")
 endif()
 
-ament_target_dependencies(${PROJECT_NAME} 
+ament_target_dependencies(${PROJECT_NAME}
   "PythonExtra"
   "tf2"
 )

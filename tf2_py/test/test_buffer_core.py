@@ -255,7 +255,7 @@ class TestBufferClient(unittest.TestCase):
                 source_frame='baz',
                 time=rclpy.time.Time()
             )
-        
+
         self.assertEqual(LookupException, type(ex.exception))
 
 if __name__ == '__main__':
