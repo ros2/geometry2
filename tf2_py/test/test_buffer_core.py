@@ -39,8 +39,8 @@ import unittest
 import rclpy
 from rclpy.executors import SingleThreadedExecutor
 from geometry_msgs.msg import TransformStamped
-from tf2_py import BufferCore
-from tf2_py import LookupException
+from test_tf2_py._tf2_py import BufferCore
+from test_tf2_py._tf2_py import LookupException
 
 def build_transform(target_frame, source_frame, stamp):
     transform = TransformStamped()

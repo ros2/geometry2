@@ -9,37 +9,51 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra)
 endif()
-set(CMAKE_BUILD_TYPE Debug)
-find_package(ament_cmake REQUIRED)
-find_package(python_cmake_module REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(PythonLibs 3 REQUIRED)
-find_package(rclpy REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_msgs REQUIRED)
 
-include_directories(${PYTHON_INCLUDE_PATH})
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(tf2 REQUIRED)
+
+find_package(python_cmake_module REQUIRED)
+find_package(PythonExtra REQUIRED)
+
+set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
+
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+endif()
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py/__init__.py" "")
+
+ament_python_install_package(${PROJECT_NAME})
+
+function(set_properties _targetname _build_type)
+  set_target_properties(${_targetname} PROPERTIES
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+    RUNTIME_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+    OUTPUT_NAME "_${_targetname}${PythonExtra_EXTENSION_SUFFIX}"
+    SUFFIX "${PythonExtra_EXTENSION_EXTENSION}")
+endfunction()
 
 add_library(${PROJECT_NAME} SHARED src/tf2_py.cpp)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME tf2 PREFIX "_" SUFFIX ".so")
+set_properties(${PROJECT_NAME} "")
+if(WIN32)
+  set_properties(${PROJECT_NAME} "_DEBUG")
+  set_properties(${PROJECT_NAME} "_MINSIZEREL")
+  set_properties(${PROJECT_NAME} "_RELEASE")
+  set_properties(${PROJECT_NAME} "_RELWITHDEBINFO")
+endif()
 
 ament_target_dependencies(${PROJECT_NAME} 
-  "builtin_interfaces"
-  "geometry_msgs"
-  "rclpy"
+  "PythonExtra"
   "tf2"
-  "tf2_msgs"
 )
-
-ament_export_include_directories("include")
-ament_export_libraries(${PROJECT_NAME})
-ament_python_install_package(${PROJECT_NAME})
 
 install(TARGETS
   ${PROJECT_NAME}
-  DESTINATION ${PYTHON_INSTALL_DIR}
+  DESTINATION ${PYTHON_INSTALL_DIR}/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
@@ -48,7 +62,12 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_pytest REQUIRED)
 
-  ament_add_pytest_test(tf2_py_test test)
+  ament_add_pytest_test(tf2_py_test test
+    PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}"
+    APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}
+  )
 endif()
+
+set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
 
 ament_package()

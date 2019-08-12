@@ -34,4 +34,4 @@
 #* 
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-from _tf2 import *
+from tf2_py._tf2_py import *

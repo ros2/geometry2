@@ -681,19 +681,19 @@ extern "C" void init_tf2()
 {
   if (!staticInit())
     return;
-  moduleInit(Py_InitModule("_tf2", module_methods));
+  moduleInit(Py_InitModule("_tf2_py", module_methods));
 }
 
 #else
 struct PyModuleDef tf_module = {
   PyModuleDef_HEAD_INIT, // base
-  "_tf2",                // name
+  "_tf2_py",                // name
   NULL,                  // docstring
   -1,                    // state size (but we're using globals)
   module_methods         // methods
 };
 
-PyMODINIT_FUNC PyInit__tf2()
+PyMODINIT_FUNC PyInit__tf2_py()
 {
   if (!staticInit())
     return NULL;
