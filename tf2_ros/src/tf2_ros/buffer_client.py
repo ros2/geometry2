@@ -65,7 +65,7 @@ class BufferClient(tf2_ros.BufferInterface):
         self.action_client = ActionClient(node, LookupTransform, action_name=ns)
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
-    
+
     # lookup, simple api 
     def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
@@ -165,16 +165,16 @@ class BufferClient(tf2_ros.BufferInterface):
     def __process_goal(self, goal):
         if not self.action_client.server_is_ready():
             raise tf2.TimeoutException("The BufferServer is not ready")
-        
+
         event = threading.Event()
 
         def unblock(future):
             nonlocal event
             event.set()
-            
+
         send_goal_future = self.action_client.send_goal_async(goal)
         send_goal_future.add_done_callback(unblock)
-        
+
         def unblock_by_timeout():
             nonlocal send_goal_future, goal, event
             clock = Clock()
@@ -184,13 +184,13 @@ class BufferClient(tf2_ros.BufferInterface):
             while not send_goal_future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
-                # TODO(vinnamkim): rclpy.Rate is not ready 
+                # TODO(vinnamkim): rclpy.Rate is not ready
                 # See https://github.com/ros2/rclpy/issues/186
                 #r = rospy.Rate(self.check_frequency)
                 sleep(1.0 / self.check_frequency)
 
             event.set()
-        
+
         t = threading.Thread(target=unblock_by_timeout)
         t.start()
 
@@ -204,7 +204,7 @@ class BufferClient(tf2_ros.BufferInterface):
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server")
 
         goal_handle = send_goal_future.result()
-        
+
         if not goal_handle.accepted:
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with accepted status. Something is likely wrong with the server.")
 

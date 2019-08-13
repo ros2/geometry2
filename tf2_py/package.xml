@@ -5,7 +5,7 @@
   <version>0.9.1</version>
   <description>The tf2_py package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
 
 
@@ -35,7 +35,7 @@
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>geometry_msgs</test_depend>
   <test_depend>rclpy</test_depend>
-  
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

@@ -50,7 +50,7 @@ static PyObject *pModulerclpytime = NULL;
 static PyObject *pModulebuiltininterfacesmsgs = NULL;
 static PyObject *pModulegeometrymsgs = NULL;
 static PyObject *tf2_exception = NULL;
-static PyObject *tf2_connectivityexception = NULL, *tf2_lookupexception = NULL, *tf2_extrapolationexception = NULL, 
+static PyObject *tf2_connectivityexception = NULL, *tf2_lookupexception = NULL, *tf2_extrapolationexception = NULL,
                 *tf2_invalidargumentexception = NULL, *tf2_timeoutexception = NULL;
 
 struct buffer_core_t {
@@ -124,6 +124,7 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   PyObject *ptranslation = PyObject_GetAttrString(ptransform, "translation");
   PyObject *protation = PyObject_GetAttrString(ptransform, "rotation");
   Py_DECREF(ptransform);
+
   PyObject_SetAttrString(pinst, "child_frame_id", stringToPython(transform->child_frame_id));
 
   PyObject_SetAttrString(ptranslation, "x", PyFloat_FromDouble(transform->transform.translation.x));
@@ -178,7 +179,7 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
     *rt = tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
     return 1;
   }
-  
+
   PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
   return 0;
 }
@@ -188,7 +189,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
   if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
     PyObject *sec = pythonBorrowAttrString(obj, "sec");
     PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
-    *rt = std::chrono::seconds(PyLong_AsLong(sec)) + 
+    *rt = std::chrono::seconds(PyLong_AsLong(sec)) +
       std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
     return 1;
   }
@@ -200,7 +201,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     *rt = std::chrono::duration_cast<tf2::Duration>(ns);
     return 1;
   }
-  
+
   PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
   return 0;
 }
@@ -330,7 +331,7 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
     PyObject *nanoseconds = Py_BuildValue("i", time_msg.nanosec);
     PyDict_SetItemString(kwargs, "seconds", seconds);
     PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds);
-    
+
     PyObject *ob = PyObject_Call(rclpy_time, args, kwargs);
     Py_DECREF(nanoseconds);
     Py_DECREF(seconds);
@@ -476,7 +477,7 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
     return NULL;
 
   transform.header.stamp = toMsg(time);
-  
+
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
 
   PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
@@ -640,7 +641,7 @@ bool staticInit() {
     return false;
   }
 
-  if(pModulerclpytime == NULL) 
+  if(pModulerclpytime == NULL)
   {
     printf("Cannot load rclpy.time.Time module");
     return false;

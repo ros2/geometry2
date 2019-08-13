@@ -67,7 +67,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         #     try:
         #         m = rosgraph.masterapi.Master(rospy.get_name())
         #         m.lookupService('~tf2_frames')
-        #     except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):   
+        #     except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):
         #         self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
 
     def __get_frames(self, req):
@@ -120,10 +120,10 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         clock = rclpy.timer.Clock()
         if timeout != Duration():
             start_time = clock.now()
-            # TODO(vinnamkim): rclpy.Rate is not ready 
+            # TODO(vinnamkim): rclpy.Rate is not ready
             # See https://github.com/ros2/rclpy/issues/186
             # r = rospy.Rate(20)
-            while (clock.now() < start_time + timeout and 
+            while (clock.now() < start_time + timeout and
                    not self.can_transform_core(target_frame, source_frame, time)[0] and
                    (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
                 # r.sleep()
@@ -155,10 +155,10 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         clock = rclpy.timer.Clock()
         if timeout != Duration():
             start_time = clock.now()
-            # TODO(vinnamkim): rclpy.Rate is not ready 
+            # TODO(vinnamkim): rclpy.Rate is not ready
             # See https://github.com/ros2/rclpy/issues/186
             # r = rospy.Rate(20)
-            while (clock.now() < start_time + timeout and 
+            while (clock.now() < start_time + timeout and
                    not self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0] and
                    (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
                 # r.sleep()
