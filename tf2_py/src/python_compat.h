@@ -26,7 +26,7 @@ inline PyObject *stringToPython(const char *input)
 inline std::string stringFromPython(PyObject * input)
 {
   Py_ssize_t size;
-  char * data;
+  const char * data;
 #if PY_MAJOR_VERSION >= 3
   data = PyUnicode_AsUTF8AndSize(input, &size);
 #else
@@ -45,9 +45,9 @@ inline PyObject *pythonImport(const std::string & name)
 
 inline PyObject *pythonBorrowAttrString(PyObject* o, const char *name)
 {
-    PyObject *r = PyObject_GetAttrString(o, name);
-    Py_XDECREF(r);
-    return r;
+  PyObject *r = PyObject_GetAttrString(o, name);
+  Py_XDECREF(r);
+  return r;
 }
 
 #endif
