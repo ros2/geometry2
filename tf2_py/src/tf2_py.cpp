@@ -58,18 +58,6 @@ struct buffer_core_t {
   tf2::BufferCore *bc;
 };
 
-
-static PyTypeObject buffer_core_Type = {
-#if PY_MAJOR_VERSION < 3
-  PyObject_HEAD_INIT(NULL)
-  0,                               /*size*/
-# else
-  PyVarObject_HEAD_INIT(NULL, 0)
-#endif
-  "_tf2.BufferCore",               /*name*/
-  sizeof(buffer_core_t),           /*basicsize*/
-};
-
 static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped* transform)
 {
   PyObject *pclass, *pargs, *pinst = NULL;
@@ -208,6 +196,8 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 
 static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
 {
+  (void)kw;
+
   tf2::Duration cache_time(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME);
 
   if (!PyArg_ParseTuple(args, "|O&", rosduration_converter, &cache_time))
@@ -218,24 +208,16 @@ static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
   return 0;
 }
 
-/* This may need to be implemented later if we decide to have it in the core
-static PyObject *getTFPrefix(PyObject *self, PyObject *args)
-{
-  if (!PyArg_ParseTuple(args, ""))
-    return NULL;
-  tf::Transformer *t = ((transformer_t*)self)->t;
-  return stringToPython(t->getTFPrefix());
-}
-*/
-
 static PyObject *allFramesAsYAML(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   return stringToPython(bc->allFramesAsYAML());
 }
 
 static PyObject *allFramesAsString(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   return stringToPython(bc->allFramesAsString());
 }
@@ -553,6 +535,7 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
 
 static PyObject *clear(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   bc->clear();
   Py_RETURN_NONE;
@@ -569,6 +552,7 @@ static PyObject *_frameExists(PyObject *self, PyObject *args)
 
 static PyObject *_getFrameStrings(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   std::vector< std::string > ids;
   bc->_getFrameStrings(ids);
@@ -588,29 +572,79 @@ static PyObject *_allFramesAsDot(PyObject *self, PyObject *args, PyObject *kw)
 
 static struct PyMethodDef buffer_core_methods[] =
 {
-  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS},
-  {"all_frames_as_string", allFramesAsString, METH_VARARGS},
-  {"set_transform", setTransform, METH_VARARGS},
-  {"set_transform_static", setTransformStatic, METH_VARARGS},
-  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS},
-  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_VARARGS | METH_KEYWORDS},
-  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS},
-  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS},
-  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS},
-  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS},
-  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS},
-  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS},
-  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS},
-  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS},
+  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS, NULL},
+  {"all_frames_as_string", allFramesAsString, METH_VARARGS, NULL},
+  {"set_transform", setTransform, METH_VARARGS, NULL},
+  {"set_transform_static", setTransformStatic, METH_VARARGS, NULL},
+  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS, NULL},
+  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS, NULL},
+  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS, NULL},
+  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS, NULL},
   //{"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_VARARGS | METH_KEYWORDS},
   //{"lookupTwistFullCore", lookupTwistFullCore, METH_VARARGS},
-  //{"getTFPrefix", (PyCFunction)getTFPrefix, METH_VARARGS},
-  {NULL,          NULL}
+  {NULL, NULL, 0, NULL}
 };
 
 static PyMethodDef module_methods[] = {
   // {"Transformer", mkTransformer, METH_VARARGS},
-  {0, 0, 0},
+  {NULL, NULL, 0, NULL},
+};
+
+static PyTypeObject buffer_core_Type = {
+  PyVarObject_HEAD_INIT(NULL, 0)
+  "_tf2.BufferCore",                        /* tp_name */
+  sizeof(buffer_core_t),                    /* tp_basicsize */
+  0,                                        /* tp_itemsize */
+  NULL,                                     /* tp_dealloc */
+  NULL,                                     /* tp_print */
+  NULL,                                     /* tp_getattr */
+  NULL,                                     /* tp_setattr */
+  NULL,                                     /* tp_as_async */
+  NULL,                                     /* tp_repr */
+  NULL,                                     /* tp_as_number */
+  NULL,                                     /* tp_as_sequence */
+  NULL,                                     /* tp_as_mapping */
+  NULL,                                     /* tp_hash */
+  NULL,                                     /* tp_call */
+  NULL,                                     /* tp_str */
+  NULL,                                     /* tp_getattro */
+  NULL,                                     /* tp_setattro */
+  NULL,                                     /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
+  NULL,                                     /* tp_doc */
+  NULL,                                     /* tp_traverse */
+  NULL,                                     /* tp_clear */
+  NULL,                                     /* tp_richcompare */
+  0,                                        /* tp_weaklistoffset */
+  NULL,                                     /* tp_iter */
+  NULL,                                     /* tp_iternext */
+  buffer_core_methods,                      /* tp_methods */
+  NULL,                                     /* tp_members */
+  NULL,                                     /* tp_getset */
+  NULL,                                     /* tp_base */
+  NULL,                                     /* tp_dict */
+  NULL,                                     /* tp_descr_get */
+  NULL,                                     /* tp_descr_set */
+  0,                                        /* tp_dictoffset */
+  BufferCore_init,                          /* tp_init */
+  PyType_GenericAlloc,                      /* tp_alloc */
+  PyType_GenericNew,                        /* tp_new */
+  NULL,                                     /* tp_free */
+  NULL,                                     /* tp_is_gc */
+  NULL,                                     /* tp_bases */
+  NULL,                                     /* tp_mro */
+  NULL,                                     /* tp_cache */
+  NULL,                                     /* tp_subclasses */
+  NULL,                                     /* tp_weaklist */
+  NULL,                                     /* tp_del */
+  0,                                        /* tp_version_tag */
+  NULL,                                     /* tp_finalize */
 };
 
 bool staticInit() {
@@ -659,11 +693,6 @@ bool staticInit() {
     return false;
   }
 
-  buffer_core_Type.tp_alloc = PyType_GenericAlloc;
-  buffer_core_Type.tp_new = PyType_GenericNew;
-  buffer_core_Type.tp_init = BufferCore_init;
-  buffer_core_Type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-  buffer_core_Type.tp_methods = buffer_core_methods;
   if (PyType_Ready(&buffer_core_Type) != 0)
     return false;
   return true;
@@ -681,21 +710,16 @@ PyObject *moduleInit(PyObject *m) {
   return m;
 }
 
-#if PY_MAJOR_VERSION < 3
-extern "C" void init_tf2()
-{
-  if (!staticInit())
-    return;
-  moduleInit(Py_InitModule("_tf2_py", module_methods));
-}
-
-#else
 struct PyModuleDef tf_module = {
-  PyModuleDef_HEAD_INIT, // base
-  "_tf2_py",                // name
-  NULL,                  // docstring
-  -1,                    // state size (but we're using globals)
-  module_methods         // methods
+  PyModuleDef_HEAD_INIT, /* m_base */
+  "_tf2_py",             /* m_name */
+  NULL,                  /* m_doc */
+  -1,                    /* m_size - state size (but we're using globals) */
+  module_methods,        /* m_methods */
+  NULL,                  /* m_slots */
+  NULL,                  /* m_traverse */
+  NULL,                  /* m_clear */
+  NULL,                  /* m_free */
 };
 
 PyMODINIT_FUNC PyInit__tf2_py()
@@ -704,4 +728,3 @@ PyMODINIT_FUNC PyInit__tf2_py()
     return NULL;
   return moduleInit(PyModule_Create(&tf_module));
 }
-#endif
