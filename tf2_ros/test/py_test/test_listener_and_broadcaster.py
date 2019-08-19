@@ -18,6 +18,7 @@ import rclpy
 from geometry_msgs.msg import TransformStamped
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_broadcaster import TransformBroadcaster
+from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros import ExtrapolationException
 
@@ -46,10 +47,10 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         cls.buffer = Buffer()
         cls.broadcaster = TransformBroadcaster()
+        cls.static_broadcaster = StaticTransformBroadcaster()
         cls.listener = TransformListener(buffer=cls.buffer)
 
         cls.executor = rclpy.executors.SingleThreadedExecutor()
-        cls.executor.add_node(cls.broadcaster)
         cls.executor.add_node(cls.listener)
         pass
 
@@ -59,7 +60,8 @@ class TestBroadcasterAndListener(unittest.TestCase):
         pass
 
     def setUp(self):
-        self.buffer.clear()
+        self.buffer = Buffer()
+        self.listener.buffer = self.buffer
 
     def broadcast_transform(self, target_frame, source_frame, time_stamp):
         broadcast_transform = build_transform(
@@ -71,7 +73,17 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         return broadcast_transform
 
-    def test_broadcast_and_listen(self):
+    def broadcast_static_transform(self, target_frame, source_frame, time_stamp):
+        broadcast_transform = build_transform(
+            target_frame=target_frame, source_frame=source_frame, stamp=time_stamp)
+
+        self.static_broadcaster.sendTransform(broadcast_transform)
+
+        self.executor.spin_once()
+
+        return broadcast_transform
+
+    def test_broadcaster_and_listener(self):
         time_stamp = rclpy.time.Time(seconds=1, nanoseconds=0).to_msg()
 
         broadcasted_transform = self.broadcast_transform(
@@ -82,21 +94,19 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         self.assertTrue(broadcasted_transform, listened_transform)
 
-        pass
-
     def test_extrapolation_exception(self):
         self.broadcast_transform(
             target_frame='foo', source_frame='bar',
-            time_stamp=rclpy.time.Time(seconds=1, nanoseconds=0).to_msg())
+            time_stamp=rclpy.time.Time(seconds=0.3, nanoseconds=0).to_msg())
 
         self.broadcast_transform(
             target_frame='foo', source_frame='bar',
-            time_stamp=rclpy.time.Time(seconds=0.5, nanoseconds=0).to_msg())
+            time_stamp=rclpy.time.Time(seconds=0.2, nanoseconds=0).to_msg())
 
         with self.assertRaises(ExtrapolationException) as e:
             self.buffer.lookup_transform(
                 target_frame='foo', source_frame='bar',
-                time=rclpy.time.Time(seconds=0.25, nanoseconds=0).to_msg())
+                time=rclpy.time.Time(seconds=0.1, nanoseconds=0).to_msg())
 
         self.assertTrue(
             'Lookup would require extrapolation into the past' in str(e.exception))
@@ -104,10 +114,22 @@ class TestBroadcasterAndListener(unittest.TestCase):
         with self.assertRaises(ExtrapolationException) as e:
             self.buffer.lookup_transform(
                 target_frame='foo', source_frame='bar',
-                time=rclpy.time.Time(seconds=1.25, nanoseconds=0).to_msg())
+                time=rclpy.time.Time(seconds=0.4, nanoseconds=0).to_msg())
 
         self.assertTrue(
             'Lookup would require extrapolation into the future' in str(e.exception))
+
+    def test_static_broadcaster_and_listener(self):
+        broadcasted_transform = self.broadcast_static_transform(
+            target_frame='foo', source_frame='bar',
+            time_stamp=rclpy.time.Time(seconds=1.1, nanoseconds=0).to_msg())
+
+        listened_transform = self.buffer.lookup_transform(
+            target_frame='foo', source_frame='bar',
+            time=rclpy.time.Time(seconds=1.5, nanoseconds=0).to_msg())
+
+        self.assertTrue(broadcasted_transform, listened_transform)
+
 
 if __name__ == '__main__':
     unittest.main()
