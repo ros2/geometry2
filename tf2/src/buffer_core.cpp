@@ -280,7 +280,23 @@ bool BufferCore::setTransformImpl(const tf2::Transform& transform_in, const std:
     CompactFrameID frame_number = lookupOrInsertFrameNumber(stripped_child_frame_id);
     TimeCacheInterfacePtr frame = getFrame(frame_number);
     if (frame == NULL)
+    {
       frame = allocateFrame(frame_number, is_static);
+    }
+    else 
+    {
+      // Overwrite TimeCacheInterface type with a current input
+      const TimeCache* time_cache_ptr = dynamic_cast<TimeCache*>(frame.get());
+      const StaticCache* static_cache_ptr = dynamic_cast<StaticCache*>(frame.get());
+      if (time_cache_ptr && is_static)
+      {
+        frame = allocateFrame(frame_number, is_static);
+      }
+      else if (static_cache_ptr && !is_static)
+      {
+        frame = allocateFrame(frame_number, is_static);
+      }
+    }
 
     if (frame->insertData(TransformStorage(stamp, transform_in.getRotation(), transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
     {
