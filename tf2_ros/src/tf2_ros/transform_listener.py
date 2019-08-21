@@ -27,39 +27,59 @@
 
 # author: Wim Meeussen
 
-from rclpy.node import Node
+from rclpy.executors import SingleThreadedExecutor
+from rclpy.qos import QoSProfile
 import tf2_ros
 from tf2_msgs.msg import TFMessage
+from threading import Thread
 
-class TransformListener(Node):
+class TransformListener:
     """
     :class:`TransformListener` is a convenient way to listen for coordinate frame transformation info.
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer, name=None):
+    def __init__(self, buffer, node, spin_thread=True, qos=QoSProfile(depth=100)):
         """
-        .. function:: __init__(buffer, name=None)
+        .. function:: __init__(buffer, node, spin_thread=True, qos=QoSProfile(depth=100))
 
             Constructor.
 
             :param buffer: The buffer to propagate changes to when tf info updates.
-            :param name: The name of ROS2 node.
+            :param node: The ROS2 node.
+            :param spin_thread: Whether the listener is spinning or not.
+            :param qos: A QoSProfile or a history depth to apply to subscribers.
         """
-        super().__init__('transform_listener_impl' if name is None else name)
         self.buffer = buffer
-        self.tf_sub = self.create_subscription(TFMessage, 'tf', self.callback)
-        self.tf_static_sub = self.create_subscription(TFMessage, 'tf_static', self.static_callback)
-    
+        self.node = node
+        self.tf_sub = node.create_subscription(TFMessage, 'tf', self.callback, qos)
+        self.tf_static_sub = node.create_subscription(TFMessage, 'tf_static', self.static_callback, qos)
+
+        if spin_thread is True:
+            self.executor = SingleThreadedExecutor()
+
+            def run_func():
+                self.executor.add_node(self.node)
+                self.executor.spin()
+                self.executor.remove_node(self.node)
+
+            self.dedicated_listener_thread = Thread(target=run_func)
+            self.dedicated_listener_thread.start()
+
     def __del__(self):
+        print('del')
+        if hasattr(self, 'dedicated_listener_thread') and hasattr(self, 'executor'):
+            self.executor.shutdown()
+            self.dedicated_listener_thread.join()
+
         self.unregister()
 
     def unregister(self):
         """
         Unregisters all tf subscribers.
         """
-        self.destroy_subscription(self.tf_sub)
-        self.destroy_subscription(self.tf_static_sub)
+        self.tf_sub.destroy()
+        self.tf_static_sub.destroy()
 
     def callback(self, data):
         who = str("default_authority")

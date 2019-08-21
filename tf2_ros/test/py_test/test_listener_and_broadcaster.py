@@ -46,12 +46,14 @@ class TestBroadcasterAndListener(unittest.TestCase):
         rclpy.init()
 
         cls.buffer = Buffer()
-        cls.broadcaster = TransformBroadcaster()
-        cls.static_broadcaster = StaticTransformBroadcaster()
-        cls.listener = TransformListener(buffer=cls.buffer)
+        cls.node = rclpy.create_node('test')
+        cls.broadcaster = TransformBroadcaster(cls.node)
+        cls.static_broadcaster = StaticTransformBroadcaster(cls.node)
+        cls.listener = TransformListener(
+            buffer=cls.buffer, node=cls.node, spin_thread=False)
 
         cls.executor = rclpy.executors.SingleThreadedExecutor()
-        cls.executor.add_node(cls.listener)
+        cls.executor.add_node(cls.node)
         pass
 
     @classmethod
