@@ -42,6 +42,8 @@
 #include <message_filters/message_traits.h>
 #include <message_filters/simple_filter.h>
 #include <rclcpp/rclcpp.hpp>
+#include <tf2/buffer_core_interface.h>
+#include <tf2/time.h>
 
 #include <tf2_ros/buffer.h>
 
