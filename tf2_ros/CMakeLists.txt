@@ -64,6 +64,11 @@ add_executable(static_transform_publisher
 target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
 )
+ament_target_dependencies(static_transform_publisher
+  "geometry_msgs"
+  "rclcpp"
+  "tf2_msgs"
+)
 
 add_executable(tf2_echo
   src/tf2_echo.cpp
@@ -71,12 +76,19 @@ add_executable(tf2_echo
 target_link_libraries(tf2_echo
   ${PROJECT_NAME}
 )
+ament_target_dependencies(tf2_echo
+  "rclcpp"
+)
 
 add_executable(tf2_monitor
   src/tf2_monitor.cpp
 )
 target_link_libraries(tf2_monitor
   ${PROJECT_NAME}
+)
+ament_target_dependencies(tf2_monitor
+  "rclcpp"
+  "tf2_msgs"
 )
 
 # Install rules
