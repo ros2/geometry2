@@ -23,13 +23,7 @@ find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
-include_directories(include
-  ${geometry_msgs_INCLUDE_DIRS}
-  ${message_filters_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-  ${tf2_INCLUDE_DIRS}
-  ${tf2_msgs_INCLUDE_DIRS}
-  )
+include_directories(include)
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
@@ -42,13 +36,13 @@ add_library(${PROJECT_NAME} SHARED
   src/static_transform_broadcaster.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}
-  ${geometry_msgs_LIBRARIES}
-  ${message_filters_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${tf2_LIBRARIES}
-  ${tf2_msgs_LIBRARIES}
-  )
+ament_target_dependencies(${PROJECT_NAME}
+  "geometry_msgs"
+  "message_filters"
+  "rclcpp"
+  "tf2"
+  "tf2_msgs"
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "TF2_ROS_BUILDING_DLL")
 
@@ -69,33 +63,33 @@ add_executable(static_transform_publisher
 )
 target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
-  ${geometry_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${tf2_LIBRARIES}
-  ${tf2_msgs_LIBRARIES}
-  )
+)
+ament_target_dependencies(static_transform_publisher
+  "geometry_msgs"
+  "rclcpp"
+  "tf2_msgs"
+)
 
 add_executable(tf2_echo
   src/tf2_echo.cpp
 )
 target_link_libraries(tf2_echo
   ${PROJECT_NAME}
-  ${geometry_msgs_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${tf2_LIBRARIES}
-  ${tf2_msgs_LIBRARIES}
-  )
+)
+ament_target_dependencies(tf2_echo
+  "rclcpp"
+)
 
-  add_executable(tf2_monitor
-    src/tf2_monitor.cpp
-  )
-  target_link_libraries(tf2_monitor
-    ${PROJECT_NAME}
-    ${geometry_msgs_LIBRARIES}
-    ${rclcpp_LIBRARIES}
-    ${tf2_LIBRARIES}
-    ${tf2_msgs_LIBRARIES}
-    )
+add_executable(tf2_monitor
+  src/tf2_monitor.cpp
+)
+target_link_libraries(tf2_monitor
+  ${PROJECT_NAME}
+)
+ament_target_dependencies(tf2_monitor
+  "rclcpp"
+  "tf2_msgs"
+)
 
 # Install rules
 install(TARGETS
