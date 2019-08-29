@@ -27,6 +27,7 @@
 
 # author: Wim Meeussen
 
+from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
@@ -66,8 +67,13 @@ class TransformListener:
                 )
         self.buffer = buffer
         self.node = node
-        self.tf_sub = node.create_subscription(TFMessage, 'tf', self.callback, qos)
-        self.tf_static_sub = node.create_subscription(TFMessage, 'tf_static', self.static_callback, static_qos)
+        # Default callback group is mutually exclusive, which would prevent waiting for transforms
+        # from another callback in the same group.
+        self.group = ReentrantCallbackGroup()
+        self.tf_sub = node.create_subscription(
+            TFMessage, 'tf', self.callback, qos, callback_group=self.group)
+        self.tf_static_sub = node.create_subscription(
+            TFMessage, 'tf_static', self.static_callback, static_qos, callback_group=self.group)
 
         if spin_thread is True:
             self.executor = SingleThreadedExecutor()
