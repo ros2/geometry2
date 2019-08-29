@@ -28,6 +28,8 @@
 # author: Wim Meeussen
 
 from rclpy.executors import SingleThreadedExecutor
+from rclpy.qos import DurabilityPolicy
+from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 import tf2_ros
 from tf2_msgs.msg import TFMessage
@@ -39,7 +41,7 @@ class TransformListener:
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer, node, spin_thread=True, qos=QoSProfile(depth=100)):
+    def __init__(self, buffer, node, spin_thread=True, qos=None, static_qos=None):
         """
         .. function:: __init__(buffer, node, spin_thread=True, qos=QoSProfile(depth=100))
 
@@ -50,10 +52,22 @@ class TransformListener:
             :param spin_thread: Whether the listener is spinning or not.
             :param qos: A QoSProfile or a history depth to apply to subscribers.
         """
+        if qos is None:
+            qos = QoSProfile(
+                depth=100,
+                durability=DurabilityPolicy.VOLATILE,
+                history=HistoryPolicy.KEEP_LAST,
+                )
+        if static_qos is None:
+            static_qos = QoSProfile(
+                depth=100,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                history=HistoryPolicy.KEEP_LAST,
+                )
         self.buffer = buffer
         self.node = node
         self.tf_sub = node.create_subscription(TFMessage, 'tf', self.callback, qos)
-        self.tf_static_sub = node.create_subscription(TFMessage, 'tf_static', self.static_callback, qos)
+        self.tf_static_sub = node.create_subscription(TFMessage, 'tf_static', self.static_callback, static_qos)
 
         if spin_thread is True:
             self.executor = SingleThreadedExecutor()

@@ -30,6 +30,8 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from rclpy.qos import DurabilityPolicy
+from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import TransformStamped
@@ -39,7 +41,7 @@ class StaticTransformBroadcaster:
     :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"/tf_static"`` message topic.
     """
 
-    def __init__(self, node, qos=QoSProfile(depth=100)):
+    def __init__(self, node, qos=None):
         """
         .. function:: __init__(node, qos=QoSProfile(depth=100))
 
@@ -48,11 +50,20 @@ class StaticTransformBroadcaster:
             :param node: The ROS2 node.
             :param qos: A QoSProfile or a history depth to apply to the publisher.
         """
+        if qos is None:
+            qos = QoSProfile(
+                depth=100,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                history=HistoryPolicy.KEEP_LAST,
+                )
         self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
 
     def sendTransform(self, transform):
         if not isinstance(transform, list):
-            transform = [transform]
+            if hasattr(transform, '__iter__'):
+                transform = list(transform)
+            else:
+                transform = [transform]
         self.pub_tf.publish(TFMessage(transforms=transform))
 
 
