@@ -97,8 +97,8 @@ class TransformListener:
         """
         Unregisters all tf subscribers.
         """
-        self.tf_sub.destroy()
-        self.tf_static_sub.destroy()
+        self.node.destroy_subscription(self.tf_sub)
+        self.node.destroy_subscription(self.tf_static_sub)
 
     def callback(self, data):
         who = str("default_authority")
