@@ -87,7 +87,6 @@ class TransformListener:
             self.dedicated_listener_thread.start()
 
     def __del__(self):
-        print('del')
         if hasattr(self, 'dedicated_listener_thread') and hasattr(self, 'executor'):
             self.executor.shutdown()
             self.dedicated_listener_thread.join()
