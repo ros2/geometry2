@@ -21,12 +21,11 @@
 
   <depend>message_filters</depend>
   <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
   <depend>tf2</depend>
   <depend>tf2_msgs</depend>
 
   <!-- TODO(tfoote) dependencies from unported sections restore when ported
-  <depend>actionlib</depend>
-  <depend>actionlib_msgs</depend>
   <depend>xmlrpcpp</depend> -->
   <!-- <build_depend version_gte="1.11.1">message_filters</build_depend> -->
   <!-- <build_depend>rosgraph</build_depend> -->
