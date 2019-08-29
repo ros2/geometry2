@@ -34,23 +34,16 @@
 *
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
+#include <string>
+
+#include <tf2/exceptions.h>
+
+#include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
 #include <tf2_ros/buffer_server.h>
 
 namespace tf2_ros
 {
-  BufferServer::BufferServer(const Buffer& buffer, const std::string& ns, bool auto_start, tf2::Duration check_period): 
-    buffer_(buffer),
-    server_(ros::NodeHandle(),
-            ns,
-            boost::bind(&BufferServer::goalCB, this, _1),
-            boost::bind(&BufferServer::cancelCB, this, _1),
-            auto_start)
-  {
-    ros::NodeHandle n;
-    check_timer_ = n.createTimer(check_period, boost::bind(&BufferServer::checkTransforms, this, _1));
-  }
-
-  void BufferServer::checkTransforms(const builtin_interfaces::msg::TimerEvent& e)
+  void BufferServer::checkTransforms()
   {
     std::unique_lock<std::mutex> lock(mutex_);
     for(std::list<GoalInfo>::iterator it = active_goals_.begin(); it != active_goals_.end();)
@@ -59,59 +52,81 @@ namespace tf2_ros
 
       //we want to lookup a transform if the time on the goal
       //has expired, or a transform is available
-      if(canTransform(info.handle) || info.end_time < tf2::get_now())
+      if(canTransform(info.handle))
       {
-        tf2_msgs::LookupTransformResult result;
+        auto result = std::make_shared<LookupTransformAction::Result>();
 
         //try to populate the result, catching exceptions if they occur
         try
         {
-          result.transform = lookupTransform(info.handle);
+          result->transform = lookupTransform(info.handle);
+
+          RCLCPP_DEBUG(
+            logger_,
+            "Can transform for goal %s",
+            rclcpp_action::to_string(info.handle->get_goal_id()).c_str());
+
+          info.handle->succeed(result);
         }
         catch (tf2::ConnectivityException &ex)
         {
-          result.error.error = result.error.CONNECTIVITY_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.CONNECTIVITY_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
         catch (tf2::LookupException &ex)
         {
-          result.error.error = result.error.LOOKUP_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.LOOKUP_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
         catch (tf2::ExtrapolationException &ex)
         {
-          result.error.error = result.error.EXTRAPOLATION_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.EXTRAPOLATION_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
         catch (tf2::InvalidArgumentException &ex)
         {
-          result.error.error = result.error.INVALID_ARGUMENT_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.INVALID_ARGUMENT_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
         catch (tf2::TimeoutException &ex)
         {
-          result.error.error = result.error.TIMEOUT_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.TIMEOUT_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
         catch (tf2::TransformException &ex)
         {
-          result.error.error = result.error.TRANSFORM_ERROR;
-          result.error.error_string = ex.what();
+          result->error.error = result->error.TRANSFORM_ERROR;
+          result->error.error_string = ex.what();
+          info.handle->abort(result);
         }
 
-        //make sure to pass the result to the client
-        //even failed transforms are considered a success
-        //since the request was successfully processed
-        it = active_goals_.erase(it);
-        info.handle.setSucceeded(result);
-      }
-      else
+      } else if (info.end_time < tf2::get_now()) {
+        // Timeout
+        auto result = std::make_shared<LookupTransformAction::Result>();
+        info.handle->abort(result);
+      } else {
         ++it;
+      }
+
+      // Remove goal if it has terminated
+      if (!info.handle->is_active()) {
+        it = active_goals_.erase(it);
+      }
     }
   }
 
-  void BufferServer::cancelCB(GoalHandle gh)
+  rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
   {
+    RCLCPP_DEBUG(
+      logger_,
+      "Cancel request for goal %s",
+      rclcpp_action::to_string(gh->get_goal_id()).c_str());
+
     std::unique_lock<std::mutex> lock(mutex_);
     //we need to find the goal in the list and remove it... also setting it as canceled
     //if its not in the list, we won't do anything since it will have already been set
@@ -121,67 +136,90 @@ namespace tf2_ros
       GoalInfo& info = *it;
       if(info.handle == gh)
       {
+        RCLCPP_DEBUG(
+          logger_,
+          "Accept cancel request for goal %s",
+          rclcpp_action::to_string(gh->get_goal_id()).c_str());
         it = active_goals_.erase(it);
-        info.handle.setCanceled();
-        return;
+        auto result = std::make_shared<LookupTransformAction::Result>();
+        info.handle->canceled(result);
+        return rclcpp_action::CancelResponse::ACCEPT;
       }
       else
         ++it;
     }
+
+    RCLCPP_DEBUG(
+      logger_,
+      "Reject cancel request for goal %s",
+      rclcpp_action::to_string(gh->get_goal_id()).c_str());
+
+    return rclcpp_action::CancelResponse::REJECT;
   }
 
-  void BufferServer::goalCB(GoalHandle gh)
+  rclcpp_action::GoalResponse BufferServer::goalCB(
+    const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const LookupTransformAction::Goal> goal)
   {
-    //we'll accept all goals we get
-    gh.setAccepted();
+    (void)uuid;
+    (void)goal;
+    // accept all goals we get
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
 
+  void BufferServer::acceptedCB(GoalHandle gh)
+  {
+    RCLCPP_DEBUG(
+      logger_,
+      "New goal accepted with ID %s",
+      rclcpp_action::to_string(gh->get_goal_id()).c_str());
     //if the transform isn't immediately available, we'll push it onto our list to check
     //along with the time that the goal will end
     GoalInfo goal_info;
     goal_info.handle = gh;
-    goal_info.end_time = tf2::get_now() + gh.getGoal()->timeout;
+    goal_info.end_time = tf2::get_now() + tf2_ros::fromMsg(gh->get_goal()->timeout);
 
     //we can do a quick check here to see if the transform is valid
-    //we'll also do this if the end time has been reached 
+    //we'll also do this if the end time has been reached
     if(canTransform(gh) || goal_info.end_time <= tf2::get_now())
     {
-      tf2_msgs::LookupTransformResult result;
+      auto result = std::make_shared<LookupTransformAction::Result>();
       try
       {
-        result.transform = lookupTransform(gh);
+        result->transform = lookupTransform(gh);
       }
       catch (tf2::ConnectivityException &ex)
       {
-        result.error.error = result.error.CONNECTIVITY_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.CONNECTIVITY_ERROR;
+        result->error.error_string = ex.what();
       }
       catch (tf2::LookupException &ex)
       {
-        result.error.error = result.error.LOOKUP_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.LOOKUP_ERROR;
+        result->error.error_string = ex.what();
       }
       catch (tf2::ExtrapolationException &ex)
       {
-        result.error.error = result.error.EXTRAPOLATION_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.EXTRAPOLATION_ERROR;
+        result->error.error_string = ex.what();
       }
       catch (tf2::InvalidArgumentException &ex)
       {
-        result.error.error = result.error.INVALID_ARGUMENT_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.INVALID_ARGUMENT_ERROR;
+        result->error.error_string = ex.what();
       }
       catch (tf2::TimeoutException &ex)
       {
-        result.error.error = result.error.TIMEOUT_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.TIMEOUT_ERROR;
+        result->error.error_string = ex.what();
       }
       catch (tf2::TransformException &ex)
       {
-        result.error.error = result.error.TRANSFORM_ERROR;
-        result.error.error_string = ex.what();
+        result->error.error = result->error.TRANSFORM_ERROR;
+        result->error.error_string = ex.what();
       }
 
-      gh.setSucceeded(result);
+      RCLCPP_DEBUG(logger_, "Transform available immediately for new goal");
+      gh->succeed(result);
       return;
     }
 
@@ -191,31 +229,28 @@ namespace tf2_ros
 
   bool BufferServer::canTransform(GoalHandle gh)
   {
-    const tf2_msgs::LookupTransformGoal::ConstPtr& goal = gh.getGoal();
+    const auto goal = gh->get_goal();
+
+    tf2::TimePoint source_time_point = tf2_ros::fromMsg(goal->source_time);
+
+    // check whether we need to used the advanced or simple api
+    if(!goal->advanced)
+      return buffer_.canTransform(goal->target_frame, goal->source_frame, source_time_point, nullptr);
+
+    tf2::TimePoint target_time_point = tf2_ros::fromMsg(goal->target_time);
+    return buffer_.canTransform(goal->target_frame, target_time_point,
+        goal->source_frame, source_time_point, goal->fixed_frame, nullptr);
+  }
+
+  geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(GoalHandle gh)
+  {
+    const auto goal = gh->get_goal();
 
     //check whether we need to used the advanced or simple api
     if(!goal->advanced)
-      return buffer_.canTransform(goal->target_frame, goal->source_frame, goal->source_time);
+      return buffer_.lookupTransform(goal->target_frame, goal->source_frame, tf2_ros::fromMsg(goal->source_time));
 
-    return buffer_.canTransform(goal->target_frame, goal->target_time, 
-        goal->source_frame, goal->source_time, goal->fixed_frame);
+    return buffer_.lookupTransform(goal->target_frame, tf2_ros::fromMsg(goal->target_time),
+        goal->source_frame, tf2_ros::fromMsg(goal->source_time), goal->fixed_frame);
   }
-
-  geometry_msgs::TransformStamped BufferServer::lookupTransform(GoalHandle gh)
-  {
-    const tf2_msgs::LookupTransformGoal::ConstPtr& goal = gh.getGoal();
-
-    //check whether we need to used the advanced or simple api
-    if(!goal->advanced)
-      return buffer_.lookupTransform(goal->target_frame, goal->source_frame, goal->source_time);
-
-    return buffer_.lookupTransform(goal->target_frame, goal->target_time, 
-        goal->source_frame, goal->source_time, goal->fixed_frame);
-  }
-
-  void BufferServer::start()
-  {
-    server_.start();
-  }
-
-};
+}  // namespace tf2_ros
