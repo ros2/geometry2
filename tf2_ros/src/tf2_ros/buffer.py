@@ -35,6 +35,8 @@ from tf2_msgs.srv import FrameGraph
 # import rosgraph.masterapi
 from time import sleep
 from rclpy.duration import Duration
+from rclpy.task import Future
+
 
 class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     """
@@ -70,8 +72,26 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         #     except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):
         #         self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
 
+        self._new_data_callbacks = []
+
     def __get_frames(self, req):
        return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
+
+    def set_transform(self, *args, **kwargs):
+        super().set_transform(*args, **kwargs)
+        self._call_new_data_callbacks()
+
+    def set_transform_static(self, *args, **kwargs):
+        super().set_transform_static(*args, **kwargs)
+        self._call_new_data_callbacks()
+
+    def _call_new_data_callbacks(self):
+        to_remove = []
+        for callback in self._new_data_callbacks:
+            if callback():
+                to_remove.append(callback)
+        for callback in to_remove:
+            self._new_data_callbacks.remove(callback)
 
     def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
@@ -87,6 +107,38 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         self.can_transform(target_frame, source_frame, time, timeout)
         return self.lookup_transform_core(target_frame, source_frame, time)
+
+    async def lookup_transform_async(self, target_frame, source_frame, time):
+        """
+        Get the transform from the source frame to the target frame asyncronously.
+
+        :param target_frame: Name of the frame to transform into.
+        :param source_frame: Name of the input frame.
+        :param time: The time at which to get the transform. (0 will get the latest)
+        :return: A future for the given transform.
+        :rtype: :class:`geometry_msgs.msg.TransformStamped`
+        """
+        fut = rclpy.task.Future()
+
+        def _on_new_data():
+            nonlocal target_frame
+            nonlocal source_frame
+            nonlocal time
+            nonlocal fut
+            if self.can_transform(target_frame, source_frame, time):
+                try:
+                    fut.set_result(self.lookup_transform_core(target_frame, source_frame, time))
+                    return True
+                except BaseException as e:
+                    fut.set_exception(e)
+
+        self._new_data_callbacks.append(_on_new_data)
+
+        await fut
+        transform = fut.result()
+        if transform is None:
+            raise fut.exception()
+        return transform
 
     def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
