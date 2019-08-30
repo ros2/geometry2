@@ -96,6 +96,19 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         self.assertTrue(broadcasted_transform, listened_transform)
 
+        # Execute a coroutine
+        listened_transform_async = None
+        coro = self.buffer.lookup_transform_async(
+            target_frame='foo', source_frame='bar', time=time_stamp)
+        try:
+            coro.send(None)
+        except StopIteration as e:
+            # The coroutine finished; store the result
+            coro.close()
+            listened_transform_async = e.value
+
+        self.assertTrue(broadcasted_transform, listened_transform_async)
+
     def test_extrapolation_exception(self):
         self.broadcast_transform(
             target_frame='foo', source_frame='bar',
