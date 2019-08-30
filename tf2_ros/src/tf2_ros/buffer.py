@@ -121,24 +121,16 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fut = rclpy.task.Future()
 
         def _on_new_data():
-            nonlocal target_frame
-            nonlocal source_frame
-            nonlocal time
-            nonlocal fut
             if self.can_transform(target_frame, source_frame, time):
                 try:
                     fut.set_result(self.lookup_transform_core(target_frame, source_frame, time))
-                    return True
                 except BaseException as e:
                     fut.set_exception(e)
+                return True
 
         self._new_data_callbacks.append(_on_new_data)
 
-        await fut
-        transform = fut.result()
-        if transform is None:
-            raise fut.exception()
-        return transform
+        return await fut
 
     def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
