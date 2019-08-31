@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <node pkg="demo_nodes_cpp" exec="talker" output="screen" name="demo_talker" args=" ">
-  </node>
-</launch>
-
