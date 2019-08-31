@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>examples_tf2_py</name>
+  <version>0.1.0</version>
+  <description>
+    Has examples of using the tf2 Python API.
+  </description>
+  <author email="sloretz@openrobotics.org">Shane Loretz</author>
+  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <license>Apache License 2.0</license>
+
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
