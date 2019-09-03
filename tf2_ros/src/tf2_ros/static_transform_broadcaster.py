@@ -59,11 +59,10 @@ class StaticTransformBroadcaster:
         self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
 
     def sendTransform(self, transform):
-        if not isinstance(transform, list):
-            if hasattr(transform, '__iter__'):
-                transform = list(transform)
-            else:
-                transform = [transform]
+        if hasattr(transform, '__iter__'):
+            transform = list(transform)
+        else:
+            transform = [transform]
         self.pub_tf.publish(TFMessage(transforms=transform))
 
 
