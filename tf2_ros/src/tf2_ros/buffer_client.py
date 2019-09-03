@@ -156,6 +156,7 @@ class BufferClient(tf2_ros.BufferInterface):
             return False
 
     def __process_goal(self, goal):
+        # TODO(sloretz) why is this an action client? Service seems more appropriate.
         if not self.action_client.server_is_ready():
             raise tf2.TimeoutException("The BufferServer is not ready")
 
