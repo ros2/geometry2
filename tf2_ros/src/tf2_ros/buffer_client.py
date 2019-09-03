@@ -155,13 +155,6 @@ class BufferClient(tf2_ros.BufferInterface):
         except tf2.TransformException:
             return False
 
-    def __is_done(self, state):
-        if state == GoalStatus.REJECTED or state == GoalStatus.ABORTED or \
-           state == GoalStatus.RECALLED or state == GoalStatus.PREEMPTED or \
-           state == GoalStatus.SUCCEEDED or state == GoalStatus.LOST:
-            return True
-        return False
-
     def __process_goal(self, goal):
         if not self.action_client.server_is_ready():
             raise tf2.TimeoutException("The BufferServer is not ready")
