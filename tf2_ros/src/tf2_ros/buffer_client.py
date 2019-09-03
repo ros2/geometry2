@@ -196,13 +196,11 @@ class BufferClient(tf2_ros.BufferInterface):
 
         event.wait()
 
-        if send_goal_future.exception() is not None:
-            raise send_goal_future.exception()
-
         #This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server")
 
+        # Raises if future was given an exception
         goal_handle = send_goal_future.result()
 
         if not goal_handle.accepted:
