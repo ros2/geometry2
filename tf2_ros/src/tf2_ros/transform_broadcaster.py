@@ -57,7 +57,10 @@ class TransformBroadcaster:
         :param transform: A transform or list of transforms to send.
         """
         if not isinstance(transform, list):
-            transform = [transform]
+            if hasattr(transform, '__iter__'):
+                transform = list(transform)
+            else:
+                transform = [transform]
         self.pub_tf.publish(TFMessage(transforms=transform))
 
 
