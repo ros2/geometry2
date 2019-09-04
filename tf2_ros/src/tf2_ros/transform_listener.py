@@ -42,7 +42,7 @@ class TransformListener:
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer, node, spin_thread=True, qos=None, static_qos=None):
+    def __init__(self, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
         """
         .. function:: __init__(buffer, node, spin_thread=True, qos=QoSProfile(depth=100))
 
@@ -50,7 +50,7 @@ class TransformListener:
 
             :param buffer: The buffer to propagate changes to when tf info updates.
             :param node: The ROS2 node.
-            :param spin_thread: Whether the listener is spinning or not.
+            :param spin_thread: Whether to create a dedidcated thread to spin this node.
             :param qos: A QoSProfile or a history depth to apply to subscribers.
         """
         if qos is None:
@@ -75,7 +75,7 @@ class TransformListener:
         self.tf_static_sub = node.create_subscription(
             TFMessage, 'tf_static', self.static_callback, static_qos, callback_group=self.group)
 
-        if spin_thread is True:
+        if spin_thread:
             self.executor = SingleThreadedExecutor()
 
             def run_func():
