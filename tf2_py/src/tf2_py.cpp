@@ -403,7 +403,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     return 1;
   }
 
-  PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
+  PyErr_SetString(PyExc_TypeError, "duration must have sec and nanosec, or nanoseconds.");
   return 0;
 }
 
