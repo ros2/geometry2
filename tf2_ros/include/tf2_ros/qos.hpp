@@ -38,14 +38,12 @@ namespace tf2_ros
 class RCLCPP_PUBLIC DynamicQoS : public rclcpp::QoS
 {
 public:
-  explicit
   DynamicQoS() : rclcpp::QoS(100) {}
 };
 
 class RCLCPP_PUBLIC StaticQoS : public rclcpp::QoS
 {
 public:
-  explicit
   StaticQoS() : rclcpp::QoS(100)
   {
     transient_local();
