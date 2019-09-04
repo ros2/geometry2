@@ -513,17 +513,55 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
   const tf2::TF2Error r = bc->_getLatestCommonTime(target_id, source_id, tf2_time, &error_string);
   if (r == tf2::TF2Error::NO_ERROR) {
     PyObject *rclpy_time = PyObject_GetAttrString(pModulerclpytime, "Time");
+    if (!rclpy_time) {
+      return NULL;
+    }
     const builtin_interfaces::msg::Time time_msg = toMsg(tf2_time);
     PyObject *args = PyTuple_New(0);
+    if (!args) {
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
     PyObject *kwargs = PyDict_New();
+    if (!kwargs) {
+      Py_DECREF(args);
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
     PyObject *seconds = Py_BuildValue("i", time_msg.sec);
+    if (!seconds) {
+      Py_DECREF(kwargs);
+      Py_DECREF(args);
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
     PyObject *nanoseconds = Py_BuildValue("i", time_msg.nanosec);
-    PyDict_SetItemString(kwargs, "seconds", seconds);
-    PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds);
+    if (!nanoseconds) {
+      Py_DECREF(seconds);
+      Py_DECREF(kwargs);
+      Py_DECREF(args);
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
+    if (0 != PyDict_SetItemString(kwargs, "seconds", seconds)) {
+      Py_DECREF(nanoseconds);
+      Py_DECREF(seconds);
+      Py_DECREF(kwargs);
+      Py_DECREF(args);
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
+    Py_DECREF(seconds);
+    if (0 != PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds)) {
+      Py_DECREF(nanoseconds);
+      Py_DECREF(kwargs);
+      Py_DECREF(args);
+      Py_DECREF(rclpy_time);
+      return NULL;
+    }
+    Py_DECREF(nanoseconds);
 
     PyObject *ob = PyObject_Call(rclpy_time, args, kwargs);
-    Py_DECREF(nanoseconds);
-    Py_DECREF(seconds);
     Py_DECREF(kwargs);
     Py_DECREF(args);
     Py_DECREF(rclpy_time);
