@@ -31,8 +31,8 @@ ament_python_install_package(${PROJECT_NAME})
 function(set_properties _targetname _build_type)
   set_target_properties(${_targetname} PROPERTIES
     PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-    RUNTIME_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+    LIBRARY_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py"
+    RUNTIME_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py"
     OUTPUT_NAME "_${_targetname}${PythonExtra_EXTENSION_SUFFIX}"
     SUFFIX "${PythonExtra_EXTENSION_EXTENSION}")
 endfunction()
