@@ -359,25 +359,11 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
   if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
     PyObject *sec = pythonBorrowAttrString(obj, "sec");
-    if (!sec) {
-      return 0;
-    }
     PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
-    if (!nanosec) {
-      Py_DECREF(sec);
-      return 0;
-    }
     builtin_interfaces::msg::Time msg;
     msg.sec = PyLong_AsLong(sec);
-    if (PyErr_Occurred()) {
-      Py_DECREF(sec);
-      Py_DECREF(nanosec);
-      return 0;
-    }
     msg.nanosec = PyLong_AsUnsignedLong(nanosec);
     if (PyErr_Occurred()) {
-      Py_DECREF(sec);
-      Py_DECREF(nanosec);
       return 0;
     }
     *rt = fromMsg(msg);
@@ -386,12 +372,8 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 
   if(PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
-    if (!nanoseconds) {
-      return 0;
-    }
     const int64_t d = PyLong_AsLongLong(nanoseconds);
     if (PyErr_Occurred()) {
-      Py_DECREF(nanoseconds);
       return 0;
     }
     const std::chrono::nanoseconds ns(d);
