@@ -363,22 +363,16 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
     builtin_interfaces::msg::Time msg;
     msg.sec = PyLong_AsLong(sec);
     msg.nanosec = PyLong_AsUnsignedLong(nanosec);
-    if (PyErr_Occurred()) {
-      return 0;
-    }
     *rt = fromMsg(msg);
-    return 1;
+    return PyErr_Occurred() ? 0 : 1;
   }
 
   if(PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
-    if (PyErr_Occurred()) {
-      return 0;
-    }
     const std::chrono::nanoseconds ns(d);
     *rt = tf2::TimePoint(ns);
-    return 1;
+    return PyErr_Occurred() ? 0 : 1;
   }
 
   PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
@@ -392,7 +386,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
     *rt = std::chrono::seconds(PyLong_AsLong(sec)) +
       std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
-    return 1;
+    return PyErr_Occurred() ? 0 : 1;
   }
 
   if(PyObject_HasAttrString(obj, "nanoseconds")) {
@@ -400,7 +394,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     const int64_t d = PyLong_AsLongLong(nanoseconds);
     const std::chrono::nanoseconds ns(d);
     *rt = std::chrono::duration_cast<tf2::Duration>(ns);
-    return 1;
+    return PyErr_Occurred() ? 0 : 1;
   }
 
   PyErr_SetString(PyExc_TypeError, "duration must have sec and nanosec, or nanoseconds.");
