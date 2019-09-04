@@ -381,15 +381,19 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
       return 0;
     }
     *rt = fromMsg(msg);
-    if (!rt) {
-      return 0;
-    }
     return 1;
   }
 
   if(PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    if (!nanoseconds) {
+      return 0;
+    }
     const int64_t d = PyLong_AsLongLong(nanoseconds);
+    if (PyErr_Occurred()) {
+      Py_DECREF(nanoseconds);
+      return 0;
+    }
     const std::chrono::nanoseconds ns(d);
     *rt = tf2::TimePoint(ns);
     return 1;
