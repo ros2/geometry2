@@ -27,6 +27,8 @@
 
 # author: Wim Meeussen
 
+import threading
+
 import rclpy
 import tf2_py as tf2
 import tf2_ros
@@ -73,6 +75,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         #         self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
 
         self._new_data_callbacks = []
+        self._callbacks_to_remove = []
+        self._callbacks_lock = threading.RLock()
 
     def __get_frames(self, req):
        return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
@@ -86,12 +90,17 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         self._call_new_data_callbacks()
 
     def _call_new_data_callbacks(self):
-        to_remove = []
-        for callback in self._new_data_callbacks:
-            if callback():
-                to_remove.append(callback)
-        for callback in to_remove:
-            self._new_data_callbacks.remove(callback)
+        with self._callbacks_lock:
+            for callback in self._new_data_callbacks:
+                callback()
+        # Remove callbacks after to avoid modifying list being iterated on
+            for callback in self._callbacks_to_remove:
+                self._new_data_callbacks.remove(callback)
+
+    def _remove_callback(self, callback):
+        with self._callbacks_lock:
+            # Actually remove the callback later
+            self._callbacks_to_remove.append(callback)
 
     def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
@@ -216,36 +225,37 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             return core_result
         return core_result[0]
 
-    async def wait_for_transform_async(self, target_frame, source_frame, time):
+    def wait_for_transform_async(self, target_frame, source_frame, time):
         """
         Wait for a transform from the source frame to the target frame to become possible.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform. (0 will get the latest) 
-        :return: True when the transform becomes available
-        :rtype: bool
+        :return: A future that becomes true when the transform is available
+        :rtype: rclpy.task.Future
         """
-        if self.can_transform_core(target_frame, source_frame, time)[0]:
-            # Short cut, the transform is available
-            return True
 
         fut = rclpy.task.Future()
 
+        if self.can_transform_core(target_frame, source_frame, time)[0]:
+            # Short cut, the transform is available
+            fut.set_result(True)
+            return fut
+
         def _on_new_data():
             try:
-                available = self.can_transform_core(target_frame, source_frame, time)[0]
-                if available:
+                if self.can_transform_core(target_frame, source_frame, time)[0]:
                     fut.set_result(True)
             except BaseException as e:
                 fut.set_exception(e)
-            return fut.done()
 
         self._new_data_callbacks.append(_on_new_data)
+        fut.add_done_callback(lambda _: self._remove_callback(_on_new_data))
 
         return fut
 
-    async def wait_for_transform_full_async(self, target_frame, target_time, source_frame, source_time, fixed_frame):
+    def wait_for_transform_full_async(self, target_frame, target_time, source_frame, source_time, fixed_frame):
         """
         Wait for a transform from the source frame to the target frame to become possible.
 
@@ -254,24 +264,24 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
         :param fixed_frame: Name of the frame to consider constant in time.
-        :return: True when the transform becomes available
-        :rtype: bool
+        :return: A future that becomes true when the transform is available
+        :rtype: rclpy.task.Future
         """
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
             # Short cut, the transform is available
-            return True
+            fut.set_result(True)
+            return fut
 
         fut = rclpy.task.Future()
 
         def _on_new_data():
             try:
-                available = self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]
-                if available:
+                if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
                     fut.set_result(True)
             except BaseException as e:
                 fut.set_exception(e)
-            return fut.done()
 
         self._new_data_callbacks.append(_on_new_data)
+        fut.add_done_callback(lambda _: self._remove_callback(_on_new_data))
 
         return fut
