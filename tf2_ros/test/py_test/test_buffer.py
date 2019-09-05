@@ -28,11 +28,11 @@ class TestBuffer(unittest.TestCase):
     def tearDownClass(cls):
         pass
 
-    def build_transform(self, source, target, rclpy_time):
+    def build_transform(self, target, source, rclpy_time):
         transform = TransformStamped()
-        transform.header.frame_id = source
+        transform.header.frame_id = target
         transform.header.stamp = rclpy_time.to_msg()
-        transform.child_frame_id = target
+        transform.child_frame_id = source
         transform.transform.translation.x = 42.0
         transform.transform.translation.y = -3.14
         transform.transform.translation.z = 0.0
