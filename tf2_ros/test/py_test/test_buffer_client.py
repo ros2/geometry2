@@ -108,7 +108,6 @@ class MockActionServer():
 
     def result_callback(self, request, response):
         bytes_goal_id = bytes(request.goal_id.uuid)
-        #response.status = TF2Error
         response.result.transform = self.result_buffer[bytes_goal_id][0]
         response.result.error = TF2Error(
             error=self.result_buffer[bytes_goal_id][1],
