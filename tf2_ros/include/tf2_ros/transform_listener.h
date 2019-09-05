@@ -59,8 +59,8 @@ public:
     tf2::BufferCore & buffer,
     NodeT && node,
     bool spin_thread = true,
-    const rclcpp::QoS & qos = DynamicQoS(),
-    const rclcpp::QoS & static_qos = StaticQoS(),
+    const rclcpp::QoS & qos = DynamicListenerQoS(),
+    const rclcpp::QoS & static_qos = StaticListenerQoS(),
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
   : buffer_(buffer)

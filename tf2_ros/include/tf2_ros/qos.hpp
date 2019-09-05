@@ -35,16 +35,31 @@
 namespace tf2_ros
 {
 
-class RCLCPP_PUBLIC DynamicQoS : public rclcpp::QoS
+class RCLCPP_PUBLIC DynamicListenerQoS: public rclcpp::QoS
 {
 public:
-  DynamicQoS() : rclcpp::QoS(100) {}
+  DynamicListenerQoS() : rclcpp::QoS(100) {}
 };
 
-class RCLCPP_PUBLIC StaticQoS : public rclcpp::QoS
+class RCLCPP_PUBLIC DynamicBroadcasterQoS : public rclcpp::QoS
 {
 public:
-  StaticQoS() : rclcpp::QoS(100)
+  DynamicBroadcasterQoS() : rclcpp::QoS(100) {}
+};
+
+class RCLCPP_PUBLIC StaticListenerQoS : public rclcpp::QoS
+{
+public:
+  StaticListenerQoS() : rclcpp::QoS(100)
+  {
+    transient_local();
+  }
+};
+
+class RCLCPP_PUBLIC StaticBroadcasterQoS : public rclcpp::QoS
+{
+public:
+  StaticBroadcasterQoS() : rclcpp::QoS(1)
   {
     transient_local();
   }

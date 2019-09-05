@@ -52,7 +52,7 @@ public:
   template<class NodeT, class AllocatorT = std::allocator<void>>
   TransformBroadcaster(
     NodeT && node,
-    const rclcpp::QoS & qos = DynamicQoS(),
+    const rclcpp::QoS & qos = DynamicBroadcasterQoS(),
     const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options =
       rclcpp::PublisherOptionsWithAllocator<AllocatorT>())
   {
