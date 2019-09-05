@@ -149,7 +149,6 @@ class TestBufferClient(unittest.TestCase):
     def tearDown(self):
         self.spinning.set()
         self.spin_thread.join()
-        #print('teardown : ', self.spin_thread.is_alive(), self.context.ok())
         return
 
     def feedback_callback(self, feedback):
