@@ -18,6 +18,7 @@ import rclpy
 from tf2_ros.buffer import Buffer
 from geometry_msgs.msg import TransformStamped, PointStamped
 
+
 class TestBuffer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -27,15 +28,11 @@ class TestBuffer(unittest.TestCase):
     def tearDownClass(cls):
         pass
 
-    def test_can_transform_valid_transform(self):
-        buffer = Buffer()
-        clock = rclpy.clock.Clock()
-        rclpy_time = clock.now()
-
+    def build_transform(self, source, target, rclpy_time):
         transform = TransformStamped()
-        transform.header.frame_id = "foo"
+        transform.header.frame_id = source
         transform.header.stamp = rclpy_time.to_msg()
-        transform.child_frame_id = "bar"
+        transform.child_frame_id = target
         transform.transform.translation.x = 42.0
         transform.transform.translation.y = -3.14
         transform.transform.translation.z = 0.0
@@ -43,6 +40,13 @@ class TestBuffer(unittest.TestCase):
         transform.transform.rotation.x = 0.0
         transform.transform.rotation.y = 0.0
         transform.transform.rotation.z = 0.0
+        return transform
+
+    def test_can_transform_valid_transform(self):
+        buffer = Buffer()
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
 
         self.assertEqual(buffer.set_transform(transform, "unittest"), None)
 
@@ -53,6 +57,73 @@ class TestBuffer(unittest.TestCase):
         self.assertEqual(transform.transform.translation.x, output.transform.translation.x)
         self.assertEqual(transform.transform.translation.y, output.transform.translation.y)
         self.assertEqual(transform.transform.translation.z, output.transform.translation.z)
+
+    def test_await_transform_immediately_available(self):
+        # wait for a transform that is already available to test short-cut code
+        buffer = Buffer()
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
+
+        buffer.set_transform(transform, "unittest")
+
+        coro = buffer.lookup_transform_async('foo', 'bar', rclpy_time)
+        with self.assertRaises(StopIteration) as cm:
+            coro.send(None)
+
+        self.assertEqual(transform, cm.exception.value)
+        coro.close()
+
+    def test_await_transform_full_immediately_available(self):
+        # wait for a transform that is already available to test short-cut code
+        buffer = Buffer()
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
+
+        buffer.set_transform(transform, "unittest")
+
+        coro = buffer.lookup_transform_full_async('foo', rclpy_time, 'bar', rclpy_time, 'foo')
+        with self.assertRaises(StopIteration) as cm:
+            coro.send(None)
+
+        self.assertEqual(transform, cm.exception.value)
+        coro.close()
+
+    def test_await_transform_delayed(self):
+        # wait for a transform that is not yet available
+        buffer = Buffer()
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
+
+        coro = buffer.lookup_transform_async('foo', 'bar', rclpy_time)
+        coro.send(None)
+
+        buffer.set_transform(transform, "unittest")
+        with self.assertRaises(StopIteration) as cm:
+            coro.send(None)
+
+        self.assertEqual(transform, cm.exception.value)
+        coro.close()
+
+    def test_await_transform_full_delayed(self):
+        # wait for a transform that is not yet available
+        buffer = Buffer()
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
+
+        coro = buffer.lookup_transform_full_async('foo', rclpy_time, 'bar', rclpy_time, 'foo')
+        coro.send(None)
+
+        buffer.set_transform(transform, "unittest")
+        with self.assertRaises(StopIteration) as cm:
+            coro.send(None)
+
+        self.assertEqual(transform, cm.exception.value)
+        coro.close()
+
 
 if __name__ == '__main__':
     unittest.main()
