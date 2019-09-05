@@ -36,6 +36,7 @@ from rclpy.qos import QoSProfile
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import TransformStamped
 
+
 class StaticTransformBroadcaster:
     """
     :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"/tf_static"`` message topic.
