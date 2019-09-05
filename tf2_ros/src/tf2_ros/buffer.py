@@ -235,9 +235,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: A future that becomes true when the transform is available
         :rtype: rclpy.task.Future
         """
-
         fut = rclpy.task.Future()
-
         if self.can_transform_core(target_frame, source_frame, time)[0]:
             # Short cut, the transform is available
             fut.set_result(True)
@@ -267,12 +265,11 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: A future that becomes true when the transform is available
         :rtype: rclpy.task.Future
         """
+        fut = rclpy.task.Future()
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
             # Short cut, the transform is available
             fut.set_result(True)
             return fut
-
-        fut = rclpy.task.Future()
 
         def _on_new_data():
             try:
