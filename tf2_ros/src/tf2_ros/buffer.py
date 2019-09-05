@@ -243,7 +243,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         self._new_data_callbacks.append(_on_new_data)
 
-        return await fut
+        return fut
 
     async def wait_for_transform_full_async(self, target_frame, target_time, source_frame, source_time, fixed_frame):
         """
@@ -274,4 +274,4 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         self._new_data_callbacks.append(_on_new_data)
 
-        return await fut
+        return fut
