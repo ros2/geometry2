@@ -51,28 +51,17 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     known frames. 
     """
 
-    def __init__(self, cache_time = None, debug = True):
+    def __init__(self, cache_time = None):
         """
-        .. function:: __init__(cache_time = None, debug = True)
+        Constructor.
 
-            Constructor.
-
-            :param cache_time: (Optional) How long to retain past information in BufferCore.
-            :param debug: (Optional) If true, check if another tf2_frames service has been advertised.
+        :param cache_time: (Optional) How long to retain past information in BufferCore.
         """
         if cache_time != None:
             tf2.BufferCore.__init__(self, cache_time)
         else:
             tf2.BufferCore.__init__(self)
         tf2_ros.BufferInterface.__init__(self)
-
-        # if debug:
-        #     #Check to see if the service has already been advertised in this node
-        #     try:
-        #         m = rosgraph.masterapi.Master(rospy.get_name())
-        #         m.lookupService('~tf2_frames')
-        #     except (rosgraph.masterapi.Error, rosgraph.masterapi.Failure):
-        #         self.frame_server = rospy.Service('~tf2_frames', FrameGraph, self.__get_frames)
 
         self._new_data_callbacks = []
         self._callbacks_to_remove = []
