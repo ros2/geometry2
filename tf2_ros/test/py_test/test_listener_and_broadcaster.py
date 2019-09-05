@@ -46,7 +46,7 @@ class TestBroadcasterAndListener(unittest.TestCase):
         rclpy.init()
 
         cls.buffer = Buffer()
-        cls.node = rclpy.create_node('test')
+        cls.node = rclpy.create_node('test_broadcaster_listener')
         cls.broadcaster = TransformBroadcaster(cls.node)
         cls.static_broadcaster = StaticTransformBroadcaster(cls.node)
         cls.listener = TransformListener(
@@ -54,12 +54,10 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         cls.executor = rclpy.executors.SingleThreadedExecutor()
         cls.executor.add_node(cls.node)
-        pass
 
     @classmethod
     def tearDownClass(cls):
         rclpy.shutdown()
-        pass
 
     def setUp(self):
         self.buffer = Buffer()
