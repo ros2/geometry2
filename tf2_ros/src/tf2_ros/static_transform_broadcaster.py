@@ -52,7 +52,7 @@ class StaticTransformBroadcaster:
         """
         if qos is None:
             qos = QoSProfile(
-                depth=100,
+                depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL,
                 history=HistoryPolicy.KEEP_LAST,
                 )
