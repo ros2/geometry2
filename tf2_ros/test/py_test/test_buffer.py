@@ -48,11 +48,11 @@ class TestBuffer(unittest.TestCase):
         rclpy_time = clock.now()
         transform = self.build_transform('foo', 'bar', rclpy_time)
 
-        self.assertEqual(buffer.set_transform(transform, "unittest"), None)
+        self.assertEqual(buffer.set_transform(transform, 'unittest'), None)
 
-        self.assertEqual(buffer.can_transform("foo", "bar", rclpy_time), True)
+        self.assertEqual(buffer.can_transform('foo', 'bar', rclpy_time), True)
 
-        output = buffer.lookup_transform("foo", "bar", rclpy_time)
+        output = buffer.lookup_transform('foo', 'bar', rclpy_time)
         self.assertEqual(transform.child_frame_id, output.child_frame_id)
         self.assertEqual(transform.transform.translation.x, output.transform.translation.x)
         self.assertEqual(transform.transform.translation.y, output.transform.translation.y)
@@ -65,7 +65,7 @@ class TestBuffer(unittest.TestCase):
         rclpy_time = clock.now()
         transform = self.build_transform('foo', 'bar', rclpy_time)
 
-        buffer.set_transform(transform, "unittest")
+        buffer.set_transform(transform, 'unittest')
 
         coro = buffer.lookup_transform_async('foo', 'bar', rclpy_time)
         with self.assertRaises(StopIteration) as cm:
@@ -81,7 +81,7 @@ class TestBuffer(unittest.TestCase):
         rclpy_time = clock.now()
         transform = self.build_transform('foo', 'bar', rclpy_time)
 
-        buffer.set_transform(transform, "unittest")
+        buffer.set_transform(transform, 'unittest')
 
         coro = buffer.lookup_transform_full_async('foo', rclpy_time, 'bar', rclpy_time, 'foo')
         with self.assertRaises(StopIteration) as cm:
@@ -100,7 +100,7 @@ class TestBuffer(unittest.TestCase):
         coro = buffer.lookup_transform_async('foo', 'bar', rclpy_time)
         coro.send(None)
 
-        buffer.set_transform(transform, "unittest")
+        buffer.set_transform(transform, 'unittest')
         with self.assertRaises(StopIteration) as cm:
             coro.send(None)
 
@@ -117,7 +117,7 @@ class TestBuffer(unittest.TestCase):
         coro = buffer.lookup_transform_full_async('foo', rclpy_time, 'bar', rclpy_time, 'foo')
         coro.send(None)
 
-        buffer.set_transform(transform, "unittest")
+        buffer.set_transform(transform, 'unittest')
         with self.assertRaises(StopIteration) as cm:
             coro.send(None)
 
