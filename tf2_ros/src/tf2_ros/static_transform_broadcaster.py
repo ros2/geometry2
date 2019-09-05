@@ -43,12 +43,10 @@ class StaticTransformBroadcaster:
 
     def __init__(self, node, qos=None):
         """
-        .. function:: __init__(node, qos=QoSProfile(depth=100))
+        Constructor.
 
-            Constructor.
-
-            :param node: The ROS2 node.
-            :param qos: A QoSProfile or a history depth to apply to the publisher.
+        :param node: The ROS2 node.
+        :param qos: A QoSProfile or a history depth to apply to the publisher.
         """
         if qos is None:
             qos = QoSProfile(
