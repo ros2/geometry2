@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.5 (2019-09-06)
+-------------------
+* Use eigen3_cmake_module (`#144 <https://github.com/ros2/geometry2/issues/144>`_) (`#153 <https://github.com/ros2/geometry2/issues/153>`_)
+* Contributors: Shane Loretz
+
 0.11.4 (2019-07-31)
 -------------------
 

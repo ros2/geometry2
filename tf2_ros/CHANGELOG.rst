@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.5 (2019-09-06)
+-------------------
+* Add missing export build dependencies (`#135 <https://github.com/ros2/geometry2/issues/135>`_) (`#152 <https://github.com/ros2/geometry2/issues/152>`_)
+* Contributors: Jacob Perron
+
 0.11.4 (2019-07-31)
 -------------------
 * Allow tf2_monitor to be run with ROS command line args (`#140 <https://github.com/ros2/geometry2/issues/140>`_)
