@@ -156,17 +156,8 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  rclcpp::WallRate loop_rate(0.2);
-  while (rclcpp::ok())
-  {
-    RCUTILS_LOG_INFO_THROTTLE(RCUTILS_STEADY_TIME, 30000 /* ms */, "LOOPING due to no latching at the moment");
-    broadcaster.sendTransform(msg);
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
-
-  // broadcaster.sendTransform(msg);
-  // ROS_INFO("Spinning until killed publishing %s to %s", msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
-  // rclcpp::spin(node);
+  broadcaster.sendTransform(msg);
+  RCLCPP_INFO(node->get_logger(), "Spinning until killed publishing %s to %s", msg.header.frame_id.c_str(), msg.child_frame_id.c_str());
+  rclcpp::spin(node);
   return 0;
 }
