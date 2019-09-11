@@ -192,7 +192,7 @@ class TransformRegistration():
     __type_map = {}
     
     def print_me(self):
-        print TransformRegistration.__type_map
+        print(TransformRegistration.__type_map)
 
     def add(self, key, callback):
         TransformRegistration.__type_map[key] = callback
