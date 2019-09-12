@@ -36,44 +36,34 @@
 namespace tf2_ros
 {
 
-class RCLCPP_PUBLIC DynamicListenerQoS: public rclcpp::QoS
+class TF2_ROS_PUBLIC DynamicListenerQoS: public rclcpp::QoS
 {
 public:
-  TF2_ROS_PUBLIC
-  explicit DynamicListenerQoS(size_t depth = 100);
-
-  TF2_ROS_PUBLIC
-  ~DynamicListenerQoS() = default;
+  explicit DynamicListenerQoS(size_t depth = 100) : rclcpp::QoS(depth) {}
 };
 
-class RCLCPP_PUBLIC DynamicBroadcasterQoS : public rclcpp::QoS
+class TF2_ROS_PUBLIC DynamicBroadcasterQoS : public rclcpp::QoS
 {
 public:
-  TF2_ROS_PUBLIC
-  explicit DynamicBroadcasterQoS(size_t depth = 100);
-
-  TF2_ROS_PUBLIC
-  ~DynamicBroadcasterQoS() = default;
+  explicit DynamicBroadcasterQoS(size_t depth = 100) : rclcpp::QoS(depth) {}
 };
 
-class RCLCPP_PUBLIC StaticListenerQoS : public rclcpp::QoS
+class TF2_ROS_PUBLIC StaticListenerQoS : public rclcpp::QoS
 {
 public:
-  TF2_ROS_PUBLIC
-  explicit StaticListenerQoS(size_t depth = 100);
-
-  TF2_ROS_PUBLIC
-  ~StaticListenerQoS() = default;
+  explicit StaticListenerQoS(size_t depth = 100) : rclcpp::QoS(depth)
+  {
+    transient_local();
+  }
 };
 
-class RCLCPP_PUBLIC StaticBroadcasterQoS : public rclcpp::QoS
+class TF2_ROS_PUBLIC StaticBroadcasterQoS : public rclcpp::QoS
 {
 public:
-  TF2_ROS_PUBLIC
-  explicit StaticBroadcasterQoS(size_t depth = 1);
-
-  TF2_ROS_PUBLIC
-  ~StaticBroadcasterQoS() = default;
+  explicit StaticBroadcasterQoS(size_t depth = 1) : rclcpp::QoS(depth)
+  {
+    transient_local();
+  }
 };
 }  // namespace tf2_ros
 #endif  // TF2_ROS__QOS_HPP_

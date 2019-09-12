@@ -30,7 +30,6 @@ add_library(${PROJECT_NAME} SHARED
   src/transform_listener.cpp
   # src/buffer_client.cpp
   src/buffer_server.cpp
-  src/qos.cpp
   src/transform_broadcaster.cpp
   src/static_transform_broadcaster.cpp
 )
