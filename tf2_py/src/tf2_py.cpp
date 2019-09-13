@@ -573,8 +573,11 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
 static inline int checkTranslationType(PyObject* o)
 {
   PyTypeObject *translation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Vector3");
+  if (!translation_type) {
+    return 0;
+  }
   int type_check = PyObject_TypeCheck(o, translation_type);
-  Py_XDECREF((PyObject*)translation_type);
+  Py_DECREF((PyObject*)translation_type);
   int attr_check = PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
                    PyObject_HasAttrString(o, "z");
@@ -588,8 +591,11 @@ static inline int checkTranslationType(PyObject* o)
 static inline int checkRotationType(PyObject* o)
 {
   PyTypeObject *rotation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Quaternion");
+  if (!rotation_type) {
+    return 0;
+  }
   int type_check = PyObject_TypeCheck(o, rotation_type);
-  Py_XDECREF((PyObject*)rotation_type);
+  Py_DECREF((PyObject*)rotation_type);
   int attr_check = PyObject_HasAttrString(o, "w") &&
                    PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
