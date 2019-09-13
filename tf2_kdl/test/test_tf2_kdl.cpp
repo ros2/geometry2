@@ -65,7 +65,7 @@ TEST(TfKDL, Frame)
 
 
   // advanced api
-  KDL::Frame v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)), 
+  KDL::Frame v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
                 "A", tf2::Duration(std::chrono::seconds(3)));
   EXPECT_NEAR(v_advanced.p[0], -9, EPS);
   EXPECT_NEAR(v_advanced.p[1], 18, EPS);
@@ -89,7 +89,7 @@ TEST(TfKDL, Vector)
   EXPECT_NEAR(v_simple[2], 27, EPS);
 
   // advanced api
-  KDL::Vector v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)), 
+  KDL::Vector v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
                 "A", tf2::Duration(std::chrono::seconds(3)));
   EXPECT_NEAR(v_advanced[0], -9, EPS);
   EXPECT_NEAR(v_advanced[1], 18, EPS);
@@ -98,20 +98,121 @@ TEST(TfKDL, Vector)
 
 TEST(TfKDL, ConvertVector)
 {
-  tf2::Stamped<KDL::Vector> v(KDL::Vector(1,2,3), tf2::TimePoint(tf2::durationFromSec(0)), "my_frame");
-
+  tf2::Stamped<KDL::Vector> v(
+      KDL::Vector(1,2,3),
+      tf2::TimePoint(tf2::durationFromSec(1.0)),
+      "my_frame"
+  );
   tf2::Stamped<KDL::Vector> v1 = v;
-  tf2::convert(v1, v1);
 
+  // Convert on duplicate arguments
+  tf2::convert(v1, v1);
   EXPECT_EQ(v, v1);
 
-  tf2::Stamped<KDL::Vector> v2(KDL::Vector(3,4,5), tf2::TimePoint(tf2::durationFromSec(0)), "my_frame2");
+  // Convert on same type
+  tf2::Stamped<KDL::Vector> v2(
+      KDL::Vector(3,4,5),
+      tf2::TimePoint(tf2::durationFromSec(2.0)),
+      "my_frame2"
+  );
   tf2::convert(v1, v2);
-
   EXPECT_EQ(v, v2);
   EXPECT_EQ(v1, v2);
+
+  // Round trip through corresponding message
+  tf2::Stamped<KDL::Vector> v3;
+  geometry_msgs::msg::PointStamped msg;
+  tf2::convert(v, msg);
+  tf2::convert(msg, v3);
+  EXPECT_EQ(v, v3);
 }
 
+TEST(TfKDL, ConvertTwist)
+{
+  tf2::Stamped<KDL::Twist> t(
+      KDL::Twist(KDL::Vector(1,2,3), KDL::Vector(4,5,6)),
+      tf2::TimePoint(tf2::durationFromSec(1.0)),
+      "my_frame");
+  tf2::Stamped<KDL::Twist> t1 = t;
+
+  // Test convert with duplicate arguments
+  tf2::convert(t1, t1);
+  EXPECT_EQ(t, t1);
+
+  // Convert on same type
+  tf2::Stamped<KDL::Twist> t2(
+      KDL::Twist(KDL::Vector(3,4,5), KDL::Vector(6,7,8)),
+      tf2::TimePoint(tf2::durationFromSec(2.0)),
+      "my_frame2");
+  tf2::convert(t1, t2);
+  EXPECT_EQ(t, t2);
+  EXPECT_EQ(t1, t2);
+
+  // Round trip through corresponding message
+  tf2::Stamped<KDL::Twist> t3;
+  geometry_msgs::msg::TwistStamped msg;
+  tf2::convert(t, msg);
+  tf2::convert(msg, t3);
+  EXPECT_EQ(t, t3);
+}
+
+TEST(TfKDL, ConvertWrench)
+{
+  tf2::Stamped<KDL::Wrench> w(
+      KDL::Wrench(KDL::Vector(1,2,3), KDL::Vector(4,5,6)),
+      tf2::TimePoint(tf2::durationFromSec(1.0)),
+      "my_frame");
+  tf2::Stamped<KDL::Wrench> w1 = w;
+
+  // Test convert with duplicate arguments
+  tf2::convert(w1, w1);
+  EXPECT_EQ(w, w1);
+
+  // Convert on same type
+  tf2::Stamped<KDL::Wrench> w2(
+      KDL::Wrench(KDL::Vector(3,4,5), KDL::Vector(6,7,8)),
+      tf2::TimePoint(tf2::durationFromSec(2.0)),
+      "my_frame2");
+  tf2::convert(w1, w2);
+  EXPECT_EQ(w, w2);
+  EXPECT_EQ(w1, w2);
+
+  // Round trip through corresponding message
+  tf2::Stamped<KDL::Wrench> w3;
+  geometry_msgs::msg::WrenchStamped msg;
+  tf2::convert(w, msg);
+  tf2::convert(msg, w3);
+  EXPECT_EQ(w, w3);
+}
+
+TEST(TfKDL, ConvertFrame)
+{
+  tf2::Stamped<KDL::Frame> f(
+      KDL::Frame(KDL::Rotation::RPY(M_PI, 0, 0), KDL::Vector(1,2,3)),
+      tf2::TimePoint(tf2::durationFromSec(1.0)),
+      "my_frame");
+  tf2::Stamped<KDL::Frame> f1 = f;
+
+  // Test convert with duplicate arguments
+  tf2::convert(f1, f1);
+  EXPECT_EQ(f, f1);
+
+  // Convert on same type
+  tf2::Stamped<KDL::Frame> f2(
+      KDL::Frame(KDL::Rotation::RPY(0, M_PI, 0), KDL::Vector(4,5,6)),
+      tf2::TimePoint(tf2::durationFromSec(2.0)),
+      "my_frame2");
+  tf2::convert(f1, f2);
+  EXPECT_EQ(f, f2);
+  EXPECT_EQ(f1, f2);
+
+  // Round trip through corresponding message
+  tf2::Stamped<KDL::Frame> f3;
+  geometry_msgs::msg::PoseStamped msg;
+  tf2::convert(f, msg);
+  tf2::convert(msg, f3);
+  EXPECT_EQ(f, f3);
+}
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
