@@ -100,11 +100,11 @@ class TransformListener:
         self.node.destroy_subscription(self.tf_static_sub)
 
     def callback(self, data):
-        who = str("default_authority")
+        who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform(transform, who)
 
     def static_callback(self, data):
-        who = str("default_authority")
+        who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform_static(transform, who)
