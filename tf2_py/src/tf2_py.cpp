@@ -60,281 +60,199 @@ struct buffer_core_t {
 
 static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped* transform)
 {
-  PyObject *pclass, *pargs, *pinst = NULL;
+  PyObject * pclass = NULL;
+  PyObject * pargs = NULL;
+  PyObject * pinst = NULL;
+  PyObject * builtin_interfaces_time = NULL;
+  PyObject * args = NULL;
+  PyObject * kwargs = NULL;
+  PyObject * sec = NULL;
+  PyObject * nanosec = NULL;
+  PyObject * time_obj = NULL;
+  PyObject * pheader = NULL;
+  PyObject * pframe_id = NULL;
+  PyObject * ptransform = NULL;
+  PyObject * ptranslation = NULL;
+  PyObject * protation = NULL;
+  PyObject * child_frame_id = NULL;
+  PyObject * ptrans_x = NULL;
+  PyObject * ptrans_y = NULL;
+  PyObject * ptrans_z = NULL;
+  PyObject * prot_x = NULL;
+  PyObject * prot_y = NULL;
+  PyObject * prot_z = NULL;
+  PyObject * prot_w = NULL;
   pclass = PyObject_GetAttrString(pModulegeometrymsgs, "TransformStamped");
-  if(pclass == NULL)
+  if(!pclass)
   {
-    printf("Can't get geometry_msgs.msg.TransformedStamped\n");
-    return NULL;
+    goto cleanup;
   }
 
   pargs = Py_BuildValue("()");
-  if(pargs == NULL)
+  if(!pargs)
   {
-    printf("Can't build argument list\n");
-    return NULL;
+    goto cleanup;
   }
 
   pinst = PyEval_CallObject(pclass, pargs);
-  Py_DECREF(pclass);
-  Py_DECREF(pargs);
-  if(pinst == NULL)
+  if(!pinst)
   {
-    printf("Can't create class\n");
-    return NULL;
+    goto cleanup;
   }
 
   //we need to convert the time to python
-  PyObject *builtin_interfaces_time = PyObject_GetAttrString(pModulebuiltininterfacesmsgs, "Time");
+  builtin_interfaces_time = PyObject_GetAttrString(pModulebuiltininterfacesmsgs, "Time");
   if (!builtin_interfaces_time) {
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *args = PyTuple_New(0);
+  args = PyTuple_New(0);
   if (!args) {
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *kwargs = PyDict_New();
+  kwargs = PyDict_New();
   if (!kwargs) {
-    Py_DECREF(args);
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *sec = Py_BuildValue("i", transform->header.stamp.sec);
+  sec = Py_BuildValue("i", transform->header.stamp.sec);
   if (!sec) {
-    Py_DECREF(kwargs);
-    Py_DECREF(args);
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *nanosec = Py_BuildValue("i", transform->header.stamp.nanosec);
+  nanosec = Py_BuildValue("i", transform->header.stamp.nanosec);
   if (!nanosec) {
-    Py_DECREF(sec);
-    Py_DECREF(kwargs);
-    Py_DECREF(args);
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
   if (-1 == PyDict_SetItemString(kwargs, "sec", sec)) {
-    Py_DECREF(sec);
-    Py_DECREF(kwargs);
-    Py_DECREF(args);
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(sec);
   if (-1 == PyDict_SetItemString(kwargs, "nanosec", nanosec)) {
-    Py_DECREF(sec);
-    Py_DECREF(kwargs);
-    Py_DECREF(args);
-    Py_DECREF(builtin_interfaces_time);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(nanosec);
 
-  PyObject *time_obj = PyObject_Call(builtin_interfaces_time, args, kwargs);
-  Py_DECREF(kwargs);
-  Py_DECREF(args);
-  Py_DECREF(builtin_interfaces_time);
+  time_obj = PyObject_Call(builtin_interfaces_time, args, kwargs);
   if (!time_obj) {
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
-  PyObject* pheader = PyObject_GetAttrString(pinst, "header");
+  pheader = PyObject_GetAttrString(pinst, "header");
   if (!pheader) {
-    Py_DECREF(time_obj);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
   if (-1 == PyObject_SetAttrString(pheader, "stamp", time_obj)) {
-    Py_DECREF(time_obj);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(time_obj);
 
-  PyObject * pframe_id = stringToPython(transform->header.frame_id);
+  pframe_id = stringToPython(transform->header.frame_id);
   if (!pframe_id) {
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
   if (-1 == PyObject_SetAttrString(pheader, "frame_id", pframe_id)) {
-    Py_DECREF(pframe_id);
-    Py_DECREF(pheader);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(pframe_id);
-  Py_DECREF(pheader);
 
-  PyObject *ptransform = PyObject_GetAttrString(pinst, "transform");
+  ptransform = PyObject_GetAttrString(pinst, "transform");
   if (!ptransform) {
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *ptranslation = PyObject_GetAttrString(ptransform, "translation");
+  ptranslation = PyObject_GetAttrString(ptransform, "translation");
   if (!ptranslation) {
-    Py_DECREF(ptransform);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject *protation = PyObject_GetAttrString(ptransform, "rotation");
+  protation = PyObject_GetAttrString(ptransform, "rotation");
   if (!ptranslation) {
-    Py_DECREF(ptranslation);
-    Py_DECREF(ptransform);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(ptransform);
 
-  PyObject *child_frame_id = stringToPython(transform->child_frame_id);
+  child_frame_id = stringToPython(transform->child_frame_id);
   if (!child_frame_id) {
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
   if (-1 == PyObject_SetAttrString(pinst, "child_frame_id", child_frame_id)) {
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
-  PyObject * ptrans_x = PyFloat_FromDouble(transform->transform.translation.x);
+  ptrans_x = PyFloat_FromDouble(transform->transform.translation.x);
   if (!ptrans_x) {
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject * ptrans_y = PyFloat_FromDouble(transform->transform.translation.y);
+  ptrans_y = PyFloat_FromDouble(transform->transform.translation.y);
   if (!ptrans_y) {
-    Py_DECREF(ptrans_x);
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  PyObject * ptrans_z = PyFloat_FromDouble(transform->transform.translation.z);
+  ptrans_z = PyFloat_FromDouble(transform->transform.translation.z);
   if (!ptrans_z) {
-    Py_DECREF(ptrans_y);
-    Py_DECREF(ptrans_x);
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
   if (-1 == PyObject_SetAttrString(ptranslation, "x", ptrans_x)) {
-    Py_DECREF(ptrans_z);
-    Py_DECREF(ptrans_y);
-    Py_DECREF(ptrans_x);
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(ptrans_x);
   if (-1 == PyObject_SetAttrString(ptranslation, "y", ptrans_y)) {
-    Py_DECREF(ptrans_z);
-    Py_DECREF(ptrans_y);
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(ptrans_y);
   if (-1 == PyObject_SetAttrString(ptranslation, "z", ptrans_z)) {
-    Py_DECREF(ptrans_z);
-    Py_DECREF(ptranslation);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(ptrans_z);
-  Py_DECREF(ptranslation);
 
-  PyObject *prot_x = PyFloat_FromDouble(transform->transform.rotation.x);
+  prot_x = PyFloat_FromDouble(transform->transform.rotation.x);
   if (!prot_x) {
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
-  PyObject *prot_y = PyFloat_FromDouble(transform->transform.rotation.y);
+  prot_y = PyFloat_FromDouble(transform->transform.rotation.y);
   if (!prot_y) {
-    Py_DECREF(prot_x);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
-  PyObject *prot_z = PyFloat_FromDouble(transform->transform.rotation.z);
+  prot_z = PyFloat_FromDouble(transform->transform.rotation.z);
   if (!prot_z) {
-    Py_DECREF(prot_y);
-    Py_DECREF(prot_x);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
-  PyObject *prot_w = PyFloat_FromDouble(transform->transform.rotation.w);
+  prot_w = PyFloat_FromDouble(transform->transform.rotation.w);
   if (!prot_w) {
-    Py_DECREF(prot_z);
-    Py_DECREF(prot_y);
-    Py_DECREF(prot_x);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
 
   if (-1 == PyObject_SetAttrString(protation, "x", prot_x)) {
-    Py_DECREF(prot_w);
-    Py_DECREF(prot_z);
-    Py_DECREF(prot_y);
-    Py_DECREF(prot_x);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(prot_x);
 
   if (-1 == PyObject_SetAttrString(protation, "y", prot_y)) {
-    Py_DECREF(prot_w);
-    Py_DECREF(prot_z);
-    Py_DECREF(prot_y);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(prot_y);
 
   if (-1 == PyObject_SetAttrString(protation, "z", prot_z)) {
-    Py_DECREF(prot_w);
-    Py_DECREF(prot_z);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(prot_z);
 
   if (-1 == PyObject_SetAttrString(protation, "w", prot_w)) {
-    Py_DECREF(prot_w);
-    Py_DECREF(protation);
-    Py_DECREF(pinst);
-    return NULL;
+    goto cleanup;
   }
-  Py_DECREF(prot_w);
-  Py_DECREF(protation);
-
+cleanup:
+  if (PyErr_Occurred()) {
+    Py_XDECREF(pinst);
+    pinst = NULL;
+  }
+  Py_XDECREF(pclass);
+  Py_XDECREF(pargs);
+  Py_XDECREF(builtin_interfaces_time);
+  Py_XDECREF(args);
+  Py_XDECREF(kwargs);
+  Py_XDECREF(sec);
+  Py_XDECREF(nanosec);
+  Py_XDECREF(time_obj);
+  Py_XDECREF(pheader);
+  Py_XDECREF(pframe_id);
+  Py_XDECREF(ptransform);
+  Py_XDECREF(ptranslation);
+  Py_XDECREF(protation);
+  Py_XDECREF(child_frame_id);
+  Py_XDECREF(ptrans_x);
+  Py_XDECREF(ptrans_y);
+  Py_XDECREF(ptrans_z);
+  Py_XDECREF(prot_x);
+  Py_XDECREF(prot_y);
+  Py_XDECREF(prot_z);
+  Py_XDECREF(prot_w);
   return pinst;
 }
 
