@@ -357,7 +357,7 @@ static tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
 
 static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
-  if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+  if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
     PyObject *sec = pythonBorrowAttrString(obj, "sec");
     PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
     builtin_interfaces::msg::Time msg;
@@ -367,7 +367,7 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
     return PyErr_Occurred() ? 0 : 1;
   }
 
-  if(PyObject_HasAttrString(obj, "nanoseconds")) {
+  if (PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
     const std::chrono::nanoseconds ns(d);
@@ -381,7 +381,7 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 
 static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 {
-  if(PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+  if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
     PyObject *sec = pythonBorrowAttrString(obj, "sec");
     PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
     *rt = std::chrono::seconds(PyLong_AsLong(sec)) +
@@ -389,7 +389,7 @@ static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
     return PyErr_Occurred() ? 0 : 1;
   }
 
-  if(PyObject_HasAttrString(obj, "nanoseconds")) {
+  if (PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
     const std::chrono::nanoseconds ns(d);
@@ -914,25 +914,25 @@ bool staticInit() {
   pModulebuiltininterfacesmsgs = pythonImport("builtin_interfaces.msg");
   pModulegeometrymsgs = pythonImport("geometry_msgs.msg");
 
-  if(pModulerclpy == NULL)
+  if (pModulerclpy == NULL)
   {
     printf("Cannot load rclpy module");
     return false;
   }
 
-  if(pModulerclpytime == NULL)
+  if (pModulerclpytime == NULL)
   {
     printf("Cannot load rclpy.time.Time module");
     return false;
   }
 
-  if(pModulegeometrymsgs == NULL)
+  if (pModulegeometrymsgs == NULL)
   {
     printf("Cannot load geometry_msgs module");
     return false;
   }
 
-  if(pModulebuiltininterfacesmsgs == NULL)
+  if (pModulebuiltininterfacesmsgs == NULL)
   {
     printf("Cannot load builtin_interfaces module");
     return false;
