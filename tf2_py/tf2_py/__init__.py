@@ -1,4 +1,3 @@
-#! /usr/bin/python
 #***********************************************************
 #* Software License Agreement (BSD License)
 #*
