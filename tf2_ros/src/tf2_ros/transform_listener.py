@@ -44,14 +44,13 @@ class TransformListener:
     """
     def __init__(self, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
         """
-        .. function:: __init__(buffer, node, spin_thread=True, qos=QoSProfile(depth=100))
+        Constructor.
 
-            Constructor.
-
-            :param buffer: The buffer to propagate changes to when tf info updates.
-            :param node: The ROS2 node.
-            :param spin_thread: Whether to create a dedidcated thread to spin this node.
-            :param qos: A QoSProfile or a history depth to apply to subscribers.
+        :param buffer: The buffer to propagate changes to when tf info updates.
+        :param node: The ROS2 node.
+        :param spin_thread: Whether to create a dedidcated thread to spin this node.
+        :param qos: A QoSProfile or a history depth to apply to subscribers.
+        :param static_qos: A QoSProfile or a history depth to apply to tf_static subscribers.
         """
         if qos is None:
             qos = QoSProfile(
