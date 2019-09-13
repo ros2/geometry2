@@ -28,7 +28,7 @@ add_library(${PROJECT_NAME} SHARED
   src/buffer.cpp
   src/create_timer_ros.cpp
   src/transform_listener.cpp
-  # src/buffer_client.cpp
+  src/buffer_client.cpp
   src/buffer_server.cpp
   src/transform_broadcaster.cpp
   src/static_transform_broadcaster.cpp
@@ -122,6 +122,9 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_buffer_server test/test_buffer_server.cpp)
   target_link_libraries(test_buffer_server ${PROJECT_NAME})
+
+  ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
+  target_link_libraries(test_buffer_client ${PROJECT_NAME})
 
   # Adds a tf2_ros message_filter unittest that uses
   # multiple target frames and a non-zero time tolerance
