@@ -24,8 +24,6 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
 endif()
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py/__init__.py" "")
-
 ament_python_install_package(${PROJECT_NAME})
 
 function(set_properties _targetname _build_type)
@@ -68,6 +66,9 @@ if(BUILD_TESTING)
     PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}"
     APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}
   )
+
+  # Create importable location in build directory
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py/__init__.py" "")
 endif()
 
 set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
