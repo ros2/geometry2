@@ -45,10 +45,12 @@
   } \
   } while (0)
 
-static PyObject *pModulerospy = NULL;
+static PyObject *pModulerclpy = NULL;
+static PyObject *pModulerclpytime = NULL;
+static PyObject *pModulebuiltininterfacesmsgs = NULL;
 static PyObject *pModulegeometrymsgs = NULL;
 static PyObject *tf2_exception = NULL;
-static PyObject *tf2_connectivityexception = NULL, *tf2_lookupexception = NULL, *tf2_extrapolationexception = NULL, 
+static PyObject *tf2_connectivityexception = NULL, *tf2_lookupexception = NULL, *tf2_extrapolationexception = NULL,
                 *tf2_invalidargumentexception = NULL, *tf2_timeoutexception = NULL;
 
 struct buffer_core_t {
@@ -56,110 +58,272 @@ struct buffer_core_t {
   tf2::BufferCore *bc;
 };
 
-
-static PyTypeObject buffer_core_Type = {
-#if PY_MAJOR_VERSION < 3
-  PyObject_HEAD_INIT(NULL)
-  0,                               /*size*/
-# else
-  PyVarObject_HEAD_INIT(NULL, 0)
-#endif
-  "_tf2.BufferCore",               /*name*/
-  sizeof(buffer_core_t),           /*basicsize*/
-};
-
-static PyObject *transform_converter(const geometry_msgs::TransformStamped* transform)
+static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped* transform)
 {
-  PyObject *pclass, *pargs, *pinst = NULL;
+  PyObject * pclass = NULL;
+  PyObject * pargs = NULL;
+  PyObject * pinst = NULL;
+  PyObject * builtin_interfaces_time = NULL;
+  PyObject * args = NULL;
+  PyObject * kwargs = NULL;
+  PyObject * sec = NULL;
+  PyObject * nanosec = NULL;
+  PyObject * time_obj = NULL;
+  PyObject * pheader = NULL;
+  PyObject * pframe_id = NULL;
+  PyObject * ptransform = NULL;
+  PyObject * ptranslation = NULL;
+  PyObject * protation = NULL;
+  PyObject * child_frame_id = NULL;
+  PyObject * ptrans_x = NULL;
+  PyObject * ptrans_y = NULL;
+  PyObject * ptrans_z = NULL;
+  PyObject * prot_x = NULL;
+  PyObject * prot_y = NULL;
+  PyObject * prot_z = NULL;
+  PyObject * prot_w = NULL;
   pclass = PyObject_GetAttrString(pModulegeometrymsgs, "TransformStamped");
-  if(pclass == NULL)
+  if (!pclass)
   {
-    printf("Can't get geometry_msgs.msg.TransformedStamped\n");
-    return NULL;
+    goto cleanup;
   }
 
   pargs = Py_BuildValue("()");
-  if(pargs == NULL)
+  if (!pargs)
   {
-    printf("Can't build argument list\n");
-    return NULL;
+    goto cleanup;
   }
 
   pinst = PyEval_CallObject(pclass, pargs);
-  Py_DECREF(pclass);
-  Py_DECREF(pargs);
-  if(pinst == NULL)
+  if (!pinst)
   {
-    printf("Can't create class\n");
-    return NULL;
+    goto cleanup;
   }
 
   //we need to convert the time to python
-  PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
-  PyObject *args = Py_BuildValue("ii", transform->header.stamp.sec, transform->header.stamp.nsec);
-  PyObject *time_obj = PyObject_CallObject(rospy_time, args);
-  Py_DECREF(args);
-  Py_DECREF(rospy_time);
+  builtin_interfaces_time = PyObject_GetAttrString(pModulebuiltininterfacesmsgs, "Time");
+  if (!builtin_interfaces_time) {
+    goto cleanup;
+  }
+  args = PyTuple_New(0);
+  if (!args) {
+    goto cleanup;
+  }
+  kwargs = PyDict_New();
+  if (!kwargs) {
+    goto cleanup;
+  }
+  sec = Py_BuildValue("i", transform->header.stamp.sec);
+  if (!sec) {
+    goto cleanup;
+  }
+  nanosec = Py_BuildValue("i", transform->header.stamp.nanosec);
+  if (!nanosec) {
+    goto cleanup;
+  }
+  if (-1 == PyDict_SetItemString(kwargs, "sec", sec)) {
+    goto cleanup;
+  }
+  if (-1 == PyDict_SetItemString(kwargs, "nanosec", nanosec)) {
+    goto cleanup;
+  }
 
-  PyObject* pheader = PyObject_GetAttrString(pinst, "header");
-  PyObject_SetAttrString(pheader, "stamp", time_obj);
-  Py_DECREF(time_obj);
+  time_obj = PyObject_Call(builtin_interfaces_time, args, kwargs);
+  if (!time_obj) {
+    goto cleanup;
+  }
 
-  PyObject_SetAttrString(pheader, "frame_id", stringToPython(transform->header.frame_id));
-  Py_DECREF(pheader);
+  pheader = PyObject_GetAttrString(pinst, "header");
+  if (!pheader) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(pheader, "stamp", time_obj)) {
+    goto cleanup;
+  }
 
-  PyObject *ptransform = PyObject_GetAttrString(pinst, "transform");
-  PyObject *ptranslation = PyObject_GetAttrString(ptransform, "translation");
-  PyObject *protation = PyObject_GetAttrString(ptransform, "rotation");
-  Py_DECREF(ptransform);
+  pframe_id = stringToPython(transform->header.frame_id);
+  if (!pframe_id) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(pheader, "frame_id", pframe_id)) {
+    goto cleanup;
+  }
 
-  PyObject_SetAttrString(pinst, "child_frame_id", stringToPython(transform->child_frame_id));
+  ptransform = PyObject_GetAttrString(pinst, "transform");
+  if (!ptransform) {
+    goto cleanup;
+  }
+  ptranslation = PyObject_GetAttrString(ptransform, "translation");
+  if (!ptranslation) {
+    goto cleanup;
+  }
+  protation = PyObject_GetAttrString(ptransform, "rotation");
+  if (!ptranslation) {
+    goto cleanup;
+  }
 
-  PyObject_SetAttrString(ptranslation, "x", PyFloat_FromDouble(transform->transform.translation.x));
-  PyObject_SetAttrString(ptranslation, "y", PyFloat_FromDouble(transform->transform.translation.y));
-  PyObject_SetAttrString(ptranslation, "z", PyFloat_FromDouble(transform->transform.translation.z));
-  Py_DECREF(ptranslation);
+  child_frame_id = stringToPython(transform->child_frame_id);
+  if (!child_frame_id) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(pinst, "child_frame_id", child_frame_id)) {
+    goto cleanup;
+  }
 
-  PyObject_SetAttrString(protation, "x", PyFloat_FromDouble(transform->transform.rotation.x));
-  PyObject_SetAttrString(protation, "y", PyFloat_FromDouble(transform->transform.rotation.y));
-  PyObject_SetAttrString(protation, "z", PyFloat_FromDouble(transform->transform.rotation.z));
-  PyObject_SetAttrString(protation, "w", PyFloat_FromDouble(transform->transform.rotation.w));
-  Py_DECREF(protation);
+  ptrans_x = PyFloat_FromDouble(transform->transform.translation.x);
+  if (!ptrans_x) {
+    goto cleanup;
+  }
+  ptrans_y = PyFloat_FromDouble(transform->transform.translation.y);
+  if (!ptrans_y) {
+    goto cleanup;
+  }
+  ptrans_z = PyFloat_FromDouble(transform->transform.translation.z);
+  if (!ptrans_z) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(ptranslation, "x", ptrans_x)) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(ptranslation, "y", ptrans_y)) {
+    goto cleanup;
+  }
+  if (-1 == PyObject_SetAttrString(ptranslation, "z", ptrans_z)) {
+    goto cleanup;
+  }
 
+  prot_x = PyFloat_FromDouble(transform->transform.rotation.x);
+  if (!prot_x) {
+    goto cleanup;
+  }
+
+  prot_y = PyFloat_FromDouble(transform->transform.rotation.y);
+  if (!prot_y) {
+    goto cleanup;
+  }
+
+  prot_z = PyFloat_FromDouble(transform->transform.rotation.z);
+  if (!prot_z) {
+    goto cleanup;
+  }
+
+  prot_w = PyFloat_FromDouble(transform->transform.rotation.w);
+  if (!prot_w) {
+    goto cleanup;
+  }
+
+  if (-1 == PyObject_SetAttrString(protation, "x", prot_x)) {
+    goto cleanup;
+  }
+
+  if (-1 == PyObject_SetAttrString(protation, "y", prot_y)) {
+    goto cleanup;
+  }
+
+  if (-1 == PyObject_SetAttrString(protation, "z", prot_z)) {
+    goto cleanup;
+  }
+
+  if (-1 == PyObject_SetAttrString(protation, "w", prot_w)) {
+    goto cleanup;
+  }
+cleanup:
+  if (PyErr_Occurred()) {
+    Py_XDECREF(pinst);
+    pinst = NULL;
+  }
+  Py_XDECREF(pclass);
+  Py_XDECREF(pargs);
+  Py_XDECREF(builtin_interfaces_time);
+  Py_XDECREF(args);
+  Py_XDECREF(kwargs);
+  Py_XDECREF(sec);
+  Py_XDECREF(nanosec);
+  Py_XDECREF(time_obj);
+  Py_XDECREF(pheader);
+  Py_XDECREF(pframe_id);
+  Py_XDECREF(ptransform);
+  Py_XDECREF(ptranslation);
+  Py_XDECREF(protation);
+  Py_XDECREF(child_frame_id);
+  Py_XDECREF(ptrans_x);
+  Py_XDECREF(ptrans_y);
+  Py_XDECREF(ptrans_z);
+  Py_XDECREF(prot_x);
+  Py_XDECREF(prot_y);
+  Py_XDECREF(prot_z);
+  Py_XDECREF(prot_w);
   return pinst;
 }
 
-static int rostime_converter(PyObject *obj, builtin_interfaces::msg::Time *rt)
+static builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
 {
-  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
-  if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
-    return 0;
-  } else {
-    (*rt).fromSec(PyFloat_AsDouble(tsr));
-    Py_DECREF(tsr);
-    return 1;
+  std::chrono::nanoseconds ns = t.time_since_epoch();
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(ns);
+  ns -= s;
+  builtin_interfaces::msg::Time time_msg;
+  time_msg.sec = (int32_t)s.count();
+  time_msg.nanosec = (uint32_t)ns.count();
+  return time_msg;
+}
+
+static tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
+{
+  std::chrono::nanoseconds ns = std::chrono::seconds(time_msg.sec) + std::chrono::nanoseconds(time_msg.nanosec);
+  return tf2::TimePoint(ns);
+}
+
+static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
+{
+  if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+    PyObject *sec = pythonBorrowAttrString(obj, "sec");
+    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    builtin_interfaces::msg::Time msg;
+    msg.sec = PyLong_AsLong(sec);
+    msg.nanosec = PyLong_AsUnsignedLong(nanosec);
+    *rt = fromMsg(msg);
+    return PyErr_Occurred() ? 0 : 1;
   }
+
+  if (PyObject_HasAttrString(obj, "nanoseconds")) {
+    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    const int64_t d = PyLong_AsLongLong(nanoseconds);
+    const std::chrono::nanoseconds ns(d);
+    *rt = tf2::TimePoint(ns);
+    return PyErr_Occurred() ? 0 : 1;
+  }
+
+  PyErr_SetString(PyExc_TypeError, "time must have sec and nanosec, or nanoseconds.");
+  return 0;
 }
 
 static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 {
-  PyObject *tsr = PyObject_CallMethod(obj, (char*)"to_sec", NULL);
-  if (tsr == NULL) {
-    PyErr_SetString(PyExc_TypeError, "time must have a to_sec method, e.g. rospy.Time or rospy.Duration");
-    return 0;
-  } else {
-    (*rt).fromSec(PyFloat_AsDouble(tsr));
-    Py_DECREF(tsr);
-    return 1;
+  if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
+    PyObject *sec = pythonBorrowAttrString(obj, "sec");
+    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    *rt = std::chrono::seconds(PyLong_AsLong(sec)) +
+      std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
+    return PyErr_Occurred() ? 0 : 1;
   }
+
+  if (PyObject_HasAttrString(obj, "nanoseconds")) {
+    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    const int64_t d = PyLong_AsLongLong(nanoseconds);
+    const std::chrono::nanoseconds ns(d);
+    *rt = std::chrono::duration_cast<tf2::Duration>(ns);
+    return PyErr_Occurred() ? 0 : 1;
+  }
+
+  PyErr_SetString(PyExc_TypeError, "duration must have sec and nanosec, or nanoseconds.");
+  return 0;
 }
 
 static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
 {
-  tf2::Duration cache_time;
+  (void)kw;
 
-  cache_time.fromSec(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME);
+  tf2::Duration cache_time(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME);
 
   if (!PyArg_ParseTuple(args, "|O&", rosduration_converter, &cache_time))
     return -1;
@@ -169,24 +333,16 @@ static int BufferCore_init(PyObject *self, PyObject *args, PyObject *kw)
   return 0;
 }
 
-/* This may need to be implemented later if we decide to have it in the core
-static PyObject *getTFPrefix(PyObject *self, PyObject *args)
-{
-  if (!PyArg_ParseTuple(args, ""))
-    return NULL;
-  tf::Transformer *t = ((transformer_t*)self)->t;
-  return stringToPython(t->getTFPrefix());
-}
-*/
-
 static PyObject *allFramesAsYAML(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   return stringToPython(bc->allFramesAsYAML());
 }
 
 static PyObject *allFramesAsString(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   return stringToPython(bc->allFramesAsString());
 }
@@ -195,7 +351,7 @@ static PyObject *canTransformCore(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint time;
   static const char *keywords[] = { "target_frame", "source_frame", "time", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char**)keywords, &target_frame, &source_frame, rostime_converter, &time))
@@ -210,7 +366,7 @@ static PyObject *canTransformFullCore(PyObject *self, PyObject *args, PyObject *
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char**)keywords,
@@ -242,7 +398,7 @@ static PyObject *_chain(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   std::vector< std::string > output;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
@@ -265,40 +421,82 @@ static PyObject *getLatestCommonTime(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
   tf2::CompactFrameID target_id, source_id;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint tf2_time;
   std::string error_string;
 
   if (!PyArg_ParseTuple(args, "ss", &target_frame, &source_frame))
     return NULL;
   WRAP(target_id = bc->_validateFrameId("get_latest_common_time", target_frame));
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
-  int r = bc->_getLatestCommonTime(target_id, source_id, time, &error_string);
-  if (r == 0) {
-    PyObject *rospy_time = PyObject_GetAttrString(pModulerospy, "Time");
-    PyObject *args = Py_BuildValue("ii", time.sec, time.nsec);
-    PyObject *ob = PyObject_CallObject(rospy_time, args);
-    Py_DECREF(args);
-    Py_DECREF(rospy_time);
-    return ob;
-  } else {
+  const tf2::TF2Error r = bc->_getLatestCommonTime(target_id, source_id, tf2_time, &error_string);
+
+  if (r != tf2::TF2Error::NO_ERROR) {
     PyErr_SetString(tf2_exception, error_string.c_str());
     return NULL;
   }
+
+  builtin_interfaces::msg::Time time_msg;
+  PyObject * rclpy_time = NULL;
+  PyObject * call_args = NULL;
+  PyObject * kwargs = NULL;
+  PyObject * seconds = NULL;
+  PyObject * nanoseconds = NULL;
+  PyObject * ob = NULL;
+
+  rclpy_time = PyObject_GetAttrString(pModulerclpytime, "Time");
+  if (!rclpy_time) {
+    goto cleanup;
+  }
+  time_msg = toMsg(tf2_time);
+  call_args = PyTuple_New(0);
+  if (!call_args) {
+    goto cleanup;
+  }
+  kwargs = PyDict_New();
+  if (!kwargs) {
+    goto cleanup;
+  }
+  seconds = Py_BuildValue("i", time_msg.sec);
+  if (!seconds) {
+    goto cleanup;
+  }
+  nanoseconds = Py_BuildValue("i", time_msg.nanosec);
+  if (!nanoseconds) {
+    goto cleanup;
+  }
+  if (0 != PyDict_SetItemString(kwargs, "seconds", seconds)) {
+    goto cleanup;
+  }
+  if (0 != PyDict_SetItemString(kwargs, "nanoseconds", nanoseconds)) {
+    goto cleanup;
+  }
+
+  ob = PyObject_Call(rclpy_time, call_args, kwargs);
+
+cleanup:
+  if (PyErr_Occurred()) {
+    Py_XDECREF(ob);
+    ob = NULL;
+  }
+  Py_XDECREF(rclpy_time);
+  Py_XDECREF(call_args);
+  Py_XDECREF(kwargs);
+  Py_XDECREF(seconds);
+  Py_XDECREF(nanoseconds);
+  return ob;
 }
 
 static PyObject *lookupTransformCore(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::TimePoint time;
   static const char *keywords[] = { "target_frame", "source_frame", "time", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char**)keywords, &target_frame, &source_frame, rostime_converter, &time))
     return NULL;
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, source_frame, time));
-  geometry_msgs::Vector3 origin = transform.transform.translation;
-  geometry_msgs::Quaternion rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
   //return Py_BuildValue("(ddd)(dddd)",
@@ -310,7 +508,7 @@ static PyObject *lookupTransformFullCore(PyObject *self, PyObject *args, PyObjec
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   char *target_frame, *source_frame, *fixed_frame;
-  builtin_interfaces::msg::Time target_time, source_time;
+  tf2::TimePoint target_time, source_time;
   static const char *keywords[] = { "target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char**)keywords,
@@ -322,10 +520,8 @@ static PyObject *lookupTransformFullCore(PyObject *self, PyObject *args, PyObjec
                         &source_time,
                         &fixed_frame))
     return NULL;
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame));
-  geometry_msgs::Vector3 origin = transform.transform.translation;
-  geometry_msgs::Quaternion rotation = transform.transform.rotation;
   //TODO: Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
 }
@@ -340,7 +536,7 @@ static PyObject *lookupTwistCore(PyObject *self, PyObject *args, PyObject *kw)
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&O&", (char**)keywords, &tracking_frame, &observation_frame, rostime_converter, &time, rosduration_converter, &averaging_interval))
     return NULL;
-  geometry_msgs::Twist twist;
+  geometry_msgs::msg::Twist twist;
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, time, averaging_interval));
 
   return Py_BuildValue("(ddd)(ddd)",
@@ -365,7 +561,7 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
                         rostime_converter, &time,
                         rosduration_converter, &averaging_interval))
     return NULL;
-  geometry_msgs::Twist twist;
+  geometry_msgs::msg::Twist twist;
   tf::Point pt(px, py, pz);
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, reference_frame, pt, reference_point_frame, time, averaging_interval));
 
@@ -377,12 +573,17 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
 static inline int checkTranslationType(PyObject* o)
 {
   PyTypeObject *translation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Vector3");
+  if (!translation_type) {
+    return 0;
+  }
   int type_check = PyObject_TypeCheck(o, translation_type);
+  Py_DECREF((PyObject*)translation_type);
   int attr_check = PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
                    PyObject_HasAttrString(o, "z");
   if (!type_check) {
     PyErr_WarnEx(PyExc_UserWarning, "translation should be of type Vector3", 1);
+    return type_check;
   }
   return attr_check;
 }
@@ -390,7 +591,11 @@ static inline int checkTranslationType(PyObject* o)
 static inline int checkRotationType(PyObject* o)
 {
   PyTypeObject *rotation_type = (PyTypeObject*) PyObject_GetAttrString(pModulegeometrymsgs, "Quaternion");
+  if (!rotation_type) {
+    return 0;
+  }
   int type_check = PyObject_TypeCheck(o, rotation_type);
+  Py_DECREF((PyObject*)rotation_type);
   int attr_check = PyObject_HasAttrString(o, "w") &&
                    PyObject_HasAttrString(o, "x") &&
                    PyObject_HasAttrString(o, "y") &&
@@ -406,16 +611,19 @@ static PyObject *setTransform(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
+  tf2::TimePoint time;
 
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
 
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
+  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
+
+  transform.header.stamp = toMsg(time);
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
 
@@ -449,16 +657,19 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
+  tf2::TimePoint time;
 
   if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
     return NULL;
 
-  geometry_msgs::TransformStamped transform;
+  geometry_msgs::msg::TransformStamped transform;
   PyObject *header = pythonBorrowAttrString(py_transform, "header");
   transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
   transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &transform.header.stamp) != 1)
+
+  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
     return NULL;
+  transform.header.stamp = toMsg(time);
 
   PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
   PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
@@ -489,6 +700,7 @@ static PyObject *setTransformStatic(PyObject *self, PyObject *args)
 
 static PyObject *clear(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   bc->clear();
   Py_RETURN_NONE;
@@ -505,6 +717,7 @@ static PyObject *_frameExists(PyObject *self, PyObject *args)
 
 static PyObject *_getFrameStrings(PyObject *self, PyObject *args)
 {
+  (void)args;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   std::vector< std::string > ids;
   bc->_getFrameStrings(ids);
@@ -515,38 +728,88 @@ static PyObject *_allFramesAsDot(PyObject *self, PyObject *args, PyObject *kw)
 {
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   static const char *keywords[] = { "time", NULL };
-  ros::Time time;
+  tf2::TimePoint time;
   if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&", (char**)keywords, rostime_converter, &time))
     return NULL;
-  return PyString_FromString(bc->_allFramesAsDot(time.toSec()).c_str());
+  return stringToPython(bc->_allFramesAsDot(time).c_str());
 }
 
 
 static struct PyMethodDef buffer_core_methods[] =
 {
-  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS},
-  {"all_frames_as_string", allFramesAsString, METH_VARARGS},
-  {"set_transform", setTransform, METH_VARARGS},
-  {"set_transform_static", setTransformStatic, METH_VARARGS},
-  {"can_transform_core", (PyCFunction)canTransformCore, METH_KEYWORDS},
-  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_KEYWORDS},
-  {"_chain", (PyCFunction)_chain, METH_KEYWORDS},
-  {"clear", (PyCFunction)clear, METH_KEYWORDS},
-  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS},
-  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS},
-  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_KEYWORDS},
-  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS},
-  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_KEYWORDS},
-  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_KEYWORDS},
-  //{"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_KEYWORDS},
+  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS, NULL},
+  {"all_frames_as_string", allFramesAsString, METH_VARARGS, NULL},
+  {"set_transform", setTransform, METH_VARARGS, NULL},
+  {"set_transform_static", setTransformStatic, METH_VARARGS, NULL},
+  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS, NULL},
+  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS, NULL},
+  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS, NULL},
+  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  //{"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_VARARGS | METH_KEYWORDS},
   //{"lookupTwistFullCore", lookupTwistFullCore, METH_VARARGS},
-  //{"getTFPrefix", (PyCFunction)getTFPrefix, METH_VARARGS},
-  {NULL,          NULL}
+  {NULL, NULL, 0, NULL}
 };
 
 static PyMethodDef module_methods[] = {
   // {"Transformer", mkTransformer, METH_VARARGS},
-  {0, 0, 0},
+  {NULL, NULL, 0, NULL},
+};
+
+static PyTypeObject buffer_core_Type = {
+  PyVarObject_HEAD_INIT(NULL, 0)
+  "_tf2.BufferCore",                        /* tp_name */
+  sizeof(buffer_core_t),                    /* tp_basicsize */
+  0,                                        /* tp_itemsize */
+  NULL,                                     /* tp_dealloc */
+  NULL,                                     /* tp_print */
+  NULL,                                     /* tp_getattr */
+  NULL,                                     /* tp_setattr */
+  NULL,                                     /* tp_as_async */
+  NULL,                                     /* tp_repr */
+  NULL,                                     /* tp_as_number */
+  NULL,                                     /* tp_as_sequence */
+  NULL,                                     /* tp_as_mapping */
+  NULL,                                     /* tp_hash */
+  NULL,                                     /* tp_call */
+  NULL,                                     /* tp_str */
+  NULL,                                     /* tp_getattro */
+  NULL,                                     /* tp_setattro */
+  NULL,                                     /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
+  NULL,                                     /* tp_doc */
+  NULL,                                     /* tp_traverse */
+  NULL,                                     /* tp_clear */
+  NULL,                                     /* tp_richcompare */
+  0,                                        /* tp_weaklistoffset */
+  NULL,                                     /* tp_iter */
+  NULL,                                     /* tp_iternext */
+  buffer_core_methods,                      /* tp_methods */
+  NULL,                                     /* tp_members */
+  NULL,                                     /* tp_getset */
+  NULL,                                     /* tp_base */
+  NULL,                                     /* tp_dict */
+  NULL,                                     /* tp_descr_get */
+  NULL,                                     /* tp_descr_set */
+  0,                                        /* tp_dictoffset */
+  BufferCore_init,                          /* tp_init */
+  PyType_GenericAlloc,                      /* tp_alloc */
+  PyType_GenericNew,                        /* tp_new */
+  NULL,                                     /* tp_free */
+  NULL,                                     /* tp_is_gc */
+  NULL,                                     /* tp_bases */
+  NULL,                                     /* tp_mro */
+  NULL,                                     /* tp_cache */
+  NULL,                                     /* tp_subclasses */
+  NULL,                                     /* tp_weaklist */
+  NULL,                                     /* tp_del */
+  0,                                        /* tp_version_tag */
+  NULL,                                     /* tp_finalize */
 };
 
 bool staticInit() {
@@ -566,20 +829,35 @@ bool staticInit() {
   tf2_timeoutexception = stringToPython("tf2.TimeoutException");
 #endif
 
-  pModulerospy        = pythonImport("rospy");
+  pModulerclpy        = pythonImport("rclpy");
+  pModulerclpytime = pythonImport("rclpy.time");
+  pModulebuiltininterfacesmsgs = pythonImport("builtin_interfaces.msg");
   pModulegeometrymsgs = pythonImport("geometry_msgs.msg");
 
-  if(pModulegeometrymsgs == NULL)
+  if (pModulerclpy == NULL)
+  {
+    printf("Cannot load rclpy module");
+    return false;
+  }
+
+  if (pModulerclpytime == NULL)
+  {
+    printf("Cannot load rclpy.time.Time module");
+    return false;
+  }
+
+  if (pModulegeometrymsgs == NULL)
   {
     printf("Cannot load geometry_msgs module");
     return false;
   }
 
-  buffer_core_Type.tp_alloc = PyType_GenericAlloc;
-  buffer_core_Type.tp_new = PyType_GenericNew;
-  buffer_core_Type.tp_init = BufferCore_init;
-  buffer_core_Type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
-  buffer_core_Type.tp_methods = buffer_core_methods;
+  if (pModulebuiltininterfacesmsgs == NULL)
+  {
+    printf("Cannot load builtin_interfaces module");
+    return false;
+  }
+
   if (PyType_Ready(&buffer_core_Type) != 0)
     return false;
   return true;
@@ -597,27 +875,21 @@ PyObject *moduleInit(PyObject *m) {
   return m;
 }
 
-#if PY_MAJOR_VERSION < 3
-extern "C" void init_tf2()
-{
-  if (!staticInit())
-    return;
-  moduleInit(Py_InitModule("_tf2", module_methods));
-}
-
-#else
 struct PyModuleDef tf_module = {
-  PyModuleDef_HEAD_INIT, // base
-  "_tf2",                // name
-  NULL,                  // docstring
-  -1,                    // state size (but we're using globals)
-  module_methods         // methods
+  PyModuleDef_HEAD_INIT, /* m_base */
+  "_tf2_py",             /* m_name */
+  NULL,                  /* m_doc */
+  -1,                    /* m_size - state size (but we're using globals) */
+  module_methods,        /* m_methods */
+  NULL,                  /* m_slots */
+  NULL,                  /* m_traverse */
+  NULL,                  /* m_clear */
+  NULL,                  /* m_free */
 };
 
-PyMODINIT_FUNC PyInit_tf2()
+PyMODINIT_FUNC PyInit__tf2_py()
 {
   if (!staticInit())
     return NULL;
   return moduleInit(PyModule_Create(&tf_module));
 }
-#endif

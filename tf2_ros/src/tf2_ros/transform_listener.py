@@ -27,45 +27,84 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_ros')
-import rospy
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import SingleThreadedExecutor
+from rclpy.qos import DurabilityPolicy
+from rclpy.qos import HistoryPolicy
+from rclpy.qos import QoSProfile
 import tf2_ros
 from tf2_msgs.msg import TFMessage
+from threading import Thread
 
-class TransformListener():
+class TransformListener:
     """
     :class:`TransformListener` is a convenient way to listen for coordinate frame transformation info.
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer):
+    def __init__(self, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
         """
-        .. function:: __init__(buffer)
+        Constructor.
 
-            Constructor.
-
-            :param buffer: The buffer to propagate changes to when tf info updates.
+        :param buffer: The buffer to propagate changes to when tf info updates.
+        :param node: The ROS2 node.
+        :param spin_thread: Whether to create a dedidcated thread to spin this node.
+        :param qos: A QoSProfile or a history depth to apply to subscribers.
+        :param static_qos: A QoSProfile or a history depth to apply to tf_static subscribers.
         """
+        if qos is None:
+            qos = QoSProfile(
+                depth=100,
+                durability=DurabilityPolicy.VOLATILE,
+                history=HistoryPolicy.KEEP_LAST,
+                )
+        if static_qos is None:
+            static_qos = QoSProfile(
+                depth=100,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                history=HistoryPolicy.KEEP_LAST,
+                )
         self.buffer = buffer
-        self.tf_sub = rospy.Subscriber("tf", TFMessage, self.callback)
-        self.tf_static_sub = rospy.Subscriber("tf_static", TFMessage, self.static_callback)
-    
+        self.node = node
+        # Default callback group is mutually exclusive, which would prevent waiting for transforms
+        # from another callback in the same group.
+        self.group = ReentrantCallbackGroup()
+        self.tf_sub = node.create_subscription(
+            TFMessage, 'tf', self.callback, qos, callback_group=self.group)
+        self.tf_static_sub = node.create_subscription(
+            TFMessage, 'tf_static', self.static_callback, static_qos, callback_group=self.group)
+
+        if spin_thread:
+            self.executor = SingleThreadedExecutor()
+
+            def run_func():
+                self.executor.add_node(self.node)
+                self.executor.spin()
+                self.executor.remove_node(self.node)
+
+            self.dedicated_listener_thread = Thread(target=run_func)
+            self.dedicated_listener_thread.start()
+
     def __del__(self):
+        if hasattr(self, 'dedicated_listener_thread') and hasattr(self, 'executor'):
+            self.executor.shutdown()
+            self.dedicated_listener_thread.join()
+
         self.unregister()
 
     def unregister(self):
         """
         Unregisters all tf subscribers.
         """
-        self.tf_sub.unregister()
-        self.tf_static_sub.unregister()
+        self.node.destroy_subscription(self.tf_sub)
+        self.node.destroy_subscription(self.tf_static_sub)
 
     def callback(self, data):
-        who = data._connection_header.get('callerid', "default_authority")
+        who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform(transform, who)
 
     def static_callback(self, data):
-        who = data._connection_header.get('callerid', "default_authority")
+        who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform_static(transform, who)

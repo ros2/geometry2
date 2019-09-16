@@ -22,6 +22,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
 include_directories(include)
+ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
@@ -181,6 +182,10 @@ add_rostest(test/transform_listener_unittest.launch)
 add_rostest(test/transform_listener_time_reset_test.launch)
 
 endif()
+
+# Python test
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(tf2_ros_py_test test/py_test)
 endif()
 
 ament_export_include_directories(include)

@@ -30,7 +30,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import rospy
+from rclpy.qos import QoSProfile
 from tf2_msgs.msg import TFMessage
 from geometry_msgs.msg import TransformStamped
 
@@ -39,9 +39,16 @@ class TransformBroadcaster:
     """
     :class:`TransformBroadcaster` is a convenient way to send transformation updates on the ``"/tf"`` message topic.
     """
+    def __init__(self, node, qos=QoSProfile(depth=100)):
+        """
+        .. function:: __init__(node, qos=QoSProfile(depth=100))
 
-    def __init__(self):
-        self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=100)
+            Constructor.
+
+            :param node: The ROS2 node.
+            :param qos: A QoSProfile or a history depth to apply to the publisher.
+        """
+        self.pub_tf = node.create_publisher(TFMessage, "/tf", qos)
 
     def sendTransform(self, transform):
         """
@@ -50,7 +57,10 @@ class TransformBroadcaster:
         :param transform: A transform or list of transforms to send.
         """
         if not isinstance(transform, list):
-            transform = [transform]
-        self.pub_tf.publish(TFMessage(transform))
+            if hasattr(transform, '__iter__'):
+                transform = list(transform)
+            else:
+                transform = [transform]
+        self.pub_tf.publish(TFMessage(transforms=transform))
 
 

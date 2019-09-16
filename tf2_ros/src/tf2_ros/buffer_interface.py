@@ -27,12 +27,13 @@
 
 # author: Wim Meeussen
 
-import roslib; roslib.load_manifest('tf2_ros')
-import rospy
+import rclpy
 import tf2_py as tf2
 import tf2_ros
 from copy import deepcopy
 from std_msgs.msg import Header
+from rclpy.time import Time
+from rclpy.duration import Duration
 
 class BufferInterface:
     """
@@ -45,7 +46,7 @@ class BufferInterface:
         self.registration = tf2_ros.TransformRegistration()
 
     # transform, simple api
-    def transform(self, object_stamped, target_frame, timeout=rospy.Duration(0.0), new_type = None):
+    def transform(self, object_stamped, target_frame, timeout=Duration(), new_type = None):
         """
         Transform an input into the target frame.
 
@@ -69,7 +70,7 @@ class BufferInterface:
         return convert(res, new_type)
 
     # transform, advanced api
-    def transform_full(self, object_stamped, target_frame, target_time, fixed_frame, timeout=rospy.Duration(0.0), new_type = None):
+    def transform_full(self, object_stamped, target_frame, target_time, fixed_frame, timeout=Duration(), new_type = None):
         """
         Transform an input into the target frame (advanced API).
 
@@ -98,7 +99,7 @@ class BufferInterface:
 
         return convert(res, new_type)
 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
@@ -113,7 +114,7 @@ class BufferInterface:
         """
         raise NotImplementedException()
 
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
@@ -131,7 +132,7 @@ class BufferInterface:
         raise NotImplementedException()        
 
     # can, simple api
-    def can_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def can_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible.
 
@@ -147,7 +148,7 @@ class BufferInterface:
         raise NotImplementedException()        
     
     # can, advanced api
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible (advanced API).
 
@@ -192,7 +193,7 @@ class TransformRegistration():
     __type_map = {}
     
     def print_me(self):
-        print TransformRegistration.__type_map
+        print(TransformRegistration.__type_map)
 
     def add(self, key, callback):
         TransformRegistration.__type_map[key] = callback
@@ -240,14 +241,14 @@ def convert(a, b_type):
     #check if an efficient conversion function between the types exists
     try:
         f = c.get_convert((type(a), b_type))
-        print "efficient copy"
+        print("efficient copy")
         return f(a)
     except TypeException:
         if type(a) == b_type:
-            print "deep copy"
+            print("deep copy")
             return deepcopy(a)
 
         f_to = c.get_to_msg(type(a))
         f_from = c.get_from_msg(b_type)
-        print "message copy"
+        print("message copy")
         return f_from(f_to(a))

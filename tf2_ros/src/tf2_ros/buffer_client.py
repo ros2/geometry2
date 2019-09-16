@@ -34,47 +34,40 @@
 #* 
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-PKG = 'tf2_ros'
-import roslib; roslib.load_manifest(PKG)
-import rospy
-import actionlib
+from rclpy.action.client import ActionClient
+from rclpy.duration import Duration
+from rclpy.clock import Clock
+from time import sleep
 import tf2_py as tf2
 import tf2_ros
+import threading
 
-from tf2_msgs.msg import LookupTransformAction, LookupTransformGoal
+from tf2_msgs.action import LookupTransform
 from actionlib_msgs.msg import GoalStatus
 
 class BufferClient(tf2_ros.BufferInterface):
     """
     Action client-based implementation of BufferInterface.
     """
-    def __init__(self, ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0)):
+    def __init__(self, node, ns, check_frequency = 10.0, timeout_padding = Duration(seconds=2.0)):
         """
         .. function:: __init__(ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0))
 
             Constructor.
 
+            :param node: The ROS2 node.
             :param ns: The namespace in which to look for a BufferServer.
             :param check_frequency: How frequently to check for updates to known transforms.
             :param timeout_padding: A constant timeout to add to blocking calls.
         """
         tf2_ros.BufferInterface.__init__(self)
-        self.client = actionlib.SimpleActionClient(ns, LookupTransformAction)
+        self.node = node
+        self.action_client = ActionClient(node, LookupTransform, action_name=ns)
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
 
-    def wait_for_server(self, timeout = rospy.Duration()):
-        """
-        Block until the action server is ready to respond to requests. 
-
-        :param timeout: Time to wait for the server.
-        :return: True if the server is ready, false otherwise.
-        :rtype: bool
-        """
-        return self.client.wait_for_server(timeout)
-
     # lookup, simple api 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
@@ -85,17 +78,17 @@ class BufferClient(tf2_ros.BufferInterface):
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
-        goal = LookupTransformGoal()
-        goal.target_frame = target_frame;
-        goal.source_frame = source_frame;
-        goal.source_time = time;
-        goal.timeout = timeout;
-        goal.advanced = False;
+        goal = LookupTransform.Goal()
+        goal.target_frame = target_frame
+        goal.source_frame = source_frame
+        goal.source_time = time.to_msg()
+        goal.timeout = timeout.to_msg()
+        goal.advanced = False
 
         return self.__process_goal(goal)
 
     # lookup, advanced api 
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
@@ -108,19 +101,19 @@ class BufferClient(tf2_ros.BufferInterface):
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
-        goal = LookupTransformGoal()
-        goal.target_frame = target_frame;
-        goal.source_frame = source_frame;
-        goal.source_time = source_time;
-        goal.timeout = timeout;
-        goal.target_time = target_time;
-        goal.fixed_frame = fixed_frame;
-        goal.advanced = True;
+        goal = LookupTransform.Goal()
+        goal.target_frame = target_frame
+        goal.source_frame = source_frame
+        goal.source_time = source_time.to_msg()
+        goal.timeout = timeout.to_msg()
+        goal.target_time = target_time.to_msg()
+        goal.fixed_frame = fixed_frame
+        goal.advanced = True
 
         return self.__process_goal(goal)
 
     # can, simple api
-    def can_transform(self, target_frame, source_frame, time, timeout=rospy.Duration(0.0)):
+    def can_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible.
 
@@ -140,7 +133,7 @@ class BufferClient(tf2_ros.BufferInterface):
 
     
     # can, advanced api
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=rospy.Duration(0.0)):
+    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Check if a transform from the source frame to the target frame is possible (advanced API).
 
@@ -162,32 +155,54 @@ class BufferClient(tf2_ros.BufferInterface):
         except tf2.TransformException:
             return False
 
-    def __is_done(self, state):
-        if state == GoalStatus.REJECTED or state == GoalStatus.ABORTED or \
-           state == GoalStatus.RECALLED or state == GoalStatus.PREEMPTED or \
-           state == GoalStatus.SUCCEEDED or state == GoalStatus.LOST:
-            return True
-        return False
-
     def __process_goal(self, goal):
-        self.client.send_goal(goal)
-        r = rospy.Rate(self.check_frequency)
-        timed_out = False
-        start_time = rospy.Time.now()
-        while not rospy.is_shutdown() and not self.__is_done(self.client.get_state()) and not timed_out:
-            if rospy.Time.now() > start_time + goal.timeout + self.timeout_padding:
-                timed_out = True
-            r.sleep()
+        # TODO(sloretz) why is this an action client? Service seems more appropriate.
+        if not self.action_client.server_is_ready():
+            raise tf2.TimeoutException("The BufferServer is not ready")
+
+        event = threading.Event()
+
+        def unblock(future):
+            nonlocal event
+            event.set()
+
+        send_goal_future = self.action_client.send_goal_async(goal)
+        send_goal_future.add_done_callback(unblock)
+
+        def unblock_by_timeout():
+            nonlocal send_goal_future, goal, event
+            clock = Clock()
+            start_time = clock.now()
+            timeout = Duration.from_msg(goal.timeout)
+            timeout_padding = Duration(seconds=self.timeout_padding)
+            while not send_goal_future.done() and not event.is_set():
+                if clock.now() > start_time + timeout + timeout_padding:
+                    break
+                # TODO(vinnamkim): rclpy.Rate is not ready
+                # See https://github.com/ros2/rclpy/issues/186
+                #r = rospy.Rate(self.check_frequency)
+                sleep(1.0 / self.check_frequency)
+
+            event.set()
+
+        t = threading.Thread(target=unblock_by_timeout)
+        t.start()
+
+        event.wait()
 
         #This shouldn't happen, but could in rare cases where the server hangs
-        if timed_out:
-            self.client.cancel_goal()
+        if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server")
 
-        if self.client.get_state() != GoalStatus.SUCCEEDED:
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with SUCCEEDED status. Something is likely wrong with the server.")
+        # Raises if future was given an exception
+        goal_handle = send_goal_future.result()
 
-        return self.__process_result(self.client.get_result())
+        if not goal_handle.accepted:
+            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with accepted status. Something is likely wrong with the server.")
+
+        response = self.action_client._get_result(goal_handle)
+
+        return self.__process_result(response.result)
 
     def __process_result(self, result):
         if result == None or result.error == None:
