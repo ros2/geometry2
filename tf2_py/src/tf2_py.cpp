@@ -83,19 +83,19 @@ static PyObject *transform_converter(const geometry_msgs::msg::TransformStamped*
   PyObject * prot_z = NULL;
   PyObject * prot_w = NULL;
   pclass = PyObject_GetAttrString(pModulegeometrymsgs, "TransformStamped");
-  if(!pclass)
+  if (!pclass)
   {
     goto cleanup;
   }
 
   pargs = Py_BuildValue("()");
-  if(!pargs)
+  if (!pargs)
   {
     goto cleanup;
   }
 
   pinst = PyEval_CallObject(pclass, pargs);
-  if(!pinst)
+  if (!pinst)
   {
     goto cleanup;
   }
