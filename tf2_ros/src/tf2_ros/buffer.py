@@ -163,7 +163,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: True if the transform is possible, false otherwise.
         :rtype: bool
         """
-        clock = rclpy.timer.Clock()
+        clock = rclpy.clock.Clock()
         if timeout != Duration():
             start_time = clock.now()
             # TODO(vinnamkim): rclpy.Rate is not ready
