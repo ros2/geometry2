@@ -307,6 +307,9 @@ public:
     return out;
   }
 
+  virtual ~BufferInterface()
+  {
+  }
  }; // class
 
 
