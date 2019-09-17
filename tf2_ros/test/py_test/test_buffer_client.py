@@ -71,7 +71,7 @@ class MockActionServer():
             LookupTransform.Impl.GetResultService, '/lookup_transform/_action/get_result',
             self.result_callback)
         self.feedback_pub = node.create_publisher(
-            LookupTransform.Impl.FeedbackMessage, '/lookup_transform/_action/feedback')
+            LookupTransform.Impl.FeedbackMessage, '/lookup_transform/_action/feedback', 1)
         self.node = node
         self.buffer_core = buffer_core
         self.result_buffer = {}
