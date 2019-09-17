@@ -146,7 +146,6 @@ if (false)
 # new requirements for testing
 find_package(catkin REQUIRED COMPONENTS
   actionlib
-  actionlib_msgs
   geometry_msgs
   message_filters
   roscpp

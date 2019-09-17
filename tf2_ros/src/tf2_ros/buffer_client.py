@@ -43,7 +43,6 @@ import tf2_ros
 import threading
 
 from tf2_msgs.action import LookupTransform
-from actionlib_msgs.msg import GoalStatus
 
 class BufferClient(tf2_ros.BufferInterface):
     """
