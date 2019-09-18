@@ -276,20 +276,23 @@ static tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
 static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 {
   if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
-    PyObject *sec = pythonBorrowAttrString(obj, "sec");
-    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    PyObject *sec = PyObject_GetAttrString(obj, "sec");
+    PyObject *nanosec = PyObject_GetAttrString(obj, "nanosec");
     builtin_interfaces::msg::Time msg;
     msg.sec = PyLong_AsLong(sec);
     msg.nanosec = PyLong_AsUnsignedLong(nanosec);
     *rt = fromMsg(msg);
+    Py_XDECREF(sec);
+    Py_XDECREF(nanosec);
     return PyErr_Occurred() ? 0 : 1;
   }
 
   if (PyObject_HasAttrString(obj, "nanoseconds")) {
-    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    PyObject *nanoseconds = PyObject_GetAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
     const std::chrono::nanoseconds ns(d);
     *rt = tf2::TimePoint(ns);
+    Py_XDECREF(nanoseconds);
     return PyErr_Occurred() ? 0 : 1;
   }
 
