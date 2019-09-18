@@ -282,16 +282,15 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
     msg.sec = PyLong_AsLong(sec);
     msg.nanosec = PyLong_AsUnsignedLong(nanosec);
     *rt = fromMsg(msg);
-    Py_XDECREF(sec);
     Py_XDECREF(nanosec);
+    Py_XDECREF(sec);
     return PyErr_Occurred() ? 0 : 1;
   }
 
   if (PyObject_HasAttrString(obj, "nanoseconds")) {
     PyObject *nanoseconds = PyObject_GetAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
-    const std::chrono::nanoseconds ns(d);
-    *rt = tf2::TimePoint(ns);
+    *rt = tf2::TimePoint(std::chrono::nanoseconds(d));
     Py_XDECREF(nanoseconds);
     return PyErr_Occurred() ? 0 : 1;
   }
@@ -303,18 +302,20 @@ static int rostime_converter(PyObject *obj, tf2::TimePoint *rt)
 static int rosduration_converter(PyObject *obj, tf2::Duration *rt)
 {
   if (PyObject_HasAttrString(obj, "sec") && PyObject_HasAttrString(obj, "nanosec")) {
-    PyObject *sec = pythonBorrowAttrString(obj, "sec");
-    PyObject *nanosec = pythonBorrowAttrString(obj, "nanosec");
+    PyObject *sec = PyObject_GetAttrString(obj, "sec");
+    PyObject *nanosec = PyObject_GetAttrString(obj, "nanosec");
     *rt = std::chrono::seconds(PyLong_AsLong(sec)) +
-      std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
+    std::chrono::nanoseconds(PyLong_AsUnsignedLong(nanosec));
+    Py_XDECREF(nanosec);
+    Py_XDECREF(sec);
     return PyErr_Occurred() ? 0 : 1;
   }
 
   if (PyObject_HasAttrString(obj, "nanoseconds")) {
-    PyObject *nanoseconds = pythonBorrowAttrString(obj, "nanoseconds");
+    PyObject *nanoseconds = PyObject_GetAttrString(obj, "nanoseconds");
     const int64_t d = PyLong_AsLongLong(nanoseconds);
-    const std::chrono::nanoseconds ns(d);
-    *rt = std::chrono::duration_cast<tf2::Duration>(ns);
+    *rt = std::chrono::duration_cast<tf2::Duration>(std::chrono::nanoseconds(d));
+    Py_XDECREF(nanoseconds);
     return PyErr_Occurred() ? 0 : 1;
   }
 
@@ -611,94 +612,285 @@ static inline int checkRotationType(PyObject* o)
 
 static PyObject *setTransform(PyObject *self, PyObject *args)
 {
+  PyObject *ret = nullptr;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
   tf2::TimePoint time;
 
-  if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
-    return NULL;
+  if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority)) {
+    return nullptr;
+  }
 
   geometry_msgs::msg::TransformStamped transform;
-  PyObject *header = pythonBorrowAttrString(py_transform, "header");
-  transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
-  transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
-    return NULL;
+
+  PyObject *header = nullptr;
+  PyObject *stamp = nullptr;
+  PyObject *frame_id = nullptr;
+  PyObject *child_frame_id = nullptr;
+
+  PyObject *mtransform = nullptr;
+
+  PyObject *translation = nullptr;
+  PyObject *tx = nullptr;
+  PyObject *ty = nullptr;
+  PyObject *tz = nullptr;
+
+  PyObject *rotation = nullptr;
+  PyObject *rx = nullptr;
+  PyObject *ry = nullptr;
+  PyObject *rz = nullptr;
+  PyObject *rw = nullptr;
+
+  header = PyObject_GetAttrString(py_transform, "header");
+  if (!header) {
+    goto cleanup;
+  }
+  stamp = PyObject_GetAttrString(header, "stamp");
+  if (!stamp) {
+    goto cleanup;
+  }
+  frame_id = PyObject_GetAttrString(header, "frame_id");
+  if (!frame_id) {
+    goto cleanup;
+  }
+  child_frame_id = PyObject_GetAttrString(py_transform, "child_frame_id");
+  if (!child_frame_id) {
+    goto cleanup;
+  }
+
+  mtransform = PyObject_GetAttrString(py_transform, "transform");
+  if (!mtransform) {
+    goto cleanup;
+  }
+
+  translation = PyObject_GetAttrString(mtransform, "translation");
+  if (!translation) {
+    goto cleanup;
+  }
+  tx = PyObject_GetAttrString(translation, "x");
+  if (!tx) {
+    goto cleanup;
+  }
+  ty = PyObject_GetAttrString(translation, "y");
+  if (!ty) {
+    goto cleanup;
+  }
+  tz = PyObject_GetAttrString(translation, "z");
+  if (!tz) {
+    goto cleanup;
+  }
+
+  rotation = PyObject_GetAttrString(mtransform, "rotation");
+  if (!rotation) {
+    goto cleanup;
+  }
+  rx = PyObject_GetAttrString(rotation, "x");
+  if (!rx) {
+    goto cleanup;
+  }
+  ry = PyObject_GetAttrString(rotation, "y");
+  if (!ry) {
+    goto cleanup;
+  }
+  rz = PyObject_GetAttrString(rotation, "z");
+  if (!rz) {
+    goto cleanup;
+  }
+  rw = PyObject_GetAttrString(rotation, "w");
+  if (!rw) {
+    goto cleanup;
+  }
+
+  transform.header.frame_id = stringFromPython(frame_id);
+
+  if (rostime_converter(stamp, &time) != 1) {
+    goto cleanup;
+  }
+
+  transform.child_frame_id = stringFromPython(child_frame_id);
 
   transform.header.stamp = toMsg(time);
 
-  PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
-
-  PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
   if (!checkTranslationType(translation)) {
     PyErr_SetString(PyExc_TypeError, "transform.translation must have members x, y, z");
-    return NULL;
+    goto cleanup;
   }
 
-  transform.transform.translation.x = PyFloat_AsDouble(pythonBorrowAttrString(translation, "x"));
-  transform.transform.translation.y = PyFloat_AsDouble(pythonBorrowAttrString(translation, "y"));
-  transform.transform.translation.z = PyFloat_AsDouble(pythonBorrowAttrString(translation, "z"));
+  transform.transform.translation.x = PyFloat_AsDouble(tx);
+  transform.transform.translation.y = PyFloat_AsDouble(ty);
+  transform.transform.translation.z = PyFloat_AsDouble(tz);
 
-  PyObject *rotation = pythonBorrowAttrString(mtransform, "rotation");
   if (!checkRotationType(rotation)) {
     PyErr_SetString(PyExc_TypeError, "transform.rotation must have members w, x, y, z");
-    return NULL;
+    goto cleanup;
   }
 
-  transform.transform.rotation.x = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "x"));
-  transform.transform.rotation.y = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "y"));
-  transform.transform.rotation.z = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "z"));
-  transform.transform.rotation.w = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "w"));
+  transform.transform.rotation.x = PyFloat_AsDouble(rx);
+  transform.transform.rotation.y = PyFloat_AsDouble(ry);
+  transform.transform.rotation.z = PyFloat_AsDouble(rz);
+  transform.transform.rotation.w = PyFloat_AsDouble(rw);
 
   bc->setTransform(transform, authority);
-  Py_RETURN_NONE;
+
+  Py_INCREF(Py_None);
+  ret = Py_None;
+
+ cleanup:
+  Py_XDECREF(rw);
+  Py_XDECREF(rz);
+  Py_XDECREF(ry);
+  Py_XDECREF(rx);
+  Py_XDECREF(rotation);
+  Py_XDECREF(tz);
+  Py_XDECREF(ty);
+  Py_XDECREF(tx);
+  Py_XDECREF(translation);
+  Py_XDECREF(mtransform);
+  Py_XDECREF(child_frame_id);
+  Py_XDECREF(frame_id);
+  Py_XDECREF(stamp);
+  Py_XDECREF(header);
+
+  return ret;
 }
 
 static PyObject *setTransformStatic(PyObject *self, PyObject *args)
 {
+  PyObject *ret = nullptr;
   tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
   PyObject *py_transform;
   char *authority;
   tf2::TimePoint time;
 
-  if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority))
-    return NULL;
+  if (!PyArg_ParseTuple(args, "Os", &py_transform, &authority)) {
+    return nullptr;
+  }
 
   geometry_msgs::msg::TransformStamped transform;
-  PyObject *header = pythonBorrowAttrString(py_transform, "header");
-  transform.child_frame_id = stringFromPython(pythonBorrowAttrString(py_transform, "child_frame_id"));
-  transform.header.frame_id = stringFromPython(pythonBorrowAttrString(header, "frame_id"));
 
-  if (rostime_converter(pythonBorrowAttrString(header, "stamp"), &time) != 1)
-    return NULL;
+  PyObject *header = nullptr;
+  PyObject *stamp = nullptr;
+  PyObject *child_frame_id = nullptr;
+  PyObject *frame_id = nullptr;
+  PyObject *mtransform = nullptr;
+  PyObject *translation = nullptr;
+  PyObject *tx = nullptr;
+  PyObject *ty = nullptr;
+  PyObject *tz = nullptr;
+  PyObject *rotation = nullptr;
+  PyObject *rx = nullptr;
+  PyObject *ry = nullptr;
+  PyObject *rz = nullptr;
+  PyObject *rw = nullptr;
+
+  header = PyObject_GetAttrString(py_transform, "header");
+  if (!header) {
+    goto cleanup;
+  }
+  stamp = PyObject_GetAttrString(header, "stamp");
+  if (!stamp) {
+    goto cleanup;
+  }
+  child_frame_id = PyObject_GetAttrString(py_transform, "child_frame_id");
+  if (!child_frame_id) {
+    goto cleanup;
+  }
+  frame_id = PyObject_GetAttrString(header, "frame_id");
+  if (!frame_id) {
+    goto cleanup;
+  }
+  mtransform = PyObject_GetAttrString(py_transform, "transform");
+  if (!mtransform) {
+    goto cleanup;
+  }
+  translation = PyObject_GetAttrString(mtransform, "translation");
+  if (!translation) {
+    goto cleanup;
+  }
+  tx = PyObject_GetAttrString(translation, "x");
+  if (!tx) {
+    goto cleanup;
+  }
+  ty = PyObject_GetAttrString(translation, "y");
+  if (!ty) {
+    goto cleanup;
+  }
+  tz = PyObject_GetAttrString(translation, "z");
+  if (!tz) {
+    goto cleanup;
+  }
+  rotation = PyObject_GetAttrString(mtransform, "rotation");
+  if (!rotation) {
+    goto cleanup;
+  }
+  rx = PyObject_GetAttrString(rotation, "x");
+  if (!rx) {
+    goto cleanup;
+  }
+  ry = PyObject_GetAttrString(rotation, "y");
+  if (!ry) {
+    goto cleanup;
+  }
+  rz = PyObject_GetAttrString(rotation, "z");
+  if (!rz) {
+    goto cleanup;
+  }
+  rw = PyObject_GetAttrString(rotation, "w");
+  if (!rw) {
+    goto cleanup;
+  }
+
+  transform.child_frame_id = stringFromPython(child_frame_id);
+  transform.header.frame_id = stringFromPython(frame_id);
+
+  if (rostime_converter(stamp, &time) != 1) {
+    goto cleanup;
+  }
   transform.header.stamp = toMsg(time);
 
-  PyObject *mtransform = pythonBorrowAttrString(py_transform, "transform");
-  PyObject *translation = pythonBorrowAttrString(mtransform, "translation");
   if (!checkTranslationType(translation)) {
     PyErr_SetString(PyExc_TypeError, "transform.translation must be of type Vector3");
-    return NULL;
+    goto cleanup;
   }
 
-  transform.transform.translation.x = PyFloat_AsDouble(pythonBorrowAttrString(translation, "x"));
-  transform.transform.translation.y = PyFloat_AsDouble(pythonBorrowAttrString(translation, "y"));
-  transform.transform.translation.z = PyFloat_AsDouble(pythonBorrowAttrString(translation, "z"));
+  transform.transform.translation.x = PyFloat_AsDouble(tx);
+  transform.transform.translation.y = PyFloat_AsDouble(ty);
+  transform.transform.translation.z = PyFloat_AsDouble(tz);
 
-  PyObject *rotation = pythonBorrowAttrString(mtransform, "rotation");
   if (!checkRotationType(rotation)) {
     PyErr_SetString(PyExc_TypeError, "transform.rotation must be of type Quaternion");
-    return NULL;
+    goto cleanup;
   }
 
-  transform.transform.rotation.x = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "x"));
-  transform.transform.rotation.y = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "y"));
-  transform.transform.rotation.z = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "z"));
-  transform.transform.rotation.w = PyFloat_AsDouble(pythonBorrowAttrString(rotation, "w"));
+  transform.transform.rotation.x = PyFloat_AsDouble(rx);
+  transform.transform.rotation.y = PyFloat_AsDouble(ry);
+  transform.transform.rotation.z = PyFloat_AsDouble(rz);
+  transform.transform.rotation.w = PyFloat_AsDouble(rw);
 
   // only difference to above is is_static == True
   bc->setTransform(transform, authority, true);
-  Py_RETURN_NONE;
+
+  Py_INCREF(Py_None);
+  ret = Py_None;
+
+ cleanup:
+  Py_XDECREF(rw);
+  Py_XDECREF(rz);
+  Py_XDECREF(ry);
+  Py_XDECREF(rx);
+  Py_XDECREF(rotation);
+  Py_XDECREF(tz);
+  Py_XDECREF(ty);
+  Py_XDECREF(tx);
+  Py_XDECREF(translation);
+  Py_XDECREF(mtransform);
+  Py_XDECREF(frame_id);
+  Py_XDECREF(child_frame_id);
+  Py_XDECREF(stamp);
+  Py_XDECREF(header);
+
+  return ret;
 }
 
 static PyObject *clear(PyObject *self, PyObject *args)

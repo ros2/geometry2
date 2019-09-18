@@ -64,15 +64,4 @@ inline PyObject *pythonImport(const std::string & name)
   return module;
 }
 
-/// \brief Borrow an attribute on an object.
-/// \note The caller must not decref the returned object.
-/// \note If the return value is NULL then an exception is set.
-/// \return a reference to the attribute on the object.
-inline PyObject *pythonBorrowAttrString(PyObject* o, const char *name)
-{
-  PyObject *r = PyObject_GetAttrString(o, name);
-  Py_XDECREF(r);
-  return r;
-}
-
 #endif
