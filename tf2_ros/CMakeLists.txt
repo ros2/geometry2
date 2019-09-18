@@ -182,9 +182,20 @@ add_rostest(test/transform_listener_time_reset_test.launch)
 
 endif()
 
-# Python test
+  # Python test
+  # Provides PYTHON_EXECUTABLE_DEBUG
+  find_package(python_cmake_module REQUIRED)
+  find_package(PythonExtra REQUIRED)
+
+  set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
+  if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+  endif()
+
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(tf2_ros_py_test test/py_test)
+
+  set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
 endif()
 
 ament_export_include_directories(include)
