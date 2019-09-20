@@ -66,6 +66,10 @@ public:
 
   void acceptedCallback(const std::shared_ptr<GoalHandle> goal_handle)
   {
+    // Simulate doing some work in here; otherwise, we can complete the goal
+    // before the rclcpp_action interface ever has time to do any work.
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     auto result = std::make_shared<LookupTransformAction::Result>();
     if (transform_available_) {
       result->transform.transform = transform_;
