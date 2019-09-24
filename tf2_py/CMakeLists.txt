@@ -9,6 +9,16 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+if(CMAKE_COMPILER_IS_GNUCXX)
+  # GCC 8 on CentOS 7 (correctly) warns that casting
+  # METH_VARARGS | METH_KEYWORDS functions (with 3 PyObject * arguments) to a
+  # PyCFunction (with 2 PyObject * arguments) in PyMethodDef is an incompatible
+  # cast.  This works fine since it is just a pointer, so disable that
+  # warning to quiet it down.  Note that we do this globally rather than in a
+  # pragma since gcc prior to 8 ignores unknown command-line flags while it
+  # does *not* ignore unknown pragmas.
+  add_compile_options(-Wno-cast-function-type)
+endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
