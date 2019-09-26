@@ -2,6 +2,38 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Simulate work in the acceptedCallback.
+* Make Windows Debug to run the correct python executable.
+* Make BufferInterface destructor virtual.
+* Remove unnecessary and blacklisted actionlib_msgs dependency.
+* More test fixes for tf2_ros python.
+* class Clock is in clock not timer.
+* tf2_ros is not built for Python (`#99 <https://github.com/ros2/geometry2/issues/99>`_)
+* Migrate buffer action server to ROS 2
+* Add conversion functions for durations
+* Make /tf_static use transient_local durability (`#160 <https://github.com/ros2/geometry2/issues/160>`_)
+* Force explicit --ros-args in NodeOptions::arguments(). (`#162 <https://github.com/ros2/geometry2/issues/162>`_)
+* Use of -r/--remap flags where appropriate. (`#159 <https://github.com/ros2/geometry2/issues/159>`_)
+* Include tf2 headers in message_filter.h (`#157 <https://github.com/ros2/geometry2/issues/157>`_)
+* Use ament_target_dependencies to ensure correct dependency order (`#156 <https://github.com/ros2/geometry2/issues/156>`_)
+* Make sure that TransformListener's node gets a unique name (`#129 <https://github.com/ros2/geometry2/issues/129>`_)
+* Fix compiler warning (`#148 <https://github.com/ros2/geometry2/issues/148>`_)
+* Do not timeout when waiting for transforms (`#146 <https://github.com/ros2/geometry2/issues/146>`_)
+* Fix race between timeout and transform ready callback (`#143 <https://github.com/ros2/geometry2/issues/143>`_)
+* Fix high CPU - Use executor to spin and stop node in tf_listener thread (`#119 <https://github.com/ros2/geometry2/issues/119>`_)
+* Catch polymorphic exceptions by reference (`#138 <https://github.com/ros2/geometry2/issues/138>`_)
+* Add missing export build dependencies (`#135 <https://github.com/ros2/geometry2/issues/135>`_)
+* avoid delete-non-virtual-dtor warning (`#134 <https://github.com/ros2/geometry2/issues/134>`_)
+* Template tf2_ros::MessageFilter on the buffer type
+* Add pure virtual interface tf2_ros::AsyncBufferInterface
+* Add pure virtual interface tf2_ros::CreateTimerInterface
+* Allow tf2_monitor to be run with ROS command line args (`#122 <https://github.com/ros2/geometry2/issues/122>`_)
+* Drop misleading ROS\_* logging macros from tf2_monitor (`#123 <https://github.com/ros2/geometry2/issues/123>`_)
+* Fix the MessageFilter init order. (`#120 <https://github.com/ros2/geometry2/issues/120>`_)
+* Contributors: Chris Lalancette, Dan Rose, Jacob Perron, Karsten Knese, Michel Hidalgo, Scott K Logan, Shane Loretz, Vinnam Kim, bpwilcox, evshary
+
 0.11.3 (2019-05-24)
 -------------------
 * stop spinning TransformListener thread node in destructor (`#114 <https://github.com/ros2/geometry2/issues/114>`_)
@@ -98,7 +130,7 @@ Changelog for package tf2_ros
 
 0.5.10 (2015-04-21)
 -------------------
-* switch to use a shared lock with upgrade instead of only a unique lock. For `#91 <https://github.com/ros/geometry_experimental/issues/91>`_
+* switch to use a shared lock with upgrade instead of only a unique lock. For `#91 <https://github.com/ros/geometry_experimental/issues/91>`__
 * Update message_filter.h
 * filters: fix unsupported old messages with frame_id starting with '/'
 * Enabled tf2 documentation
@@ -183,7 +215,7 @@ Changelog for package tf2_ros
 ------------------
 * patching python implementation for `#24 <https://github.com/ros/geometry_experimental/issues/24>`_ as well
 * Stop waiting if time jumps backwards.  fixes `#24 <https://github.com/ros/geometry_experimental/issues/24>`_
-* patch to work around uninitiaized time. `#30 https://github.com/ros/geometry/issues/30`_
+* patch to work around uninitiaized time. `#30 <https://github.com/ros/geometry/issues/30>`_
 * Removing unnecessary CATKIN_DEPENDS  `#18 <https://github.com/ros/geometry_experimental/issues/18>`_
 
 0.4.5 (2013-07-11)

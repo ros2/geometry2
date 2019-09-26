@@ -2,6 +2,14 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Properly keep references to Python objects.
+* Don't use borrowString in time or duration conversions.
+* Minor fix to use CMake variable.
+* tf2_ros is not built for Python (`#99 <https://github.com/ros2/geometry2/issues/99>`_)
+* Contributors: Chris Lalancette, Vinnam Kim
+
 0.5.15 (2017-01-24)
 -------------------
 

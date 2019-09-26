@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add pure virtual interface tf2::BufferCoreInterface
+* Guard against invalid iterator (`#127 <https://github.com/ros2/geometry2/issues/127>`_)
+* Contributors: Jacob Perron
+
 0.11.3 (2019-05-24)
 -------------------
 
@@ -304,7 +310,7 @@ Changelog for package tf2
 * new dox mainpage
 * update tf2 manifest
 * commenting out twist
-* Changed cache_time to cache_time_ to follow C++ style guide, also initialized it to actually get things to work
+* Changed cache_time to cache_time to follow C++ style guide, also initialized it to actually get things to work
 * no more rand in cache tests
 * Changing tf2_py.cpp to use underscores instead of camelCase
 * removing all old converter functions from transform_datatypes.h

@@ -2,6 +2,12 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adds additional conversions for tf2, KDL, Eigen
+* Use eigen3_cmake_module (`#144 <https://github.com/ros2/geometry2/issues/144>`_)
+* Contributors: Ian McMahon, Shane Loretz
+
 0.11.3 (2019-05-24)
 -------------------
 
