@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.0 (2019-09-26)
+-------------------
 * Add pure virtual interface tf2::BufferCoreInterface
 * Guard against invalid iterator (`#127 <https://github.com/ros2/geometry2/issues/127>`_)
 * Contributors: Jacob Perron

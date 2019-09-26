@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.0 (2019-09-26)
+-------------------
 * Simulate work in the acceptedCallback.
 * Make Windows Debug to run the correct python executable.
 * Make BufferInterface destructor virtual.

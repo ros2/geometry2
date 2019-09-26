@@ -2,8 +2,8 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.0 (2019-09-26)
+-------------------
 * Properly keep references to Python objects.
 * Don't use borrowString in time or duration conversions.
 * Minor fix to use CMake variable.

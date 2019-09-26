@@ -2,8 +2,8 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.0 (2019-09-26)
+-------------------
 * Use eigen3_cmake_module (`#144 <https://github.com/ros2/geometry2/issues/144>`_)
 * Added missing header (for tf2::fromMsg) (`#126 <https://github.com/ros2/geometry2/issues/126>`_)
 * Contributors: Esteve Fernandez, Shane Loretz

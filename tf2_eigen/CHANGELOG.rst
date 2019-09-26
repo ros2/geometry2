@@ -2,8 +2,8 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.0 (2019-09-26)
+-------------------
 * Adds toMsg & fromMsg for Eigen Vector3
 * Adds additional conversions for tf2, KDL, Eigen
 * Use eigen3_cmake_module (`#144 <https://github.com/ros2/geometry2/issues/144>`_)
