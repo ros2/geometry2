@@ -126,6 +126,7 @@ namespace tf2_ros
       {
         client_ = rclcpp_action::create_client<LookupTransformAction>(node, ns);
       }
+      virtual ~BufferClient() = default;
 
       /** \brief Get the transform between two frames by frame ID.
        *
