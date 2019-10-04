@@ -124,7 +124,10 @@ int main(int argc, char **argv){
   t.transform.translation.x = 10;
   t.transform.translation.y = 20;
   t.transform.translation.z = 30;
+  t.transform.rotation.w = 0;
   t.transform.rotation.x = 1;
+  t.transform.rotation.y = 0;
+  t.transform.rotation.z = 0;
   t.header.stamp.sec = 2;
   t.header.stamp.nanosec = 0;
   t.header.frame_id = "A";

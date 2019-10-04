@@ -45,7 +45,10 @@ TEST(TfGeometry, Frame)
   v1.pose.position.x = 1;
   v1.pose.position.y = 2;
   v1.pose.position.z = 3;
+  v1.pose.orientation.w = 0;
   v1.pose.orientation.x = 1;
+  v1.pose.orientation.y = 0;
+  v1.pose.orientation.z = 0;
   v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
   v1.header.frame_id = "A";
 
@@ -134,7 +137,10 @@ int main(int argc, char **argv){
   t.transform.translation.x = 10;
   t.transform.translation.y = 20;
   t.transform.translation.z = 30;
+  t.transform.rotation.w = 0;
   t.transform.rotation.x = 1;
+  t.transform.rotation.y = 0;
+  t.transform.rotation.z = 0;
   t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
   t.header.frame_id = "A";
   t.child_frame_id = "B";
