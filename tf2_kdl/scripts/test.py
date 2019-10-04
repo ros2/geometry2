@@ -5,7 +5,7 @@ import rclpy
 import PyKDL
 import tf2_ros
 import tf2_kdl
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Quaternion
 from copy import deepcopy
 import builtin_interfaces
 
@@ -14,7 +14,7 @@ class KDLConversions(unittest.TestCase):
         b = tf2_ros.Buffer()
         t = TransformStamped()
         t.transform.translation.x = 1.0
-        t.transform.rotation.x = 1.0
+        t.transform.rotation = Quaternion(w=0, x=1, y=0, z=0)
         t.header.stamp = builtin_interfaces.msg.Time(sec=2)
         t.header.frame_id = 'a'
         t.child_frame_id = 'b'

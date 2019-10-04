@@ -57,7 +57,10 @@ TEST(tf2_ros_transform_listener, time_backwards)
   msg.header.stamp = builtin_interfaces::msg::Time(100, 0);
   msg.header.frame_id = "foo";
   msg.child_frame_id = "bar";
+  msg.transform.rotation.w = 0.0;
   msg.transform.rotation.x = 1.0;
+  msg.transform.rotation.y = 0.0;
+  msg.transform.rotation.z = 0.0;
   tfb.sendTransform(msg);
   msg.header.stamp = builtin_interfaces::msg::Time(102, 0);
   tfb.sendTransform(msg);

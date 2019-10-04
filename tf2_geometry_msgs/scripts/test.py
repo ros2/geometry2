@@ -5,14 +5,14 @@ import rospy
 import PyKDL
 import tf2_ros
 import tf2_geometry_msgs
-from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped
+from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped, Quaternion
 
 class GeometryMsgs(unittest.TestCase):
     def test_transform(self):
         b = tf2_ros.Buffer()
         t = TransformStamped()
         t.transform.translation.x = 1
-        t.transform.rotation.x = 1
+        t.transform.rotation = Quaternion(w=0, x=1, y=0, z=0)
         t.header.stamp = rospy.Time(2.0)
         t.header.frame_id = 'a'
         t.child_frame_id = 'b'
@@ -40,7 +40,7 @@ class GeometryMsgs(unittest.TestCase):
         v.pose.position.x = 1
         v.pose.position.y = 2
         v.pose.position.z = 3
-        v.pose.orientation.x = 1
+        v.pose.orientation = Quaternion(w=0, x=1, y=0, z=0)
         out = b.transform(v, 'b')
         self.assertEqual(out.pose.position.x, 0)
         self.assertEqual(out.pose.position.y, -2)
@@ -51,7 +51,7 @@ class GeometryMsgs(unittest.TestCase):
         t.transform.translation.x = 1
         t.transform.translation.y = 2
         t.transform.translation.z = 3
-        t.transform.rotation.w = 1
+        t.transform.rotation = Quaterion(w=1, x=0, y=0, z=0)
         v = Vector3Stamped()
         v.vector.x = 1
         v.vector.y = 0
@@ -66,7 +66,7 @@ class GeometryMsgs(unittest.TestCase):
         t.transform.translation.x = 1
         t.transform.translation.y = 2
         t.transform.translation.z = 3
-        t.transform.rotation.y = 1
+        t.transform.rotation = Quaterion(w=0, x=0, y=1, z=0)
 
         v = Vector3Stamped()
         v.vector.x = 1
