@@ -42,7 +42,7 @@ TEST(TfGeometry, Conversions)
 {
   // TransformStamped
   {
-    tf2::Quaternion rotation(1.0, 2.0, 3.0, 4.0);
+    auto rotation = tf2::Quaternion(1.0, 2.0, 3.0, 4.0).normalized();
     tf2::Vector3 translation(1.0, 2.0, 3.0);
     auto stamp = tf2::timeFromSec(2);
     std::string frame_id = "test_frame_id";
@@ -50,13 +50,13 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::TransformStamped tf_stamped_msg;
     tf_stamped_msg = tf2::toMsg(tf_stamped);
 
-    EXPECT_NEAR(rotation.x(), tf_stamped_msg.transform.rotation.x, EPS);
-    EXPECT_NEAR(rotation.y(), tf_stamped_msg.transform.rotation.y, EPS);
-    EXPECT_NEAR(rotation.z(), tf_stamped_msg.transform.rotation.z, EPS);
-    EXPECT_NEAR(rotation.w(), tf_stamped_msg.transform.rotation.w, EPS);
-    EXPECT_NEAR(translation.x(), tf_stamped_msg.transform.translation.z, EPS);
-    EXPECT_NEAR(translation.y(), tf_stamped_msg.transform.translation.y, EPS);
-    EXPECT_NEAR(translation.z(), tf_stamped_msg.transform.translation.z, EPS);
+    EXPECT_NEAR(rotation.getX(), tf_stamped_msg.transform.rotation.x, EPS);
+    EXPECT_NEAR(rotation.getY(), tf_stamped_msg.transform.rotation.y, EPS);
+    EXPECT_NEAR(rotation.getZ(), tf_stamped_msg.transform.rotation.z, EPS);
+    EXPECT_NEAR(rotation.getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_NEAR(translation.getX(), tf_stamped_msg.transform.translation.x, EPS);
+    EXPECT_NEAR(translation.getY(), tf_stamped_msg.transform.translation.y, EPS);
+    EXPECT_NEAR(translation.getZ(), tf_stamped_msg.transform.translation.z, EPS);
   }
 }
 
