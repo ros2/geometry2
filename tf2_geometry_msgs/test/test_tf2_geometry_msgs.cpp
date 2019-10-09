@@ -53,6 +53,16 @@ TEST(TfGeometry, Conversions)
     EXPECT_NEAR(rotation.getY(), quat_stamped_msg.quaternion.y, EPS);
     EXPECT_NEAR(rotation.getZ(), quat_stamped_msg.quaternion.z, EPS);
     EXPECT_NEAR(rotation.getW(), quat_stamped_msg.quaternion.w, EPS);
+    EXPECT_EQ(frame_id, quat_stamped_msg.header.frame_id);
+
+    tf2::Stamped<tf2::Quaternion> quat_from_msg;
+    tf2::fromMsg(quat_stamped_msg, quat_from_msg);
+
+    EXPECT_NEAR(quat_from_msg.getX(), quat_stamped_msg.quaternion.x, EPS);
+    EXPECT_NEAR(quat_from_msg.getY(), quat_stamped_msg.quaternion.y, EPS);
+    EXPECT_NEAR(quat_from_msg.getZ(), quat_stamped_msg.quaternion.z, EPS);
+    EXPECT_NEAR(quat_from_msg.getW(), quat_stamped_msg.quaternion.w, EPS);
+    EXPECT_EQ(quat_from_msg.frame_id_, quat_stamped_msg.header.frame_id);
   }
 
   // TransformStamped
@@ -72,6 +82,19 @@ TEST(TfGeometry, Conversions)
     EXPECT_NEAR(translation.getX(), tf_stamped_msg.transform.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_stamped_msg.transform.translation.y, EPS);
     EXPECT_NEAR(translation.getZ(), tf_stamped_msg.transform.translation.z, EPS);
+    EXPECT_EQ(frame_id, tf_stamped_msg.header.frame_id);
+
+    tf2::Stamped<tf2::Transform> tf_from_msg;
+    tf2::fromMsg(tf_stamped_msg, tf_from_msg);
+
+    EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_stamped_msg.transform.rotation.x, EPS);
+    EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_stamped_msg.transform.rotation.y, EPS);
+    EXPECT_NEAR(tf_from_msg.getRotation().getZ(), tf_stamped_msg.transform.rotation.z, EPS);
+    EXPECT_NEAR(tf_from_msg.getRotation().getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_NEAR(tf_from_msg.getOrigin().getX(), tf_stamped_msg.transform.translation.x, EPS);
+    EXPECT_NEAR(tf_from_msg.getOrigin().getY(), tf_stamped_msg.transform.translation.y, EPS);
+    EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_stamped_msg.transform.translation.z, EPS);
+    EXPECT_EQ(tf_from_msg.frame_id_, tf_stamped_msg.header.frame_id);
   }
 }
 
