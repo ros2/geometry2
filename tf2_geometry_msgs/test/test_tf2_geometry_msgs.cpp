@@ -40,6 +40,21 @@ static const double EPS = 1e-3;
 
 TEST(TfGeometry, Conversions)
 {
+  // QuaternionStamped
+  {
+    auto rotation = tf2::Quaternion(1.0, 2.0, 3.0, 4.0).normalized();
+    auto stamp = tf2::timeFromSec(2);
+    std::string frame_id = "test_frame_id";
+    tf2::Stamped<tf2::Quaternion> quat_stamped(rotation, stamp, frame_id);
+    geometry_msgs::msg::QuaternionStamped quat_stamped_msg;
+    quat_stamped_msg = tf2::toMsg(quat_stamped);
+
+    EXPECT_NEAR(rotation.getX(), quat_stamped_msg.quaternion.x, EPS);
+    EXPECT_NEAR(rotation.getY(), quat_stamped_msg.quaternion.y, EPS);
+    EXPECT_NEAR(rotation.getZ(), quat_stamped_msg.quaternion.z, EPS);
+    EXPECT_NEAR(rotation.getW(), quat_stamped_msg.quaternion.w, EPS);
+  }
+
   // TransformStamped
   {
     auto rotation = tf2::Quaternion(1.0, 2.0, 3.0, 4.0).normalized();
