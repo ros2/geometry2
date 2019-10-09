@@ -38,6 +38,27 @@
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
+TEST(TfGeometry, Conversions)
+{
+  // TransformStamped
+  {
+    tf2::Quaternion rotation(1.0, 2.0, 3.0, 4.0);
+    tf2::Vector3 translation(1.0, 2.0, 3.0);
+    auto stamp = tf2::timeFromSec(2);
+    std::string frame_id = "test_frame_id";
+    tf2::Stamped<tf2::Transform> tf_stamped(tf2::Transform(rotation, translation), stamp, frame_id);
+    geometry_msgs::msg::TransformStamped tf_stamped_msg;
+    tf_stamped_msg = tf2::toMsg(tf_stamped);
+
+    EXPECT_NEAR(rotation.x(), tf_stamped_msg.transform.rotation.x, EPS);
+    EXPECT_NEAR(rotation.y(), tf_stamped_msg.transform.rotation.y, EPS);
+    EXPECT_NEAR(rotation.z(), tf_stamped_msg.transform.rotation.z, EPS);
+    EXPECT_NEAR(rotation.w(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_NEAR(translation.x(), tf_stamped_msg.transform.translation.z, EPS);
+    EXPECT_NEAR(translation.y(), tf_stamped_msg.transform.translation.y, EPS);
+    EXPECT_NEAR(translation.z(), tf_stamped_msg.transform.translation.z, EPS);
+  }
+}
 
 TEST(TfGeometry, Frame)
 {
