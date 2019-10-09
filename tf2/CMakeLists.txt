@@ -11,13 +11,16 @@ find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on 
 find_package(console_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-include_directories(include src/bt ${geometry_msgs_INCLUDE_DIRS} ${console_bridge_INCLUDE_DIRS})
+include_directories(include src/bt)
 
 # export user definitions
 
 #CPP Libraries
 add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
-target_link_libraries(tf2 ${geometry_msgs_LIBRARIES} ${console_bridge_LIBRARIES})
+ament_target_dependencies(tf2
+  "console_bridge"
+  "geometry_msgs"
+)
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(tf2 PRIVATE "TF2_BUILDING_DLL")
@@ -41,17 +44,30 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_cache_unittest test/cache_unittest.cpp)
   if(TARGET test_cache_unittest)
-    target_link_libraries(test_cache_unittest tf2 ${geometry_msgs_LIBRARIES} ${console_bridge_LIBRARIES})
+    target_link_libraries(test_cache_unittest tf2)
+    ament_target_dependencies(test_cache_unittest
+      "geometry_msgs"
+      "console_bridge"
+    )
   endif()
 
   ament_add_gtest(test_static_cache_unittest test/static_cache_test.cpp)
   if(TARGET test_static_cache_unittest)
+    target_link_libraries(test_static_cache_unittest tf2)
+    ament_target_dependencies(test_static_cache_unittest
+      "geometry_msgs"
+      "console_bridge"
+    )
     target_link_libraries(test_static_cache_unittest tf2 ${geometry_msgs_LIBRARIES} ${console_bridge_LIBRARIES})
   endif()
 
   ament_add_gtest(test_simple test/simple_tf2_core.cpp)
   if(TARGET test_simple)
-    target_link_libraries(test_simple tf2  ${geometry_msgs_LIBRARIES} ${console_bridge_LIBRARIES})
+    target_link_libraries(test_simple tf2)
+    ament_target_dependencies(test_simple
+      "geometry_msgs"
+      "console_bridge"
+    )
   endif()
 
 # TODO(tfoote) reimplement speed test without dependency on message datatypes.
