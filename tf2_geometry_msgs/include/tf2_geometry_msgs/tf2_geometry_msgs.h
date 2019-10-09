@@ -508,7 +508,6 @@ void fromMsg(const geometry_msgs::msg::TransformStamped& in, tf2::Stamped <tf2::
  * \param in An instance of the tf2::Transform specialization of the tf2::Stamped template.
  * \return The TransformStamped converted to a geometry_msgs TransformStamped message type.
  */
-template <>
 inline
 geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform>& in)
 {
