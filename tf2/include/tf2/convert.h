@@ -40,30 +40,32 @@
 #include <tf2/impl/convert.h>
 #include <tf2/visibility_control.h>
 
+#include <rosidl_generator_cpp/traits.hpp>
+
 namespace tf2 {
 
 /**\brief The templated function expected to be able to do a transform
  *
- * This is the method which tf2 will use to try to apply a transform for any given datatype.   
+ * This is the method which tf2 will use to try to apply a transform for any given datatype.
  * \param data_in The data to be transformed.
  * \param data_out A reference to the output data.  Note this can point to data in and the method should be mutation safe.
- * \param transform The transform to apply to data_in to fill data_out.  
- * 
+ * \param transform The transform to apply to data_in to fill data_out.
+ *
  * This method needs to be implemented by client library developers
  */
 template <class T>
   void doTransform(const T& data_in, T& data_out, const geometry_msgs::msg::TransformStamped& transform);
 
-/**\brief Get the timestamp from data 
+/**\brief Get the timestamp from data
  * \param t The data input.
- * \return The timestamp associated with the data. 
+ * \return The timestamp associated with the data.
  */
 template <class T>
   tf2::TimePoint getTimestamp(const T& t);
 
-/**\brief Get the frame_id from data 
+/**\brief Get the frame_id from data
  * \param t The data input.
- * \return The frame_id associated with the data. 
+ * \return The frame_id associated with the data.
  */
 template <class T>
   std::string getFrameId(const T& t);
@@ -110,23 +112,19 @@ template<typename A, typename B>
  * \param b the object to convert to
  */
 
- //TODO(dhood): re-instate if/when IsMessage message traits available in ROS 2
- /*
 template <class A, class B>
-  void convert(const A& a, B& b)
-  {
-    //printf("In double type convert\n");
-    impl::Converter<ros::message_traits::IsMessage<A>::value, ros::message_traits::IsMessage<B>::value>::convert(a, b);
-  }
-  */
+void convert(const A& a, B& b)
+{
+  impl::Converter<rosidl_generator_traits::is_message<A>::value,
+                  rosidl_generator_traits::is_message<B>::value>::convert(a, b);
+}
 
 template <class A>
-  void convert(const A& a1, A& a2)
-  {
-    //printf("In single type convert\n");
-    if(&a1 != &a2)
-      a2 = a1;
-  }
+void convert(const A& a1, A& a2)
+{
+  if(&a1 != &a2)
+    a2 = a1;
+}
 
 
 }
