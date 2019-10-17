@@ -90,6 +90,30 @@ namespace tf2_ros
     return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
   }
 
+  inline tf2::TimePoint fromRclcpp(const rclcpp::Time & time)
+  {
+    // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
+    // Ignore that, and assume the clock used from rclcpp time points is consistent.
+    return tf2::TimePoint(std::chrono::nanoseconds(time.nanoseconds()));
+  }
+
+  inline rclcpp::Time toRclcpp(const tf2::TimePoint & time)
+  {
+    // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
+    // Use whatever the default clock is.
+    return rclcpp::Time(std::chrono::nanoseconds(time.time_since_epoch()).count());
+  }
+
+  inline tf2::Duration fromRclcpp(const rclcpp::Duration & duration)
+  {
+    return tf2::Duration(std::chrono::nanoseconds(duration.nanoseconds()));
+  }
+
+  inline rclcpp::Duration toRclcpp(const tf2::Duration & duration)
+  {
+    return rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
+  }
+
 /** \brief Abstract interface for wrapping tf2::BufferCoreInterface in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.
  */

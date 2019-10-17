@@ -85,6 +85,18 @@ namespace tf2_ros
     lookupTransform(const std::string& target_frame, const std::string& source_frame,
                     const tf2::TimePoint& time, const tf2::Duration timeout) const override;
 
+    /** \brief Get the transform between two frames by frame ID.
+     * \sa lookupTransform(const std::string&, const std::string&, const tf2::TimePoint&,
+                           const tf2::Duration)
+     */
+    TF2_ROS_PUBLIC
+    geometry_msgs::msg::TransformStamped
+    lookupTransform(const std::string& target_frame, const std::string& source_frame,
+      const rclcpp::Time & time, const rclcpp::Duration timeout=rclcpp::Duration(0)) const
+    {
+      return lookupTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout));
+    }
+
     /** \brief Get the transform between two frames by frame ID assuming fixed frame.
      * \param target_frame The frame to which data should be transformed
      * \param target_time The time to which the data should be transformed. (0 will get the latest)
@@ -103,6 +115,22 @@ namespace tf2_ros
                     const std::string& source_frame, const tf2::TimePoint& source_time,
                     const std::string& fixed_frame, const tf2::Duration timeout) const override;
 
+    /** \brief Get the transform between two frames by frame ID assuming fixed frame.
+     * \sa lookupTransform(const std::string&, const tf2::TimePoint&,
+                           const std::string&, const tf2::TimePoint&,
+                           const std::string&, const tf2::Duration)
+     */
+    TF2_ROS_PUBLIC
+    geometry_msgs::msg::TransformStamped
+    lookupTransform(const std::string & target_frame, const rclcpp::Time & target_time,
+      const std::string & source_frame, const rclcpp::Time & source_time,
+      const std::string & fixed_frame, const rclcpp::Duration timeout=rclcpp::Duration(0)) const
+    {
+      return lookupTransform(
+        target_frame, fromRclcpp(target_time),
+        source_frame, fromRclcpp(source_time),
+        fixed_frame, fromRclcpp(timeout));
+    }
 
     /** \brief Test if a transform is possible
      * \param target_frame The frame into which to transform
@@ -116,7 +144,20 @@ namespace tf2_ros
     virtual bool
     canTransform(const std::string& target_frame, const std::string& source_frame, 
                  const tf2::TimePoint& target_time, const tf2::Duration timeout, std::string* errstr = NULL) const override;
-    
+
+    /** \brief Test if a transform is possible
+     * \sa canTransform(const std::string&, const std::string&,
+                        const tf2::TimePoint&, const tf2::Duration, std::string*)
+     */
+    TF2_ROS_PUBLIC
+    bool
+    canTransform(const std::string & target_frame, const std::string & source_frame,
+      const rclcpp::Time & time, const rclcpp::Duration timeout=rclcpp::Duration(0),
+      std::string * errstr=NULL) const
+    {
+      return canTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr);
+    }
+
     /** \brief Test if a transform is possible
      * \param target_frame The frame into which to transform
      * \param target_time The time into which to transform
@@ -132,6 +173,26 @@ namespace tf2_ros
       canTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
                    const std::string& source_frame, const tf2::TimePoint& source_time,
                    const std::string& fixed_frame, const tf2::Duration timeout, std::string* errstr = NULL) const override;
+
+    /** \brief Test if a transform is possible
+     * \sa
+      canTransform(const std::string&, const tf2::TimePoint&,
+                   const std::string&, const tf2::TimePoint&,
+                   const std::string&, const tf2::Duration, std::string*)
+     */
+    TF2_ROS_PUBLIC
+    bool
+    canTransform(const std::string & target_frame, const rclcpp::Time & target_time,
+      const std::string & source_frame, const rclcpp::Time & source_time,
+      const std::string & fixed_frame, const rclcpp::Duration timeout=rclcpp::Duration(0),
+      std::string * errstr=NULL) const
+    {
+      return canTransform(
+        target_frame, fromRclcpp(target_time),
+        source_frame, fromRclcpp(source_time),
+        fixed_frame, fromRclcpp(timeout),
+        errstr);
+    }
 
    /** \brief Wait for a transform between two frames to become available.
     *
@@ -153,6 +214,22 @@ namespace tf2_ros
     virtual TransformStampedFuture
     waitForTransform(const std::string& target_frame, const std::string& source_frame, const tf2::TimePoint& time,
                      const tf2::Duration& timeout, TransformReadyCallback callback) override;
+
+   /** \brief Wait for a transform between two frames to become available.
+    * \sa waitForTransform(const std::string &, const std::string &, const tf2::TimePoint &,
+                           const tf2::Duration &, TransformReadyCallback);
+    */
+    TF2_ROS_PUBLIC
+    TransformStampedFuture
+    waitForTransform(const std::string & target_frame, const std::string & source_frame,
+                     const rclcpp::Time & time,
+                     const rclcpp::Duration & timeout, TransformReadyCallback callback)
+    {
+      return waitForTransform(
+        target_frame, source_frame,
+        fromRclcpp(time), fromRclcpp(timeout),
+        callback);
+    }
 
     TF2_ROS_PUBLIC
     inline void
