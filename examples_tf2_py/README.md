@@ -13,13 +13,13 @@ Dynamic transforms are frequently changing, and re-published every time the do.
 Both broadcasters can be run with
 
 ```
-ros2 launch example_tf2_py broadcasters.launch.xml
+ros2 launch examples_tf2_py broadcasters.launch.xml
 ```
 
 ### `dynamic_broadcaster.py`
 
 ```
-ros2 run example_tf2_py dynamic_broadcaster
+ros2 run examples_tf2_py dynamic_broadcaster
 ```
 
 This is an example of a dynamic transform publisher.
@@ -28,7 +28,7 @@ Transforms showing the rotation of two wheels are published frequently.
 ### `static_broadcaster.py`
 
 ```
-ros2 run example_tf2_py static_broadcaster
+ros2 run examples_tf2_py static_broadcaster
 ```
 
 This is an example of a static transform publisher.
@@ -44,7 +44,7 @@ to wait for it.
 ### `waits_for_transform.py`
 
 ```
-ros2 run example_tf2_py waits_for_transform
+ros2 run examples_tf2_py waits_for_transform
 ```
 
 This example blocks until a transform is received.
@@ -54,7 +54,7 @@ execute callbacks for it's subscriptions.
 ### `async_waits_for_transforms.py`
 
 ```
-ros2 run example_tf2_py async_waits_for_transform
+ros2 run examples_tf2_py async_waits_for_transform
 ```
 
 This example uses coroutines to wait for a transform.
@@ -64,7 +64,7 @@ a `SingleThreadedExecutor`.
 ### Frame Dumper
 
 ```
-ros2 run example_tf2_py frame_dumper
+ros2 run examples_tf2_py frame_dumper
 ```
 
 This example periodically outputs information about all frames it is aware of.
