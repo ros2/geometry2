@@ -163,6 +163,41 @@ TEST(tf2_canTransform, One_Exists)
   EXPECT_FALSE(tfc.canTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(1))));
 }
 
+TEST(tf2_clear, LookUp_Static_Transfrom_Succeed)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1;
+  tfc.clear();
+  EXPECT_TRUE(tfc.setTransform(st, "authority1", true));
+  EXPECT_NO_THROW(
+    auto trans = tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2)));
+  );
+}
+
+TEST(tf2_clear, LookUp_Static_Transfrom_Fail)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1"));
+  tfc.clear();
+  EXPECT_TRUE(tfc.setTransform(st, "authority1", true));
+  EXPECT_NO_THROW(
+    auto trans = tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2)));
+  );
+}
+
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();
