@@ -372,7 +372,6 @@ geometry_msgs::msg::QuaternionStamped toMsg(const tf2::Stamped<tf2::Quaternion>&
  * \param in A QuaternionStamped message type.
  * \param out The QuaternionStamped converted to the equivalent tf2 type.
  */
-template <>
 inline
 void fromMsg(const geometry_msgs::msg::QuaternionStamped& in, tf2::Stamped<tf2::Quaternion>& out)
 {
