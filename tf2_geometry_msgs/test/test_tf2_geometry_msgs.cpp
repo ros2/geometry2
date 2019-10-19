@@ -47,7 +47,7 @@ TEST(TfGeometry, Conversions)
     std::string frame_id = "test_frame_id";
     tf2::Stamped<tf2::Quaternion> quat_stamped(rotation, stamp, frame_id);
     geometry_msgs::msg::QuaternionStamped quat_stamped_msg;
-    quat_stamped_msg = tf2::toMsg(quat_stamped);
+    tf2::convert(quat_stamped, quat_stamped_msg);
 
     EXPECT_NEAR(rotation.getX(), quat_stamped_msg.quaternion.x, EPS);
     EXPECT_NEAR(rotation.getY(), quat_stamped_msg.quaternion.y, EPS);
@@ -56,7 +56,7 @@ TEST(TfGeometry, Conversions)
     EXPECT_EQ(frame_id, quat_stamped_msg.header.frame_id);
 
     tf2::Stamped<tf2::Quaternion> quat_from_msg;
-    tf2::fromMsg(quat_stamped_msg, quat_from_msg);
+    tf2::convert(quat_stamped_msg, quat_from_msg);
 
     EXPECT_NEAR(quat_from_msg.getX(), quat_stamped_msg.quaternion.x, EPS);
     EXPECT_NEAR(quat_from_msg.getY(), quat_stamped_msg.quaternion.y, EPS);
@@ -73,7 +73,7 @@ TEST(TfGeometry, Conversions)
     std::string frame_id = "test_frame_id";
     tf2::Stamped<tf2::Transform> tf_stamped(tf2::Transform(rotation, translation), stamp, frame_id);
     geometry_msgs::msg::TransformStamped tf_stamped_msg;
-    tf_stamped_msg = tf2::toMsg(tf_stamped);
+    tf2::convert(tf_stamped, tf_stamped_msg);
 
     EXPECT_NEAR(rotation.getX(), tf_stamped_msg.transform.rotation.x, EPS);
     EXPECT_NEAR(rotation.getY(), tf_stamped_msg.transform.rotation.y, EPS);
@@ -85,7 +85,7 @@ TEST(TfGeometry, Conversions)
     EXPECT_EQ(frame_id, tf_stamped_msg.header.frame_id);
 
     tf2::Stamped<tf2::Transform> tf_from_msg;
-    tf2::fromMsg(tf_stamped_msg, tf_from_msg);
+    tf2::convert(tf_stamped_msg, tf_from_msg);
 
     EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_stamped_msg.transform.rotation.x, EPS);
     EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_stamped_msg.transform.rotation.y, EPS);
