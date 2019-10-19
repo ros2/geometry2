@@ -354,7 +354,6 @@ void fromMsg(const geometry_msgs::msg::QuaternionStamped& msg, geometry_msgs::ms
  * \param in A instance of the tf2::Quaternion specialization of the tf2::Stamped template.
  * \return The QuaternionStamped converted to a geometry_msgs QuaternionStamped message type.
  */
-template <>
 inline
 geometry_msgs::msg::QuaternionStamped toMsg(const tf2::Stamped<tf2::Quaternion>& in)
 {
@@ -373,7 +372,6 @@ geometry_msgs::msg::QuaternionStamped toMsg(const tf2::Stamped<tf2::Quaternion>&
  * \param in A QuaternionStamped message type.
  * \param out The QuaternionStamped converted to the equivalent tf2 type.
  */
-template <>
 inline
 void fromMsg(const geometry_msgs::msg::QuaternionStamped& in, tf2::Stamped<tf2::Quaternion>& out)
 {
@@ -508,7 +506,6 @@ void fromMsg(const geometry_msgs::msg::TransformStamped& in, tf2::Stamped <tf2::
  * \param in An instance of the tf2::Transform specialization of the tf2::Stamped template.
  * \return The TransformStamped converted to a geometry_msgs TransformStamped message type.
  */
-template <>
 inline
 geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform>& in)
 {
