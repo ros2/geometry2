@@ -195,22 +195,22 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 TEST(tf2_ros_message_filter, failure_reason_string_conversion)
 {
   // Sanity test defined messages
-  ASSERT_EQ(
+  EXPECT_EQ(
     "Unknown",
     tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::Unknown)
   );
-  ASSERT_EQ(
+  EXPECT_EQ(
     "OutTheBack",
     tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::OutTheBack)
   );
-  ASSERT_EQ(
+  EXPECT_EQ(
     "EmptyFrameID",
     tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::EmptyFrameID)
   );
 
   // Make sure all values have been given a string
   for (size_t i=0; i < tf2_ros::filter_failure_reasons::FilterFailureReasonCount; i++) {
-    ASSERT_NE(
+    EXPECT_NE(
       "Invalid Failure Reason",
       tf2_ros::get_filter_failure_reason_string(
         tf2_ros::filter_failure_reasons::FilterFailureReason(i))
@@ -219,7 +219,7 @@ TEST(tf2_ros_message_filter, failure_reason_string_conversion)
 
   // Test that value outside the defined range has been given a string and that count was
   // maintained at the end
-  ASSERT_EQ(
+  EXPECT_EQ(
     "Invalid Failure Reason",
     tf2_ros::get_filter_failure_reason_string(
       tf2_ros::filter_failure_reasons::FilterFailureReasonCount)

@@ -64,6 +64,8 @@ namespace filter_failure_reasons
 {
 enum FilterFailureReason
 {
+  // NOTE when adding new values, do not explicitly assign a number. See FilterFailureReasonCount
+
   /// The message buffer overflowed, and this message was pushed off the back of the queue, but the reason it was unable to be transformed is unknown.
   Unknown,
   /// The timestamp on the message is more than the cache length earlier than the newest data in the transform cache
@@ -76,7 +78,7 @@ enum FilterFailureReason
 
 }
 
-std::string get_filter_failure_reason_string(filter_failure_reasons::FilterFailureReason reason) {
+static std::string get_filter_failure_reason_string(filter_failure_reasons::FilterFailureReason reason) {
   switch (reason) {
     case filter_failure_reasons::Unknown:
       return "Unknown";
@@ -369,7 +371,7 @@ public:
             info.handles.push_back(next_handle_index_++);
           }
         }
-        catch (std::exception & e)  {
+        catch (const std::exception & e)  {
           TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
           messageDropped(evt, filter_failure_reasons::OutTheBack);
           return;
@@ -393,7 +395,7 @@ public:
               info.handles.push_back(next_handle_index_++);
             }
           }
-          catch (std::exception & e)  {
+          catch (const std::exception & e)  {
             TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
             messageDropped(evt, filter_failure_reasons::OutTheBack);
             return;
