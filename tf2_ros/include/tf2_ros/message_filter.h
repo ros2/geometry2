@@ -70,7 +70,7 @@ enum FilterFailureReason
   OutTheBack,
   /// The frame_id on the message is empty
   EmptyFrameID,
-  /// Placeholder value, keep it at the end of the enum
+  /// Max enum value for iteration, keep it at the end of the enum
   FilterFailureReasonCount,
 };
 
