@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.1 (2019-10-23)
+-------------------
 * Add convenience methods using rclcpp time types (`#180 <https://github.com/ros2/geometry2/issues/180>`_)
 * Don't assume quaternions init to all zeros
 * Make BufferClient destructor virtual
