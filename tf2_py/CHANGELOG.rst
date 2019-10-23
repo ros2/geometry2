@@ -2,6 +2,11 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Quiet the cast-function-type warning on GCC 8.
+* Contributors: Chris Lalancette
+
 0.12.0 (2019-09-26)
 -------------------
 * Properly keep references to Python objects.

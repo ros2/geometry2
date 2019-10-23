@@ -2,6 +2,12 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Restore conversion via message traits (`#167 <https://github.com/ros2/geometry2/issues/167>`_)
+* Don't assume quaternions init to all zeros
+* Contributors: Josh Langsfeld, Michael Carroll
+
 0.12.0 (2019-09-26)
 -------------------
 * Adds additional conversions for tf2, KDL, Eigen

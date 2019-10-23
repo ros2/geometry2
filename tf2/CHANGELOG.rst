@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Overwrite TimeCacheInterface type with a current input (`#151 <https://github.com/ros2/geometry2/issues/151>`_)
+* [tf2] Use ament_target_dependencies where possible
+* Restore conversion via message traits (`#167 <https://github.com/ros2/geometry2/issues/167>`_)
+* Contributors: Jacob Perron, Michael Carroll, Vinnam Kim
+
 0.12.0 (2019-09-26)
 -------------------
 * Add pure virtual interface tf2::BufferCoreInterface
