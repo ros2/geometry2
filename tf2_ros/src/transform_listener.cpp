@@ -94,6 +94,13 @@ void TransformListener::initThread(
 
 void TransformListener::subscription_callback(const tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static)
 {
+  tf2::TimePoint now = tf2::get_now();
+  if(now < last_update_){
+    ROS_WARN("Detected jump back in time. Clearing TF buffer.");
+    buffer_.clear();
+  }
+  last_update_ = now;
+
   const tf2_msgs::msg::TFMessage & msg_in = *msg;
   // TODO(tfoote) find a way to get the authority
   std::string authority = "Authority undetectable";  // msg_evt.getPublisherName();  // lookup the authority
