@@ -83,7 +83,7 @@ def main():
     nodes = []
     nodes.append(DynamicFramePublisher())
 
-    if 'fake_joint_states:=true' in sys.argv:
+    if 'compose_fake_joint_states_node' in sys.argv:
         nodes.append(FakeJointStatePublisher())
 
     from rclpy.executors import SingleThreadedExecutor
