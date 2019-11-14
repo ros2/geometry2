@@ -41,6 +41,7 @@ class StaticFramePublisher(Node):
     def make_transforms(self):
         base_link_to_platform = TransformStamped()
         base_link_to_platform.header.frame_id = 'base_link'
+        base_link_to_platform.header.stamp = self.get_clock().now().to_msg()
         base_link_to_platform.child_frame_id = 'platform'
         base_link_to_platform.transform.translation.x = 0.0
         base_link_to_platform.transform.translation.y = 0.0
@@ -52,6 +53,7 @@ class StaticFramePublisher(Node):
 
         platform_to_camera = TransformStamped()
         platform_to_camera.header.frame_id = 'platform'
+        platform_to_camera.header.stamp = self.get_clock().now().to_msg()
         platform_to_camera.child_frame_id = 'camera'
         platform_to_camera.transform.translation.x = 0.05
         platform_to_camera.transform.translation.y = 0.0
@@ -63,6 +65,7 @@ class StaticFramePublisher(Node):
 
         platform_to_sonar_0 = TransformStamped()
         platform_to_sonar_0.header.frame_id = 'platform'
+        platform_to_sonar_0.header.stamp = self.get_clock().now().to_msg()
         platform_to_sonar_0.child_frame_id = 'sonar_0'
         platform_to_sonar_0.transform.translation.x = 0.05 * math.sin(math.radians(45))
         platform_to_sonar_0.transform.translation.y = 0.05 * math.cos(math.radians(45))
@@ -74,6 +77,7 @@ class StaticFramePublisher(Node):
 
         platform_to_sonar_1 = TransformStamped()
         platform_to_sonar_1.header.frame_id = 'platform'
+        platform_to_sonar_1.header.stamp = self.get_clock().now().to_msg()
         platform_to_sonar_1.child_frame_id = 'sonar_1'
         platform_to_sonar_1.transform.translation.x = 0.05
         platform_to_sonar_1.transform.translation.y = 0.0
@@ -85,6 +89,7 @@ class StaticFramePublisher(Node):
 
         platform_to_sonar_2 = TransformStamped()
         platform_to_sonar_2.header.frame_id = 'platform'
+        platform_to_sonar_2.header.stamp = self.get_clock().now().to_msg()
         platform_to_sonar_2.child_frame_id = 'sonar_2'
         platform_to_sonar_2.transform.translation.x = 0.05 * math.sin(math.radians(45))
         platform_to_sonar_2.transform.translation.y = -0.05 * math.cos(math.radians(45))
