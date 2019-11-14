@@ -49,7 +49,7 @@ class AsyncWaitsForTransform(Node):
             # Suspends callback until transform becomes available
             transform = await self._tf_buffer.lookup_transform_async(to_frame, from_frame, when)
             self.get_logger().info('Got {}'.format(repr(transform)))
-        except Exception as e:
+        except LookupException as e:
             self.get_logger().error('failed to get transform {}'.format(repr(e)))
 
 
