@@ -87,8 +87,6 @@ class FakeJointStatePublisher(Node):
 
 
 def main():
-    import sys
-
     rclpy.init()
     nodes = []
     nodes.append(DynamicFramePublisher())
