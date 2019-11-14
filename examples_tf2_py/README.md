@@ -48,7 +48,7 @@ ros2 run examples_tf2_py waits_for_transform
 ```
 
 This example blocks until a transform is received.
-It must be run with a `MultiThreadedExecutor` to the `TransformListener` can
+It must be run with a `MultiThreadedExecutor` so the `TransformListener` can
 execute callbacks for it's subscriptions.
 
 ### `async_waits_for_transforms.py`
