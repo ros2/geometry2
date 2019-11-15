@@ -114,63 +114,74 @@ std::string stripSlash(const std::string& in)
   return out;
 }
 
+namespace {
+
+void fillOrWarnMessageForInvalidFrame(
+  const char* function_name_arg,
+  const std::string& frame_id,
+  std::string* error_msg,
+  const char* rationale)
+{
+  std::string s = "Invalid frame ID \"" + frame_id +
+                  "\" passed to " + function_name_arg + " - " + rationale;
+  if (error_msg != nullptr)
+  {
+    *error_msg = s;
+  }
+  else
+  {
+    CONSOLE_BRIDGE_logWarn("%s", s.c_str());
+  }
+}
+
+}  // anonymous namespace
+
 CompactFrameID BufferCore::validateFrameId(
   const char* function_name_arg,
   const std::string& frame_id,
   std::string* error_msg) const
 {
-  std::stringstream ss;
   if (frame_id.empty())
   {
-    ss << "Invalid argument passed to " << function_name_arg << " - in tf2 frame_ids cannot be empty";
-  }
-  else if (startsWithSlash(frame_id))
-  {
-    ss << "Invalid argument \"" << frame_id << "\" passed to " << function_name_arg << " - in tf2 frame_ids cannot start with a '/'";
-  }
-  else {
-    CompactFrameID id = lookupFrameNumber(frame_id);
-    if (id == 0) {
-      ss << "Frame \"" << frame_id << "\" passed to " << function_name_arg <<" does not exist.";
-    } else {
-      return id;
-    }
+    fillOrWarnMessageForInvalidFrame(
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot be empty");
+    return 0;
   }
 
-  // A check failed so we fell through to here
-  if (error_msg != nullptr)
+  if (startsWithSlash(frame_id))
   {
-    *error_msg = ss.str();
+    fillOrWarnMessageForInvalidFrame(
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot start with a '/'");
+    return 0;
   }
-  else
-  {
-    CONSOLE_BRIDGE_logWarn("%s", ss.str().c_str());
+
+  CompactFrameID id = lookupFrameNumber(frame_id);
+  if (id == 0) {
+    fillOrWarnMessageForInvalidFrame(
+      function_name_arg, frame_id, error_msg, "frame does not exist");
   }
-  return 0;
+  return id;
 }
 
 CompactFrameID BufferCore::validateFrameId(const char* function_name_arg, const std::string& frame_id) const
 {
   if (frame_id.empty())
   {
-    std::stringstream ss;
-    ss << "Invalid argument passed to " << function_name_arg << " - in tf2 frame_ids cannot be empty";
-    throw tf2::InvalidArgumentException(ss.str().c_str());
+    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg + " - in tf2 frame_ids cannot be empty";
+    throw tf2::InvalidArgumentException(error_msg.c_str());
   }
 
   if (startsWithSlash(frame_id))
   {
-    std::stringstream ss;
-    ss << "Invalid argument \"" << frame_id << "\" passed to " << function_name_arg << " - in tf2 frame_ids cannot start with a '/'";
-    throw tf2::InvalidArgumentException(ss.str().c_str());
+    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg + " - in tf2 frame_ids cannot start with a '/'";
+    throw tf2::InvalidArgumentException(error_msg.c_str());
   }
 
   CompactFrameID id = lookupFrameNumber(frame_id);
   if (id == 0)
   {
-    std::stringstream ss;
-    ss << "\"" << frame_id << "\" passed to " << function_name_arg << " does not exist. ";
-    throw tf2::LookupException(ss.str().c_str());
+    std::string error_msg = "\"" + frame_id + "\" passed to " + function_name_arg + " does not exist. ";
+    throw tf2::LookupException(error_msg.c_str());
   }
   
   return id;
