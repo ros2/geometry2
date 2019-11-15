@@ -21,17 +21,18 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 
-class WaitsForTransform(Node):
+class BlockingWaitsForTransform(Node):
     """
     Wait for a transform syncronously.
 
     This class is an example of waiting for transforms.
     This will block the executor if used within a callback.
-    See the async example showing how to use coroutine callbacks to avoid this.
+    Coroutine callbacks should be used instead to avoid this.
+    See :doc:`examples_tf2_py/async_waits_for_transform.py` for an example.
     """
 
     def __init__(self):
-        super().__init__('example_waits_for_transform')
+        super().__init__('example_blocking_waits_for_transform')
 
         self._tf_buffer = Buffer()
         self._tf_listener = TransformListener(self._tf_buffer, self)
@@ -57,7 +58,7 @@ def main():
     from rclpy.executors import MultiThreadedExecutor
 
     rclpy.init()
-    node = WaitsForTransform()
+    node = BlockingWaitsForTransform()
     # this node blocks in a callback, so a MultiThreadedExecutor is required
     executor = MultiThreadedExecutor()
     executor.add_node(node)

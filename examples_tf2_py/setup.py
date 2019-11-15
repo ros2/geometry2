@@ -36,6 +36,7 @@ setup(
             'dynamic_broadcaster = examples_tf2_py.dynamic_broadcaster:main',
             'frame_dumper = examples_tf2_py.frame_dumper:main',
             'waits_for_transform = examples_tf2_py.waits_for_transform:main',
+            'blocking_waits_for_transform = examples_tf2_py.blocking_waits_for_transform:main',
             'async_waits_for_transform = examples_tf2_py.async_waits_for_transform:main',
         ],
     },
