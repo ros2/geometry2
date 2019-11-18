@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.2 (2019-11-18)
+-------------------
 * Fix tf2_monitor subscriptions QoS settings. (`#196 <https://github.com/ros2/geometry2/issues/196>`_)
 * Contributors: Michel Hidalgo
 
