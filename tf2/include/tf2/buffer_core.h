@@ -408,11 +408,32 @@ private:
 
   TimeCacheInterfacePtr allocateFrame(CompactFrameID cfid, bool is_static);
 
+  /** \brief Validate a frame ID format and look up its CompactFrameID.
+    *   For invalid cases, produce an message.
+    * \param function_name_arg string to print out in the message,
+    *   the current function and argument name being validated
+    * \param frame_id name of the tf frame to validate
+    * \param[out] error_msg if non-NULL, fill with produced error messaging.
+    *   Otherwise messages are logged as warning.
+    * \return The CompactFrameID of the frame or 0 if not found.
+    */
+  CompactFrameID validateFrameId(
+    const char* function_name_arg,
+    const std::string& frame_id,
+    std::string* error_msg) const;
 
-  bool warnFrameId(const char* function_name_arg, const std::string& frame_id) const;
+  /** \brief Validate a frame ID format and look it up its compact ID.
+    *   Raise an exception for invalid cases.
+    * \param function_name_arg string to print out in the exception,
+    *   the current function and argument name being validated
+    * \param frame_id name of the tf frame to validate
+    * \return The CompactFrameID of the existing frame.
+    * \raises InvalidArgumentException if the frame_id string has an invalid format
+    * \raises LookupException if frame_id did not exist
+    */
   CompactFrameID validateFrameId(const char* function_name_arg, const std::string& frame_id) const;
 
-  /// String to number for frame lookup with dynamic allocation of new frames
+  /// String to number for frame lookup. Returns 0 if the frame was not found.
   CompactFrameID lookupFrameNumber(const std::string& frameid_str) const;
 
   /// String to number for frame lookup with dynamic allocation of new frames
@@ -436,8 +457,10 @@ private:
   tf2::TF2Error walkToTopParent(F& f, TimePoint time, CompactFrameID target_id, CompactFrameID source_id, std::string* error_string, std::vector<CompactFrameID> *frame_chain) const;
 
   void testTransformableRequests();
+  // Thread safe transform check, acquire lock and call canTransformNoLock.
   bool canTransformInternal(CompactFrameID target_id, CompactFrameID source_id,
                     const TimePoint& time, std::string* error_msg) const;
+  // Actual implementation to walk the transform tree and find out if a transform exists.
   bool canTransformNoLock(CompactFrameID target_id, CompactFrameID source_id,
                       const TimePoint& time, std::string* error_msg) const;
 
