@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix up -Wcast-qual warning (`#193 <https://github.com/ros2/geometry2/issues/193>`_) (`#197 <https://github.com/ros2/geometry2/issues/197>`_)
+* Contributors: Chris Lalancette
+
 0.12.1 (2019-10-23)
 -------------------
 * Overwrite TimeCacheInterface type with a current input (`#151 <https://github.com/ros2/geometry2/issues/151>`_)

@@ -2,6 +2,9 @@
 Changelog for package geometry2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.12.1 (2019-10-23)
 -------------------
 * Port geometry2 metapackage to ROS 2 to be able to use it in variants (`#184 <https://github.com/ros2/geometry2/issues/184>`_)

@@ -2,6 +2,9 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.12.1 (2019-10-23)
 -------------------
 * Restore conversion via message traits (`#167 <https://github.com/ros2/geometry2/issues/167>`_)

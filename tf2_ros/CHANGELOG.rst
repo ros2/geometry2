@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix tf2_monitor subscriptions QoS settings. (`#196 <https://github.com/ros2/geometry2/issues/196>`_)
+* Contributors: Michel Hidalgo
+
 0.12.1 (2019-10-23)
 -------------------
 * Add convenience methods using rclcpp time types (`#180 <https://github.com/ros2/geometry2/issues/180>`_)
