@@ -66,7 +66,11 @@ def main(args=None):
     try:
         result = future.result()
     except Exception as e:
-        node.get_logger().info('Service call failed %r' % (e,))
+        node.get_logger().error('Service call failed %r' % (e,))
+        cli.destroy()
+        node.destroy_node()
+        rclpy.shutdown()
+        return -1
     else:
         node.get_logger().info(
             'Result:'+ str(result) )
