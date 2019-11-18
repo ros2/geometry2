@@ -64,13 +64,31 @@ namespace filter_failure_reasons
 {
 enum FilterFailureReason
 {
+  // NOTE when adding new values, do not explicitly assign a number. See FilterFailureReasonCount
+
   /// The message buffer overflowed, and this message was pushed off the back of the queue, but the reason it was unable to be transformed is unknown.
   Unknown,
   /// The timestamp on the message is more than the cache length earlier than the newest data in the transform cache
   OutTheBack,
   /// The frame_id on the message is empty
   EmptyFrameID,
+  /// Max enum value for iteration, keep it at the end of the enum
+  FilterFailureReasonCount,
 };
+
+}
+
+static std::string get_filter_failure_reason_string(filter_failure_reasons::FilterFailureReason reason) {
+  switch (reason) {
+    case filter_failure_reasons::Unknown:
+      return "Unknown";
+    case filter_failure_reasons::OutTheBack:
+      return "OutTheBack";
+    case filter_failure_reasons::EmptyFrameID:
+      return "EmptyFrameID";
+    default:
+      return "Invalid Failure Reason";
+  }
 }
 
 typedef filter_failure_reasons::FilterFailureReason FilterFailureReason;
@@ -353,8 +371,8 @@ public:
             info.handles.push_back(next_handle_index_++);
           }
         }
-        catch (...) {
-          // never transformable
+        catch (const std::exception & e)  {
+          TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
           messageDropped(evt, filter_failure_reasons::OutTheBack);
           return;
         }
@@ -377,8 +395,8 @@ public:
               info.handles.push_back(next_handle_index_++);
             }
           }
-          catch (...) {
-            // never transformable
+          catch (const std::exception & e)  {
+            TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
             messageDropped(evt, filter_failure_reasons::OutTheBack);
             return;
           }
@@ -664,8 +682,10 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
-    RCLCPP_INFO(node_logging_->get_logger(), "[%s] Drop message: frame '%s' at time %.3f for reason(%d)",
-      __func__, frame_id.c_str(), stamp.seconds(), reason);
+    RCLCPP_INFO(
+      node_logging_->get_logger(),
+      "Message Filter dropping message: frame '%s' at time %.3f for reason '%s'",
+      frame_id.c_str(), stamp.seconds(), get_filter_failure_reason_string(reason).c_str());
   }
 
   static std::string stripSlash(const std::string & in)

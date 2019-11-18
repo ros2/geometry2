@@ -192,6 +192,40 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   ASSERT_TRUE(filter_callback_fired);
 }
 
+TEST(tf2_ros_message_filter, failure_reason_string_conversion)
+{
+  // Sanity test defined messages
+  EXPECT_EQ(
+    "Unknown",
+    tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::Unknown)
+  );
+  EXPECT_EQ(
+    "OutTheBack",
+    tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::OutTheBack)
+  );
+  EXPECT_EQ(
+    "EmptyFrameID",
+    tf2_ros::get_filter_failure_reason_string(tf2_ros::filter_failure_reasons::EmptyFrameID)
+  );
+
+  // Make sure all values have been given a string
+  for (size_t i=0; i < tf2_ros::filter_failure_reasons::FilterFailureReasonCount; i++) {
+    EXPECT_NE(
+      "Invalid Failure Reason",
+      tf2_ros::get_filter_failure_reason_string(
+        tf2_ros::filter_failure_reasons::FilterFailureReason(i))
+    );
+  }
+
+  // Test that value outside the defined range has been given a string and that count was
+  // maintained at the end
+  EXPECT_EQ(
+    "Invalid Failure Reason",
+    tf2_ros::get_filter_failure_reason_string(
+      tf2_ros::filter_failure_reasons::FilterFailureReasonCount)
+  );
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
