@@ -33,6 +33,7 @@
 /** \author Wim Meeussen */
 
 
+#include "tf2_ros/qos.hpp"
 #include "tf2_ros/transform_listener.h"
 #include <string>
 #include <thread>
@@ -155,9 +156,11 @@ public:
     }
 
     subscriber_tf_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf", 100, std::bind(&TFMonitor::callback, this, std::placeholders::_1));
+      "/tf", tf2_ros::DynamicListenerQoS(),
+      std::bind(&TFMonitor::callback, this, std::placeholders::_1));
     subscriber_tf_message_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf_static", 100, std::bind(&TFMonitor::callback, this, std::placeholders::_1));
+      "/tf_static", tf2_ros::StaticListenerQoS(),
+      std::bind(&TFMonitor::callback, this, std::placeholders::_1));
 
     // subscriber_tf_ = node_->create_subscriber.subscribe<tf::tfMessage>("tf", 100, boost::bind(&TFMonitor::callback, this, _1));
     // subscriber_tf_message_ = node_.subscribe<tf::tfMessage>("tf_message", 100, boost::bind(&TFMonitor::callback, this, _1));
