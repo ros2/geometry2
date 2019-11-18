@@ -2,7 +2,7 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.0.0 (2019-11-04)
+0.12.1 (Forthcoming)
 -------------------
 ahcorde: Adding support for ROS 2.0
 
