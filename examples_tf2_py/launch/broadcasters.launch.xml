@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="examples_tf2_py" exec="dynamic_broadcaster" output="screen" name="example_dynamic_broadcaster"/>
+  <node pkg="examples_tf2_py" exec="static_broadcaster" output="screen" name="example_static_broadcaster"/>
+</launch>
