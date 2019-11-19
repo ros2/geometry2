@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Provide more available error messaging for nonexistent and invalid frames in canTransform (`#187 <https://github.com/ros2/geometry2/issues/187>`_)
+* Contributors: Emerson Knapp
+
 0.12.2 (2019-11-18)
 -------------------
 * Fix up -Wcast-qual warning (`#193 <https://github.com/ros2/geometry2/issues/193>`_) (`#197 <https://github.com/ros2/geometry2/issues/197>`_)
