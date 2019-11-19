@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.12.3 (2019-11-18)
+-------------------
 * Remove unused setup.py files (`#190 <https://github.com/ros2/geometry2/issues/190>`_)
 * Print out the name of the signalFailure reason instead of just its enum value (`#186 <https://github.com/ros2/geometry2/issues/186>`_)
 * Contributors: Emerson Knapp, Vasilii Artemev
