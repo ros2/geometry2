@@ -1,9 +1,9 @@
 # Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
-#
+# 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#
+# 
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-#
+# 
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -48,7 +48,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
     Stores known frames and offers a ROS service, "tf_frames", which responds to client requests
     with a response containing a :class:`tf2_msgs.FrameGraph` representing the relationship of
-    known frames.
+    known frames. 
     """
 
     def __init__(self, cache_time = None, debug = False, node = None):
@@ -100,7 +100,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest)
+        :param time: The time at which to get the transform. (0 will get the latest) 
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
@@ -128,9 +128,9 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         Get the transform from the source frame to the target frame using the advanced API.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest)
+        :param target_time: The time to transform to. (0 will get the latest) 
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
@@ -144,9 +144,9 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         Get the transform from the source frame to the target frame using the advanced API asyncronously.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest)
+        :param target_time: The time to transform to. (0 will get the latest) 
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
         :param fixed_frame: Name of the frame to consider constant in time.
         :return: the transform
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
@@ -160,7 +160,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest)
+        :param time: The time at which to get the transform. (0 will get the latest) 
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
@@ -192,9 +192,9 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         Must be implemented by a subclass of BufferInterface.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest)
+        :param target_time: The time to transform to. (0 will get the latest) 
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
@@ -223,7 +223,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest)
+        :param time: The time at which to get the transform. (0 will get the latest) 
         :return: A future that becomes true when the transform is available
         :rtype: rclpy.task.Future
         """
@@ -250,9 +250,9 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         Wait for a transform from the source frame to the target frame to become possible.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest)
+        :param target_time: The time to transform to. (0 will get the latest) 
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
         :param fixed_frame: Name of the frame to consider constant in time.
         :return: A future that becomes true when the transform is available
         :rtype: rclpy.task.Future

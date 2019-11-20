@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
-#
+# 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#
+# 
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-#
+# 
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -86,13 +86,13 @@ def generate_dot(data, node):
         return 'digraph G { "No tf data received" }'
 
     dot = 'digraph G {\n'
-    for el in data:
+    for el in data: 
         map = data[el]
         dot += '"'+map['parent']+'" -> "'+str(el)+'"'
         dot += '[label=" '
         dot += 'Broadcaster: '+map['broadcaster']+'\\n'
         dot += 'Average rate: '+str(map['rate'])+'\\n'
-        dot += 'Buffer length: '+str(map['buffer_length'])+'\\n'
+        dot += 'Buffer length: '+str(map['buffer_length'])+'\\n' 
         dot += 'Most recent transform: '+str(map['most_recent_transform'])+'\\n'
         dot += 'Oldest transform: '+str(map['oldest_transform'])+'\\n'
         dot += '"];\n'
@@ -103,6 +103,7 @@ def generate_dot(data, node):
     dot += '"Recorded at time: '+str(node.get_clock().now())+'"[ shape=plaintext ] ;\n'
     dot += '}->"'+root+'";\n}'
     return dot
+
 
 if __name__ == '__main__':
     main()
