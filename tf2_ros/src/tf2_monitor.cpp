@@ -128,7 +128,7 @@ public:
         using_specific_chain_(using_specific_chain),
         node_(node),
         clock_(node->get_clock()),
-        buffer_(clock_)
+        buffer_(clock_, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node)
   {
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
     
