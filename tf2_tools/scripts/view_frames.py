@@ -63,25 +63,26 @@ def main(args=None):
     future = cli.call_async(req)
     rclpy.spin_until_future_complete(node, future)
 
+    raised = True
     try:
         result = future.result()
+        raised = False
     except Exception as e:
         node.get_logger().error('Service call failed %r' % (e,))
-        cli.destroy()
-        node.destroy_node()
-        rclpy.shutdown()
-        return -1
     else:
         node.get_logger().info(
             'Result:'+ str(result) )
         data = yaml.load(result.frame_yaml)
         with open('frames.gv', 'w') as f:
-           f.write(generate_dot(data, node))
+           f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
         subprocess.Popen('dot -Tpdf frames.gv -o frames.pdf'.split(' ')).communicate()
-    node.destroy_node()
-    rclpy.shutdown()
+    finally:
+        cli.destroy()
+        node.destroy_node()
+        rclpy.shutdown()
+        return not raised
 
-def generate_dot(data, node):
+def generate_dot(data, recorded_time):
     if len(data) == 0:
         return 'digraph G { "No tf data received" }'
 
@@ -100,7 +101,7 @@ def generate_dot(data, node):
             root = map['parent']
     dot += 'edge [style=invis];\n'
     dot += ' subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";\n'
-    dot += '"Recorded at time: '+str(node.get_clock().now())+'"[ shape=plaintext ] ;\n'
+    dot += '"Recorded at time: '+str(recorded_time[0]+recorded_time[1]/1e9)+'"[ shape=plaintext ] ;\n'
     dot += '}->"'+root+'";\n}'
     return dot
 
