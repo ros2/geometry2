@@ -41,7 +41,7 @@ def main(args=None):
 
     node = rclpy.create_node('view_frames')
 
-    buffer = tf2_ros.Buffer(debug=True, node=node)
+    buffer = tf2_ros.Buffer(node=node)
     listener = tf2_ros.TransformListener(buffer, node, spin_thread=False)
 
     executor = rclpy.executors.SingleThreadedExecutor()
