@@ -68,7 +68,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         self._callbacks_to_remove = []
         self._callbacks_lock = threading.RLock()
 
-        if node != None:
+        if node is not None:
             self.srv = node.create_service(FrameGraph, 'tf2_frames', self.__get_frames)
 
     def __get_frames(self, req, res):
