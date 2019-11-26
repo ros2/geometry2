@@ -28,32 +28,61 @@
 
 # author: Wim Meeussen
 
-import rospy
+import rclpy
 import tf2_py as tf2
 import yaml
 import subprocess
 from tf2_msgs.srv import FrameGraph
 import tf2_ros
+import time
 
-def main():
-    rospy.init_node('view_frames')
-    
+def main(args=None):
+    rclpy.init(args=args)
+
+    node = rclpy.create_node('view_frames')
+
+    buffer = tf2_ros.Buffer(node=node)
+    listener = tf2_ros.TransformListener(buffer, node, spin_thread=False)
+
+    executor = rclpy.executors.SingleThreadedExecutor()
+    executor.add_node(node)
+
     # listen to tf for 5 seconds
-    rospy.loginfo('Listening to tf data during 5 seconds...')
-    rospy.sleep(0.00001)
-    buffer = tf2_ros.Buffer()
-    listener = tf2_ros.TransformListener(buffer)
-    rospy.sleep(5.0)
+    node.get_logger().info('Listening to tf data during 5 seconds...')
+    start_time = time.time()
+    while (time.time() - start_time) < 5.0:
+        rclpy.spin_once(node, timeout_sec=0.1)
 
-    rospy.loginfo('Generating graph in frames.pdf file...')
-    rospy.wait_for_service('~tf2_frames')
-    srv = rospy.ServiceProxy('~tf2_frames', FrameGraph)
-    data = yaml.load(srv().frame_yaml)
-    with open('frames.gv', 'w') as f:
-        f.write(generate_dot(data))
-    subprocess.Popen('dot -Tpdf frames.gv -o frames.pdf'.split(' ')).communicate()
+    node.get_logger().info('Generating graph in frames.pdf file...')
 
-def generate_dot(data):
+    cli = node.create_client(FrameGraph, 'tf2_frames')
+    req = FrameGraph.Request()
+    while not cli.wait_for_service(timeout_sec=1.0):
+        node.get_logger().info('service not available, waiting again...')
+
+    future = cli.call_async(req)
+    rclpy.spin_until_future_complete(node, future)
+
+    raised = True
+    try:
+        result = future.result()
+        raised = False
+    except Exception as e:
+        node.get_logger().error('Service call failed %r' % (e,))
+    else:
+        node.get_logger().info(
+            'Result:'+ str(result) )
+        data = yaml.load(result.frame_yaml)
+        with open('frames.gv', 'w') as f:
+           f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
+        subprocess.Popen('dot -Tpdf frames.gv -o frames.pdf'.split(' ')).communicate()
+    finally:
+        cli.destroy()
+        node.destroy_node()
+        rclpy.shutdown()
+        return not raised
+
+def generate_dot(data, recorded_time):
     if len(data) == 0:
         return 'digraph G { "No tf data received" }'
 
@@ -72,7 +101,7 @@ def generate_dot(data):
             root = map['parent']
     dot += 'edge [style=invis];\n'
     dot += ' subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";\n'
-    dot += '"Recorded at time: '+str(rospy.Time.now().to_sec())+'"[ shape=plaintext ] ;\n'
+    dot += '"Recorded at time: '+str(recorded_time[0]+recorded_time[1]/1e9)+'"[ shape=plaintext ] ;\n'
     dot += '}->"'+root+'";\n}'
     return dot
 

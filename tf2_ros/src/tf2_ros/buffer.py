@@ -51,11 +51,12 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     known frames. 
     """
 
-    def __init__(self, cache_time = None):
+    def __init__(self, cache_time = None, node = None):
         """
         Constructor.
 
         :param cache_time: (Optional) How long to retain past information in BufferCore.
+        :param node: (Optional) If node create a tf2_frames service, It responses all frames as a yaml
         """
         if cache_time != None:
             tf2.BufferCore.__init__(self, cache_time)
@@ -67,7 +68,10 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         self._callbacks_to_remove = []
         self._callbacks_lock = threading.RLock()
 
-    def __get_frames(self, req):
+        if node is not None:
+            self.srv = node.create_service(FrameGraph, 'tf2_frames', self.__get_frames)
+
+    def __get_frames(self, req, res):
        return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
 
     def set_transform(self, *args, **kwargs):
