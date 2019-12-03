@@ -62,6 +62,14 @@ class Stamped : public T{
   
   /** Set the data element */
   void setData(const T& input){*static_cast<T*>(this) = input;};
+
+  Stamped& operator=(const Stamped<T>& s)
+  {
+    T::operator=(s);
+    this->stamp_ = s.stamp_;
+    this->frame_id_ = s.frame_id_;
+    return *this;
+  }
 };
 
 /** \brief Comparison Operator for Stamped datatypes */
