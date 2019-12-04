@@ -20,16 +20,16 @@ if(TARGET buffer_core_test)
   )
 endif()
 
-# ament_add_gtest_executable(buffer_core_test test/buffer_core_test.cpp)
-# catkin_add_gtest(buffer_core_test test/buffer_core_test.cpp)
-# target_link_libraries(buffer_core_test ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
+ament_add_gtest(test_message_filter test/test_message_filter.cpp)
+if(TARGET test_message_filter)
+  ament_target_dependencies(test_message_filter
+    tf2
+    tf2_ros
+    rclcpp
+    geometry_msgs
+  )
+endif()
 
-# catkin_add_gtest(test_tf2_message_filter test/test_message_filter.cpp)
-# target_link_libraries(test_tf2_message_filter ${Boost_LIBRARIES} ${catkin_LIBRARIES})
-#
-# catkin_add_gtest(test_convert test/test_convert.cpp)
-# target_link_libraries(test_convert ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
-#
 ament_add_gtest(test_utils test/test_utils.cpp)
 if(TARGET test_utils)
   ament_target_dependencies(test_utils
