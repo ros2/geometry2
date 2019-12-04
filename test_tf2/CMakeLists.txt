@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_gtest REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_kdl REQUIRED)
 
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
@@ -29,9 +30,14 @@ endif()
 # catkin_add_gtest(test_convert test/test_convert.cpp)
 # target_link_libraries(test_convert ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
 #
-# catkin_add_gtest(test_utils test/test_utils.cpp)
-# target_link_libraries(test_utils ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES})
-#
+ament_add_gtest(test_utils test/test_utils.cpp)
+if(TARGET test_utils)
+  ament_target_dependencies(test_utils
+    tf2
+    tf2_kdl
+  )
+endif()
+
 # add_executable(test_buffer_server EXCLUDE_FROM_ALL test/test_buffer_server.cpp)
 # target_link_libraries(test_buffer_server ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 #
