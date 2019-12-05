@@ -41,15 +41,15 @@ namespace
 constexpr size_t uuid_alpha_count = 8;
 constexpr size_t uuid_numerics_count = 8;
 constexpr size_t uuid_size = uuid_alpha_count + uuid_numerics_count;
-using UUID = std::array<uint8_t, uuid_size>;
+using UUID = std::array<unsigned short, uuid_size>;
 
 std::string get_unique_node_name()
 {
   std::string node_name{"static_transform_publisher_"};
   std::random_device rd;
   std::mt19937 g{rd()};
-  std::uniform_int_distribution<char> alpha{'A', 'Z'};
-  std::uniform_int_distribution<char> numerics{'0', '9'};
+  std::uniform_int_distribution<unsigned short> alpha{'A', 'Z'};
+  std::uniform_int_distribution<unsigned short> numerics{'0', '9'};
   UUID node_uuid;
   std::generate(node_uuid.begin(), node_uuid.begin() + uuid_alpha_count, [&alpha, &rd](){ return alpha(rd); });
   std::generate(node_uuid.begin() + uuid_alpha_count, node_uuid.end(), [&numerics, &rd](){ return numerics(rd); });
