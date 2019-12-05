@@ -27,17 +27,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <utility>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <random>
 
 #include "tf2_ros/static_transform_broadcaster_node.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+namespace
+{
+constexpr size_t uuid_alpha_count = 8;
+constexpr size_t uuid_numerics_count = 8;
+constexpr size_t uuid_size = uuid_alpha_count + uuid_numerics_count;
+using UUID = std::array<uint8_t, uuid_size>;
+
+std::string get_unique_node_name()
+{
+  std::string node_name{"static_transform_publisher_"};
+  std::random_device rd;
+  std::mt19937 g{rd()};
+  std::uniform_int_distribution<char> alpha{'A', 'Z'};
+  std::uniform_int_distribution<char> numerics{'0', '9'};
+  UUID node_uuid;
+  std::generate(node_uuid.begin(), node_uuid.begin() + uuid_alpha_count, [&alpha, &rd](){ return alpha(rd); });
+  std::generate(node_uuid.begin() + uuid_alpha_count, node_uuid.end(), [&numerics, &rd](){ return numerics(rd); });
+  std::shuffle(node_uuid.begin(), node_uuid.end(), g);  // mix alpha and numerics
+  std::for_each(node_uuid.begin(), node_uuid.end(), [&node_name](auto & byte){ node_name += (byte) ; });
+  return node_name;
+}
+}
+
 namespace tf2_ros
 {
 StaticTransformBroadcasterNode::StaticTransformBroadcasterNode(const rclcpp::NodeOptions & options)
-: rclcpp::Node("static_transform_publisher", options)
+: rclcpp::Node(get_unique_node_name().c_str(), options)
 // TODO(clalancette): Anonymize the node name like it is in ROS1.
 {
   geometry_msgs::msg::TransformStamped tf_msg;
