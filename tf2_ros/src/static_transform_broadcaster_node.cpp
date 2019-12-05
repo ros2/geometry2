@@ -38,24 +38,26 @@
 
 namespace
 {
-constexpr size_t uuid_alpha_count = 8;
-constexpr size_t uuid_numerics_count = 8;
-constexpr size_t uuid_size = uuid_alpha_count + uuid_numerics_count;
-using UUID = std::array<unsigned short, uuid_size>;
-
 std::string get_unique_node_name()
 {
-  std::string node_name{"static_transform_publisher_"};
-  std::random_device rd;
-  std::mt19937 g{rd()};
-  std::uniform_int_distribution<unsigned short> alpha{'A', 'Z'};
-  std::uniform_int_distribution<unsigned short> numerics{'0', '9'};
-  UUID node_uuid;
-  std::generate(node_uuid.begin(), node_uuid.begin() + uuid_alpha_count, [&alpha, &rd](){ return alpha(rd); });
-  std::generate(node_uuid.begin() + uuid_alpha_count, node_uuid.end(), [&numerics, &rd](){ return numerics(rd); });
-  std::shuffle(node_uuid.begin(), node_uuid.end(), g);  // mix alpha and numerics
-  std::for_each(node_uuid.begin(), node_uuid.end(), [&node_name](auto & byte){ node_name += (byte) ; });
-  return node_name;
+  const static std::string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static std::random_device rd;
+  static std::minstd_rand g{rd()};
+
+  // The uniform_int_distribution takes a closed interval of [a, b]; since that
+  // would include the \0, we remove one from our string length.
+  static std::uniform_int_distribution<std::string::size_type> pick(0, chars.length() - 1);
+
+  std::string s{"static_transform_publisher_"};
+
+  size_t orig_length = s.length();
+  s.resize(orig_length + 16);
+
+  for (size_t i = orig_length; i < s.length(); ++i) {
+    s[i] = chars[pick(g)];
+  }
+
+  return s;
 }
 }
 
