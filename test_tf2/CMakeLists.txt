@@ -9,6 +9,7 @@ project(test_tf2)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_gtest REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_kdl REQUIRED)
 
@@ -38,9 +39,13 @@ if(TARGET test_utils)
   )
 endif()
 
-# add_executable(test_buffer_server EXCLUDE_FROM_ALL test/test_buffer_server.cpp)
-# target_link_libraries(test_buffer_server ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-#
+add_executable(test_buffer_server test/test_buffer_server.cpp)
+ament_target_dependencies(test_buffer_server
+    rclcpp
+    rclcpp_action
+    tf2_ros
+  )
+
 # add_executable(test_buffer_client EXCLUDE_FROM_ALL test/test_buffer_client.cpp)
 # target_link_libraries(test_buffer_client ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES} ${orocos_kdl_LIBRARIES})
 #
