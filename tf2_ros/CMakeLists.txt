@@ -20,6 +20,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
+find_package(rclcpp_components REQUIRED)
 
 include_directories(include)
 ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
@@ -65,12 +66,26 @@ add_executable(static_transform_publisher
 )
 target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
+  static_transform_broadcaster_node
 )
 ament_target_dependencies(static_transform_publisher
   "geometry_msgs"
   "rclcpp"
   "tf2_msgs"
 )
+
+add_library(static_transform_broadcaster_node SHARED
+  src/static_transform_broadcaster_node.cpp
+)
+target_compile_definitions(static_transform_broadcaster_node PRIVATE "STATIC_TRANSFORM_BROADCASTER_BUILDING_DLL")
+target_link_libraries(static_transform_broadcaster_node ${PROJECT_NAME})
+ament_target_dependencies(static_transform_broadcaster_node
+  "geometry_msgs"
+  "rclcpp"
+  "tf2_msgs"
+  "rclcpp_components"
+)
+rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
 
 add_executable(tf2_echo
   src/tf2_echo.cpp
@@ -96,6 +111,13 @@ ament_target_dependencies(tf2_monitor
 # Install rules
 install(TARGETS
   ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(TARGETS
+  static_transform_broadcaster_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -199,7 +221,7 @@ endif()
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
+ament_export_libraries(${PROJECT_NAME} static_transform_broadcaster_node)
 ament_export_dependencies(message_filters)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(tf2_msgs)
