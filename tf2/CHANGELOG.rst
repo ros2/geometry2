@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.6 (2019-12-10)
+-------------------
+* Fix up -Wcast-qual warning (`#193 <https://github.com/ros2/geometry2/issues/193>`_)
+* Contributors: Yu, Yan
+
 0.11.5 (2019-09-06)
 -------------------
 

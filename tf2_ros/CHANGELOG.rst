@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.11.6 (2019-12-10)
+-------------------
+
 0.11.5 (2019-09-06)
 -------------------
 * Add missing export build dependencies (`#135 <https://github.com/ros2/geometry2/issues/135>`_) (`#152 <https://github.com/ros2/geometry2/issues/152>`_)
