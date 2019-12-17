@@ -27,9 +27,13 @@ include_directories(include
 
 link_directories(${orocos_kdl_LIBRARY_DIRS})
 
+ament_python_install_package(${PROJECT_NAME}
+     PACKAGE_DIR src/${PROJECT_NAME})
 
-# TODO(dhood): enable python support once ported to ROS 2
-# catkin_python_setup()
+# TODO (ahcorde) Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
+# install(PROGRAMS scripts/test.py
+#    DESTINATION lib/${PROJECT_NAME}
+# )
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
