@@ -31,12 +31,9 @@
 #*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 #*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #*  POSSIBILITY OF SUCH DAMAGE.
-#* 
+#*
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-PKG = 'test_tf2'
-import roslib; roslib.load_manifest(PKG)
-
 import sys
 import unittest
 
@@ -44,23 +41,23 @@ import tf2_py as tf2
 import tf2_ros
 import tf2_geometry_msgs
 from geometry_msgs.msg import PointStamped
-import rospy
+import builtin_interfaces
+import rclpy
 import tf2_kdl
 import PyKDL
 
+
 class TestConvert(unittest.TestCase):
     def test_convert(self):
-        p = tf2_ros.Stamped(PyKDL.Vector(1, 2, 3), rospy.Time(), 'my_frame')
-        print p
-        msg = tf2_ros.convert(p, PointStamped) 
-        print msg
+        p = tf2_ros.Stamped(PyKDL.Vector(1, 2, 3), builtin_interfaces.msg.Time(sec=0), 'my_frame')
+        msg = tf2_ros.convert(p, PointStamped)
         p2 = tf2_ros.convert(msg, PyKDL.Vector)
-        print p2
-        p2[0] = 100
-        print p
-        print p2
-        print p2.header
+
+        self.assertEqual(p2[0], p[0])
+        self.assertEqual(p2[1], p[1])
+        self.assertEqual(p2[2], p[2])
+        self.assertEqual(p2.header, p.header)
+
 
 if __name__ == '__main__':
-    import rostest
-    rostest.unitrun(PKG, 'test_buffer_client', TestConvert)
+    unittest.main()
