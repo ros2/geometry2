@@ -12,6 +12,9 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_kdl REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_bullet REQUIRED)
 
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
@@ -39,17 +42,19 @@ if(TARGET test_utils)
   )
 endif()
 
-add_executable(test_buffer_server test/test_buffer_server.cpp)
-ament_target_dependencies(test_buffer_server
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(bullet REQUIRED bullet)
+include_directories(include ${bullet_INCLUDE_DIRS})
+
+ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
+ament_target_dependencies(test_buffer_client
     rclcpp
     rclcpp_action
     tf2_ros
-  )
+    tf2_kdl
+    tf2_bullet
+)
 
-# add_executable(test_buffer_client EXCLUDE_FROM_ALL test/test_buffer_client.cpp)
-# target_link_libraries(test_buffer_client ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES} ${orocos_kdl_LIBRARIES})
-#
-#
 # add_rostest(test/buffer_client_tester.launch)
 #
 # add_executable(test_static_publisher EXCLUDE_FROM_ALL test/test_static_publisher.cpp)
