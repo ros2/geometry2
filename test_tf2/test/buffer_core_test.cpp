@@ -34,10 +34,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "permuter.hpp"
-// #include "LinearMath/btVector3.h"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/exceptions.h"
-// #include "rostest/permuter.h"
 
 void seed_rand()
 {
@@ -167,12 +165,8 @@ void push_back_1(std::vector<std::string>& children, std::vector<std::string>& p
 
 void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_interfaces::msg::Time & time, const tf2::Duration& interpolation_space = tf2::durationFromSec(0.0))
 {
-  // auto node = rclcpp::Node::make_shared("buffer_core_test");
 
-  // RCLCPP_DEBUG(node->get_logger(), "Clearing Buffer Core for new test setup");
   mBC.clear();
-
-  // RCLCPP_DEBUG(node->get_logger(), "Setting up test tree for formation %s", mode.c_str());
 
   std::vector<std::string> children;
   std::vector<std::string> parents;
@@ -218,7 +212,9 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         direction = -1;
       }
       else
+      {
         frame_prefix ="";
+      }
       for (uint64_t i = 1; i <  frames.size(); i++)
       {
         geometry_msgs::msg::TransformStamped ts;
@@ -233,12 +229,15 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         double time_seconds = time.sec +  time.nanosec / 1e9;
         double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
 
-        if (time_seconds > time_interpolation_space ){
+        if (time_seconds > time_interpolation_space )
+        {
           double time_stamp = time_seconds - time_interpolation_space;
-          ts.header.stamp.sec = (int)time_stamp;
-          ts.header.stamp.nanosec = (time_stamp-(int)time_stamp)*1e9;
-        }else
+          ts.header.stamp = rclcpp::Time(time_stamp);
+        }
+        else
+        {
           ts.header.stamp = builtin_interfaces::msg::Time();
+        }
 
         ts.header.frame_id = frame_prefix + frames[i-1];
         if (i > 1)
@@ -249,8 +248,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         if (interpolation_space > tf2::Duration())
         {
           double time_stamp = time_seconds + time_interpolation_space;
-          ts.header.stamp.sec = (int)time_stamp;
-          ts.header.stamp.nanosec = (time_stamp-(int)time_stamp)*1e9;
+          ts.header.stamp = rclcpp::Time(time_stamp);
           EXPECT_TRUE(mBC.setTransform(ts, "authority"));
         }
       }
@@ -260,7 +258,6 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
   else if (mode == "1")
   {
     push_back_1(children, parents, dx, dy);
-
   }
   else if (mode =="1_v")
   {
@@ -282,10 +279,12 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
     if (time_seconds > time_interpolation_space ){
       double time_stamp = time_seconds - time_interpolation_space;
-      ts.header.stamp.sec = (int)time_stamp;
-      ts.header.stamp.nanosec = (time_stamp-(int)time_stamp)*1e9;
-    }else
+      ts.header.stamp = rclcpp::Time(time_stamp);
+    }
+    else
+    {
       ts.header.stamp = builtin_interfaces::msg::Time();
+    }
 
     ts.header.frame_id = parents[i];
     ts.child_frame_id = children[i];
@@ -293,8 +292,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     if (interpolation_space > tf2::Duration())
     {
       double time_stamp = time_seconds + time_interpolation_space;
-      ts.header.stamp.sec = (int)time_stamp;
-      ts.header.stamp.nanosec = (time_stamp-(int)time_stamp)*1e9;
+      ts.header.stamp = rclcpp::Time(time_stamp);
       EXPECT_TRUE(mBC.setTransform(ts, "authority"));
     }
   }
@@ -630,14 +628,9 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //
 // */
 
-#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
-
 TEST(BufferCore_lookupTransform, i_configuration)
 {
   double epsilon = 1e-6;
-  // TEST_COUT << "BufferCore_lookupTransform" << std::endl;
-
-  GTEST_COUT << "ALEX!!! BufferCore_lookupTransform" << std::endl;
 
   rostest::Permuter permuter;
   std::vector<builtin_interfaces::msg::Time> times;
