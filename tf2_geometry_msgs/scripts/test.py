@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import unittest
 import rclpy
@@ -29,7 +29,8 @@ class GeometryMsgs(unittest.TestCase):
         v.point.x = 1.0
         v.point.y = 2.0
         v.point.z = 3.0
-        out = b.transform(v, 'b')
+        # b.registration.add(PointStamped)
+        out = b.transform(v, 'b', new_type = PointStamped)
         self.assertEqual(out.point.x, 0)
         self.assertEqual(out.point.y, -2)
         self.assertEqual(out.point.z, -3)
@@ -51,7 +52,7 @@ class GeometryMsgs(unittest.TestCase):
         t.transform.translation.x = 1.0
         t.transform.translation.y = 2.0
         t.transform.translation.z = 3.0
-        t.transform.rotation = Quaterion(w=1.0, x=0.0, y=0.0, z=0.0)
+        t.transform.rotation = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
         v = Vector3Stamped()
         v.vector.x = 1.0
         v.vector.y = 0.0
@@ -66,7 +67,7 @@ class GeometryMsgs(unittest.TestCase):
         t.transform.translation.x = 1.0
         t.transform.translation.y = 2.0
         t.transform.translation.z = 3.0
-        t.transform.rotation = Quaterion(w=0.0, x=0.0, y=1.0, z=0.0)
+        t.transform.rotation = Quaternion(w=0.0, x=0.0, y=1.0, z=0.0)
 
         v = Vector3Stamped()
         v.vector.x = 1.0
