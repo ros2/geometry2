@@ -34,8 +34,8 @@
 
 #include <tf2/convert.h>
 #include <LinearMath/btTransform.h>
-#include <geometry_msgs/PointStamped.h>
-
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <tf2_ros/buffer_interface.h>
 
 namespace tf2
 {
@@ -44,7 +44,7 @@ namespace tf2
  * \return The transform message converted to a Bullet btTransform.
  */
 inline
-btTransform transformToBullet(const geometry_msgs::TransformStamped& t)
+btTransform transformToBullet(const geometry_msgs::msg::TransformStamped& t)
   {
     return btTransform(btQuaternion(t.transform.rotation.x, t.transform.rotation.y,
 				    t.transform.rotation.z, t.transform.rotation.w),
@@ -60,9 +60,9 @@ btTransform transformToBullet(const geometry_msgs::TransformStamped& t)
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<btVector3>& t_in, tf2::Stamped<btVector3>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<btVector3>& t_in, tf2::Stamped<btVector3>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<btVector3>(transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<btVector3>(transformToBullet(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
@@ -71,10 +71,10 @@ inline
  * \return The vector converted to a PointStamped message.
  */
 inline
-geometry_msgs::PointStamped toMsg(const tf2::Stamped<btVector3>& in)
+geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3>& in)
 {
-  geometry_msgs::PointStamped msg;
-  msg.header.stamp = in.stamp_;
+  geometry_msgs::msg::PointStamped msg;
+  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point.x = in[0];
   msg.point.y = in[1];
@@ -88,9 +88,9 @@ geometry_msgs::PointStamped toMsg(const tf2::Stamped<btVector3>& in)
  * \param out The point converted to a timestamped Bullet Vector3.
  */
 inline
-void fromMsg(const geometry_msgs::PointStamped& msg, tf2::Stamped<btVector3>& out)
+void fromMsg(const geometry_msgs::msg::PointStamped& msg, tf2::Stamped<btVector3>& out)
 {
-  out.stamp_ = msg.header.stamp;
+  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out[0] = msg.point.x;
   out[1] = msg.point.y;
@@ -106,9 +106,9 @@ void fromMsg(const geometry_msgs::PointStamped& msg, tf2::Stamped<btVector3>& ou
  */
 template <>
 inline
-  void doTransform(const tf2::Stamped<btTransform>& t_in, tf2::Stamped<btTransform>& t_out, const geometry_msgs::TransformStamped& transform)
+  void doTransform(const tf2::Stamped<btTransform>& t_in, tf2::Stamped<btTransform>& t_out, const geometry_msgs::msg::TransformStamped& transform)
   {
-    t_out = tf2::Stamped<btTransform>(transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+    t_out = tf2::Stamped<btTransform>(transformToBullet(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
 
