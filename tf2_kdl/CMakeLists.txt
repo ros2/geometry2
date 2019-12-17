@@ -24,9 +24,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION include/${PROJECT_NAME}
 )
 
-install(PROGRAMS scripts/test.py
-    DESTINATION lib/${PROJECT_NAME}
-)
+# TODO(ahcorde): Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
+# install(PROGRAMS scripts/test.py
+#     DESTINATION lib/${PROJECT_NAME}
+# )
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
