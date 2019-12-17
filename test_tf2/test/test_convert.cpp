@@ -39,13 +39,12 @@
 #include <tf2_kdl/tf2_kdl.h>
 #include <tf2_bullet/tf2_bullet.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <ros/time.h>
 
 TEST(tf2Convert, kdlToBullet)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b(btVector3(1,2,3), builtin_interfaces::msg::Time(), "my_frame");
+  tf2::Stamped<btVector3> b(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame");
 
   tf2::Stamped<btVector3> b1 = b;
   tf2::Stamped<KDL::Vector> k1;
@@ -55,14 +54,14 @@ TEST(tf2Convert, kdlToBullet)
   tf2::convert(k1, b2);
 
   EXPECT_EQ(b.frame_id_, b2.frame_id_);
-  EXPECT_NEAR(b.stamp_.toSec(), b2.stamp_.toSec(), epsilon);
+  EXPECT_NEAR(tf2::timeToSec(b.stamp_), tf2::timeToSec(b2.stamp_), epsilon);
   EXPECT_NEAR(b.x(), b2.x(), epsilon);
   EXPECT_NEAR(b.y(), b2.y(), epsilon);
   EXPECT_NEAR(b.z(), b2.z(), epsilon);
 
 
   EXPECT_EQ(b1.frame_id_, b2.frame_id_);
-  EXPECT_NEAR(b1.stamp_.toSec(), b2.stamp_.toSec(), epsilon);
+  EXPECT_NEAR(tf2::timeToSec(b1.stamp_), tf2::timeToSec(b2.stamp_), epsilon);
   EXPECT_NEAR(b1.x(), b2.x(), epsilon);
   EXPECT_NEAR(b1.y(), b2.y(), epsilon);
   EXPECT_NEAR(b1.z(), b2.z(), epsilon);
@@ -72,8 +71,8 @@ TEST(tf2Convert, kdlBulletROSConversions)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b1(btVector3(1,2,3), builtin_interfaces::msg::Time(), "my_frame"), b2, b3, b4;
-  geometry_msgs::PointStamped r1, r2, r3;
+  tf2::Stamped<btVector3> b1(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame"), b2, b3, b4;
+  geometry_msgs::msg::PointStamped r1, r2, r3;
   tf2::Stamped<KDL::Vector> k1, k2, k3;
 
   // Do bullet -> self -> bullet -> KDL -> self -> KDL -> ROS -> self -> ROS -> KDL -> bullet -> ROS -> bullet
@@ -91,15 +90,14 @@ TEST(tf2Convert, kdlBulletROSConversions)
   tf2::convert(r3, b4);
 
   EXPECT_EQ(b1.frame_id_, b4.frame_id_);
-  EXPECT_NEAR(b1.stamp_.toSec(), b4.stamp_.toSec(), epsilon);
+  EXPECT_NEAR(tf2::timeToSec(b1.stamp_), tf2::timeToSec(b4.stamp_), epsilon);
   EXPECT_NEAR(b1.x(), b4.x(), epsilon);
   EXPECT_NEAR(b1.y(), b4.y(), epsilon);
   EXPECT_NEAR(b1.z(), b4.z(), epsilon);
-} 
+}
 
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-
