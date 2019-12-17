@@ -9,8 +9,8 @@
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/tf2_bullet</url>
-    
-  <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <build_depend>tf2</build_depend>
@@ -21,5 +21,10 @@
   <run_depend>bullet</run_depend>
   <run_depend>geometry_msgs</run_depend>
 
-</package>
+  <depend>bullet</depend>
 
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
