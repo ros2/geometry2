@@ -43,8 +43,8 @@ namespace rostest
 class PermuteOptionBase
 {
 public:
-  virtual void reset() =0;
-  virtual bool step() =0;
+  virtual void reset() = 0;
+  virtual bool step() = 0;
   virtual ~PermuteOptionBase() {};
 };
 
@@ -65,7 +65,8 @@ public:
 
   virtual ~PermuteOption(){};
 
-  void reset(){
+  void reset()
+  {
     std::lock_guard<std::mutex> lock(access_mutex_);
     current_element_ = options_.begin();
     *output_ = *current_element_;
@@ -113,7 +114,7 @@ public:
   void addOptionSet(const std::vector<T>& values, T* output)
   {
     std::lock_guard<std::mutex> lock(access_mutex_);
-    options_.push_back(static_cast<PermuteOptionBase*> (new PermuteOption<T>(values, output)));
+    options_.emplace_back(std::make_unique<PermuteOption<T>>(values, output));
     reset();
   };
 
@@ -151,15 +152,11 @@ public:
   void clearAll()
   {
     std::lock_guard<std::mutex> lock(access_mutex_);
-    for ( unsigned int i = 0 ; i < options_.size(); i++)
-    {
-      delete options_[i];
-    }
     options_.clear();
   };
 
 private:
-  std::vector<PermuteOptionBase*> options_; ///< Store all the option objects
+  std::vector<std::unique_ptr<PermuteOptionBase>> options_; ///< Store all the option objects
   std::mutex access_mutex_;
 };
 
