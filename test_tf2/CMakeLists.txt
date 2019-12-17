@@ -16,6 +16,10 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_bullet REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(bullet REQUIRED bullet)
+include_directories(include ${bullet_INCLUDE_DIRS})
+
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
   ament_target_dependencies(buffer_core_test
@@ -34,38 +38,67 @@ if(TARGET test_message_filter)
   )
 endif()
 
+ament_add_gtest(test_convert test/test_convert.cpp)
+if(TARGET test_convert)
+  ament_target_dependencies(test_convert
+    tf2
+    tf2_bullet
+  )
+endif()
+
 ament_add_gtest(test_utils test/test_utils.cpp)
 if(TARGET test_utils)
   ament_target_dependencies(test_utils
     tf2
     tf2_kdl
+    tf2_geometry_msgs
   )
 endif()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(bullet REQUIRED bullet)
-include_directories(include ${bullet_INCLUDE_DIRS})
+add_executable(test_buffer_server test/test_buffer_server.cpp)
+if(TARGET test_buffer_server)
+  ament_target_dependencies(test_buffer_server
+      rclcpp
+      rclcpp_action
+      tf2_ros
+      tf2_bullet
+    )
+endif()
+
 
 ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
-ament_target_dependencies(test_buffer_client
-    rclcpp
-    rclcpp_action
-    tf2_ros
-    tf2_kdl
-    tf2_bullet
-)
+if(TARGET test_buffer_client)
+  ament_target_dependencies(test_buffer_client
+      rclcpp
+      rclcpp_action
+      tf2_ros
+      tf2_kdl
+      tf2_bullet
+  )
+endif()
 
 # add_rostest(test/buffer_client_tester.launch)
-#
-# add_executable(test_static_publisher EXCLUDE_FROM_ALL test/test_static_publisher.cpp)
-# target_link_libraries(test_static_publisher ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-#
+
+ament_add_gtest(test_static_publisher test/test_static_publisher.cpp)
+if(TARGET test_static_publisher)
+  ament_target_dependencies(test_static_publisher
+      rclcpp
+      rclcpp_action
+      tf2_ros
+  )
+endif()
 # add_rostest(test/static_publisher.launch)
-#
-#
-# add_executable(test_tf2_bullet EXCLUDE_FROM_ALL test/test_tf2_bullet.cpp)
-# target_link_libraries(test_tf2_bullet ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-#
+
+ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
+if(TARGET test_tf2_bullet)
+  ament_target_dependencies(test_tf2_bullet
+      rclcpp
+      rclcpp_action
+      tf2_ros
+      tf2_bullet
+  )
+endif()
+
 # add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_tf2_bullet.launch)
 #
 #
