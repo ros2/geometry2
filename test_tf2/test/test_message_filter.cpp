@@ -282,7 +282,7 @@ TEST(MessageFilter, tolerance)
   EXPECT_EQ(0, n.count_); //No return due to lack of space for offset
 
   double time_stamp = (stamp.sec + stamp.nanosec/1e9)*1.1 + tf2::durationToSec(offset);
-  builtin_interfaces::msg::Time stamp_transform = tf2_ros::toMsg(tf2::timeFromSec(time_stamp));
+  builtin_interfaces::msg::Time stamp_transform = rclcpp::Time(time_stamp);
 
   buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp_transform, "frame1", "frame2"), "me");
 
@@ -290,8 +290,7 @@ TEST(MessageFilter, tolerance)
 
   time_stamp = (stamp.sec + stamp.nanosec/1e9) + tf2::durationToSec(offset);
 
-  msg->header.stamp.sec = (int)time_stamp;
-  msg->header.stamp.nanosec = (time_stamp - (int)time_stamp)/1e9;
+  msg->header.stamp = rclcpp::Time(time_stamp);
   filter.add(msg);
 
   EXPECT_EQ(1, n.count_); // Latest message is off the end of the offset
