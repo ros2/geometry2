@@ -70,7 +70,7 @@ public:
     std::lock_guard<std::mutex> lock(access_mutex_);
     current_element_ = options_.begin();
     *output_ = *current_element_;
-  };
+  }
 
   bool step()
   {
@@ -80,7 +80,7 @@ public:
       return false;
     *output_ = *current_element_;
     return true;
-  };
+  }
 
 private:
   /// Local storage of the possible values
@@ -116,14 +116,14 @@ public:
     std::lock_guard<std::mutex> lock(access_mutex_);
     options_.emplace_back(std::make_unique<PermuteOption<T>>(values, output));
     reset();
-  };
+  }
 
 
   /** \brief Reset the internal counters */
   void reset(){
     for (unsigned int level= 0; level < options_.size(); level++)
       options_[level]->reset();
-  };
+  }
 
   /** \brief Iterate to the next value in the iteration
    * Returns true unless done iterating.
@@ -146,14 +146,14 @@ public:
       }
     }
     return false;
-  };
+  }
 
   /** \brief Clear all stored data */
   void clearAll()
   {
     std::lock_guard<std::mutex> lock(access_mutex_);
     options_.clear();
-  };
+  }
 
 private:
   std::vector<std::unique_ptr<PermuteOptionBase>> options_; ///< Store all the option objects
