@@ -17,19 +17,17 @@ find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-# TODO(clalancette): Port python once https://github.com/ros2/geometry2/pull/99 is merged
-# ament_python_install_package(${PROJECT_NAME}
-#      PACKAGE_DIR src/${PROJECT_NAME})
+ament_python_install_package(${PROJECT_NAME}
+     PACKAGE_DIR src/${PROJECT_NAME})
 
 install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION include/${PROJECT_NAME}
 )
 
-# TODO(clalancette): Port python tests once https://github.com/ros2/geometry/pull/99 is merged
+# TODO(ahcorde): Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
 # install(PROGRAMS scripts/test.py
 #     DESTINATION lib/${PROJECT_NAME}
 # )
-
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
