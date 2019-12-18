@@ -14,7 +14,7 @@ class KDLConversions(unittest.TestCase):
         b = tf2_ros.Buffer()
         t = TransformStamped()
         t.transform.translation.x = 1.0
-        t.transform.rotation = Quaternion(w=0, x=1, y=0, z=0)
+        t.transform.rotation = Quaternion(w=0.0, x=1.0, y=0.0, z=0.0)
         t.header.stamp = builtin_interfaces.msg.Time(sec=2)
         t.header.frame_id = 'a'
         t.child_frame_id = 'b'
@@ -69,8 +69,6 @@ class KDLConversions(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # import rosunit
     rclpy.init(args=None)
     node = rclpy.create_node('test_tf2_kdl_python')
-    # rosunit.unitrun("test_tf2_kdl", "test_tf2_kdl_python", KDLConversions)
     unittest.main()
