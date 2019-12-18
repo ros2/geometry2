@@ -120,7 +120,8 @@ public:
 
 
   /** \brief Reset the internal counters */
-  void reset(){
+  void reset()
+  {
     for (unsigned int level= 0; level < options_.size(); level++)
       options_[level]->reset();
   }
