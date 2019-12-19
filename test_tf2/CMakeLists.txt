@@ -92,30 +92,20 @@ if(TARGET test_static_publisher)
   add_launch_test(test/static_publisher.launch.py)
 endif()
 
-ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
-if(TARGET test_tf2_bullet)
-  ament_target_dependencies(test_tf2_bullet
-      rclcpp
-      rclcpp_action
-      tf2_ros
-      tf2_bullet
-  )
-endif()
-
-add_launch_test(test/test_buffer_client.launch.py)
-
+# TODO (ahcorde): activate when tf2_kdl is merged
+# ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
+# if(TARGET test_tf2_bullet)
+#   ament_target_dependencies(test_tf2_bullet
+#       rclcpp
+#       rclcpp_action
+#       tf2_ros
+#       tf2_bullet
+#   )
+# endif()
+#
+# add_launch_test(test/test_buffer_client.launch.py)
 # add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_tf2_bullet.launch)
-#
-#
-# if(TARGET tests)
-#   add_dependencies(tests test_buffer_server test_buffer_client test_static_publisher test_tf2_bullet)
-# endif()
-#
-#
-# # used as a test fixture
-# if(TARGET tf2_ros_static_transform_publisher)
-#   add_dependencies(tests tf2_ros_static_transform_publisher test_static_publisher)
-# endif()
+
 
 # install executables
 install(TARGETS
