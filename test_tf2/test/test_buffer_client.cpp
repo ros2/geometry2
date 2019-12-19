@@ -41,6 +41,7 @@
 #include <tf2_kdl/tf2_kdl.h>
 #include <tf2_bullet/tf2_bullet.h>
 #include <chrono>
+#include <thread>
 
 static const double EPS = 1e-3;
 
@@ -83,7 +84,9 @@ TEST(tf2_ros, buffer_client)
     RCLCPP_ERROR(node->get_logger(), "Failed to transform: %s", ex.what());
     ASSERT_FALSE("Should not get here");
   }
-  rclcpp::shutdown();
+  executor.cancel();
+  spin_thread.join();
+  node.reset();
 }
 
 TEST(tf2_ros, buffer_client_different_types)
@@ -121,11 +124,17 @@ TEST(tf2_ros, buffer_client_different_types)
     RCLCPP_ERROR(node->get_logger(), "Failed to transform: %s", ex.what());
     ASSERT_FALSE("Should not get here");
   }
-  rclcpp::shutdown();
+  executor.cancel();
+  spin_thread.join();
+  node.reset();
+
 }
 
 int main(int argc, char** argv)
 {
+  // This is needed because we need to wait a little bit for the other nodes
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();

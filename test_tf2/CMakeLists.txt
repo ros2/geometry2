@@ -15,6 +15,9 @@ find_package(tf2_kdl REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_bullet REQUIRED)
+find_package(ament_cmake_gtest REQUIRED)
+ament_find_gtest()
+find_package(launch_testing_ament_cmake REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(bullet REQUIRED bullet)
@@ -66,7 +69,7 @@ if(TARGET test_buffer_server)
 endif()
 
 
-ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
+add_executable(test_buffer_client test/test_buffer_client.cpp)
 if(TARGET test_buffer_client)
   ament_target_dependencies(test_buffer_client
       rclcpp
@@ -75,9 +78,9 @@ if(TARGET test_buffer_client)
       tf2_kdl
       tf2_bullet
   )
+  target_link_libraries(test_buffer_client ${GTEST_LIBRARIES})
+  add_launch_test(test/buffer_client_tester.launch.py)
 endif()
-
-# add_rostest(test/buffer_client_tester.launch)
 
 ament_add_gtest(test_static_publisher test/test_static_publisher.cpp)
 if(TARGET test_static_publisher)
@@ -111,5 +114,12 @@ endif()
 # if(TARGET tf2_ros_static_transform_publisher)
 #   add_dependencies(tests tf2_ros_static_transform_publisher test_static_publisher)
 # endif()
+
+# install executables
+install(TARGETS
+  test_buffer_client
+  test_buffer_server
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()
