@@ -61,10 +61,10 @@ public:
       [](const rclcpp_action::GoalUUID &, std::shared_ptr<const LookupTransformAction::Goal>)
         {return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;},
       [](const std::shared_ptr<GoalHandle>){return rclcpp_action::CancelResponse::ACCEPT;},
-      std::bind(&MockBufferServer::handle_accepted, this, std::placeholders::_1));
+      std::bind(&MockBufferServer::handleAccepted, this, std::placeholders::_1));
   }
 
-  void handle_accepted(const std::shared_ptr<GoalHandle> goal_handle)
+  void handleAccepted(const std::shared_ptr<GoalHandle> goal_handle)
   {
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
     std::thread(&MockBufferServer::acceptedCallback, this, goal_handle).detach();

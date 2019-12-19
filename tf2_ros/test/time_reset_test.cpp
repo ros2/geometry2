@@ -39,7 +39,7 @@ void spin_for_a_second(std::shared_ptr<rclcpp::Node>& node)
 {
   rclcpp::Rate r(10);
   rclcpp::spin_some(node);
-  for (uint8_t i = 0; i < 10; ++i)
+  for (int i = 0; i < 10; ++i)
   {
     r.sleep();
     rclcpp::spin_some(node);

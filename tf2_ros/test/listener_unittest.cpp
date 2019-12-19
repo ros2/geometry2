@@ -29,21 +29,12 @@
 
 #include <chrono>
 #include <gtest/gtest.h>
+#include <functional>
+#include <memory>
+#include <thread>
+#include <rclcpp/rclcpp.hpp>
+#include <builtin_interfaces/msg/time.hpp>,
 #include <tf2_ros/transform_listener.h>
-
-void seed_rand()
-{
-  //Seed random number generator with current microseond count
-  srand(std::chrono::system_clock::now().time_since_epoch().count());
-}
-
-void generate_rand_numbers(double & xvalue, double & yvalue, double & zvalue)
-{
-  seed_rand();
-  xvalue = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-  yvalue = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-  zvalue = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-}
 
 TEST(tf2_ros_test_listener, transform_listener)
 {
@@ -60,16 +51,14 @@ TEST(tf2_ros_test_listener, transform_listener)
   std::thread spin_thread = std::thread(
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
-  double x, y, z;
-  generate_rand_numbers(x, y, z);
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
   ts.header.frame_id = "a";
   ts.header.stamp = rclcpp::Time(10, 0);
   ts.child_frame_id = "b";
-  ts.transform.translation.x = x;
-  ts.transform.translation.y = y;
-  ts.transform.translation.z = z;
+  ts.transform.translation.x = 1;
+  ts.transform.translation.y = 2;
+  ts.transform.translation.z = 3;
 
   buffer.setTransform(ts, "authority");
 
@@ -79,9 +68,9 @@ TEST(tf2_ros_test_listener, transform_listener)
 
   geometry_msgs::msg::TransformStamped out_rootc = buffer.lookupTransform("a", "b", builtin_interfaces::msg::Time());
 
-  EXPECT_EQ(x, out_rootc.transform.translation.x);
-  EXPECT_EQ(y, out_rootc.transform.translation.y);
-  EXPECT_EQ(z, out_rootc.transform.translation.z);
+  EXPECT_EQ(1, out_rootc.transform.translation.x);
+  EXPECT_EQ(2, out_rootc.transform.translation.y);
+  EXPECT_EQ(3, out_rootc.transform.translation.z);
   EXPECT_EQ(1, out_rootc.transform.rotation.w);
   EXPECT_EQ(0, out_rootc.transform.rotation.x);
   EXPECT_EQ(0, out_rootc.transform.rotation.y);
