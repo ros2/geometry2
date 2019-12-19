@@ -226,13 +226,13 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         ts.transform.rotation.z = sin(direction * M_PI/8);
         ts.transform.rotation.w = cos(direction * M_PI/8);
 
-        double time_seconds = time.sec +  time.nanosec / 1e9;
+        double time_seconds = time.sec + time.nanosec / 1e9;
         double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
 
         if (time_seconds > time_interpolation_space )
         {
           double time_stamp = time_seconds - time_interpolation_space;
-          ts.header.stamp = rclcpp::Time(time_stamp);
+          ts.header.stamp = rclcpp::Time(time_stamp*1e9);
         }
         else
         {
@@ -247,8 +247,9 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         EXPECT_TRUE(mBC.setTransform(ts, "authority"));
         if (interpolation_space > tf2::Duration())
         {
-          double time_stamp = time_seconds + time_interpolation_space;
-          ts.header.stamp = rclcpp::Time(time_stamp);
+          // TODO (ahcorde): review this
+          double time_stamp = time_seconds;// + time_interpolation_space;
+          ts.header.stamp = rclcpp::Time(time_stamp*1e9);
           EXPECT_TRUE(mBC.setTransform(ts, "authority"));
         }
       }
@@ -279,7 +280,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
     if (time_seconds > time_interpolation_space ){
       double time_stamp = time_seconds - time_interpolation_space;
-      ts.header.stamp = rclcpp::Time(time_stamp);
+      ts.header.stamp = rclcpp::Time(time_stamp*1e9);
     }
     else
     {
@@ -291,8 +292,9 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     EXPECT_TRUE(mBC.setTransform(ts, "authority"));
     if (interpolation_space > tf2::Duration())
     {
-      double time_stamp = time_seconds + time_interpolation_space;
-      ts.header.stamp = rclcpp::Time(time_stamp);
+      // TODO (ahcorde): review this
+      double time_stamp = time_seconds;// + time_interpolation_space;
+      ts.header.stamp = rclcpp::Time(time_stamp*1e9);
       EXPECT_TRUE(mBC.setTransform(ts, "authority"));
     }
   }
@@ -663,11 +665,9 @@ TEST(BufferCore_lookupTransform, i_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "i", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
+    tf2::TimePoint eval_time_time_point = tf2_ros::fromMsg(eval_time);
 
-    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_EQ(outpose.header.stamp, eval_time);
     EXPECT_EQ(outpose.header.frame_id, source_frame);
@@ -1002,11 +1002,7 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "1", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
-
-    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_1_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1051,11 +1047,7 @@ TEST(BufferCore_lookupTransform, v_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "v", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
-
-    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_v_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1100,11 +1092,7 @@ TEST(BufferCore_lookupTransform, y_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "y", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
-
-    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_y_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1150,13 +1138,9 @@ TEST(BufferCore_lookupTransform, multi_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "1_v", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
-
-    if (mBC.canTransform(source_frame, target_frame, eval_time_time_point))
+    if (mBC.canTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time)))
     {
-      geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+      geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
       if ((source_frame == "1" || source_frame =="2") && (target_frame =="1" || target_frame == "2"))
         EXPECT_TRUE(check_1_result(outpose, source_frame, target_frame, eval_time, epsilon));
@@ -1466,7 +1450,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
   tf2::Duration interpolation_space;
-  //  permuter.addOptionSet(durations, &interpolation_space);
+  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
   frames.push_back("a");
@@ -1496,15 +1480,15 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   {
 
     tf2::BufferCore mBC;
+    // std::cerr << "interpolation_space " << tf2::durationToSec(interpolation_space) << std::endl;
+    // std::cerr << "eval_time " << eval_time.sec << " " << eval_time.nanosec << std::endl;
     setupTree(mBC, "ring_45", eval_time, interpolation_space);
 
-    tf2::TimePoint eval_time_time_point = tf2::TimePoint(
-        std::chrono::seconds(eval_time.sec) +
-        std::chrono::nanoseconds(eval_time.nanosec));
-
-    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time_time_point);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
+    // std::cerr << "outpose " << outpose.header.stamp.sec << " " << outpose.header.stamp.nanosec << std::endl;
+
     EXPECT_EQ(outpose.header.stamp, eval_time);
     EXPECT_EQ(outpose.header.frame_id, source_frame);
     EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -1630,8 +1614,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*3/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*3/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*3/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*3/8), epsilon);
     }
     // Chaining 4
     else if ((source_frame == "a" && target_frame =="e") ||
@@ -1662,7 +1646,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI/2), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI/2), epsilon);
       EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI/2), epsilon);
     }
     // Chaining 5
@@ -1692,8 +1676,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*5/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*5/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*5/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*5/8), epsilon);
     }
     // Chaining 6
     else if ((source_frame == "a" && target_frame =="g") ||
@@ -1706,8 +1690,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*6/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI*6/8), epsilon);
     }
     // Inverse Chaining 6
     else if ((target_frame == "a" && source_frame =="g") ||
@@ -1720,8 +1704,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*6/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*6/8), epsilon);
     }
     // Chaining 7
     else if ((source_frame == "a" && target_frame =="h") ||
@@ -1733,8 +1717,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*7/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*7/8), epsilon);
     }
     // Inverse Chaining 7
     else if ((target_frame == "a" && source_frame =="h") ||
@@ -1746,8 +1730,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*7/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI*7/8), epsilon);
     }
     else
     {
