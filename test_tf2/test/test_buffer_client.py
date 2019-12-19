@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/python3
 #***********************************************************
 #* Software License Agreement (BSD License)
 #*
@@ -59,7 +59,6 @@ class TestBufferClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.node.destroy_node()
         rclpy.shutdown(context=cls.context)
 
     def setUp(self):
@@ -121,9 +120,8 @@ class TestBufferClient(unittest.TestCase):
     #     except tf2.TransformException as e:
     #         self.node.get_logger().error("%s" % e)
 
-        node.destroy_node()
-        rclpy.shutdown()
 
 if __name__ == '__main__':
-    rclpy.init(args=None)
+    rclpy.init(args=sys.argv)
+    sys.argv = [sys.argv[0]]
     unittest.main()

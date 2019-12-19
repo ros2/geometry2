@@ -68,7 +68,6 @@ if(TARGET test_buffer_server)
     )
 endif()
 
-
 add_executable(test_buffer_client test/test_buffer_client.cpp)
 if(TARGET test_buffer_client)
   ament_target_dependencies(test_buffer_client
@@ -103,6 +102,8 @@ if(TARGET test_tf2_bullet)
   )
 endif()
 
+add_launch_test(test/test_buffer_client.launch.py)
+
 # add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_tf2_bullet.launch)
 #
 #
@@ -121,6 +122,10 @@ install(TARGETS
   test_buffer_client
   test_buffer_server
   test_static_publisher
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(PROGRAMS
+  test/test_buffer_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
