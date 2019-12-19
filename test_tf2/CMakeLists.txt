@@ -82,15 +82,16 @@ if(TARGET test_buffer_client)
   add_launch_test(test/buffer_client_tester.launch.py)
 endif()
 
-ament_add_gtest(test_static_publisher test/test_static_publisher.cpp)
+add_executable(test_static_publisher test/test_static_publisher.cpp)
 if(TARGET test_static_publisher)
   ament_target_dependencies(test_static_publisher
       rclcpp
       rclcpp_action
       tf2_ros
   )
+  target_link_libraries(test_static_publisher ${GTEST_LIBRARIES})
+  add_launch_test(test/static_publisher.launch.py)
 endif()
-# add_rostest(test/static_publisher.launch)
 
 ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
 if(TARGET test_tf2_bullet)
@@ -119,6 +120,7 @@ endif()
 install(TARGETS
   test_buffer_client
   test_buffer_server
+  test_static_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 
