@@ -33,7 +33,7 @@
 #include <memory>
 #include <thread>
 #include <rclcpp/rclcpp.hpp>
-#include <builtin_interfaces/msg/time.hpp>,
+#include <builtin_interfaces/msg/time.hpp>
 #include <tf2_ros/transform_listener.h>
 
 TEST(tf2_ros_test_listener, transform_listener)
