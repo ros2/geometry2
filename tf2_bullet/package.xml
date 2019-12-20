@@ -1,4 +1,4 @@
-<package>
+<package format="2">
   <name>tf2_bullet</name>
   <version>0.9.1</version>
   <description>
@@ -11,17 +11,14 @@
   <url type="website">http://www.ros.org/wiki/tf2_bullet</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>pkg-config</buildtool_depend>
 
   <build_depend>tf2</build_depend>
   <build_depend>bullet</build_depend>
   <build_depend>geometry_msgs</build_depend>
 
-  <run_depend>tf2</run_depend>
-  <run_depend>bullet</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-
-  <depend>bullet</depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>bullet</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
