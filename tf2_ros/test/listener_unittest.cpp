@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 #include <tf2_ros/transform_listener.h>
 
+
 void seed_rand()
 {
   //Seed random number generator with current microseond count
@@ -48,17 +49,22 @@ void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xva
   }
 }
 
-TEST(tf2_ros_test_listener, transform_listener)
-{
-  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  tf2_ros::Buffer buffer(clock);
+using namespace tf2;
+
+TEST(tf2_ros_transform, transform_listener)
+{
+  tf2_ros::Buffer buffer;
   tf2_ros::TransformListener tfl(buffer);
+  
+
 }
+
+
+
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
-  rclcpp::init(argc, argv);
-  std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>("transform_listener_unittest");
+  ros::init(argc, argv, "transform_listener_unittest");
   return RUN_ALL_TESTS();
 }

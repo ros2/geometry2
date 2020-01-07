@@ -27,37 +27,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono>
 #include <gtest/gtest.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <rosgraph_msgs/msg/clock.hpp>
-#include <builtin_interfaces/msg/time.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include <rosgraph_msgs/Clock.h>
 
-TEST(tf2_ros_time_reset_test, time_backwards)
+using namespace tf2;
+
+TEST(tf2_ros_transform_listener, time_backwards)
 {
-  std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>("transform_listener_backwards_reset");
-  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer;
   tf2_ros::TransformListener tfl(buffer);
-  tf2_ros::TransformBroadcaster tfb(node_);
+  tf2_ros::TransformBroadcaster tfb;
 
-  auto clock_pub = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", 5);
+  ros::NodeHandle nh = ros::NodeHandle();
 
-  rosgraph_msgs::msg::Clock c;
-  c.clock.sec = 100;
-  c.clock.nanosec = 0;
-  clock_pub->publish(c);
+  ros::Publisher clock = nh.advertise<rosgraph_msgs::Clock>("/clock", 5);
+
+  rosgraph_msgs::Clock c;
+  c.clock = builtin_interfaces::msg::Time(100);
+  clock.publish(c);
 
   // basic test
-  ASSERT_FALSE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
+  ASSERT_FALSE(buffer.canTransform("foo", "bar", builtin_interfaces::msg::Time(101, 0)));
 
   // set the transform
-  geometry_msgs::msg::TransformStamped msg;
-  msg.header.stamp.sec = 100;
-  msg.header.stamp.nanosec = 0;
+  geometry_msgs::TransformStamped msg;
+  msg.header.stamp = builtin_interfaces::msg::Time(100, 0);
   msg.header.frame_id = "foo";
   msg.child_frame_id = "bar";
   msg.transform.rotation.w = 0.0;
@@ -65,42 +62,44 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   msg.transform.rotation.y = 0.0;
   msg.transform.rotation.z = 0.0;
   tfb.sendTransform(msg);
-  msg.header.stamp.sec = 102;
-  msg.header.stamp.nanosec = 0;
+  msg.header.stamp = builtin_interfaces::msg::Time(102, 0);
   tfb.sendTransform(msg);
 
+
   // make sure it arrives
-  rclcpp::spin_some(node_);
+  ros::spinOnce();
   sleep(1);
 
   // verify it's been set
-  ASSERT_TRUE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
+  ASSERT_TRUE(buffer.canTransform("foo", "bar", builtin_interfaces::msg::Time(101, 0)));
 
-  c.clock.sec = 90;
-  c.clock.nanosec = 0;
-  clock_pub->publish(c);
+  c.clock = builtin_interfaces::msg::Time(90);
+  clock.publish(c);
 
   // make sure it arrives
-  rclcpp::spin_some(node_);
+  ros::spinOnce();
   sleep(1);
 
   //Send anoterh message to trigger clock test on an unrelated frame
-  msg.header.stamp.sec = 110;
-  msg.header.stamp.nanosec = 0;
+  msg.header.stamp = builtin_interfaces::msg::Time(110, 0);
   msg.header.frame_id = "foo2";
   msg.child_frame_id = "bar2";
   tfb.sendTransform(msg);
 
   // make sure it arrives
-  rclcpp::spin_some(node_);
+  ros::spinOnce();
   sleep(1);
 
   //verify the data's been cleared
-  ASSERT_FALSE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
+  ASSERT_FALSE(buffer.canTransform("foo", "bar", builtin_interfaces::msg::Time(101, 0)));
+
 }
+
+
+
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
-  rclcpp::init(argc, argv);
+  ros::init(argc, argv, "transform_listener_backwards_reset");
   return RUN_ALL_TESTS();
 }
