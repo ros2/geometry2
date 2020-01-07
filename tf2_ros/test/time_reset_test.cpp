@@ -35,6 +35,17 @@
 #include <builtin_interfaces/msg/time.hpp>
 #include <rclcpp/rclcpp.hpp>
 
+void spin_for_a_second(std::shared_ptr<rclcpp::Node>& node)
+{
+  rclcpp::Rate r(10);
+  rclcpp::spin_some(node);
+  for (int i = 0; i < 10; ++i)
+  {
+    r.sleep();
+    rclcpp::spin_some(node);
+  }
+}
+
 TEST(tf2_ros_time_reset_test, time_backwards)
 {
   std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>("transform_listener_backwards_reset");
@@ -44,20 +55,19 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   tf2_ros::TransformListener tfl(buffer);
   tf2_ros::TransformBroadcaster tfb(node_);
 
-  auto clock_pub = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", 5);
+  auto clock_pub = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", 1);
+
 
   rosgraph_msgs::msg::Clock c;
-  c.clock.sec = 100;
-  c.clock.nanosec = 0;
+  c.clock = rclcpp::Time(100, 0);
   clock_pub->publish(c);
 
   // basic test
-  ASSERT_FALSE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
+  ASSERT_FALSE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
   // set the transform
   geometry_msgs::msg::TransformStamped msg;
-  msg.header.stamp.sec = 100;
-  msg.header.stamp.nanosec = 0;
+  msg.header.stamp = rclcpp::Time(100, 0);
   msg.header.frame_id = "foo";
   msg.child_frame_id = "bar";
   msg.transform.rotation.w = 0.0;
@@ -65,8 +75,7 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   msg.transform.rotation.y = 0.0;
   msg.transform.rotation.z = 0.0;
   tfb.sendTransform(msg);
-  msg.header.stamp.sec = 102;
-  msg.header.stamp.nanosec = 0;
+  msg.header.stamp = rclcpp::Time(102, 0);
   tfb.sendTransform(msg);
 
 
@@ -78,7 +87,7 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   }
 
   // verify it's been set
-  ASSERT_TRUE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
+  ASSERT_TRUE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
   // TODO (ahcorde). review this
   // c.clock.sec = 90;
