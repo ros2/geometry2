@@ -84,6 +84,5 @@ TEST(tf2_ros_test_listener, transform_listener)
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
-  std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>("transform_listener_unittest");
   return RUN_ALL_TESTS();
 }

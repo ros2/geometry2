@@ -78,13 +78,8 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   msg.header.stamp = rclcpp::Time(102, 0);
   tfb.sendTransform(msg);
 
-
   // make sure it arrives
-  rclcpp::Rate rate(10);
-  for(int i = 0; i < 10; i++){
-    rclcpp::spin_some(node_);
-    rate.sleep();
-  }
+  spin_for_a_second(node_);
 
   // verify it's been set
   ASSERT_TRUE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
