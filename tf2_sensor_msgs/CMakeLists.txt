@@ -29,6 +29,9 @@ include_directories(include
   ${Eigen3_INCLUDE_DIRS}
 )
 
+ament_export_dependencies(eigen3_cmake_module)
+ament_export_dependencies(Eigen3)
+
 # TODO enable tests
 #if(BUILD_TESTING)
 #  catkin_add_nosetests(test/test_tf2_sensor_msgs.py)
