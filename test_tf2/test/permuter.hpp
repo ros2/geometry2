@@ -133,7 +133,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(access_mutex_);
     // base case just iterating
-    for (unsigned int level= 0; level < options_.size(); level++)
+    for (size_t level = 0; level < options_.size(); level++)
     {
       if(options_[level]->step())
       {
