@@ -209,8 +209,6 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
 int main(int argc, char **argv)
 {
-  // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();
