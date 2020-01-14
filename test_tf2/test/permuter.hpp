@@ -123,7 +123,9 @@ public:
   void reset()
   {
     for (unsigned int level= 0; level < options_.size(); level++)
+    {
       options_[level]->reset();
+    }
   }
 
   /** \brief Iterate to the next value in the iteration
