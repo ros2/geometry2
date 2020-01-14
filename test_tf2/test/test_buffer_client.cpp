@@ -42,6 +42,8 @@
 #include <tf2_bullet/tf2_bullet.h>
 #include <chrono>
 #include <thread>
+#include <functional>
+#include <memory>
 
 static const double EPS = 1e-3;
 

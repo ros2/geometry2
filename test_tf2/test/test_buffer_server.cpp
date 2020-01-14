@@ -38,6 +38,7 @@
 #include <tf2_ros/buffer_server.h>
 #include <tf2_ros/transform_listener.h>
 #include <rclcpp/rclcpp.hpp>
+#include <memory>
 
 int main(int argc, char** argv)
 {

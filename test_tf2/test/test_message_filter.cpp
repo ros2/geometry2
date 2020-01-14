@@ -38,6 +38,8 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <gtest/gtest.h>
+#include <memory>
+#include <functional>
 
 class Notification
 {
@@ -82,8 +84,6 @@ TEST(MessageFilter, noTransforms)
   filter.add(msg);
 
   EXPECT_EQ(0, n.count_);
-
-  node.reset();
 }
 
 TEST(MessageFilter, noTransformsSameFrame)
@@ -106,7 +106,6 @@ TEST(MessageFilter, noTransformsSameFrame)
   filter.add(msg);
 
   EXPECT_EQ(1, n.count_);
-  node.reset();
 }
 
 geometry_msgs::msg::TransformStamped createTransform(tf2::Quaternion q, tf2::Vector3 v, builtin_interfaces::msg::Time stamp, const std::string& frame1, const std::string& frame2)
@@ -150,8 +149,6 @@ TEST(MessageFilter, preexistingTransforms)
   filter.add(msg);
 
   EXPECT_EQ(1, n.count_);
-
-  node.reset();
 }
 
 TEST(MessageFilter, postTransforms)
@@ -182,7 +179,6 @@ TEST(MessageFilter, postTransforms)
   buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.count_);
-  node.reset();
 }
 // TODO (ahcorde): For some unknown reason message_filters::Connection registerFailureCallback is disable
 // with #if 0 https://github.com/ros2/geometry2/blob/ros2/tf2_ros/include/tf2_ros/message_filter.h#L463
@@ -221,7 +217,7 @@ TEST(MessageFilter, postTransforms)
 //
 //   EXPECT_EQ(10, n.count_);
 //
-//   node.reset();
+//
 // }
 
 TEST(MessageFilter, setTargetFrame)
@@ -249,7 +245,6 @@ TEST(MessageFilter, setTargetFrame)
   filter.add(msg);
 
   EXPECT_EQ(1, n.count_);
-  node.reset();
 }
 
 TEST(MessageFilter, multipleTargetFrames)
@@ -286,8 +281,6 @@ TEST(MessageFilter, multipleTargetFrames)
   buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.count_); // frame2->frame3 now exists
-
-  node.reset();
 }
 
 TEST(MessageFilter, tolerance)
@@ -330,8 +323,6 @@ TEST(MessageFilter, tolerance)
   filter.add(msg);
 
   EXPECT_EQ(1, n.count_); // Latest message is off the end of the offset
-
-  node.reset();
 }
 
 // TODO(ahcorde): For some unknown reason message_filters::Connection registerFailureCallback is disable
@@ -412,8 +403,8 @@ TEST(MessageFilter, tolerance)
 //
 //   EXPECT_EQ(1, n.count_);
 // }
-//
-//
+
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
