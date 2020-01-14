@@ -184,7 +184,9 @@ TEST(MessageFilter, postTransforms)
   EXPECT_EQ(1, n.count_);
   node.reset();
 }
-// TODO (ahcorde): enable this when this is available
+// TODO (ahcorde): For some unknown reason message_filters::Connection registerFailureCallback is disable
+// with #if 0 https://github.com/ros2/geometry2/blob/ros2/tf2_ros/include/tf2_ros/message_filter.h#L463
+// rework this part when this is available
 // TEST(MessageFilter, queueSize)
 // {
 //   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
@@ -332,7 +334,10 @@ TEST(MessageFilter, tolerance)
   node.reset();
 }
 
-// TODO(ahcorde): failurecallback
+// TODO(ahcorde): For some unknown reason message_filters::Connection registerFailureCallback is disable
+// with #if 0 https://github.com/ros2/geometry2/blob/ros2/tf2_ros/include/tf2_ros/message_filter.h#L463
+// rework this part when this is available
+
 // TEST(MessageFilter, outTheBackFailure)
 // {
 //   BufferCore bc;
