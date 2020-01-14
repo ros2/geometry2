@@ -13,15 +13,17 @@ find_package(launch_testing_ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(tf2 REQUIRED)
-find_package(tf2_bullet REQUIRED)
+# TODO (ahcorde): activate when tf2_bullet is merged
+# find_package(tf2_bullet REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_kdl REQUIRED)
 
 ament_find_gtest()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(bullet REQUIRED bullet)
-include_directories(include ${bullet_INCLUDE_DIRS})
+# TODO (ahcorde): activate when tf2_bullet is merged
+# find_package(PkgConfig REQUIRED)
+# pkg_check_modules(bullet REQUIRED bullet)
+# include_directories(include ${bullet_INCLUDE_DIRS})
 
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
@@ -41,13 +43,14 @@ if(TARGET test_message_filter)
   )
 endif()
 
-ament_add_gtest(test_convert test/test_convert.cpp)
-if(TARGET test_convert)
-  ament_target_dependencies(test_convert
-    tf2
-    tf2_bullet
-  )
-endif()
+# TODO (ahcorde): activate when tf2_bullet is merged
+# ament_add_gtest(test_convert test/test_convert.cpp)
+# if(TARGET test_convert)
+#   ament_target_dependencies(test_convert
+#     tf2
+#     tf2_bullet
+#   )
+# endif()
 
 ament_add_gtest(test_utils test/test_utils.cpp)
 if(TARGET test_utils)
@@ -58,28 +61,30 @@ if(TARGET test_utils)
   )
 endif()
 
-add_executable(test_buffer_server test/test_buffer_server.cpp)
-if(TARGET test_buffer_server)
-  ament_target_dependencies(test_buffer_server
-    rclcpp
-    rclcpp_action
-    tf2_bullet
-    tf2_ros
-  )
-endif()
+# TODO (ahcorde): activate when tf2_bullet is merged
+# add_executable(test_buffer_server test/test_buffer_server.cpp)
+# if(TARGET test_buffer_server)
+#   ament_target_dependencies(test_buffer_server
+#     rclcpp
+#     rclcpp_action
+#     tf2_bullet
+#     tf2_ros
+#   )
+# endif()
 
-add_executable(test_buffer_client test/test_buffer_client.cpp)
-if(TARGET test_buffer_client)
-  ament_target_dependencies(test_buffer_client
-    rclcpp
-    rclcpp_action
-    tf2_bullet
-    tf2_kdl
-    tf2_ros
-  )
-  target_link_libraries(test_buffer_client ${GTEST_LIBRARIES})
-  add_launch_test(test/buffer_client_tester.launch.py)
-endif()
+# TODO (ahcorde): activate when tf2_bullet is merged
+# add_executable(test_buffer_client test/test_buffer_client.cpp)
+# if(TARGET test_buffer_client)
+#   ament_target_dependencies(test_buffer_client
+#     rclcpp
+#     rclcpp_action
+#     tf2_bullet
+#     tf2_kdl
+#     tf2_ros
+#   )
+#   target_link_libraries(test_buffer_client ${GTEST_LIBRARIES})
+#   add_launch_test(test/buffer_client_tester.launch.py)
+# endif()
 
 add_executable(test_static_publisher test/test_static_publisher.cpp)
 if(TARGET test_static_publisher)
@@ -108,8 +113,8 @@ endif()
 
 # install executables
 install(TARGETS
-  test_buffer_client
-  test_buffer_server
+  # test_buffer_client
+  # test_buffer_server
   test_static_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
