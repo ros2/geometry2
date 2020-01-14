@@ -20,6 +20,8 @@ find_package(tf2_kdl REQUIRED)
 
 ament_find_gtest()
 
+include_directories(${GTEST_INCLUDE_DIRS})
+
 # TODO (ahcorde): activate when tf2_bullet is merged
 # find_package(PkgConfig REQUIRED)
 # pkg_check_modules(bullet REQUIRED bullet)
@@ -30,6 +32,7 @@ if(TARGET buffer_core_test)
   ament_target_dependencies(buffer_core_test
     rclcpp
     tf2
+    tf2_geometry_msgs
   )
 endif()
 
