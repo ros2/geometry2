@@ -1,8 +1,8 @@
 <package format="2">
-  <name>tf2_ros</name>
-  <version>0.13.4</version>
+  <name>tf2_ros_py</name>
+  <version>0.12.4</version>
   <description>
-    This package contains the C++ ROS bindings for the tf2 library
+    This package contains the ROS Python bindings for the tf2 library
   </description>
   <author>Eitan Marder-Eppstein</author>
   <author>Wim Meeussen</author>
@@ -29,6 +29,7 @@
   <depend>tf2</depend>
   <depend>tf2_msgs</depend>
   <depend>tf2_py</depend>
+  <depend>tf2_ros</depend>
 
   <!-- TODO(tfoote) dependencies from unported sections restore when ported
   <depend>xmlrpcpp</depend> -->
