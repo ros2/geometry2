@@ -49,12 +49,12 @@ public:
   {
   }
 
-  void notify(const geometry_msgs::msg::PointStamped::ConstPtr& message)
+  void notify(const geometry_msgs::msg::PointStamped::ConstSharedPtr& message)
   {
     ++count_;
   }
 
-  void failure(const geometry_msgs::msg::PointStamped::ConstPtr& message, tf2_ros::filter_failure_reasons::FilterFailureReason reason)
+  void failure(const geometry_msgs::msg::PointStamped::ConstSharedPtr& message, tf2_ros::filter_failure_reasons::FilterFailureReason reason)
   {
     ++failure_count_;
   }
