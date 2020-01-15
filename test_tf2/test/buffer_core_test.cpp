@@ -27,6 +27,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if _WIN32
+#define _USE_MATH_DEFINES
+#include <cmath>
+#endif
+
 #include <gtest/gtest.h>
 #include <tf2/buffer_core.h>
 #include "tf2/exceptions.h"
