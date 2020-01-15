@@ -45,7 +45,7 @@
 void seed_rand()
 {
   //Seed random number generator with current time.
-  srand(std::chrono::system_clock::now().time_since_epoch().count());
+  srand((unsigned) time(0));
 };
 
 void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xvalues, std::vector<double>& yvalues, std::vector<double>&zvalues)
@@ -237,7 +237,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         if (time_seconds > time_interpolation_space )
         {
           double time_stamp = time_seconds - time_interpolation_space;
-          ts.header.stamp = rclcpp::Time(time_stamp*1e9);
+          ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
         }
         else
         {
@@ -254,7 +254,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         {
           // TODO (ahcorde): review this
           double time_stamp = time_seconds;// + time_interpolation_space;
-          ts.header.stamp = rclcpp::Time(time_stamp*1e9);
+          ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
           EXPECT_TRUE(mBC.setTransform(ts, "authority"));
         }
       }
@@ -285,7 +285,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
     if (time_seconds > time_interpolation_space ){
       double time_stamp = time_seconds - time_interpolation_space;
-      ts.header.stamp = rclcpp::Time(time_stamp*1e9);
+      ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
     }
     else
     {
@@ -299,7 +299,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     {
       // TODO (ahcorde): review this
       double time_stamp = time_seconds;// + time_interpolation_space;
-      ts.header.stamp = rclcpp::Time(time_stamp*1e9);
+      ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
       EXPECT_TRUE(mBC.setTransform(ts, "authority"));
     }
   }
