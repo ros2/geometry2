@@ -326,7 +326,7 @@ TEST(BufferCore_setTransform, NoInsertWithNan)
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "other_frame";
   EXPECT_TRUE(mBC.setTransform(tranStamped, "authority"));
-  tranStamped.transform.translation.x = 0.0/0.0;
+  tranStamped.transform.translation.x = std::numeric_limits<float>::quiet_NaN();
   EXPECT_TRUE(std::isnan(tranStamped.transform.translation.x));
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
 }
