@@ -15,6 +15,11 @@
 #ifndef TF2_IMPL_UTILS_H
 #define TF2_IMPL_UTILS_H
 
+#if _WIN32
+#define _USE_MATH_DEFINES
+#include <cmath>
+#endif
+
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
