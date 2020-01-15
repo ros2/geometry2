@@ -15,11 +15,6 @@
 #ifndef TF2_IMPL_UTILS_H
 #define TF2_IMPL_UTILS_H
 
-#if _WIN32
-#define _USE_MATH_DEFINES
-#include <cmath>
-#endif
-
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -91,6 +86,7 @@ template<typename T>
 inline
 void getEulerYPR(const tf2::Quaternion& q, double &yaw, double &pitch, double &roll)
 {
+  const double pi_2 = 1.57079632679489661923;
   double sqw;
   double sqx;
   double sqy;
@@ -104,11 +100,11 @@ void getEulerYPR(const tf2::Quaternion& q, double &yaw, double &pitch, double &r
   // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
   double sarg = -2 * (q.x()*q.z() - q.w()*q.y()) / (sqx + sqy + sqz + sqw); /* normalization added from urdfom_headers */
   if (sarg <= -0.99999) {
-    pitch = -0.5*M_PI;
+    pitch = -0.5*pi_2;
     roll  = 0;
     yaw   = -2 * atan2(q.y(), q.x());
   } else if (sarg >= 0.99999) {
-    pitch = 0.5*M_PI;
+    pitch = 0.5*pi_2;
     roll  = 0;
     yaw   = 2 * atan2(q.y(), q.x());
   } else {
