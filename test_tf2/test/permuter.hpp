@@ -31,7 +31,7 @@
 /** \author Tully Foote */
 
 #ifndef ROSTEST_PERMUTER_HPP
-#define ROSTEST_PERMUTER_H
+#define ROSTEST_PERMUTER_HPP
 
 #include <vector>
 #include <mutex>
@@ -166,4 +166,4 @@ private:
 
 }
 
-#endif //ROSTEST_PERMUTER_H
+#endif //ROSTEST_PERMUTER_HPP
