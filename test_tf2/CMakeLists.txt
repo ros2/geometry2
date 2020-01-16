@@ -4,6 +4,8 @@ if(NOT BUILD_TESTING)
   return()
 endif()
 
+set(CMAKE_CXX_STANDARD 14)
+
 project(test_tf2)
 
 find_package(ament_cmake REQUIRED)
