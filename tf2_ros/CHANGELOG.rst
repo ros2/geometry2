@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.12.5 (2020-01-17)
+-------------------
+* Adding support for view_frame (`#192 <https://github.com/ros2/geometry2/issues/192>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.12.4 (2019-11-19)
 -------------------
 

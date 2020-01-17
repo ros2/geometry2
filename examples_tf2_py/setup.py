@@ -4,7 +4,7 @@ package_name = 'examples_tf2_py'
 
 setup(
     name=package_name,
-    version='0.12.4',
+    version='0.12.5',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
