@@ -33,8 +33,8 @@
 #ifndef ROSTEST_PERMUTER_HPP
 #define ROSTEST_PERMUTER_HPP
 
-#include <vector>
 #include <mutex>
+#include <vector>
 
 namespace rostest
 {

@@ -28,13 +28,13 @@
  */
 
 #include <gtest/gtest.h>
-#include <tf2/buffer_core.h>
-#include "tf2/exceptions.h"
-#include <tf2_ros/static_transform_broadcaster.h>
-#include <rclcpp/rclcpp.hpp>
-#include "permuter.hpp"
 
+#include "permuter.hpp"
+#include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
+#include <rclcpp/rclcpp.hpp>
+#include <tf2/buffer_core.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 TEST(StaticTransformPublisher, a_b_different_times)
 {
@@ -180,7 +180,8 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   node.reset();
 };
 
-// TODO (ahcorde) Load transform from yaml
+// TODO (ahcorde) static_transform_publisher allows to load transforma from yaml files
+// Revisit this test when "Load transform from yaml" is available
 // TEST(StaticTransformPublisher, tf_from_param_server_valid)
 // {
 //   // This TF is loaded from the parameter server; ensure it is valid.

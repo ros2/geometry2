@@ -666,7 +666,6 @@ TEST(BufferCore_lookupTransform, i_configuration)
 
   while(permuter.step())
   {
-
     tf2::BufferCore mBC;
     setupTree(mBC, "i", eval_time, interpolation_space);
 
@@ -712,14 +711,12 @@ TEST(BufferCore_lookupTransform, i_configuration)
       EXPECT_FALSE("i configuration: Shouldn't get here");
       printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.sec + eval_time.nanosec /1e9 );
     }
-    // rclcpp::shutdown();
   }
 }
 
 /* Check 1 result return false if test parameters unmet */
 bool check_1_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -745,7 +742,6 @@ bool check_1_result(const geometry_msgs::msg::TransformStamped& outpose, const s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
@@ -754,7 +750,6 @@ bool check_1_result(const geometry_msgs::msg::TransformStamped& outpose, const s
 /* Check v result return false if test parameters unmet */
 bool check_v_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -855,7 +850,6 @@ bool check_v_result(const geometry_msgs::msg::TransformStamped& outpose, const s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
@@ -864,7 +858,6 @@ bool check_v_result(const geometry_msgs::msg::TransformStamped& outpose, const s
 /* Check v result return false if test parameters unmet */
 bool check_y_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -965,7 +958,6 @@ bool check_y_result(const geometry_msgs::msg::TransformStamped& outpose, const s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
@@ -1485,14 +1477,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   {
 
     tf2::BufferCore mBC;
-    // std::cerr << "interpolation_space " << tf2::durationToSec(interpolation_space) << std::endl;
-    // std::cerr << "eval_time " << eval_time.sec << " " << eval_time.nanosec << std::endl;
-    setupTree(mBC, "ring_45", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
-
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
-    // std::cerr << "outpose " << outpose.header.stamp.sec << " " << outpose.header.stamp.nanosec << std::endl;
 
     EXPECT_EQ(outpose.header.stamp, eval_time);
     EXPECT_EQ(outpose.header.frame_id, source_frame);
@@ -2868,7 +2854,6 @@ TEST(tf2_stamped, OperatorEqual)
   */
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
-  // builtin_interfaces::msg::Time::init(); //needed for builtin_interfaces::msg::Time::now()
   rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();
 }

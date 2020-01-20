@@ -29,17 +29,16 @@
 
 /** \author Josh Faust */
 
-
-#include <tf2_ros/message_filter.h>
-#include <tf2_ros/create_timer_ros.h>
-#include <tf2/buffer_core.h>
-#include <geometry_msgs/msg/point_stamped.hpp>
-
-#include <rclcpp/rclcpp.hpp>
-
 #include <gtest/gtest.h>
-#include <memory>
+
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2/buffer_core.h>
+#include <tf2_ros/create_timer_ros.h>
+#include <tf2_ros/message_filter.h>
+
 #include <functional>
+#include <memory>
 
 class Notification
 {
@@ -275,8 +274,6 @@ TEST(MessageFilter, multipleTargetFrames)
   filter.add(msg);
 
   EXPECT_EQ(0, n.count_); // frame1->frame3 exists, frame2->frame3 does not (yet)
-
-  //builtin_interfaces::msg::Time::setNow(builtin_interfaces::msg::Time::now() + tf2::durationFromSec(1.0));
 
   buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
 
