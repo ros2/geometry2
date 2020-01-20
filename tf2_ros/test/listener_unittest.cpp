@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2008, Willow Garage, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  *     * Neither the name of the Willow Garage, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,42 +29,60 @@
 
 #include <chrono>
 #include <gtest/gtest.h>
+#include <functional>
+#include <memory>
+#include <thread>
+#include <rclcpp/rclcpp.hpp>
+#include <builtin_interfaces/msg/time.hpp>
 #include <tf2_ros/transform_listener.h>
 
-
-void seed_rand()
+TEST(tf2_ros_test_listener, transform_listener)
 {
-  //Seed random number generator with current microseond count
-  srand(std::chrono::system_clock::now().time_since_epoch().count());
-};
+  auto node = rclcpp::Node::make_shared("tf2_ros_test_listener_transform_listener");
 
-void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xvalues, std::vector<double>& yvalues, std::vector<double>&zvalues)
-{
-  seed_rand();
-  for ( uint64_t i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 1.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-  }
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+
+  tf2_ros::Buffer buffer(clock);
+  tf2_ros::TransformListener tfl(buffer, node, false);
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+  // Start spinning in a thread
+  std::thread spin_thread = std::thread(
+    std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
+
+  geometry_msgs::msg::TransformStamped ts;
+  ts.transform.rotation.w = 1;
+  ts.header.frame_id = "a";
+  ts.header.stamp = rclcpp::Time(10, 0);
+  ts.child_frame_id = "b";
+  ts.transform.translation.x = 1;
+  ts.transform.translation.y = 2;
+  ts.transform.translation.z = 3;
+
+  buffer.setTransform(ts, "authority");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+  EXPECT_TRUE(buffer.canTransform("a", "b", tf2::timeFromSec(0)));
+
+  geometry_msgs::msg::TransformStamped out_rootc = buffer.lookupTransform("a", "b", builtin_interfaces::msg::Time());
+
+  EXPECT_EQ(1, out_rootc.transform.translation.x);
+  EXPECT_EQ(2, out_rootc.transform.translation.y);
+  EXPECT_EQ(3, out_rootc.transform.translation.z);
+  EXPECT_EQ(1, out_rootc.transform.rotation.w);
+  EXPECT_EQ(0, out_rootc.transform.rotation.x);
+  EXPECT_EQ(0, out_rootc.transform.rotation.y);
+  EXPECT_EQ(0, out_rootc.transform.rotation.z);
+
+  executor.cancel();
+  spin_thread.join();
+  node.reset();
 }
-
-
-using namespace tf2;
-
-TEST(tf2_ros_transform, transform_listener)
-{
-  tf2_ros::Buffer buffer;
-  tf2_ros::TransformListener tfl(buffer);
-  
-
-}
-
-
-
 
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "transform_listener_unittest");
+  rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();
 }
