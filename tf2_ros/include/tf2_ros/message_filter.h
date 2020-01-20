@@ -447,13 +447,8 @@ public:
    */
   void add(const MConstPtr & message)
   {
-    using builtin_interfaces::msg::Time;
-    std::shared_ptr<std::map<std::string, std::string>> header(new std::map<std::string,
-      std::string>);
-
-    (*header)["callerid"] = "unknown";
-    Time t = node_clock_->get_clock()->now();
-    add(MEvent(message, header, t));
+    builtin_interfaces::msg::Time t = node_clock_->get_clock()->now();
+    add(MEvent(message, t));
   }
 
   /**
