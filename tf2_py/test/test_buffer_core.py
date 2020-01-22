@@ -35,6 +35,7 @@ from geometry_msgs.msg import TransformStamped
 from test_tf2_py._tf2_py import BufferCore
 from test_tf2_py._tf2_py import LookupException
 
+
 def build_transform(target_frame, source_frame, stamp):
     transform = TransformStamped()
     transform.header.frame_id = target_frame
@@ -250,6 +251,7 @@ class TestBufferClient(unittest.TestCase):
             )
 
         self.assertEqual(LookupException, type(ex.exception))
+
 
 if __name__ == '__main__':
     unittest.main()
