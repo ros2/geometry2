@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/python3
 #***********************************************************
 #* Software License Agreement (BSD License)
 #*
@@ -31,59 +31,97 @@
 #*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 #*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #*  POSSIBILITY OF SUCH DAMAGE.
-#* 
+#*
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
-PKG = 'test_tf2'
-import roslib; roslib.load_manifest(PKG)
-
 import sys
 import unittest
 
 import tf2_py as tf2
 import tf2_ros
-import tf2_kdl
-import tf2_geometry_msgs
 from geometry_msgs.msg import PointStamped
-import rospy
-import PyKDL
+import rclpy
+import tf2_geometry_msgs
+# TODO (ahcorde): Enable once python_orocos_kdl is ported
+# import tf2_kdl
+# import PyKDL
+from rclpy.executors import SingleThreadedExecutor
+import threading
 
 class TestBufferClient(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.context = rclpy.context.Context()
+        rclpy.init(context=cls.context)
+        cls.executor = SingleThreadedExecutor(context=cls.context)
+        cls.node = rclpy.create_node('TestBufferClient', context=cls.context)
+        cls.executor.add_node(cls.node)
+
+    @classmethod
+    def tearDownClass(cls):
+        rclpy.shutdown(context=cls.context)
+
+    def setUp(self):
+        self.spinning = threading.Event()
+        self.spin_thread = threading.Thread(target=self.spin)
+        self.spin_thread.start()
+        return
+
+    def tearDown(self):
+        self.spinning.set()
+        self.spin_thread.join()
+        return
+
+    def spin(self):
+        try:
+            while self.context.ok() and not self.spinning.is_set():
+                self.executor.spin_once(timeout_sec=0.05)
+        finally:
+            return
+
     def test_buffer_client(self):
-        client = tf2_ros.BufferClient("tf_action")
-        client.wait_for_server()
+        buffer_client = tf2_ros.BufferClient(
+            self.node, '/tf_action', check_frequency=10.0, timeout_padding=0.0)
 
         p1 = PointStamped()
         p1.header.frame_id = "a"
-        p1.header.stamp = rospy.Time(0.0)
+        p1.header.stamp = rclpy.time.Time(seconds=1.0).to_msg()
         p1.point.x = 0.0
         p1.point.y = 0.0
         p1.point.z = 0.0
 
-        try:
-            p2 = client.transform(p1, "b")
-            rospy.loginfo("p1: %s, p2: %s" % (p1, p2))
-        except tf2.TransformException as e:
-            rospy.logerr("%s" % e)
-
-    def test_transform_type(self):
-        client = tf2_ros.BufferClient("tf_action")
-        client.wait_for_server()
-
-        p1 = PointStamped()
-        p1.header.frame_id = "a"
-        p1.header.stamp = rospy.Time(0.0)
-        p1.point.x = 0.0
-        p1.point.y = 0.0
-        p1.point.z = 0.0
+        buffer_client.action_client.wait_for_server()
 
         try:
-            p2 = client.transform(p1, "b", new_type = PyKDL.Vector)
-            rospy.loginfo("p1: %s, p2: %s" % (str(p1), str(p2)))
+            p2 = buffer_client.transform(p1, "b", timeout=rclpy.time.Duration(seconds=1))
+            self.node.get_logger().info("p1: %s, p2: %s" % (p1, p2))
         except tf2.TransformException as e:
-            rospy.logerr("%s" % e)
+            self.node.get_logger().error("%s" % e)
+            self.assertEqual(0, 4)
+
+    # TODO (ahcorde): Enable once python_orocos_kdl is ported
+    # def test_transform_type(self):
+    #     buffer_client = tf2_ros.BufferClient(
+    #         self.node, '/tf_action', check_frequency=10.0, timeout_padding=0.0)
+    #
+    #     p1 = PointStamped()
+    #     p1.header.frame_id = "a"
+    #     p1.header.stamp = rclpy.time.Time(seconds=1.0).to_msg()
+    #     p1.point.x = 0.0
+    #     p1.point.y = 0.0
+    #     p1.point.z = 0.0
+    #
+    #     buffer_client.action_client.wait_for_server()
+    #
+    #     try:
+    #         p2 = buffer_client.transform(p1, "b", timeout=rclpy.time.Duration(seconds=1),
+    #                                      new_type = PyKDL.Vector)
+    #         self.node.get_logger().info("p1: %s, p2: %s" % (str(p1), str(p2)))
+    #     except tf2.TransformException as e:
+    #         self.node.get_logger().error("%s" % e)
+
 
 if __name__ == '__main__':
-    rospy.init_node("test_buffer_client")
-    import rostest
-    rostest.rosrun(PKG, 'test_buffer_client', TestBufferClient)
+    rclpy.init(args=sys.argv)
+    sys.argv = [sys.argv[0]]
+    unittest.main()

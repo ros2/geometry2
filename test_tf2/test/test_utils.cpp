@@ -13,10 +13,9 @@
 // limitations under the License.
 
 #include <gtest/gtest.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2/utils.h>
 #include <tf2_kdl/tf2_kdl.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <ros/time.h>
 
 double epsilon = 1e-9;
 
@@ -24,7 +23,7 @@ template<typename T>
 void yprTest(const T& t, double yaw1, double pitch1, double roll1) {
   double yaw2, pitch2, roll2;
 
-  tf2::getEulerYPR(t, yaw2, pitch2, roll2);  
+  tf2::getEulerYPR(t, yaw2, pitch2, roll2);
 
   EXPECT_NEAR(yaw1, yaw2, epsilon);
   EXPECT_NEAR(pitch1, pitch2, epsilon);
@@ -44,33 +43,34 @@ TEST(tf2Utils, yaw)
   // Compute results one way with KDL
   KDL::Rotation::Quaternion(x, y, z, w).GetRPY(roll1, pitch1, yaw1);
   {
-    // geometry_msgs::Quaternion
-    geometry_msgs::Quaternion q;
+    // geometry_msgs::msg::Quaternion
+    geometry_msgs::msg::Quaternion q;
     q.x = x; q.y =y; q.z = z; q.w = w;
     yprTest(q, yaw1, pitch1, roll1);
 
-    // geometry_msgs::QuaternionStamped
-    geometry_msgs::QuaternionStamped qst;
+    // geometry_msgs::msg::QuaternionStamped
+    geometry_msgs::msg::QuaternionStamped qst;
     qst.quaternion = q;
     yprTest(qst, yaw1, pitch1, roll1);
   }
 
-  
+
   {
     // tf2::Quaternion
     tf2::Quaternion q(x, y, z, w);
     yprTest(q, yaw1, pitch1, roll1);
 
-    // tf2::Stamped<tf2::Quaternion>
-    tf2::Stamped<tf2::Quaternion> sq;
-    sq.setData(q);
-    yprTest(sq, yaw1, pitch1, roll1);
+    // TODO (ahcorde): This PR fix this issue https://github.com/ros/geometry2/pull/357
+    // // tf2::Stamped<tf2::Quaternion>
+    // tf2::Stamped<tf2::Quaternion> sq;
+    // sq.setData(q);
+    // yprTest(sq, yaw1, pitch1, roll1);
   }
 }
 
 TEST(tf2Utils, identity)
 {
-  geometry_msgs::Transform t;
+  geometry_msgs::msg::Transform t;
   t.translation.x = 0.1;
   t.translation.y = 0.2;
   t.translation.z = 0.3;
@@ -80,7 +80,7 @@ TEST(tf2Utils, identity)
   t.rotation.w = 0.7;
 
   // Test identity
-  t = tf2::getTransformIdentity<geometry_msgs::Transform>();
+  t = tf2::getTransformIdentity<geometry_msgs::msg::Transform>();
 
   EXPECT_EQ(t.translation.x, 0);
   EXPECT_EQ(t.translation.y, 0);
@@ -96,4 +96,3 @@ int main(int argc, char** argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

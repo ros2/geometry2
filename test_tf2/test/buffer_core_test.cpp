@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2008, Willow Garage, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  *     * Neither the name of the Willow Garage, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,19 +27,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if _WIN32
+#define _USE_MATH_DEFINES
+#include <cmath>
+#endif
+
 #include <gtest/gtest.h>
 #include <tf2/buffer_core.h>
 #include "tf2/exceptions.h"
 #include <chrono>
-#include <ros/ros.h>
-#include "LinearMath/btVector3.h"
-#include "LinearMath/btTransform.h"
-#include "rostest/permuter.h"
+#include "rclcpp/rclcpp.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include "permuter.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/exceptions.h"
 
 void seed_rand()
 {
   //Seed random number generator with current time.
-  srand(std::chrono::system_clock::now().time_since_epoch().count());
+  srand((unsigned) time(0));
 };
 
 void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xvalues, std::vector<double>& yvalues, std::vector<double>&zvalues)
@@ -54,7 +60,7 @@ void generate_rand_vectors(double scale, uint64_t runs, std::vector<double>& xva
 }
 
 
-void setIdentity(geometry_msgs::Transform& trans) 
+void setIdentity(geometry_msgs::msg::Transform& trans)
 {
   trans.translation.x = 0;
   trans.translation.y = 0;
@@ -66,17 +72,17 @@ void setIdentity(geometry_msgs::Transform& trans)
 }
 
 
-void push_back_i(std::vector<std::string>& children, std::vector<std::string>& parents, 
+void push_back_i(std::vector<std::string>& children, std::vector<std::string>& parents,
                  std::vector<double>& dx, std::vector<double>& dy)
 {
-  /* 
+  /*
      "a"
      v   (1,0)
      "b"
      v   (1,0)
      "c"
   */
-    
+
   children.push_back("b");
   parents.push_back("a");
   dx.push_back(1.0);
@@ -88,7 +94,7 @@ void push_back_i(std::vector<std::string>& children, std::vector<std::string>& p
 }
 
 
-void push_back_y(std::vector<std::string>& children, std::vector<std::string>& parents, 
+void push_back_y(std::vector<std::string>& children, std::vector<std::string>& parents,
                  std::vector<double>& dx, std::vector<double>& dy)
 {
     /*
@@ -120,13 +126,13 @@ void push_back_y(std::vector<std::string>& children, std::vector<std::string>& p
     dy.push_back(1.0);
 }
 
-void push_back_v(std::vector<std::string>& children, std::vector<std::string>& parents, 
+void push_back_v(std::vector<std::string>& children, std::vector<std::string>& parents,
                  std::vector<double>& dx, std::vector<double>& dy)
 {
   /*
     "a" ------(0,1)-----> "f"
     v  (1,0)              v  (0,1)
-    "b"                   "g" 
+    "b"                   "g"
     v  (1,0)
     "c"
   */
@@ -153,7 +159,7 @@ void push_back_v(std::vector<std::string>& children, std::vector<std::string>& p
 
 }
 
-void push_back_1(std::vector<std::string>& children, std::vector<std::string>& parents, 
+void push_back_1(std::vector<std::string>& children, std::vector<std::string>& parents,
                  std::vector<double>& dx, std::vector<double>& dy)
 {
   children.push_back("2");
@@ -162,17 +168,15 @@ void push_back_1(std::vector<std::string>& children, std::vector<std::string>& p
   dy.push_back(0.0);
 }
 
-void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_interfaces::msg::Time & time, const tf2::Duration& interpolation_space = tf2::durationFromSec())
+void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_interfaces::msg::Time & time, const tf2::Duration& interpolation_space = tf2::durationFromSec(0.0))
 {
-  ROS_DEBUG("Clearing Buffer Core for new test setup");
+
   mBC.clear();
-  
-  ROS_DEBUG("Setting up test tree for formation %s", mode.c_str());
 
   std::vector<std::string> children;
   std::vector<std::string> parents;
   std::vector<double> dx, dy;
-  
+
   if (mode == "i")
   {
     push_back_i(children, parents, dx, dy);
@@ -192,9 +196,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     /* Form a ring of transforms at every 45 degrees on the unit circle.  */
 
     std::vector<std::string> frames;
-        
 
-    
     frames.push_back("a");
     frames.push_back("b");
     frames.push_back("c");
@@ -204,7 +206,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     frames.push_back("g");
     frames.push_back("h");
     frames.push_back("i");
-    
+
     for (uint8_t iteration = 0; iteration < 2; ++iteration)
     {
       double direction = 1;
@@ -215,10 +217,12 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         direction = -1;
       }
       else
+      {
         frame_prefix ="";
+      }
       for (uint64_t i = 1; i <  frames.size(); i++)
       {
-        geometry_msgs::TransformStamped ts;
+        geometry_msgs::msg::TransformStamped ts;
         setIdentity(ts.transform);
         ts.transform.translation.x = direction * ( sqrt(2)/2 - 1);
         ts.transform.translation.y = direction * sqrt(2)/2;
@@ -226,11 +230,20 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         ts.transform.rotation.y = 0;
         ts.transform.rotation.z = sin(direction * M_PI/8);
         ts.transform.rotation.w = cos(direction * M_PI/8);
-        if (time > builtin_interfaces::msg::Time() + (interpolation_space * .5))
-          ts.header.stamp = time - (interpolation_space * .5);
+
+        double time_seconds = time.sec + time.nanosec / 1e9;
+        double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
+
+        if (time_seconds > time_interpolation_space )
+        {
+          double time_stamp = time_seconds - time_interpolation_space;
+          ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
+        }
         else
+        {
           ts.header.stamp = builtin_interfaces::msg::Time();
-            
+        }
+
         ts.header.frame_id = frame_prefix + frames[i-1];
         if (i > 1)
           ts.child_frame_id = frame_prefix + frames[i];
@@ -239,19 +252,19 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         EXPECT_TRUE(mBC.setTransform(ts, "authority"));
         if (interpolation_space > tf2::Duration())
         {
-          ts.header.stamp = time + interpolation_space * .5;
+          // TODO (ahcorde): review this
+          double time_stamp = time_seconds;// + time_interpolation_space;
+          ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
           EXPECT_TRUE(mBC.setTransform(ts, "authority"));
-        
         }
       }
     }
     return; // nonstandard setup return before standard executinog
-  }  
+  }
   else if (mode == "1")
   {
     push_back_1(children, parents, dx, dy);
-    
-  }  
+  }
   else if (mode =="1_v")
   {
     push_back_1(children, parents, dx, dy);
@@ -261,26 +274,33 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     EXPECT_FALSE("Undefined mode for tree setup.  Test harness improperly setup.");
 
 
-  /// Standard 
+  /// Standard
   for (uint64_t i = 0; i <  children.size(); i++)
   {
-    geometry_msgs::TransformStamped ts;
+    geometry_msgs::msg::TransformStamped ts;
     setIdentity(ts.transform);
     ts.transform.translation.x = dx[i];
     ts.transform.translation.y = dy[i];
-    if (time > builtin_interfaces::msg::Time() + (interpolation_space * .5))
-      ts.header.stamp = time - (interpolation_space * .5);
+    double time_seconds = time.sec +  time.nanosec / 1e9;
+    double time_interpolation_space = tf2::durationToSec(interpolation_space) * .5;
+    if (time_seconds > time_interpolation_space ){
+      double time_stamp = time_seconds - time_interpolation_space;
+      ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
+    }
     else
+    {
       ts.header.stamp = builtin_interfaces::msg::Time();
-            
+    }
+
     ts.header.frame_id = parents[i];
     ts.child_frame_id = children[i];
     EXPECT_TRUE(mBC.setTransform(ts, "authority"));
     if (interpolation_space > tf2::Duration())
     {
-      ts.header.stamp = time + interpolation_space * .5;
+      // TODO (ahcorde): review this
+      double time_stamp = time_seconds;// + time_interpolation_space;
+      ts.header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp*1e9));
       EXPECT_TRUE(mBC.setTransform(ts, "authority"));
-      
     }
   }
 }
@@ -289,9 +309,9 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
 TEST(BufferCore_setTransform, NoInsertOnSelfTransform)
 {
   tf2::BufferCore mBC;
-  geometry_msgs::TransformStamped tranStamped;
+  geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = builtin_interfaces::msg::Time().fromNSec(10.0);
+  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "same_frame";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -300,24 +320,23 @@ TEST(BufferCore_setTransform, NoInsertOnSelfTransform)
 TEST(BufferCore_setTransform, NoInsertWithNan)
 {
   tf2::BufferCore mBC;
-  geometry_msgs::TransformStamped tranStamped;
+  geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = builtin_interfaces::msg::Time().fromNSec(10.0);
+  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "other_frame";
   EXPECT_TRUE(mBC.setTransform(tranStamped, "authority"));
-  tranStamped.transform.translation.x = 0.0/0.0;
+  tranStamped.transform.translation.x = std::numeric_limits<float>::quiet_NaN();
   EXPECT_TRUE(std::isnan(tranStamped.transform.translation.x));
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
-
 }
 
 TEST(BufferCore_setTransform, NoInsertWithNoFrameID)
 {
   tf2::BufferCore mBC;
-  geometry_msgs::TransformStamped tranStamped;
+  geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = builtin_interfaces::msg::Time().fromNSec(10.0);
+  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -329,9 +348,9 @@ TEST(BufferCore_setTransform, NoInsertWithNoFrameID)
 TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 {
   tf2::BufferCore mBC;
-  geometry_msgs::TransformStamped tranStamped;
+  geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = builtin_interfaces::msg::Time().fromNSec(10.0);
+  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "";
   tranStamped.child_frame_id = "some_frame";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -340,295 +359,291 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
 }
 
-/*
-TEST(tf, ListOneInverse)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( uint64_t i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped (btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
-    mTR.setTransform(tranStamped);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( uint64_t i = 0; i < runs ; i++ )
-
-  {
-    Stamped<Pose> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "child");
-
-    try{
-    Stamped<Pose> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("my_parent",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
-      bool exception_improperly_thrown = true;
-      EXPECT_FALSE(exception_improperly_thrown);
-    }
-  }
-  
-}
-
-TEST(tf, ListTwoInverse)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( unsigned int i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
-    mTR.setTransform(tranStamped);
-    StampedTransform tranStamped2(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "child", "grandchild");
-    mTR.setTransform(tranStamped2);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( unsigned int i = 0; i < runs ; i++ )
-
-  {
-    Stamped<Pose> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "grandchild");
-
-    try{
-    Stamped<Pose> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("my_parent",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), 2*xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), 2*yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), 2*zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
-      bool exception_improperly_thrown = true;
-      EXPECT_FALSE(exception_improperly_thrown);
-    }
-  }
-  
-}
-
-
-TEST(tf, ListOneForward)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( uint64_t i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
-    mTR.setTransform(tranStamped);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( uint64_t i = 0; i < runs ; i++ )
-
-  {
-    Stamped<Pose> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "my_parent");
-
-    try{
-    Stamped<Pose> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("child",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), -xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), -yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), -zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
-      bool exception_improperly_thrown = true;
-      EXPECT_FALSE(exception_improperly_thrown);
-    }
-  }
-  
-}
-
-TEST(tf, ListTwoForward)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( unsigned int i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
-    mTR.setTransform(tranStamped);
-    StampedTransform tranStamped2(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "child", "grandchild");
-    mTR.setTransform(tranStamped2);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( unsigned int i = 0; i < runs ; i++ )
-
-  {
-    Stamped<Pose> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "my_parent");
-
-    try{
-    Stamped<Pose> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("grandchild",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), -2*xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), -2*yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), -2*zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
-      bool exception_improperly_thrown = true;
-      EXPECT_FALSE(exception_improperly_thrown);
-    }
-  }
-  
-}
-
-TEST(tf, TransformThrougRoot)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( unsigned int i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(1000 + i*100),  "my_parent", "childA");
-    mTR.setTransform(tranStamped);
-    StampedTransform tranStamped2(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(1000 + i*100),  "my_parent", "childB");
-    mTR.setTransform(tranStamped2);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( unsigned int i = 0; i < runs ; i++ )
-
-  {
-    Stamped<Pose> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000 + i*100), "childA");
-
-    try{
-    Stamped<Pose> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("childB",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), 0*xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), 0*yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), 0*zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
-      bool exception_improperly_thrown = true;
-      EXPECT_FALSE(exception_improperly_thrown);
-    }
-  }
-  
-}
-
-TEST(tf, TransformThroughNO_PARENT)
-{
-  unsigned int runs = 4;
-  double epsilon = 1e-6;
-  seed_rand();
-  
-  tf::Transformer mTR(true);
-  std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
-  for ( unsigned int i = 0; i < runs ; i++ )
-  {
-    xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-    zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
-
-    StampedTransform tranStamped(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parentA", "childA");
-    mTR.setTransform(tranStamped);
-    StampedTransform tranStamped2(btTransform(btQuaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parentB", "childB");
-    mTR.setTransform(tranStamped2);
-  }
-
-  //  std::cout << mTR.allFramesAsString() << std::endl;
-  //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
-
-  for ( unsigned int i = 0; i < runs ; i++ )
-
-  {
-    Stamped<btTransform> inpose (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "childA");
-    bool exception_thrown = false;
-
-    try{
-    Stamped<btTransform> outpose;
-    outpose.setIdentity(); //to make sure things are getting mutated
-    mTR.transformPose("childB",inpose, outpose);
-    EXPECT_NEAR(outpose.getOrigin().x(), 0*xvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().y(), 0*yvalues[i], epsilon);
-    EXPECT_NEAR(outpose.getOrigin().z(), 0*zvalues[i], epsilon);
-    }
-    catch (tf::TransformException & ex)
-    {
-      exception_thrown = true;
-    }
-    EXPECT_TRUE(exception_thrown);
-  }
-  
-}
-
-*/
-
+// /*
+// TEST(tf, ListOneInverse)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( uint64_t i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped (btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
+//     mTR.setTransform(tranStamped);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( uint64_t i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<Pose> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "child");
+//
+//     try{
+//     Stamped<Pose> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("my_parent",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       bool exception_improperly_thrown = true;
+//       EXPECT_FALSE(exception_improperly_thrown);
+//     }
+//   }
+//
+// }
+//
+// TEST(tf, ListTwoInverse)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
+//     mTR.setTransform(tranStamped);
+//     StampedTransform tranStamped2(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "child", "grandchild");
+//     mTR.setTransform(tranStamped2);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<Pose> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "grandchild");
+//
+//     try{
+//     Stamped<Pose> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("my_parent",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), 2*xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), 2*yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), 2*zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       bool exception_improperly_thrown = true;
+//       EXPECT_FALSE(exception_improperly_thrown);
+//     }
+//   }
+//
+// }
+//
+//
+// TEST(tf, ListOneForward)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( uint64_t i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
+//     mTR.setTransform(tranStamped);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( uint64_t i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<Pose> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "my_parent");
+//
+//     try{
+//     Stamped<Pose> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("child",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), -xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), -yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), -zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       bool exception_improperly_thrown = true;
+//       EXPECT_FALSE(exception_improperly_thrown);
+//     }
+//   }
+//
+// }
+//
+// TEST(tf, ListTwoForward)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parent", "child");
+//     mTR.setTransform(tranStamped);
+//     StampedTransform tranStamped2(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "child", "grandchild");
+//     mTR.setTransform(tranStamped2);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<Pose> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "my_parent");
+//
+//     try{
+//     Stamped<Pose> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("grandchild",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), -2*xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), -2*yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), -2*zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       bool exception_improperly_thrown = true;
+//       EXPECT_FALSE(exception_improperly_thrown);
+//     }
+//   }
+//
+// }
+//
+// TEST(tf, TransformThrougRoot)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(1000 + i*100),  "my_parent", "childA");
+//     mTR.setTransform(tranStamped);
+//     StampedTransform tranStamped2(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(1000 + i*100),  "my_parent", "childB");
+//     mTR.setTransform(tranStamped2);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<Pose> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000 + i*100), "childA");
+//
+//     try{
+//     Stamped<Pose> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("childB",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), 0*xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), 0*yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), 0*zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       bool exception_improperly_thrown = true;
+//       EXPECT_FALSE(exception_improperly_thrown);
+//     }
+//   }
+//
+// }
+//
+// TEST(tf, TransformThroughNO_PARENT)
+// {
+//   unsigned int runs = 4;
+//   double epsilon = 1e-6;
+//   seed_rand();
+//
+//   tf::Transformer mTR(true);
+//   std::vector<double> xvalues(runs), yvalues(runs), zvalues(runs);
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//   {
+//     xvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     yvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//     zvalues[i] = 10.0 * ((double) rand() - (double)RAND_MAX /2.0) /(double)RAND_MAX;
+//
+//     StampedTransform tranStamped(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parentA", "childA");
+//     mTR.setTransform(tranStamped);
+//     StampedTransform tranStamped2(btTransform(tf2::Quaternion(0,0,0,1), btVector3(xvalues[i],yvalues[i],zvalues[i])), builtin_interfaces::msg::Time().fromNSec(10 + i),  "my_parentB", "childB");
+//     mTR.setTransform(tranStamped2);
+//   }
+//
+//   //  std::cout << mTR.allFramesAsString() << std::endl;
+//   //  std::cout << mTR.chainAsString("child", 0, "my_parent2", 0, "my_parent2") << std::endl;
+//
+//   for ( unsigned int i = 0; i < runs ; i++ )
+//
+//   {
+//     Stamped<btTransform> inpose (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10 + i), "childA");
+//     bool exception_thrown = false;
+//
+//     try{
+//     Stamped<btTransform> outpose;
+//     outpose.setIdentity(); //to make sure things are getting mutated
+//     mTR.transformPose("childB",inpose, outpose);
+//     EXPECT_NEAR(outpose.getOrigin().x(), 0*xvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().y(), 0*yvalues[i], epsilon);
+//     EXPECT_NEAR(outpose.getOrigin().z(), 0*zvalues[i], epsilon);
+//     }
+//     catch (tf::TransformException & ex)
+//     {
+//       exception_thrown = true;
+//     }
+//     EXPECT_TRUE(exception_thrown);
+//   }
+//
+// }
+//
+// */
 
 TEST(BufferCore_lookupTransform, i_configuration)
 {
   double epsilon = 1e-6;
-  
-
 
   rostest::Permuter permuter;
-
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -637,7 +652,7 @@ TEST(BufferCore_lookupTransform, i_configuration)
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
   tf2::Duration interpolation_space;
-  //  permuter.addOptionSet(durations, &interpolation_space);
+  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
   frames.push_back("a");
@@ -645,18 +660,19 @@ TEST(BufferCore_lookupTransform, i_configuration)
   frames.push_back("c");
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
-  while  (permuter.step())
+  while(permuter.step())
   {
-
     tf2::BufferCore mBC;
     setupTree(mBC, "i", eval_time, interpolation_space);
 
-    geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());  
+    tf2::TimePoint eval_time_time_point = tf2_ros::fromMsg(eval_time);
+
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
+
     EXPECT_EQ(outpose.header.stamp, eval_time);
     EXPECT_EQ(outpose.header.frame_id, source_frame);
     EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -666,7 +682,7 @@ TEST(BufferCore_lookupTransform, i_configuration)
     EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
     EXPECT_NEAR(outpose.transform.rotation.z, 0, epsilon);
     EXPECT_NEAR(outpose.transform.rotation.w, 1, epsilon);
-    
+
     //Zero distance
     if (source_frame == target_frame)
     {
@@ -693,16 +709,14 @@ TEST(BufferCore_lookupTransform, i_configuration)
     else
     {
       EXPECT_FALSE("i configuration: Shouldn't get here");
-      printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
+      printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.sec + eval_time.nanosec /1e9 );
     }
-    
   }
 }
 
 /* Check 1 result return false if test parameters unmet */
-bool check_1_result(const geometry_msgs::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
+bool check_1_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());  
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -712,7 +726,7 @@ bool check_1_result(const geometry_msgs::TransformStamped& outpose, const std::s
   EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.z, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.w, 1, epsilon);
-    
+
   //Zero distance
   if (source_frame == target_frame)
   {
@@ -728,16 +742,14 @@ bool check_1_result(const geometry_msgs::TransformStamped& outpose, const std::s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
 }
 
 /* Check v result return false if test parameters unmet */
-bool check_v_result(const geometry_msgs::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
+bool check_v_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());  
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -746,7 +758,7 @@ bool check_v_result(const geometry_msgs::TransformStamped& outpose, const std::s
   EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.z, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.w, 1, epsilon);
-    
+
   //Zero distance
   if (source_frame == target_frame)
   {
@@ -838,16 +850,14 @@ bool check_v_result(const geometry_msgs::TransformStamped& outpose, const std::s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
 }
 
 /* Check v result return false if test parameters unmet */
-bool check_y_result(const geometry_msgs::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
+bool check_y_result(const geometry_msgs::msg::TransformStamped& outpose, const std::string& source_frame, const std::string& target_frame, const builtin_interfaces::msg::Time& eval_time, double epsilon)
 {
-  //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());  
   EXPECT_EQ(outpose.header.stamp, eval_time);
   EXPECT_EQ(outpose.header.frame_id, source_frame);
   EXPECT_EQ(outpose.child_frame_id, target_frame);
@@ -856,7 +866,7 @@ bool check_y_result(const geometry_msgs::TransformStamped& outpose, const std::s
   EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.z, 0, epsilon);
   EXPECT_NEAR(outpose.transform.rotation.w, 1, epsilon);
-    
+
   //Zero distance
   if (source_frame == target_frame)
   {
@@ -948,7 +958,6 @@ bool check_y_result(const geometry_msgs::TransformStamped& outpose, const std::s
   }
   else
   {
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
     return false;
   }
   return true;
@@ -958,15 +967,13 @@ bool check_y_result(const geometry_msgs::TransformStamped& outpose, const std::s
 TEST(BufferCore_lookupTransform, one_link_configuration)
 {
   double epsilon = 1e-6;
-  
-
 
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -975,14 +982,14 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
   tf2::Duration interpolation_space;
-  //  permuter.addOptionSet(durations, &interpolation_space);
+  // permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
   frames.push_back("1");
   frames.push_back("2");
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
@@ -992,7 +999,7 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "1", eval_time, interpolation_space);
 
-    geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_1_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1002,15 +1009,13 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
 TEST(BufferCore_lookupTransform, v_configuration)
 {
   double epsilon = 1e-6;
-  
-
 
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1029,7 +1034,7 @@ TEST(BufferCore_lookupTransform, v_configuration)
   frames.push_back("g");
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
@@ -1039,7 +1044,7 @@ TEST(BufferCore_lookupTransform, v_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "v", eval_time, interpolation_space);
 
-    geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_v_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1049,15 +1054,13 @@ TEST(BufferCore_lookupTransform, v_configuration)
 TEST(BufferCore_lookupTransform, y_configuration)
 {
   double epsilon = 1e-6;
-  
-
 
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1076,7 +1079,7 @@ TEST(BufferCore_lookupTransform, y_configuration)
   frames.push_back("e");
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
@@ -1086,7 +1089,7 @@ TEST(BufferCore_lookupTransform, y_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "y", eval_time, interpolation_space);
 
-    geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
     EXPECT_TRUE(check_y_result(outpose, source_frame, target_frame, eval_time, epsilon));
   }
@@ -1095,15 +1098,13 @@ TEST(BufferCore_lookupTransform, y_configuration)
 TEST(BufferCore_lookupTransform, multi_configuration)
 {
   double epsilon = 1e-6;
-  
-
 
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1124,7 +1125,7 @@ TEST(BufferCore_lookupTransform, multi_configuration)
   frames.push_back("g");
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
@@ -1134,33 +1135,33 @@ TEST(BufferCore_lookupTransform, multi_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "1_v", eval_time, interpolation_space);
 
-    if (mBC.canTransform(source_frame, target_frame, eval_time))
+    if (mBC.canTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time)))
     {
-      geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
-      
+      geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
+
       if ((source_frame == "1" || source_frame =="2") && (target_frame =="1" || target_frame == "2"))
         EXPECT_TRUE(check_1_result(outpose, source_frame, target_frame, eval_time, epsilon));
-      else if ((source_frame == "a" || source_frame == "b" || source_frame == "c" || source_frame == "f" || source_frame == "g") && 
+      else if ((source_frame == "a" || source_frame == "b" || source_frame == "c" || source_frame == "f" || source_frame == "g") &&
                (target_frame == "a" || target_frame == "b" || target_frame == "c" || target_frame == "f" || target_frame == "g"))
         EXPECT_TRUE(check_v_result(outpose, source_frame, target_frame, eval_time, epsilon));
       else
         EXPECT_FALSE("Frames unhandled");
     }
     else
-      EXPECT_TRUE(((source_frame == "a" || source_frame =="b" || source_frame == "c" || source_frame == "f" || source_frame == "g") && 
+      EXPECT_TRUE(((source_frame == "a" || source_frame =="b" || source_frame == "c" || source_frame == "f" || source_frame == "g") &&
                    (target_frame == "1" || target_frame == "2") )
-                  || 
-                  ((target_frame == "a" || target_frame =="b" || target_frame == "c" || target_frame == "f" || target_frame == "g") && 
+                  ||
+                  ((target_frame == "a" || target_frame =="b" || target_frame == "c" || target_frame == "f" || target_frame == "g") &&
                    (source_frame == "1" || source_frame == "2"))
                   );
-      
-  }      
+
+  }
 }
 
 #define CHECK_QUATERNION_NEAR(_q1, _x, _y, _z, _w, _epsilon)                 \
 	   {                        											 \
-	   btQuaternion q1(_q1.x, _q1.y, _q1.z, _q1.w);                          \
-       btQuaternion q2(_x, _y, _z, _w);                                      \
+	   tf2::Quaternion q1(_q1.x, _q1.y, _q1.z, _q1.w);                          \
+       tf2::Quaternion q2(_x, _y, _z, _w);                                      \
        double angle = q1.angle(q2);                                          \
 	   EXPECT_TRUE(fabs(angle) < _epsilon || fabs(angle - M_PI) < _epsilon); \
 	   }
@@ -1170,258 +1171,264 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 	EXPECT_NEAR(_out.transform.translation.y, _expected.getOrigin().y(), epsilon); 															                        			\
 	EXPECT_NEAR(_out.transform.translation.z, _expected.getOrigin().z(), epsilon); 													            	             				\
 	CHECK_QUATERNION_NEAR(_out.transform.rotation, _expected.getRotation().x(), _expected.getRotation().y(), _expected.getRotation().z(), _expected.getRotation().w(), _eps);
+//
+// // TODO(ahcorde): btTransform
+// // Simple test with compound transform
+// TEST(BufferCore_lookupTransform, compound_xfm_configuration)
+// {
+// 	/*
+// 	 * Frames
+// 	 *
+// 	 * root->a
+// 	 *
+// 	 * root->b->c->d
+// 	 *
+// 	 */
+//
+// 	double epsilon = 2e-5; // Larger epsilon for interpolation values
+//
+//     tf2::BufferCore mBC;
+//
+//     geometry_msgs::msg::TransformStamped tsa;
+//     tsa.header.frame_id = "root";
+//     tsa.child_frame_id  = "a";
+//     tsa.transform.translation.x = 1.0;
+//     tsa.transform.translation.y = 1.0;
+//     tsa.transform.translation.z = 1.0;
+//     tf2::Quaternion q1;
+//     q1.setEuler(0.25, .5, .75);
+//     tsa.transform.rotation.x = q1.x();
+//     tsa.transform.rotation.y = q1.y();
+//     tsa.transform.rotation.z = q1.z();
+//     tsa.transform.rotation.w = q1.w();
+//     EXPECT_TRUE(mBC.setTransform(tsa, "authority"));
+//
+//     geometry_msgs::msg::TransformStamped tsb;
+//     tsb.header.frame_id = "root";
+//     tsb.child_frame_id  = "b";
+//     tsb.transform.translation.x = -1.0;
+//     tsb.transform.translation.y =  0.0;
+//     tsb.transform.translation.z = -1.0;
+//     tf2::Quaternion q2;
+//     q2.setEuler(1.0, 0.25, 0.5);
+//     tsb.transform.rotation.x = q2.x();
+//     tsb.transform.rotation.y = q2.y();
+//     tsb.transform.rotation.z = q2.z();
+//     tsb.transform.rotation.w = q2.w();
+//     EXPECT_TRUE(mBC.setTransform(tsb, "authority"));
+//
+//     geometry_msgs::msg::TransformStamped tsc;
+//     tsc.header.frame_id = "b";
+//     tsc.child_frame_id  = "c";
+//     tsc.transform.translation.x =  0.0;
+//     tsc.transform.translation.y =  2.0;
+//     tsc.transform.translation.z =  0.5;
+//     tf2::Quaternion q3;
+//     q3.setEuler(0.25, .75, 1.25);
+//     tsc.transform.rotation.x = q3.x();
+//     tsc.transform.rotation.y = q3.y();
+//     tsc.transform.rotation.z = q3.z();
+//     tsc.transform.rotation.w = q3.w();
+//     EXPECT_TRUE(mBC.setTransform(tsc, "authority"));
+//
+//     geometry_msgs::msg::TransformStamped tsd;
+//     tsd.header.frame_id = "c";
+//     tsd.child_frame_id  = "d";
+//     tsd.transform.translation.x =  0.5;
+//     tsd.transform.translation.y =  -1;
+//     tsd.transform.translation.z =  1.5;
+//     tf2::Quaternion q4;
+//     q4.setEuler(-0.5, 1.0, -.75);
+//     tsd.transform.rotation.x = q4.x();
+//     tsd.transform.rotation.y = q4.y();
+//     tsd.transform.rotation.z = q4.z();
+//     tsd.transform.rotation.w = q4.w();
+//     EXPECT_TRUE(mBC.setTransform(tsd, "authority"));
+//
+//     btTransform ta, tb, tc, td, expected_ab, expected_bc, expected_cb, expected_ac, expected_ba, expected_ca, expected_ad, expected_da, expected_bd, expected_db, expected_rootd, expected_rootc;
+//     ta.setOrigin(btVector3(1.0,  1.0,  1.0));
+//     ta.setRotation(q1);
+//     tb.setOrigin(btVector3(-1.0, 0.0, -1.0));
+//     tb.setRotation(q2);
+//     tc.setOrigin(btVector3(0.0, 2.0, 0.5));
+//     tc.setRotation(q3);
+//     td.setOrigin(btVector3(0.5, -1, 1.5));
+//     td.setRotation(q4);
+//
+//
+//     expected_ab = ta.inverse() * tb;
+//     expected_ac = ta.inverse() * tb * tc;
+//     expected_ad = ta.inverse() * tb * tc * td;
+//     expected_cb = tc.inverse();
+//     expected_bc = tc;
+//     expected_bd = tc * td;
+//     expected_db = expected_bd.inverse();
+//     expected_ba = tb.inverse() * ta;
+//     expected_ca = tc.inverse() * tb.inverse() * ta;
+//     expected_da = td.inverse() * tc.inverse() * tb.inverse() * ta;
+//     expected_rootd = tb * tc * td;
+//     expected_rootc = tb * tc;
+//
+//     // root -> b -> c
+//     geometry_msgs::msg::TransformStamped out_rootc = mBC.lookupTransform("root", "c", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_rootc, expected_rootc, epsilon);
+//
+//     // root -> b -> c -> d
+//     geometry_msgs::msg::TransformStamped out_rootd = mBC.lookupTransform("root", "d", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_rootd, expected_rootd, epsilon);
+//
+//     // a <- root -> b
+//     geometry_msgs::msg::TransformStamped out_ab = mBC.lookupTransform("a", "b", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_ab, expected_ab, epsilon);
+//
+//     geometry_msgs::msg::TransformStamped out_ba = mBC.lookupTransform("b", "a", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_ba, expected_ba, epsilon);
+//
+//     // a <- root -> b -> c
+//     geometry_msgs::msg::TransformStamped out_ac = mBC.lookupTransform("a", "c", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_ac, expected_ac, epsilon);
+//
+//     geometry_msgs::msg::TransformStamped out_ca = mBC.lookupTransform("c", "a", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_ca, expected_ca, epsilon);
+//
+//     // a <- root -> b -> c -> d
+//     geometry_msgs::msg::TransformStamped out_ad = mBC.lookupTransform("a", "d", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_ad, expected_ad, epsilon);
+//
+//     geometry_msgs::msg::TransformStamped out_da = mBC.lookupTransform("d", "a", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_da, expected_da, epsilon);
+//
+//     // b -> c
+//     geometry_msgs::msg::TransformStamped out_cb = mBC.lookupTransform("c", "b", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_cb, expected_cb, epsilon);
+//
+//     geometry_msgs::msg::TransformStamped out_bc = mBC.lookupTransform("b", "c", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_bc, expected_bc, epsilon);
+//
+//     // b -> c -> d
+//     geometry_msgs::msg::TransformStamped out_bd = mBC.lookupTransform("b", "d", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_bd, expected_bd, epsilon);
+//
+//     geometry_msgs::msg::TransformStamped out_db = mBC.lookupTransform("d", "b", builtin_interfaces::msg::Time());
+//     CHECK_TRANSFORMS_NEAR(out_db, expected_db, epsilon);
+// }
 
-
-// Simple test with compound transform
-TEST(BufferCore_lookupTransform, compound_xfm_configuration)
-{
-	/*
-	 * Frames
-	 *
-	 * root->a
-	 *
-	 * root->b->c->d
-	 *
-	 */
-
-	double epsilon = 2e-5; // Larger epsilon for interpolation values
-
-    tf2::BufferCore mBC;
-
-    geometry_msgs::TransformStamped tsa;
-    tsa.header.frame_id = "root";
-    tsa.child_frame_id  = "a";
-    tsa.transform.translation.x = 1.0;
-    tsa.transform.translation.y = 1.0;
-    tsa.transform.translation.z = 1.0;
-    btQuaternion q1;
-    q1.setEuler(0.25, .5, .75);
-    tsa.transform.rotation.x = q1.x();
-    tsa.transform.rotation.y = q1.y();
-    tsa.transform.rotation.z = q1.z();
-    tsa.transform.rotation.w = q1.w();
-    EXPECT_TRUE(mBC.setTransform(tsa, "authority"));
-
-    geometry_msgs::TransformStamped tsb;
-    tsb.header.frame_id = "root";
-    tsb.child_frame_id  = "b";
-    tsb.transform.translation.x = -1.0;
-    tsb.transform.translation.y =  0.0;
-    tsb.transform.translation.z = -1.0;
-    btQuaternion q2;
-    q2.setEuler(1.0, 0.25, 0.5);
-    tsb.transform.rotation.x = q2.x();
-    tsb.transform.rotation.y = q2.y();
-    tsb.transform.rotation.z = q2.z();
-    tsb.transform.rotation.w = q2.w();
-    EXPECT_TRUE(mBC.setTransform(tsb, "authority"));
-
-    geometry_msgs::TransformStamped tsc;
-    tsc.header.frame_id = "b";
-    tsc.child_frame_id  = "c";
-    tsc.transform.translation.x =  0.0;
-    tsc.transform.translation.y =  2.0;
-    tsc.transform.translation.z =  0.5;
-    btQuaternion q3;
-    q3.setEuler(0.25, .75, 1.25);
-    tsc.transform.rotation.x = q3.x();
-    tsc.transform.rotation.y = q3.y();
-    tsc.transform.rotation.z = q3.z();
-    tsc.transform.rotation.w = q3.w();
-    EXPECT_TRUE(mBC.setTransform(tsc, "authority"));
-
-    geometry_msgs::TransformStamped tsd;
-    tsd.header.frame_id = "c";
-    tsd.child_frame_id  = "d";
-    tsd.transform.translation.x =  0.5;
-    tsd.transform.translation.y =  -1;
-    tsd.transform.translation.z =  1.5;
-    btQuaternion q4;
-    q4.setEuler(-0.5, 1.0, -.75);
-    tsd.transform.rotation.x = q4.x();
-    tsd.transform.rotation.y = q4.y();
-    tsd.transform.rotation.z = q4.z();
-    tsd.transform.rotation.w = q4.w();
-    EXPECT_TRUE(mBC.setTransform(tsd, "authority"));
-
-    btTransform ta, tb, tc, td, expected_ab, expected_bc, expected_cb, expected_ac, expected_ba, expected_ca, expected_ad, expected_da, expected_bd, expected_db, expected_rootd, expected_rootc;
-    ta.setOrigin(btVector3(1.0,  1.0,  1.0));
-    ta.setRotation(q1);
-    tb.setOrigin(btVector3(-1.0, 0.0, -1.0));
-    tb.setRotation(q2);
-    tc.setOrigin(btVector3(0.0, 2.0, 0.5));
-    tc.setRotation(q3);
-    td.setOrigin(btVector3(0.5, -1, 1.5));
-    td.setRotation(q4);
-
-
-    expected_ab = ta.inverse() * tb;
-    expected_ac = ta.inverse() * tb * tc;
-    expected_ad = ta.inverse() * tb * tc * td;
-    expected_cb = tc.inverse();
-    expected_bc = tc;
-    expected_bd = tc * td;
-    expected_db = expected_bd.inverse();
-    expected_ba = tb.inverse() * ta;
-    expected_ca = tc.inverse() * tb.inverse() * ta;
-    expected_da = td.inverse() * tc.inverse() * tb.inverse() * ta;
-    expected_rootd = tb * tc * td;
-    expected_rootc = tb * tc;
-
-    // root -> b -> c
-    geometry_msgs::TransformStamped out_rootc = mBC.lookupTransform("root", "c", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_rootc, expected_rootc, epsilon);
-
-    // root -> b -> c -> d
-    geometry_msgs::TransformStamped out_rootd = mBC.lookupTransform("root", "d", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_rootd, expected_rootd, epsilon);
-
-    // a <- root -> b
-    geometry_msgs::TransformStamped out_ab = mBC.lookupTransform("a", "b", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_ab, expected_ab, epsilon);
-
-    geometry_msgs::TransformStamped out_ba = mBC.lookupTransform("b", "a", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_ba, expected_ba, epsilon);
-
-    // a <- root -> b -> c
-    geometry_msgs::TransformStamped out_ac = mBC.lookupTransform("a", "c", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_ac, expected_ac, epsilon);
-
-    geometry_msgs::TransformStamped out_ca = mBC.lookupTransform("c", "a", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_ca, expected_ca, epsilon);
-
-    // a <- root -> b -> c -> d
-    geometry_msgs::TransformStamped out_ad = mBC.lookupTransform("a", "d", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_ad, expected_ad, epsilon);
-
-    geometry_msgs::TransformStamped out_da = mBC.lookupTransform("d", "a", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_da, expected_da, epsilon);
-
-    // b -> c
-    geometry_msgs::TransformStamped out_cb = mBC.lookupTransform("c", "b", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_cb, expected_cb, epsilon);
-
-    geometry_msgs::TransformStamped out_bc = mBC.lookupTransform("b", "c", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_bc, expected_bc, epsilon);
-
-    // b -> c -> d
-    geometry_msgs::TransformStamped out_bd = mBC.lookupTransform("b", "d", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_bd, expected_bd, epsilon);
-
-    geometry_msgs::TransformStamped out_db = mBC.lookupTransform("d", "b", builtin_interfaces::msg::Time());
-    CHECK_TRANSFORMS_NEAR(out_db, expected_db, epsilon);
-}
-
+// TODO(ahcorde)
 // Time varying transforms, testing interpolation
-TEST(BufferCore_lookupTransform, helix_configuration)
-{
-	double epsilon = 2e-5; // Larger epsilon for interpolation values
-
-    tf2::BufferCore mBC;
-
-    builtin_interfaces::msg::Time     t0        = builtin_interfaces::msg::Time() + tf2::durationFromSec(10);
-    tf2::Duration step      = tf2::durationFromSec(0.05);
-    tf2::Duration half_step = tf2::durationFromSec(0.025);
-    builtin_interfaces::msg::Time     t1        = t0 + tf2::durationFromSec(5.0);
-
-    /*
-     * a->b->c
-     *
-     * b.z = vel * (t - t0)
-     * c.x = cos(theta * (t - t0))
-     * c.y = sin(theta * (t - t0))
-     *
-     * a->d
-     *
-     * d.z = 2 * cos(theta * (t - t0))
-     * a->d transforms are at half-step between a->b->c transforms
-     */
-
-    double theta = 0.25;
-    double vel   = 1.0;
-
-    for (builtin_interfaces::msg::Time t = t0; t <= t1; t += step)
-    {
-    	builtin_interfaces::msg::Time t2 = t + half_step;
-    	double dt  = (t - t0).toSec();
-    	double dt2 = (t2 - t0).toSec();
-
-        geometry_msgs::TransformStamped ts;
-        ts.header.frame_id = "a";
-        ts.header.stamp    = t;
-        ts.child_frame_id  = "b";
-        ts.transform.translation.z = vel * dt;
-        ts.transform.rotation.w = 1.0;
-        EXPECT_TRUE(mBC.setTransform(ts, "authority"));
-
-        geometry_msgs::TransformStamped ts2;
-        ts2.header.frame_id = "b";
-        ts2.header.stamp    = t;
-        ts2.child_frame_id  = "c";
-        ts2.transform.translation.x = cos(theta * dt);
-        ts2.transform.translation.y = sin(theta * dt);
-        btQuaternion q;
-        q.setEuler(0,0,theta*dt);
-        ts2.transform.rotation.z = q.z();
-        ts2.transform.rotation.w = q.w();
-        EXPECT_TRUE(mBC.setTransform(ts2, "authority"));
-
-        geometry_msgs::TransformStamped ts3;
-        ts3.header.frame_id = "a";
-        ts3.header.stamp    = t2;
-        ts3.child_frame_id  = "d";
-        ts3.transform.translation.z = cos(theta * dt2);
-        ts3.transform.rotation.w = 1.0;
-        EXPECT_TRUE(mBC.setTransform(ts3, "authority"));
-    }
-
-
-    for (builtin_interfaces::msg::Time t = t0 + half_step; t < t1; t += step)
-    {
-    	builtin_interfaces::msg::Time t2 = t + half_step;
-    	double dt  = (t - t0).toSec();
-    	double dt2 = (t2 - t0).toSec();
-
-        geometry_msgs::TransformStamped out_ab = mBC.lookupTransform("a", "b", t);
-        EXPECT_NEAR(out_ab.transform.translation.z, vel * dt, epsilon);
-
-        geometry_msgs::TransformStamped out_ac = mBC.lookupTransform("a", "c", t);
-        EXPECT_NEAR(out_ac.transform.translation.x, cos(theta * dt), epsilon);
-        EXPECT_NEAR(out_ac.transform.translation.y, sin(theta * dt), epsilon);
-        EXPECT_NEAR(out_ac.transform.translation.z, vel * dt, 		 epsilon);
-        btQuaternion q;
-        q.setEuler(0,0,theta*dt);
-        CHECK_QUATERNION_NEAR(out_ac.transform.rotation, 0, 0, q.z(), q.w(), epsilon);
-
-        geometry_msgs::TransformStamped out_ad = mBC.lookupTransform("a", "d", t);
-        EXPECT_NEAR(out_ad.transform.translation.z, cos(theta * dt), epsilon);
-
-        geometry_msgs::TransformStamped out_cd = mBC.lookupTransform("c", "d", t2);
-        EXPECT_NEAR(out_cd.transform.translation.x, -1,           			      epsilon);
-        EXPECT_NEAR(out_cd.transform.translation.y,  0,  			              epsilon);
-        EXPECT_NEAR(out_cd.transform.translation.z, cos(theta * dt2) - vel * dt2, epsilon);
-        btQuaternion mq;
-        mq.setEuler(0,0,-theta*dt2);
-        CHECK_QUATERNION_NEAR(out_cd.transform.rotation, 0, 0, mq.z(), mq.w(), epsilon);
-    }
-
-    // Advanced API
-    for (builtin_interfaces::msg::Time t = t0 + half_step; t < t1; t += (step + step))
-    {
-    	builtin_interfaces::msg::Time t2 = t + step;
-    	double dt  = (t - t0).toSec();
-    	double dt2 = (t2 - t0).toSec();
-
-        geometry_msgs::TransformStamped out_cd2 = mBC.lookupTransform("c", t, "d", t2, "a");
-        EXPECT_NEAR(out_cd2.transform.translation.x, -1,           			      epsilon);
-        EXPECT_NEAR(out_cd2.transform.translation.y,  0,  			              epsilon);
-        EXPECT_NEAR(out_cd2.transform.translation.z, cos(theta * dt2) - vel * dt, epsilon);
-        btQuaternion mq2;
-        mq2.setEuler(0,0,-theta*dt);
-        CHECK_QUATERNION_NEAR(out_cd2.transform.rotation, 0, 0, mq2.z(), mq2.w(), epsilon);
-    }
-}
-
+// TEST(BufferCore_lookupTransform, helix_configuration)
+// {
+// 	double epsilon = 2e-5; // Larger epsilon for interpolation values
+//
+//     tf2::BufferCore mBC;
+//
+//     builtin_interfaces::msg::Time t0;
+//     t0.sec = 10;
+//     t0.nanosec = 0;
+//     tf2::Duration step      = tf2::durationFromSec(0.05);
+//     tf2::Duration half_step = tf2::durationFromSec(0.025);
+//     builtin_interfaces::msg::Time t1;
+//     double t1_seconds = tf2::durationToSec(tf2::durationFromSec(5.0)) + t0.sec + t0.nanosec;
+//     t0.sec = (int)t1_seconds;
+//     t0.nanosec = (t1_seconds - (int)t1_seconds)/1e9;
+//
+//     /*
+//      * a->b->c
+//      *
+//      * b.z = vel * (t - t0)
+//      * c.x = cos(theta * (t - t0))
+//      * c.y = sin(theta * (t - t0))
+//      *
+//      * a->d
+//      *
+//      * d.z = 2 * cos(theta * (t - t0))
+//      * a->d transforms are at half-step between a->b->c transforms
+//      */
+//
+//     double theta = 0.25;
+//     double vel   = 1.0;
+//
+//     for (builtin_interfaces::msg::Time t = t0; t <= t1; t += step)
+//     {
+//     	builtin_interfaces::msg::Time t2 = t + half_step;
+//     	double dt  = (t - t0).toSec();
+//     	double dt2 = (t2 - t0).toSec();
+//
+//         geometry_msgs::msg::TransformStamped ts;
+//         ts.header.frame_id = "a";
+//         ts.header.stamp    = t;
+//         ts.child_frame_id  = "b";
+//         ts.transform.translation.z = vel * dt;
+//         ts.transform.rotation.w = 1.0;
+//         EXPECT_TRUE(mBC.setTransform(ts, "authority"));
+//
+//         geometry_msgs::msg::TransformStamped ts2;
+//         ts2.header.frame_id = "b";
+//         ts2.header.stamp    = t;
+//         ts2.child_frame_id  = "c";
+//         ts2.transform.translation.x = cos(theta * dt);
+//         ts2.transform.translation.y = sin(theta * dt);
+//         tf2::Quaternion q;
+//         q.setEuler(0,0,theta*dt);
+//         ts2.transform.rotation.z = q.z();
+//         ts2.transform.rotation.w = q.w();
+//         EXPECT_TRUE(mBC.setTransform(ts2, "authority"));
+//
+//         geometry_msgs::msg::TransformStamped ts3;
+//         ts3.header.frame_id = "a";
+//         ts3.header.stamp    = t2;
+//         ts3.child_frame_id  = "d";
+//         ts3.transform.translation.z = cos(theta * dt2);
+//         ts3.transform.rotation.w = 1.0;
+//         EXPECT_TRUE(mBC.setTransform(ts3, "authority"));
+//     }
+//
+//
+//     for (builtin_interfaces::msg::Time t = t0 + half_step; t < t1; t += step)
+//     {
+//     	builtin_interfaces::msg::Time t2 = t + half_step;
+//     	double dt  = (t - t0).toSec();
+//     	double dt2 = (t2 - t0).toSec();
+//
+//         geometry_msgs::msg::TransformStamped out_ab = mBC.lookupTransform("a", "b", t);
+//         EXPECT_NEAR(out_ab.transform.translation.z, vel * dt, epsilon);
+//
+//         geometry_msgs::msg::TransformStamped out_ac = mBC.lookupTransform("a", "c", t);
+//         EXPECT_NEAR(out_ac.transform.translation.x, cos(theta * dt), epsilon);
+//         EXPECT_NEAR(out_ac.transform.translation.y, sin(theta * dt), epsilon);
+//         EXPECT_NEAR(out_ac.transform.translation.z, vel * dt, 		 epsilon);
+//         tf2::Quaternion q;
+//         q.setEuler(0,0,theta*dt);
+//         CHECK_QUATERNION_NEAR(out_ac.transform.rotation, 0, 0, q.z(), q.w(), epsilon);
+//
+//         geometry_msgs::msg::TransformStamped out_ad = mBC.lookupTransform("a", "d", t);
+//         EXPECT_NEAR(out_ad.transform.translation.z, cos(theta * dt), epsilon);
+//
+//         geometry_msgs::msg::TransformStamped out_cd = mBC.lookupTransform("c", "d", t2);
+//         EXPECT_NEAR(out_cd.transform.translation.x, -1,           			      epsilon);
+//         EXPECT_NEAR(out_cd.transform.translation.y,  0,  			              epsilon);
+//         EXPECT_NEAR(out_cd.transform.translation.z, cos(theta * dt2) - vel * dt2, epsilon);
+//         tf2::Quaternion mq;
+//         mq.setEuler(0,0,-theta*dt2);
+//         CHECK_QUATERNION_NEAR(out_cd.transform.rotation, 0, 0, mq.z(), mq.w(), epsilon);
+//     }
+//
+//     // Advanced API
+//     for (builtin_interfaces::msg::Time t = t0 + half_step; t < t1; t += (step + step))
+//     {
+//     	builtin_interfaces::msg::Time t2 = t + step;
+//     	double dt  = (t - t0).toSec();
+//     	double dt2 = (t2 - t0).toSec();
+//
+//         geometry_msgs::msg::TransformStamped out_cd2 = mBC.lookupTransform("c", t, "d", t2, "a");
+//         EXPECT_NEAR(out_cd2.transform.translation.x, -1,           			      epsilon);
+//         EXPECT_NEAR(out_cd2.transform.translation.y,  0,  			              epsilon);
+//         EXPECT_NEAR(out_cd2.transform.translation.z, cos(theta * dt2) - vel * dt, epsilon);
+//         tf2::Quaternion mq2;
+//         mq2.setEuler(0,0,-theta*dt);
+//         CHECK_QUATERNION_NEAR(out_cd2.transform.rotation, 0, 0, mq2.z(), mq2.w(), epsilon);
+//     }
+// }
+//
 
 TEST(BufferCore_lookupTransform, ring_45_configuration)
 {
@@ -1429,9 +1436,9 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(builtin_interfaces::msg::Time(1.0));
-  times.push_back(builtin_interfaces::msg::Time(10.0));
-  times.push_back(builtin_interfaces::msg::Time(0.0));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1440,7 +1447,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
   tf2::Duration interpolation_space;
-  //  permuter.addOptionSet(durations, &interpolation_space);
+  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
   frames.push_back("a");
@@ -1462,7 +1469,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   frames.push_back("inverse_i");*/
   std::string source_frame;
   permuter.addOptionSet(frames, &source_frame);
-  
+
   std::string target_frame;
   permuter.addOptionSet(frames, &target_frame);
 
@@ -1472,16 +1479,12 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "ring_45", eval_time, interpolation_space);
 
-    geometry_msgs::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, eval_time);
+    geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
-
-    //printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());  
     EXPECT_EQ(outpose.header.stamp, eval_time);
     EXPECT_EQ(outpose.header.frame_id, source_frame);
     EXPECT_EQ(outpose.child_frame_id, target_frame);
 
-
-    
     //Zero distance or all the way
     if (source_frame == target_frame               ||
         (source_frame == "a" && target_frame == "i") ||
@@ -1603,8 +1606,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*3/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*3/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*3/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*3/8), epsilon);
     }
     // Chaining 4
     else if ((source_frame == "a" && target_frame =="e") ||
@@ -1635,7 +1638,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI/2), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI/2), epsilon);
       EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI/2), epsilon);
     }
     // Chaining 5
@@ -1665,8 +1668,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*5/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*5/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*5/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*5/8), epsilon);
     }
     // Chaining 6
     else if ((source_frame == "a" && target_frame =="g") ||
@@ -1679,8 +1682,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*6/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI*6/8), epsilon);
     }
     // Inverse Chaining 6
     else if ((target_frame == "a" && source_frame =="g") ||
@@ -1693,8 +1696,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*6/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI*6/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*6/8), epsilon);
     }
     // Chaining 7
     else if ((source_frame == "a" && target_frame =="h") ||
@@ -1706,8 +1709,8 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*7/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI*7/8), epsilon);
     }
     // Inverse Chaining 7
     else if ((target_frame == "a" && source_frame =="h") ||
@@ -1719,33 +1722,37 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI*7/8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI*7/8), epsilon);
+      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI*7/8), epsilon);
     }
     else
     {
       EXPECT_FALSE("Ring_45 testing Shouldn't get here");
-      printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.toSec());
+      printf("source_frame %s target_frame %s time %f\n", source_frame.c_str(), target_frame.c_str(), eval_time.sec + eval_time.nanosec /1e9 );
     }
-    
   }
 }
 
 TEST(BufferCore_lookupTransform, invalid_arguments)
 {
   tf2::BufferCore mBC;
-  
-  setupTree(mBC, "i", builtin_interfaces::msg::Time(1.0));
-  
-  EXPECT_NO_THROW(mBC.lookupTransform("b", "a", builtin_interfaces::msg::Time()));
+
+  tf2::TimePoint eval_time_time_point = tf2::TimePoint(
+      std::chrono::seconds(0) +
+      std::chrono::nanoseconds(0));
+
+  setupTree(mBC, "i", tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+
+  // EXPECT_NO_THROW
+  EXPECT_NO_THROW(mBC.lookupTransform("b", "a", eval_time_time_point));
 
   //Empty frame_id
-  EXPECT_THROW(mBC.lookupTransform("", "a", builtin_interfaces::msg::Time()), tf2::InvalidArgumentException);
-  EXPECT_THROW(mBC.lookupTransform("b", "", builtin_interfaces::msg::Time()), tf2::InvalidArgumentException);
-
-  //frame_id with /
-  EXPECT_THROW(mBC.lookupTransform("/b", "a", builtin_interfaces::msg::Time()), tf2::InvalidArgumentException);
-  EXPECT_THROW(mBC.lookupTransform("b", "/a", builtin_interfaces::msg::Time()), tf2::InvalidArgumentException);
+  EXPECT_THROW(mBC.lookupTransform("", "a", eval_time_time_point), tf2::InvalidArgumentException);
+  EXPECT_THROW(mBC.lookupTransform("b", "", eval_time_time_point), tf2::InvalidArgumentException);
+  //
+  // //frame_id with /
+  EXPECT_THROW(mBC.lookupTransform("/b", "a", eval_time_time_point), tf2::InvalidArgumentException);
+  EXPECT_THROW(mBC.lookupTransform("b", "/a", eval_time_time_point), tf2::InvalidArgumentException);
 
 };
 
@@ -1753,18 +1760,21 @@ TEST(BufferCore_canTransform, invalid_arguments)
 {
   tf2::BufferCore mBC;
 
-  setupTree(mBC, "i", builtin_interfaces::msg::Time(1.0));
-  
-  EXPECT_TRUE(mBC.canTransform("b", "a", builtin_interfaces::msg::Time()));
-  
-  
+  tf2::TimePoint eval_time_time_point = tf2::TimePoint(
+      std::chrono::seconds(0) +
+      std::chrono::nanoseconds(0));
+
+  setupTree(mBC, "i", tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+
+  EXPECT_TRUE(mBC.canTransform("b", "a", eval_time_time_point));
+
   //Empty frame_id
-  EXPECT_FALSE(mBC.canTransform("", "a", builtin_interfaces::msg::Time()));
-  EXPECT_FALSE(mBC.canTransform("b", "", builtin_interfaces::msg::Time()));
+  EXPECT_FALSE(mBC.canTransform("", "a", eval_time_time_point));
+  EXPECT_FALSE(mBC.canTransform("b", "", eval_time_time_point));
 
   //frame_id with /
-  EXPECT_FALSE(mBC.canTransform("/b", "a", builtin_interfaces::msg::Time()));
-  EXPECT_FALSE(mBC.canTransform("b", "/a", builtin_interfaces::msg::Time()));
+  EXPECT_FALSE(mBC.canTransform("/b", "a", eval_time_time_point));
+  EXPECT_FALSE(mBC.canTransform("b", "/a", eval_time_time_point));
 
 };
 
@@ -1774,8 +1784,11 @@ struct TransformableHelper
   : called(false)
   {}
 
-  void callback(tf2::TransformableRequestHandle request_handle, const std::string& target_frame, const std::string& source_frame,
-          builtin_interfaces::msg::Time time, tf2::TransformableResult result)
+  void callback(tf2::TransformableRequestHandle request_handle,
+                const std::string & target_frame,
+                const std::string & source_frame,
+                tf2::TimePoint time,
+                tf2::TransformableResult result)
   {
     called = true;
   }
@@ -1788,28 +1801,50 @@ TEST(BufferCore_transformableCallbacks, alreadyTransformable)
   tf2::BufferCore b;
   TransformableHelper h;
 
-  geometry_msgs::TransformStamped t;
-  t.header.stamp = builtin_interfaces::msg::Time(1);
+  geometry_msgs::msg::TransformStamped t;
+  t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1.0));
   t.header.frame_id = "a";
   t.child_frame_id = "b";
   t.transform.rotation.w = 1.0;
   b.setTransform(t, "me");
 
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(boost::bind(&TransformableHelper::callback, &h, _1, _2, _3, _4, _5));
-  EXPECT_EQ(b.addTransformableRequest(cb_handle, "a", "b", builtin_interfaces::msg::Time(1)), 0U);
+  tf2::TimePoint eval_time_time_point = tf2::TimePoint(
+      std::chrono::seconds(1) +
+      std::chrono::nanoseconds(0));
+
+  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+      &h,
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3,
+      std::placeholders::_4,
+      std::placeholders::_5));
+
+  EXPECT_EQ(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
 }
 
 TEST(BufferCore_transformableCallbacks, waitForNewTransform)
 {
   tf2::BufferCore b;
   TransformableHelper h;
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(boost::bind(&TransformableHelper::callback, &h, _1, _2, _3, _4, _5));
-  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", builtin_interfaces::msg::Time(10)), 0U);
+  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+      &h,
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3,
+      std::placeholders::_4,
+      std::placeholders::_5));
 
-  geometry_msgs::TransformStamped t;
+  tf2::TimePoint eval_time_time_point = tf2::TimePoint(
+      std::chrono::seconds(10) +
+      std::chrono::nanoseconds(0));
+
+  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
+
+  geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 1; i <= 10; ++i)
   {
-    t.header.stamp = builtin_interfaces::msg::Time(i);
+    t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(i));
     t.header.frame_id = "a";
     t.child_frame_id = "b";
     t.transform.rotation.w = 1.0;
@@ -1830,13 +1865,24 @@ TEST(BufferCore_transformableCallbacks, waitForOldTransform)
 {
   tf2::BufferCore b;
   TransformableHelper h;
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(boost::bind(&TransformableHelper::callback, &h, _1, _2, _3, _4, _5));
-  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", builtin_interfaces::msg::Time(1)), 0U);
+  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+      &h,
+      std::placeholders::_1,
+      std::placeholders::_2,
+      std::placeholders::_3,
+      std::placeholders::_4,
+      std::placeholders::_5));
 
-  geometry_msgs::TransformStamped t;
+  tf2::TimePoint eval_time_time_point = tf2::TimePoint(
+      std::chrono::seconds(1) +
+      std::chrono::nanoseconds(0));
+
+  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
+
+  geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 10; i > 0; --i)
   {
-    t.header.stamp = builtin_interfaces::msg::Time(i);
+    t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(i));
     t.header.frame_id = "a";
     t.child_frame_id = "b";
     t.transform.rotation.w = 1.0;
@@ -1859,15 +1905,15 @@ TEST(tf, Exceptions)
 
  tf::Transformer mTR(true);
 
- 
+
  Stamped<btTransform> outpose;
 
  //connectivity when no data
  EXPECT_FALSE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(10000000)));
- try 
+ try
  {
-   mTR.transformPose("parent",Stamped<Pose>(btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000000) , "me"), outpose);
-   EXPECT_FALSE("ConnectivityException Not Thrown");   
+   mTR.transformPose("parent",Stamped<Pose>(btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000000) , "me"), outpose);
+   EXPECT_FALSE("ConnectivityException Not Thrown");
  }
  catch ( tf::LookupException &ex)
  {
@@ -1878,14 +1924,14 @@ TEST(tf, Exceptions)
    printf("%s\n",ex.what());
    EXPECT_FALSE("Other Exception Caught");
  }
- 
- mTR.setTransform( StampedTransform(btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(100000), "parent", "me"));
+
+ mTR.setTransform( StampedTransform(btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(100000), "parent", "me"));
 
  //Extrapolation not valid with one value
  EXPECT_FALSE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(200000)));
- try 
+ try
  {
-   mTR.transformPose("parent",Stamped<Pose>(btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "me"), outpose);
+   mTR.transformPose("parent",Stamped<Pose>(btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "me"), outpose);
    EXPECT_TRUE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1897,16 +1943,16 @@ TEST(tf, Exceptions)
    printf("%s\n",ex.what());
    EXPECT_FALSE("Other Exception Caught");
  }
- 
 
- mTR.setTransform( StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(300000), "parent", "me"));
+
+ mTR.setTransform( StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(300000), "parent", "me"));
 
  //NO Extration when Interpolating
  //inverse list
  EXPECT_TRUE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(200000)));
- try 
+ try
  {
-   mTR.transformPose("parent",Stamped<Pose>(btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "me"), outpose);
+   mTR.transformPose("parent",Stamped<Pose>(btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "me"), outpose);
    EXPECT_TRUE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1923,9 +1969,9 @@ TEST(tf, Exceptions)
 
  //forward list
  EXPECT_TRUE(mTR.canTransform("me", "parent", builtin_interfaces::msg::Time().fromNSec(200000)));
- try 
+ try
  {
-   mTR.transformPose("me",Stamped<Pose>(btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "parent"), outpose);
+   mTR.transformPose("me",Stamped<Pose>(btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(200000) , "parent"), outpose);
    EXPECT_TRUE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1937,14 +1983,14 @@ TEST(tf, Exceptions)
    printf("%s\n",ex.what());
    EXPECT_FALSE("Other Exception Caught");
  }
-  
+
 
  //Extrapolating backwards
  //inverse list
  EXPECT_FALSE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(1000)));
- try 
+ try
  {
-   mTR.transformPose("parent",Stamped<Pose> (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000) , "me"), outpose);
+   mTR.transformPose("parent",Stamped<Pose> (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000) , "me"), outpose);
    EXPECT_FALSE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1958,9 +2004,9 @@ TEST(tf, Exceptions)
  }
  //forwards list
  EXPECT_FALSE(mTR.canTransform("me", "parent", builtin_interfaces::msg::Time().fromNSec(1000)));
- try 
+ try
  {
-   mTR.transformPose("me",Stamped<Pose> (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000) , "parent"), outpose);
+   mTR.transformPose("me",Stamped<Pose> (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000) , "parent"), outpose);
    EXPECT_FALSE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1972,16 +2018,16 @@ TEST(tf, Exceptions)
    printf("%s\n",ex.what());
    EXPECT_FALSE("Other Exception Caught");
  }
-  
+
 
 
  // Test extrapolation inverse and forward linkages FORWARD
 
  //inverse list
  EXPECT_FALSE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(350000)));
- try 
+ try
  {
-   mTR.transformPose("parent", Stamped<Pose> (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(350000) , "me"), outpose);
+   mTR.transformPose("parent", Stamped<Pose> (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(350000) , "me"), outpose);
    EXPECT_FALSE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -1996,9 +2042,9 @@ TEST(tf, Exceptions)
 
  //forward list
  EXPECT_FALSE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(350000)));
- try 
+ try
  {
-   mTR.transformPose("me", Stamped<Pose> (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(350000) , "parent"), outpose);
+   mTR.transformPose("me", Stamped<Pose> (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(350000) , "parent"), outpose);
    EXPECT_FALSE("ExtrapolationException Not Thrown");
  }
  catch ( tf::ExtrapolationException &ex)
@@ -2010,7 +2056,7 @@ TEST(tf, Exceptions)
    printf("%s\n",ex.what());
    EXPECT_FALSE("Other Exception Caught");
  }
-  
+
 
 
 
@@ -2021,21 +2067,21 @@ TEST(tf, Exceptions)
 TEST(tf, NoExtrapolationExceptionFromParent)
 {
   tf::Transformer mTR(true, tf2::Duration().fromNSec(1000000));
-  
 
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000), "parent", "a"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent", "a"));
-  
-  
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "b"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent", "b"));
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent", "parent"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent's parent", "parent's parent"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000), "parent", "a"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent", "a"));
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent's parent", "parent"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent's parent's parent", "parent's parent"));
+
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent", "b"));
+
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent", "parent"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent's parent", "parent's parent"));
+
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent's parent", "parent"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(10000),  "parent's parent's parent", "parent's parent"));
 
   Stamped<Point> output;
 
@@ -2057,12 +2103,12 @@ TEST(tf, NoExtrapolationExceptionFromParent)
 TEST(tf, ExtrapolationFromOneValue)
 {
   tf::Transformer mTR(true, tf2::Duration().fromNSec(1000000));
-  
 
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "a"));
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent", "parent"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "a"));
+
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent's parent", "parent"));
 
 
   Stamped<Point> output;
@@ -2077,7 +2123,7 @@ TEST(tf, ExtrapolationFromOneValue)
   {
     excepted = true;
   }
-  
+
   EXPECT_TRUE(excepted);
 
   excepted = false;
@@ -2090,7 +2136,7 @@ TEST(tf, ExtrapolationFromOneValue)
   {
     excepted = true;
   }
-  
+
   EXPECT_TRUE(excepted);
 
   //Past multi link
@@ -2103,7 +2149,7 @@ TEST(tf, ExtrapolationFromOneValue)
   {
     excepted = true;
   }
-  
+
   EXPECT_TRUE(excepted);
 
   //Future case multi link
@@ -2116,10 +2162,10 @@ TEST(tf, ExtrapolationFromOneValue)
   {
     excepted = true;
   }
-  
+
   EXPECT_TRUE(excepted);
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(20000),  "parent", "a"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(20000),  "parent", "a"));
 
   excepted = false;
   try
@@ -2130,7 +2176,7 @@ TEST(tf, ExtrapolationFromOneValue)
   {
     excepted = true;
   }
-  
+
   EXPECT_FALSE(excepted);
 
 };
@@ -2140,9 +2186,9 @@ TEST(tf, ExtrapolationFromOneValue)
 TEST(tf, getLatestCommonTime)
 {
   tf::Transformer mTR(true);
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "a"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(2000),  "parent's parent", "parent"));
-  
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(1000),  "parent", "a"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(2000),  "parent's parent", "parent"));
+
   //simple case
   builtin_interfaces::msg::Time t;
   mTR.getLatestCommonTime("a", "parent's parent", t, NULL);
@@ -2153,15 +2199,15 @@ TEST(tf, getLatestCommonTime)
   EXPECT_EQ(t, builtin_interfaces::msg::Time());
 
   //testing with update
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(3000),  "parent", "a"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(3000),  "parent", "a"));
   mTR.getLatestCommonTime("a", "parent's parent",t, NULL);
   EXPECT_EQ(t, builtin_interfaces::msg::Time().fromNSec(2000));
 
   //longer chain
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(3000),  "b", "c"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(9000),  "c", "d"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(5000),  "f", "e"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(3000),  "b", "c"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(9000),  "c", "d"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(5000),  "f", "e"));
 
   //shared parent
   mTR.getLatestCommonTime("a", "b",t, NULL);
@@ -2221,8 +2267,8 @@ TEST(tf, getLatestCommonTime)
 TEST(tf, RepeatedTimes)
 {
   Transformer mTR;
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,1,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,1,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "parent", "b"));
 
   tf::StampedTransform  output;
   try{
@@ -2239,7 +2285,7 @@ TEST(tf, RepeatedTimes)
   {
     EXPECT_FALSE("Excetion improperly thrown");
   }
-  
+
 
 }
 
@@ -2259,7 +2305,7 @@ TEST(tf, frameExists)
   EXPECT_FALSE(mTR.frameExists("other"));
   EXPECT_FALSE(mTR.frameExists("frame"));
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/parent", "/b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/parent", "/b"));
 
   // test with fully qualified name
   EXPECT_TRUE(mTR.frameExists("/b"));
@@ -2273,14 +2319,14 @@ TEST(tf, frameExists)
   EXPECT_FALSE(mTR.frameExists("other"));
   EXPECT_FALSE(mTR.frameExists("frame"));
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,1,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/frame", "/other"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,1,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/frame", "/other"));
 
   // test with fully qualified name
   EXPECT_TRUE(mTR.frameExists("/b"));
   EXPECT_TRUE(mTR.frameExists("/parent"));
   EXPECT_TRUE(mTR.frameExists("/other"));
   EXPECT_TRUE(mTR.frameExists("/frame"));
-  
+
   //Test with resolveping
   EXPECT_TRUE(mTR.frameExists("b"));
   EXPECT_TRUE(mTR.frameExists("parent"));
@@ -2315,8 +2361,8 @@ TEST(tf, canTransform)
   //Create a two link tree between times 10 and 20
   for (int i = 10; i < 20; i++)
   {
-    mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "child"));
-    mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "other_child"));
+    mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "child"));
+    mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "other_child"));
   }
 
   // four different timestamps related to tf state
@@ -2406,8 +2452,8 @@ TEST(tf, lookupTransform)
   //Create a two link tree between times 10 and 20
   for (int i = 10; i < 20; i++)
   {
-    mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "child"));
-    mTR.setTransform(  StampedTransform (btTransform(btQuaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "other_child"));
+    mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "child"));
+    mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(1,0,0), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromSec(i),  "parent", "other_child"));
   }
 
   // four different timestamps related to tf state
@@ -2434,7 +2480,7 @@ TEST(tf, lookupTransform)
     //Valid data should pass
     mTR.lookupTransform("child", "parent", valid_time, output);
     mTR.lookupTransform("child", "other_child", valid_time, output);
-    
+
     //zero data should pass
     mTR.lookupTransform("child", "parent", zero_time, output);
     mTR.lookupTransform("child", "other_child", zero_time, output);
@@ -2463,16 +2509,16 @@ TEST(tf, lookupTransform)
   {
     EXPECT_TRUE("Exception Thrown Correctly");
   }
-    
+
   try {
     //Same Frame should pass for all times
     mTR.lookupTransform("child", "child", zero_time, output);
     mTR.lookupTransform("child", "child", old_time, output);
     mTR.lookupTransform("child", "child", valid_time, output);
     mTR.lookupTransform("child", "child", future_time, output);
-    
+
     // Advanced API Tests
-    
+
     // Source = Fixed
     //zero data in fixed frame should pass
     mTR.lookupTransform("child", zero_time, "parent", valid_time, "child", output);
@@ -2560,7 +2606,7 @@ TEST(tf, lookupTransform)
     printf("Exception improperly thrown: %s", ex.what());
     EXPECT_FALSE("Exception improperly thrown");
   }
-  
+
 
   //make sure zero goes to now for zero length
   try
@@ -2576,7 +2622,7 @@ TEST(tf, lookupTransform)
     printf("Exception improperly thrown: %s", ex.what());
     EXPECT_FALSE("Exception improperly thrown");
   }
-  
+
 }
 
 
@@ -2585,7 +2631,7 @@ TEST(tf, getFrameStrings)
   Transformer mTR;
 
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/parent", "/b"));
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/parent", "/b"));
   std::vector <std::string> frames_string;
   mTR.getFrameStrings(frames_string);
   ASSERT_EQ(frames_string.size(), (unsigned)2);
@@ -2593,8 +2639,8 @@ TEST(tf, getFrameStrings)
   EXPECT_STREQ(frames_string[1].c_str(), std::string("/parent").c_str());
 
 
-  mTR.setTransform(  StampedTransform (btTransform(btQuaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/frame", "/other"));
-  
+  mTR.setTransform(  StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(4000),  "/frame", "/other"));
+
   mTR.getFrameStrings(frames_string);
   ASSERT_EQ(frames_string.size(), (unsigned)4);
   EXPECT_STREQ(frames_string[0].c_str(), std::string("/b").c_str());
@@ -2612,7 +2658,7 @@ bool expectInvalidQuaternion(tf::Quaternion q)
     printf("this should have thrown\n");
     return false;
   }
-  catch (tf::InvalidArgument &ex)  
+  catch (tf::InvalidArgument &ex)
   {
     return true;
   }
@@ -2630,14 +2676,14 @@ bool expectValidQuaternion(tf::Quaternion q)
   {
     tf::assertQuaternionValid(q);
   }
-  catch (tf::TransformException &ex)  
+  catch (tf::TransformException &ex)
   {
     return false;
   }
   return true;
 }
 
-bool expectInvalidQuaternion(geometry_msgs::Quaternion q)
+bool expectInvalidQuaternion(geometry_msgs::msg::Quaternion q)
 {
   try
   {
@@ -2645,7 +2691,7 @@ bool expectInvalidQuaternion(geometry_msgs::Quaternion q)
     printf("this should have thrown\n");
     return false;
   }
-  catch (tf::InvalidArgument &ex)  
+  catch (tf::InvalidArgument &ex)
   {
     return true;
   }
@@ -2657,13 +2703,13 @@ bool expectInvalidQuaternion(geometry_msgs::Quaternion q)
   return false;
 }
 
-bool expectValidQuaternion(geometry_msgs::Quaternion q)
+bool expectValidQuaternion(geometry_msgs::msg::Quaternion q)
 {
   try
   {
     tf::assertQuaternionValid(q);
   }
-  catch (tf::TransformException &ex)  
+  catch (tf::TransformException &ex)
   {
     return false;
   }
@@ -2705,11 +2751,11 @@ TEST(tf, assertQuaternionValid)
   //EXPECT_THROW(tf::assertQuaternionValid(q), tf::InvalidArgument);
   //q.setY(1);
   //EXPECT_NO_THROW(tf::assertQuaternionValid(q));
-  
+
 }
 TEST(tf, assertQuaternionMsgValid)
 {
-  geometry_msgs::Quaternion q;
+  geometry_msgs::msg::Quaternion q;
   q.x = 1;//others zeroed to start
 
   EXPECT_TRUE(expectValidQuaternion(q));
@@ -2809,7 +2855,6 @@ TEST(tf2_stamped, OperatorEqual)
   */
 int main(int argc, char **argv){
   testing::InitGoogleTest(&argc, argv);
-  builtin_interfaces::msg::Time::init(); //needed for builtin_interfaces::msg::Time::now()
-  ros::init(argc, argv, "tf_unittest");
+  rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();
 }
