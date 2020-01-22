@@ -1477,6 +1477,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   {
 
     tf2::BufferCore mBC;
+    setupTree(mBC, "ring_45", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time));
 
