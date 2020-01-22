@@ -18,43 +18,43 @@
     catch (const tf2::ConnectivityException & e) \
     { \
       PyErr_SetString(tf2_connectivityexception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
     catch (const tf2::LookupException & e) \
     { \
       PyErr_SetString(tf2_lookupexception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
     catch (const tf2::ExtrapolationException & e) \
     { \
       PyErr_SetString(tf2_extrapolationexception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
     catch (const tf2::InvalidArgumentException & e) \
     { \
       PyErr_SetString(tf2_invalidargumentexception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
     catch (const tf2::TimeoutException & e) \
     { \
       PyErr_SetString(tf2_timeoutexception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
     catch (const tf2::TransformException & e) \
     { \
       PyErr_SetString(tf2_exception, e.what()); \
-      return NULL; \
+      return nullptr; \
     } \
   } while (0)
 
-static PyObject * pModulerclpy = NULL;
-static PyObject * pModulerclpytime = NULL;
-static PyObject * pModulebuiltininterfacesmsgs = NULL;
-static PyObject * pModulegeometrymsgs = NULL;
-static PyObject * tf2_exception = NULL;
-static PyObject * tf2_connectivityexception = NULL, * tf2_lookupexception = NULL,
-  * tf2_extrapolationexception = NULL,
-  * tf2_invalidargumentexception = NULL, * tf2_timeoutexception = NULL;
+static PyObject * pModulerclpy = nullptr;
+static PyObject * pModulerclpytime = nullptr;
+static PyObject * pModulebuiltininterfacesmsgs = nullptr;
+static PyObject * pModulegeometrymsgs = nullptr;
+static PyObject * tf2_exception = nullptr;
+static PyObject * tf2_connectivityexception = nullptr, * tf2_lookupexception = nullptr,
+  * tf2_extrapolationexception = nullptr,
+  * tf2_invalidargumentexception = nullptr, * tf2_timeoutexception = nullptr;
 
 struct buffer_core_t
 {
@@ -64,28 +64,28 @@ struct buffer_core_t
 
 static PyObject * transform_converter(const geometry_msgs::msg::TransformStamped * transform)
 {
-  PyObject * pclass = NULL;
-  PyObject * pargs = NULL;
-  PyObject * pinst = NULL;
-  PyObject * builtin_interfaces_time = NULL;
-  PyObject * args = NULL;
-  PyObject * kwargs = NULL;
-  PyObject * sec = NULL;
-  PyObject * nanosec = NULL;
-  PyObject * time_obj = NULL;
-  PyObject * pheader = NULL;
-  PyObject * pframe_id = NULL;
-  PyObject * ptransform = NULL;
-  PyObject * ptranslation = NULL;
-  PyObject * protation = NULL;
-  PyObject * child_frame_id = NULL;
-  PyObject * ptrans_x = NULL;
-  PyObject * ptrans_y = NULL;
-  PyObject * ptrans_z = NULL;
-  PyObject * prot_x = NULL;
-  PyObject * prot_y = NULL;
-  PyObject * prot_z = NULL;
-  PyObject * prot_w = NULL;
+  PyObject * pclass = nullptr;
+  PyObject * pargs = nullptr;
+  PyObject * pinst = nullptr;
+  PyObject * builtin_interfaces_time = nullptr;
+  PyObject * args = nullptr;
+  PyObject * kwargs = nullptr;
+  PyObject * sec = nullptr;
+  PyObject * nanosec = nullptr;
+  PyObject * time_obj = nullptr;
+  PyObject * pheader = nullptr;
+  PyObject * pframe_id = nullptr;
+  PyObject * ptransform = nullptr;
+  PyObject * ptranslation = nullptr;
+  PyObject * protation = nullptr;
+  PyObject * child_frame_id = nullptr;
+  PyObject * ptrans_x = nullptr;
+  PyObject * ptrans_y = nullptr;
+  PyObject * ptrans_z = nullptr;
+  PyObject * prot_x = nullptr;
+  PyObject * prot_y = nullptr;
+  PyObject * prot_z = nullptr;
+  PyObject * prot_w = nullptr;
   pclass = PyObject_GetAttrString(pModulegeometrymsgs, "TransformStamped");
   if (!pclass) {
     goto cleanup;
@@ -231,7 +231,7 @@ static PyObject * transform_converter(const geometry_msgs::msg::TransformStamped
 cleanup:
   if (PyErr_Occurred()) {
     Py_XDECREF(pinst);
-    pinst = NULL;
+    pinst = nullptr;
   }
   Py_XDECREF(pclass);
   Py_XDECREF(pargs);
@@ -359,13 +359,13 @@ static PyObject * canTransformCore(PyObject * self, PyObject * args, PyObject * 
   tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame;
   tf2::TimePoint time;
-  static const char * keywords[] = {"target_frame", "source_frame", "time", NULL};
+  static const char * keywords[] = {"target_frame", "source_frame", "time", nullptr};
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
     &source_frame, rostime_converter, &time))
   {
-    return NULL;
+    return nullptr;
   }
   std::string error_msg;
   bool can_transform = bc->canTransform(target_frame, source_frame, time, &error_msg);
@@ -379,7 +379,7 @@ static PyObject * canTransformFullCore(PyObject * self, PyObject * args, PyObjec
   char * target_frame, * source_frame, * fixed_frame;
   tf2::TimePoint target_time, source_time;
   static const char * keywords[] =
-  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
+  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)),
@@ -391,7 +391,7 @@ static PyObject * canTransformFullCore(PyObject * self, PyObject * args, PyObjec
     &source_time,
     &fixed_frame))
   {
-    return NULL;
+    return nullptr;
   }
   std::string error_msg;
   bool can_transform = bc->canTransform(target_frame, target_time, source_frame, source_time,
@@ -418,7 +418,7 @@ static PyObject * _chain(PyObject * self, PyObject * args, PyObject * kw)
   tf2::TimePoint target_time, source_time;
   std::vector<std::string> output;
   static const char * keywords[] =
-  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
+  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)),
@@ -430,7 +430,7 @@ static PyObject * _chain(PyObject * self, PyObject * args, PyObject * kw)
     &source_time,
     &fixed_frame))
   {
-    return NULL;
+    return nullptr;
   }
 
   WRAP(bc->_chainAsVector(target_frame, target_time, source_frame, source_time, fixed_frame,
@@ -447,7 +447,7 @@ static PyObject * getLatestCommonTime(PyObject * self, PyObject * args)
   std::string error_string;
 
   if (!PyArg_ParseTuple(args, "ss", &target_frame, &source_frame)) {
-    return NULL;
+    return nullptr;
   }
   WRAP(target_id = bc->_validateFrameId("get_latest_common_time", target_frame));
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
@@ -455,16 +455,16 @@ static PyObject * getLatestCommonTime(PyObject * self, PyObject * args)
 
   if (r != tf2::TF2Error::NO_ERROR) {
     PyErr_SetString(tf2_exception, error_string.c_str());
-    return NULL;
+    return nullptr;
   }
 
   builtin_interfaces::msg::Time time_msg;
-  PyObject * rclpy_time = NULL;
-  PyObject * call_args = NULL;
-  PyObject * kwargs = NULL;
-  PyObject * seconds = NULL;
-  PyObject * nanoseconds = NULL;
-  PyObject * ob = NULL;
+  PyObject * rclpy_time = nullptr;
+  PyObject * call_args = nullptr;
+  PyObject * kwargs = nullptr;
+  PyObject * seconds = nullptr;
+  PyObject * nanoseconds = nullptr;
+  PyObject * ob = nullptr;
 
   rclpy_time = PyObject_GetAttrString(pModulerclpytime, "Time");
   if (!rclpy_time) {
@@ -499,7 +499,7 @@ static PyObject * getLatestCommonTime(PyObject * self, PyObject * args)
 cleanup:
   if (PyErr_Occurred()) {
     Py_XDECREF(ob);
-    ob = NULL;
+    ob = nullptr;
   }
   Py_XDECREF(rclpy_time);
   Py_XDECREF(call_args);
@@ -514,13 +514,13 @@ static PyObject * lookupTransformCore(PyObject * self, PyObject * args, PyObject
   tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame;
   tf2::TimePoint time;
-  static const char * keywords[] = {"target_frame", "source_frame", "time", NULL};
+  static const char * keywords[] = {"target_frame", "source_frame", "time", nullptr};
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
     &source_frame, rostime_converter, &time))
   {
-    return NULL;
+    return nullptr;
   }
   geometry_msgs::msg::TransformStamped transform;
   WRAP(transform = bc->lookupTransform(target_frame, source_frame, time));
@@ -537,7 +537,7 @@ static PyObject * lookupTransformFullCore(PyObject * self, PyObject * args, PyOb
   char * target_frame, * source_frame, * fixed_frame;
   tf2::TimePoint target_time, source_time;
   static const char * keywords[] =
-  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
+  {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)),
@@ -549,7 +549,7 @@ static PyObject * lookupTransformFullCore(PyObject * self, PyObject * args, PyOb
     &source_time,
     &fixed_frame))
   {
-    return NULL;
+    return nullptr;
   }
   geometry_msgs::msg::TransformStamped transform;
   WRAP(transform =
@@ -564,10 +564,10 @@ static PyObject *lookupTwistCore(PyObject *self, PyObject *args, PyObject *kw)
   char *tracking_frame, *observation_frame;
   builtin_interfaces::msg::Time time;
   tf2::Duration averaging_interval;
-  static const char *keywords[] = { "tracking_frame", "observation_frame", "time", "averaging_interval", NULL };
+  static const char *keywords[] = { "tracking_frame", "observation_frame", "time", "averaging_interval", nullptr };
 
   if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&O&", (char**)keywords, &tracking_frame, &observation_frame, rostime_converter, &time, rosduration_converter, &averaging_interval))
-    return NULL;
+    return nullptr;
   geometry_msgs::msg::Twist twist;
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, time, averaging_interval));
 
@@ -592,7 +592,7 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
                         &reference_point_frame,
                         rostime_converter, &time,
                         rosduration_converter, &averaging_interval))
-    return NULL;
+    return nullptr;
   geometry_msgs::msg::Twist twist;
   tf::Point pt(px, py, pz);
   WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, reference_frame, pt, reference_point_frame, time, averaging_interval));
@@ -938,7 +938,7 @@ static PyObject * _frameExists(PyObject * self, PyObject * args)
   tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * frame_id_str;
   if (!PyArg_ParseTuple(args, "s", &frame_id_str)) {
-    return NULL;
+    return nullptr;
   }
   return PyBool_FromLong(bc->_frameExists(frame_id_str));
 }
@@ -955,12 +955,12 @@ static PyObject * _getFrameStrings(PyObject * self, PyObject * args)
 static PyObject * _allFramesAsDot(PyObject * self, PyObject * args, PyObject * kw)
 {
   tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
-  static const char * keywords[] = {"time", NULL};
+  static const char * keywords[] = {"time", nullptr};
   tf2::TimePoint time;
   if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&",
     const_cast<char **>(reinterpret_cast<const char **>(keywords)), rostime_converter, &time))
   {
-    return NULL;
+    return nullptr;
   }
   return stringToPython(bc->_allFramesAsDot(time).c_str());
 }
@@ -968,99 +968,101 @@ static PyObject * _allFramesAsDot(PyObject * self, PyObject * args, PyObject * k
 
 static struct PyMethodDef buffer_core_methods[] =
 {
-  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS, NULL},
-  {"all_frames_as_string", allFramesAsString, METH_VARARGS, NULL},
-  {"set_transform", setTransform, METH_VARARGS, NULL},
-  {"set_transform_static", setTransformStatic, METH_VARARGS, NULL},
-  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+  {"all_frames_as_yaml", allFramesAsYAML, METH_VARARGS, nullptr},
+  {"all_frames_as_string", allFramesAsString, METH_VARARGS, nullptr},
+  {"set_transform", setTransform, METH_VARARGS, nullptr},
+  {"set_transform_static", setTransformStatic, METH_VARARGS, nullptr},
+  {"can_transform_core", (PyCFunction)canTransformCore, METH_VARARGS | METH_KEYWORDS, nullptr},
   {"can_transform_full_core", (PyCFunction)canTransformFullCore, METH_VARARGS | METH_KEYWORDS,
-    NULL},
-  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS, NULL},
-  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS, NULL},
-  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS, NULL},
-  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS, NULL},
-  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS, NULL},
-  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS, NULL},
-  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS, NULL},
+    nullptr},
+  {"_chain", (PyCFunction)_chain, METH_VARARGS | METH_KEYWORDS, nullptr},
+  {"clear", (PyCFunction)clear, METH_VARARGS | METH_KEYWORDS, nullptr},
+  {"_frameExists", (PyCFunction)_frameExists, METH_VARARGS, nullptr},
+  {"_getFrameStrings", (PyCFunction)_getFrameStrings, METH_VARARGS, nullptr},
+  {"_allFramesAsDot", (PyCFunction)_allFramesAsDot, METH_VARARGS | METH_KEYWORDS, nullptr},
+  {"get_latest_common_time", (PyCFunction)getLatestCommonTime, METH_VARARGS, nullptr},
+  {"lookup_transform_core", (PyCFunction)lookupTransformCore, METH_VARARGS | METH_KEYWORDS,
+    nullptr},
   {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS,
-    NULL},
+    nullptr},
   // {"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_VARARGS | METH_KEYWORDS},
   // {"lookupTwistFullCore", lookupTwistFullCore, METH_VARARGS},
-  {NULL, NULL, 0, NULL}
+  {nullptr, nullptr, 0, nullptr}
 };
 
 static PyMethodDef module_methods[] = {
   // {"Transformer", mkTransformer, METH_VARARGS},
-  {NULL, NULL, 0, NULL},
+  {nullptr, nullptr, 0, nullptr},
 };
 
 static PyTypeObject buffer_core_Type = {
-  PyVarObject_HEAD_INIT(NULL, 0)
+  PyVarObject_HEAD_INIT(nullptr, 0)
   "_tf2.BufferCore",                        /* tp_name */
   sizeof(buffer_core_t),                    /* tp_basicsize */
   0,                                        /* tp_itemsize */
-  NULL,                                     /* tp_dealloc */
-  NULL,                                     /* tp_print */
-  NULL,                                     /* tp_getattr */
-  NULL,                                     /* tp_setattr */
-  NULL,                                     /* tp_as_async */
-  NULL,                                     /* tp_repr */
-  NULL,                                     /* tp_as_number */
-  NULL,                                     /* tp_as_sequence */
-  NULL,                                     /* tp_as_mapping */
-  NULL,                                     /* tp_hash */
-  NULL,                                     /* tp_call */
-  NULL,                                     /* tp_str */
-  NULL,                                     /* tp_getattro */
-  NULL,                                     /* tp_setattro */
-  NULL,                                     /* tp_as_buffer */
+  nullptr,                                     /* tp_dealloc */
+  nullptr,                                     /* tp_print */
+  nullptr,                                     /* tp_getattr */
+  nullptr,                                     /* tp_setattr */
+  nullptr,                                     /* tp_as_async */
+  nullptr,                                     /* tp_repr */
+  nullptr,                                     /* tp_as_number */
+  nullptr,                                     /* tp_as_sequence */
+  nullptr,                                     /* tp_as_mapping */
+  nullptr,                                     /* tp_hash */
+  nullptr,                                     /* tp_call */
+  nullptr,                                     /* tp_str */
+  nullptr,                                     /* tp_getattro */
+  nullptr,                                     /* tp_setattro */
+  nullptr,                                     /* tp_as_buffer */
   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-  NULL,                                     /* tp_doc */
-  NULL,                                     /* tp_traverse */
-  NULL,                                     /* tp_clear */
-  NULL,                                     /* tp_richcompare */
+  nullptr,                                     /* tp_doc */
+  nullptr,                                     /* tp_traverse */
+  nullptr,                                     /* tp_clear */
+  nullptr,                                     /* tp_richcompare */
   0,                                        /* tp_weaklistoffset */
-  NULL,                                     /* tp_iter */
-  NULL,                                     /* tp_iternext */
+  nullptr,                                     /* tp_iter */
+  nullptr,                                     /* tp_iternext */
   buffer_core_methods,                      /* tp_methods */
-  NULL,                                     /* tp_members */
-  NULL,                                     /* tp_getset */
-  NULL,                                     /* tp_base */
-  NULL,                                     /* tp_dict */
-  NULL,                                     /* tp_descr_get */
-  NULL,                                     /* tp_descr_set */
+  nullptr,                                     /* tp_members */
+  nullptr,                                     /* tp_getset */
+  nullptr,                                     /* tp_base */
+  nullptr,                                     /* tp_dict */
+  nullptr,                                     /* tp_descr_get */
+  nullptr,                                     /* tp_descr_set */
   0,                                        /* tp_dictoffset */
   BufferCore_init,                          /* tp_init */
   PyType_GenericAlloc,                      /* tp_alloc */
   PyType_GenericNew,                        /* tp_new */
-  NULL,                                     /* tp_free */
-  NULL,                                     /* tp_is_gc */
-  NULL,                                     /* tp_bases */
-  NULL,                                     /* tp_mro */
-  NULL,                                     /* tp_cache */
-  NULL,                                     /* tp_subclasses */
-  NULL,                                     /* tp_weaklist */
-  NULL,                                     /* tp_del */
+  nullptr,                                     /* tp_free */
+  nullptr,                                     /* tp_is_gc */
+  nullptr,                                     /* tp_bases */
+  nullptr,                                     /* tp_mro */
+  nullptr,                                     /* tp_cache */
+  nullptr,                                     /* tp_subclasses */
+  nullptr,                                     /* tp_weaklist */
+  nullptr,                                     /* tp_del */
   0,                                        /* tp_version_tag */
-  NULL,                                     /* tp_finalize */
+  nullptr,                                     /* tp_finalize */
 };
 
 bool staticInit()
 {
 #if PYTHON_API_VERSION >= 1007
-  tf2_exception = PyErr_NewException(const_cast<char *>("tf2.TransformException"), NULL, NULL);
+  tf2_exception =
+    PyErr_NewException(const_cast<char *>("tf2.TransformException"), nullptr, nullptr);
   tf2_connectivityexception = PyErr_NewException(const_cast<char *>("tf2.ConnectivityException"),
       tf2_exception,
-      NULL);
+      nullptr);
   tf2_lookupexception = PyErr_NewException(const_cast<char *>("tf2.LookupException"), tf2_exception,
-      NULL);
+      nullptr);
   tf2_extrapolationexception = PyErr_NewException(const_cast<char *>("tf2.ExtrapolationException"),
-      tf2_exception, NULL);
+      tf2_exception, nullptr);
   tf2_invalidargumentexception =
     PyErr_NewException(const_cast<char *>("tf2.InvalidArgumentException"),
-      tf2_exception, NULL);
+      tf2_exception, nullptr);
   tf2_timeoutexception = PyErr_NewException(const_cast<char *>("tf2.TimeoutException"),
-      tf2_exception, NULL);
+      tf2_exception, nullptr);
 #else
   tf2_exception = stringToPython("tf2.error");
   tf2_connectivityexception = stringToPython("tf2.ConnectivityException");
@@ -1075,22 +1077,22 @@ bool staticInit()
   pModulebuiltininterfacesmsgs = pythonImport("builtin_interfaces.msg");
   pModulegeometrymsgs = pythonImport("geometry_msgs.msg");
 
-  if (pModulerclpy == NULL) {
+  if (pModulerclpy == nullptr) {
     printf("Cannot load rclpy module");
     return false;
   }
 
-  if (pModulerclpytime == NULL) {
+  if (pModulerclpytime == nullptr) {
     printf("Cannot load rclpy.time.Time module");
     return false;
   }
 
-  if (pModulegeometrymsgs == NULL) {
+  if (pModulegeometrymsgs == nullptr) {
     printf("Cannot load geometry_msgs module");
     return false;
   }
 
-  if (pModulebuiltininterfacesmsgs == NULL) {
+  if (pModulebuiltininterfacesmsgs == nullptr) {
     printf("Cannot load builtin_interfaces module");
     return false;
   }
@@ -1117,19 +1119,19 @@ PyObject * moduleInit(PyObject * m)
 struct PyModuleDef tf_module = {
   PyModuleDef_HEAD_INIT, /* m_base */
   "_tf2_py",             /* m_name */
-  NULL,                  /* m_doc */
+  nullptr,                  /* m_doc */
   -1,                    /* m_size - state size (but we're using globals) */
   module_methods,        /* m_methods */
-  NULL,                  /* m_slots */
-  NULL,                  /* m_traverse */
-  NULL,                  /* m_clear */
-  NULL,                  /* m_free */
+  nullptr,                  /* m_slots */
+  nullptr,                  /* m_traverse */
+  nullptr,                  /* m_clear */
+  nullptr,                  /* m_free */
 };
 
 PyMODINIT_FUNC PyInit__tf2_py()
 {
   if (!staticInit()) {
-    return NULL;
+    return nullptr;
   }
   return moduleInit(PyModule_Create(&tf_module));
 }
