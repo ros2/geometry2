@@ -335,7 +335,7 @@ static int BufferCore_init(PyObject * self, PyObject * args, PyObject * kw)
     return -1;
   }
 
-  ((buffer_core_t *)self)->bc = new tf2::BufferCore(cache_time);
+  reinterpret_cast<buffer_core_t *>(self)->bc = new tf2::BufferCore(cache_time);
 
   return 0;
 }
@@ -343,25 +343,26 @@ static int BufferCore_init(PyObject * self, PyObject * args, PyObject * kw)
 static PyObject * allFramesAsYAML(PyObject * self, PyObject * args)
 {
   (void)args;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   return stringToPython(bc->allFramesAsYAML());
 }
 
 static PyObject * allFramesAsString(PyObject * self, PyObject * args)
 {
   (void)args;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   return stringToPython(bc->allFramesAsString());
 }
 
 static PyObject * canTransformCore(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame;
   tf2::TimePoint time;
   static const char * keywords[] = {"target_frame", "source_frame", "time", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char **)keywords, &target_frame,
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
     &source_frame, rostime_converter, &time))
   {
     return NULL;
@@ -374,13 +375,14 @@ static PyObject * canTransformCore(PyObject * self, PyObject * args, PyObject * 
 
 static PyObject * canTransformFullCore(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame, * fixed_frame;
   tf2::TimePoint target_time, source_time;
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char **)keywords,
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
     &target_frame,
     rostime_converter,
     &target_time,
@@ -394,7 +396,8 @@ static PyObject * canTransformFullCore(PyObject * self, PyObject * args, PyObjec
   std::string error_msg;
   bool can_transform = bc->canTransform(target_frame, target_time, source_frame, source_time,
       fixed_frame, &error_msg);
-  // return PyBool_FromLong(t->canTransform(target_frame, target_time, source_frame, source_time, fixed_frame));
+  // return PyBool_FromLong(t->canTransform(target_frame, target_time, source_frame,
+  //                                        source_time, fixed_frame));
   return Py_BuildValue("bs", can_transform, error_msg.c_str());
 }
 
@@ -410,14 +413,15 @@ static PyObject * asListOfStrings(std::vector<std::string> los)
 
 static PyObject * _chain(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame, * fixed_frame;
   tf2::TimePoint target_time, source_time;
   std::vector<std::string> output;
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char **)keywords,
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
     &target_frame,
     rostime_converter,
     &target_time,
@@ -436,7 +440,7 @@ static PyObject * _chain(PyObject * self, PyObject * args, PyObject * kw)
 
 static PyObject * getLatestCommonTime(PyObject * self, PyObject * args)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame;
   tf2::CompactFrameID target_id, source_id;
   tf2::TimePoint tf2_time;
@@ -507,12 +511,13 @@ cleanup:
 
 static PyObject * lookupTransformCore(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame;
   tf2::TimePoint time;
   static const char * keywords[] = {"target_frame", "source_frame", "time", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&", (char **)keywords, &target_frame,
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
     &source_frame, rostime_converter, &time))
   {
     return NULL;
@@ -528,13 +533,14 @@ static PyObject * lookupTransformCore(PyObject * self, PyObject * args, PyObject
 
 static PyObject * lookupTransformFullCore(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * target_frame, * source_frame, * fixed_frame;
   tf2::TimePoint target_time, source_time;
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s", (char **)keywords,
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
     &target_frame,
     rostime_converter,
     &target_time,
@@ -598,13 +604,14 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
 */
 static inline int checkTranslationType(PyObject * o)
 {
-  PyTypeObject * translation_type = (PyTypeObject *) PyObject_GetAttrString(pModulegeometrymsgs,
-      "Vector3");
+  PyTypeObject * translation_type =
+    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(pModulegeometrymsgs,
+    "Vector3"));
   if (!translation_type) {
     return 0;
   }
   int type_check = PyObject_TypeCheck(o, translation_type);
-  Py_DECREF((PyObject *)translation_type);
+  Py_DECREF(reinterpret_cast<PyObject *>(translation_type));
   int attr_check = PyObject_HasAttrString(o, "x") &&
     PyObject_HasAttrString(o, "y") &&
     PyObject_HasAttrString(o, "z");
@@ -617,13 +624,14 @@ static inline int checkTranslationType(PyObject * o)
 
 static inline int checkRotationType(PyObject * o)
 {
-  PyTypeObject * rotation_type = (PyTypeObject *) PyObject_GetAttrString(pModulegeometrymsgs,
-      "Quaternion");
+  PyTypeObject * rotation_type =
+    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(pModulegeometrymsgs,
+    "Quaternion"));
   if (!rotation_type) {
     return 0;
   }
   int type_check = PyObject_TypeCheck(o, rotation_type);
-  Py_DECREF((PyObject *)rotation_type);
+  Py_DECREF(reinterpret_cast<PyObject *>(rotation_type));
   int attr_check = PyObject_HasAttrString(o, "w") &&
     PyObject_HasAttrString(o, "x") &&
     PyObject_HasAttrString(o, "y") &&
@@ -637,7 +645,7 @@ static inline int checkRotationType(PyObject * o)
 static PyObject * setTransform(PyObject * self, PyObject * args)
 {
   PyObject * ret = nullptr;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   PyObject * py_transform;
   char * authority;
   tf2::TimePoint time;
@@ -782,7 +790,7 @@ cleanup:
 static PyObject * setTransformStatic(PyObject * self, PyObject * args)
 {
   PyObject * ret = nullptr;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   PyObject * py_transform;
   char * authority;
   tf2::TimePoint time;
@@ -920,14 +928,14 @@ cleanup:
 static PyObject * clear(PyObject * self, PyObject * args)
 {
   (void)args;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   bc->clear();
   Py_RETURN_NONE;
 }
 
 static PyObject * _frameExists(PyObject * self, PyObject * args)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   char * frame_id_str;
   if (!PyArg_ParseTuple(args, "s", &frame_id_str)) {
     return NULL;
@@ -938,7 +946,7 @@ static PyObject * _frameExists(PyObject * self, PyObject * args)
 static PyObject * _getFrameStrings(PyObject * self, PyObject * args)
 {
   (void)args;
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   std::vector<std::string> ids;
   bc->_getFrameStrings(ids);
   return asListOfStrings(ids);
@@ -946,10 +954,12 @@ static PyObject * _getFrameStrings(PyObject * self, PyObject * args)
 
 static PyObject * _allFramesAsDot(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   static const char * keywords[] = {"time", NULL};
   tf2::TimePoint time;
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&", (char **)keywords, rostime_converter, &time)) {
+  if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&",
+    const_cast<char **>(reinterpret_cast<const char **>(keywords)), rostime_converter, &time))
+  {
     return NULL;
   }
   return stringToPython(bc->_allFramesAsDot(time).c_str());
@@ -1038,15 +1048,19 @@ static PyTypeObject buffer_core_Type = {
 bool staticInit()
 {
 #if PYTHON_API_VERSION >= 1007
-  tf2_exception = PyErr_NewException((char *)"tf2.TransformException", NULL, NULL);
-  tf2_connectivityexception = PyErr_NewException((char *)"tf2.ConnectivityException", tf2_exception,
+  tf2_exception = PyErr_NewException(const_cast<char *>("tf2.TransformException"), NULL, NULL);
+  tf2_connectivityexception = PyErr_NewException(const_cast<char *>("tf2.ConnectivityException"),
+      tf2_exception,
       NULL);
-  tf2_lookupexception = PyErr_NewException((char *)"tf2.LookupException", tf2_exception, NULL);
-  tf2_extrapolationexception = PyErr_NewException((char *)"tf2.ExtrapolationException",
+  tf2_lookupexception = PyErr_NewException(const_cast<char *>("tf2.LookupException"), tf2_exception,
+      NULL);
+  tf2_extrapolationexception = PyErr_NewException(const_cast<char *>("tf2.ExtrapolationException"),
       tf2_exception, NULL);
-  tf2_invalidargumentexception = PyErr_NewException((char *)"tf2.InvalidArgumentException",
+  tf2_invalidargumentexception =
+    PyErr_NewException(const_cast<char *>("tf2.InvalidArgumentException"),
       tf2_exception, NULL);
-  tf2_timeoutexception = PyErr_NewException((char *)"tf2.TimeoutException", tf2_exception, NULL);
+  tf2_timeoutexception = PyErr_NewException(const_cast<char *>("tf2.TimeoutException"),
+      tf2_exception, NULL);
 #else
   tf2_exception = stringToPython("tf2.error");
   tf2_connectivityexception = stringToPython("tf2.ConnectivityException");
@@ -1089,7 +1103,7 @@ bool staticInit()
 
 PyObject * moduleInit(PyObject * m)
 {
-  PyModule_AddObject(m, "BufferCore", (PyObject *)&buffer_core_Type);
+  PyModule_AddObject(m, "BufferCore", reinterpret_cast<PyObject *>(&buffer_core_Type));
   PyObject * d = PyModule_GetDict(m);
   PyDict_SetItemString(d, "TransformException", tf2_exception);
   PyDict_SetItemString(d, "ConnectivityException", tf2_connectivityexception);
