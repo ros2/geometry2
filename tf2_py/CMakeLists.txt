@@ -36,6 +36,8 @@ endif()
 
 ament_python_install_package(${PROJECT_NAME})
 
+include_directories(include)
+
 function(set_properties _targetname _build_type)
   set_target_properties(${_targetname} PROPERTIES
     PREFIX ""

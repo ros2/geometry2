@@ -1,5 +1,5 @@
-#ifndef TF2_PY_PYTHON_COMPAT_H
-#define TF2_PY_PYTHON_COMPAT_H
+#ifndef PYTHON_COMPAT_H_
+#define PYTHON_COMPAT_H_
 
 #include <Python.h>
 
@@ -9,7 +9,7 @@
 /// \note The caller is responsible for decref'ing the returned object.
 /// \note If the return value is NULL then an exception is set.
 /// \return a new PyObject reference, or NULL
-inline PyObject *stringToPython(const std::string &input)
+inline PyObject * stringToPython(const std::string & input)
 {
 #if PY_MAJOR_VERSION >= 3
   return PyUnicode_FromStringAndSize(input.c_str(), input.size());
@@ -22,7 +22,7 @@ inline PyObject *stringToPython(const std::string &input)
 /// \note The caller is responsible for decref'ing the returned object.
 /// \note If the return value is NULL then an exception is set.
 /// \return a new PyObject reference, or NULL
-inline PyObject *stringToPython(const char *input)
+inline PyObject * stringToPython(const char * input)
 {
 #if PY_MAJOR_VERSION >= 3
   return PyUnicode_FromString(input);
@@ -53,15 +53,15 @@ inline std::string stringFromPython(PyObject * input)
 /// \note The caller is responsible for decref'ing the returned object.
 /// \note If the return value is NULL then an exception is set.
 /// \return a reference to the imported module.
-inline PyObject *pythonImport(const std::string & name)
+inline PyObject * pythonImport(const std::string & name)
 {
-  PyObject *py_name = stringToPython(name);
+  PyObject * py_name = stringToPython(name);
   if (!py_name) {
     return nullptr;
   }
-  PyObject *module  = PyImport_Import(py_name);
+  PyObject * module = PyImport_Import(py_name);
   Py_XDECREF(py_name);
   return module;
 }
 
-#endif
+#endif  // PYTHON_COMPAT_H_
