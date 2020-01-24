@@ -28,7 +28,6 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import time
 import unittest
 import rclpy
 from geometry_msgs.msg import TransformStamped
