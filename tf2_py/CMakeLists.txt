@@ -74,6 +74,7 @@ if(BUILD_TESTING)
   # https://github.com/ros2/geometry2/pull/222
   list(APPEND AMENT_LINT_AUTO_EXCLUDE
     ament_cmake_copyright
+    ament_cmake_cpplint
   )
   ament_lint_auto_find_test_dependencies()
 
