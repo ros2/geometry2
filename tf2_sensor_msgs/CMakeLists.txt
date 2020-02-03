@@ -22,13 +22,6 @@ ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-include_directories(include
-  ${sensor_msgs_INCLUDE_DIRS}
-  ${tf2_INCLUDE_DIRS}
-  ${tf2_ros_INCLUDE_DIRS}
-  ${Eigen3_INCLUDE_DIRS}
-)
-
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)
 
