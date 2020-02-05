@@ -58,7 +58,6 @@ public:
     const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options =
       rclcpp::PublisherOptionsWithAllocator<AllocatorT>())
   {
-    // TODO(tfoote) latched equivalent
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
       node, "/tf_static", qos, options);
   }
