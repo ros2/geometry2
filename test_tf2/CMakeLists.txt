@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
 
+project(test_tf2)
+
+find_package(ament_cmake REQUIRED)
+
 if(NOT BUILD_TESTING)
+  ament_package()
   return()
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
-project(test_tf2)
-
-find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_gtest REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED)
