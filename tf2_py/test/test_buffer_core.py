@@ -29,10 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-import rclpy
+
 from geometry_msgs.msg import TransformStamped
 from test_tf2_py._tf2_py import BufferCore
 from test_tf2_py._tf2_py import LookupException
+import rclpy
 
 
 def build_transform(target_frame, source_frame, stamp):
@@ -51,6 +52,7 @@ def build_transform(target_frame, source_frame, stamp):
 
 
 class TestBufferClient(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         pass
