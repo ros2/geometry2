@@ -77,7 +77,7 @@ if(BUILD_TESTING)
 
 endif()
 
-ament_export_dependencies(console_bridge)
+ament_export_dependencies(console_bridge geometry_msgs)
 ament_export_include_directories(include)
 ament_export_libraries(tf2)
 ament_package()
