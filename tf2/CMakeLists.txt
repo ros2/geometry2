@@ -10,6 +10,7 @@ find_package(ament_cmake)
 find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
 find_package(console_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(rcutils REQUIRED)
 
 include_directories(include src/bt)
 
@@ -20,6 +21,7 @@ add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp sr
 ament_target_dependencies(tf2
   "console_bridge"
   "geometry_msgs"
+  "rcutils"
 )
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
@@ -77,7 +79,7 @@ if(BUILD_TESTING)
 
 endif()
 
-ament_export_dependencies(console_bridge geometry_msgs)
+ament_export_dependencies(console_bridge geometry_msgs rcutils)
 ament_export_include_directories(include)
 ament_export_libraries(tf2)
 ament_package()
