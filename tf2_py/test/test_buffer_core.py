@@ -31,9 +31,10 @@
 import unittest
 
 from geometry_msgs.msg import TransformStamped
+import rclpy
+
 from test_tf2_py._tf2_py import BufferCore
 from test_tf2_py._tf2_py import LookupException
-import rclpy
 
 
 def build_transform(target_frame, source_frame, stamp):
