@@ -361,9 +361,10 @@ static PyObject * canTransformCore(PyObject * self, PyObject * args, PyObject * 
   tf2::TimePoint time;
   static const char * keywords[] = {"target_frame", "source_frame", "time", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
-    &source_frame, rostime_converter, &time))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "ssO&",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
+      &source_frame, rostime_converter, &time))
   {
     return nullptr;
   }
@@ -381,21 +382,23 @@ static PyObject * canTransformFullCore(PyObject * self, PyObject * args, PyObjec
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
-    &target_frame,
-    rostime_converter,
-    &target_time,
-    &source_frame,
-    rostime_converter,
-    &source_time,
-    &fixed_frame))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "sO&sO&s",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)),
+      &target_frame,
+      rostime_converter,
+      &target_time,
+      &source_frame,
+      rostime_converter,
+      &source_time,
+      &fixed_frame))
   {
     return nullptr;
   }
   std::string error_msg;
-  bool can_transform = bc->canTransform(target_frame, target_time, source_frame, source_time,
-      fixed_frame, &error_msg);
+  bool can_transform = bc->canTransform(
+    target_frame, target_time, source_frame, source_time,
+    fixed_frame, &error_msg);
   // return PyBool_FromLong(t->canTransform(target_frame, target_time, source_frame,
   //                                        source_time, fixed_frame));
   return Py_BuildValue("bs", can_transform, error_msg.c_str());
@@ -420,21 +423,24 @@ static PyObject * _chain(PyObject * self, PyObject * args, PyObject * kw)
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
-    &target_frame,
-    rostime_converter,
-    &target_time,
-    &source_frame,
-    rostime_converter,
-    &source_time,
-    &fixed_frame))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "sO&sO&s",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)),
+      &target_frame,
+      rostime_converter,
+      &target_time,
+      &source_frame,
+      rostime_converter,
+      &source_time,
+      &fixed_frame))
   {
     return nullptr;
   }
 
-  WRAP(bc->_chainAsVector(target_frame, target_time, source_frame, source_time, fixed_frame,
-    output));
+  WRAP(
+    bc->_chainAsVector(
+      target_frame, target_time, source_frame, source_time, fixed_frame,
+      output));
   return asListOfStrings(output);
 }
 
@@ -516,9 +522,10 @@ static PyObject * lookupTransformCore(PyObject * self, PyObject * args, PyObject
   tf2::TimePoint time;
   static const char * keywords[] = {"target_frame", "source_frame", "time", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
-    &source_frame, rostime_converter, &time))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "ssO&",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)), &target_frame,
+      &source_frame, rostime_converter, &time))
   {
     return nullptr;
   }
@@ -539,20 +546,22 @@ static PyObject * lookupTransformFullCore(PyObject * self, PyObject * args, PyOb
   static const char * keywords[] =
   {"target_frame", "target_time", "source_frame", "source_time", "fixed_frame", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "sO&sO&s",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)),
-    &target_frame,
-    rostime_converter,
-    &target_time,
-    &source_frame,
-    rostime_converter,
-    &source_time,
-    &fixed_frame))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "sO&sO&s",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)),
+      &target_frame,
+      rostime_converter,
+      &target_time,
+      &source_frame,
+      rostime_converter,
+      &source_time,
+      &fixed_frame))
   {
     return nullptr;
   }
   geometry_msgs::msg::TransformStamped transform;
-  WRAP(transform =
+  WRAP(
+    transform =
     bc->lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame));
   // TODO(anyone): Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
@@ -605,8 +614,9 @@ static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
 static inline int checkTranslationType(PyObject * o)
 {
   PyTypeObject * translation_type =
-    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(pModulegeometrymsgs,
-    "Vector3"));
+    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(
+      pModulegeometrymsgs,
+      "Vector3"));
   if (!translation_type) {
     return 0;
   }
@@ -625,8 +635,9 @@ static inline int checkTranslationType(PyObject * o)
 static inline int checkRotationType(PyObject * o)
 {
   PyTypeObject * rotation_type =
-    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(pModulegeometrymsgs,
-    "Quaternion"));
+    reinterpret_cast<PyTypeObject *>(PyObject_GetAttrString(
+      pModulegeometrymsgs,
+      "Quaternion"));
   if (!rotation_type) {
     return 0;
   }
@@ -957,8 +968,9 @@ static PyObject * _allFramesAsDot(PyObject * self, PyObject * args, PyObject * k
   tf2::BufferCore * bc = reinterpret_cast<buffer_core_t *>(self)->bc;
   static const char * keywords[] = {"time", nullptr};
   tf2::TimePoint time;
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "|O&",
-    const_cast<char **>(reinterpret_cast<const char **>(keywords)), rostime_converter, &time))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "|O&",
+      const_cast<char **>(reinterpret_cast<const char **>(keywords)), rostime_converter, &time))
   {
     return nullptr;
   }
@@ -1051,18 +1063,23 @@ bool staticInit()
 #if PYTHON_API_VERSION >= 1007
   tf2_exception =
     PyErr_NewException(const_cast<char *>("tf2.TransformException"), nullptr, nullptr);
-  tf2_connectivityexception = PyErr_NewException(const_cast<char *>("tf2.ConnectivityException"),
-      tf2_exception,
-      nullptr);
-  tf2_lookupexception = PyErr_NewException(const_cast<char *>("tf2.LookupException"), tf2_exception,
-      nullptr);
-  tf2_extrapolationexception = PyErr_NewException(const_cast<char *>("tf2.ExtrapolationException"),
-      tf2_exception, nullptr);
+  tf2_connectivityexception = PyErr_NewException(
+    const_cast<char *>("tf2.ConnectivityException"),
+    tf2_exception,
+    nullptr);
+  tf2_lookupexception = PyErr_NewException(
+    const_cast<char *>("tf2.LookupException"), tf2_exception,
+    nullptr);
+  tf2_extrapolationexception = PyErr_NewException(
+    const_cast<char *>("tf2.ExtrapolationException"),
+    tf2_exception, nullptr);
   tf2_invalidargumentexception =
-    PyErr_NewException(const_cast<char *>("tf2.InvalidArgumentException"),
-      tf2_exception, nullptr);
-  tf2_timeoutexception = PyErr_NewException(const_cast<char *>("tf2.TimeoutException"),
-      tf2_exception, nullptr);
+    PyErr_NewException(
+    const_cast<char *>("tf2.InvalidArgumentException"),
+    tf2_exception, nullptr);
+  tf2_timeoutexception = PyErr_NewException(
+    const_cast<char *>("tf2.TimeoutException"),
+    tf2_exception, nullptr);
 #else
   tf2_exception = stringToPython("tf2.error");
   tf2_connectivityexception = stringToPython("tf2.ConnectivityException");
