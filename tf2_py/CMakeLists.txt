@@ -36,6 +36,8 @@ endif()
 
 ament_python_install_package(${PROJECT_NAME})
 
+include_directories(include)
+
 function(set_properties _targetname _build_type)
   set_target_properties(${_targetname} PROPERTIES
     PREFIX ""
@@ -68,6 +70,12 @@ install(TARGETS
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  # TODO (ahcorde): disable the copyright check. Once we figure out the ament_lint situation
+  # https://github.com/ros2/geometry2/pull/222
+  list(APPEND AMENT_LINT_AUTO_EXCLUDE
+    ament_cmake_copyright
+    ament_cmake_cpplint
+  )
   ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_pytest REQUIRED)

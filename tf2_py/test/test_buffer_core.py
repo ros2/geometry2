@@ -28,12 +28,14 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import time
 import unittest
-import rclpy
+
 from geometry_msgs.msg import TransformStamped
+import rclpy
+
 from test_tf2_py._tf2_py import BufferCore
 from test_tf2_py._tf2_py import LookupException
+
 
 def build_transform(target_frame, source_frame, stamp):
     transform = TransformStamped()
@@ -51,6 +53,7 @@ def build_transform(target_frame, source_frame, stamp):
 
 
 class TestBufferClient(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         pass
@@ -250,6 +253,7 @@ class TestBufferClient(unittest.TestCase):
             )
 
         self.assertEqual(LookupException, type(ex.exception))
+
 
 if __name__ == '__main__':
     unittest.main()
