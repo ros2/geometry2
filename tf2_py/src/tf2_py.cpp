@@ -1007,59 +1007,28 @@ static PyMethodDef module_methods[] = {
   {nullptr, nullptr, 0, nullptr},
 };
 
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
 static PyTypeObject buffer_core_Type = {
   PyVarObject_HEAD_INIT(nullptr, 0)
-  "_tf2.BufferCore",                        /* tp_name */
-  sizeof(buffer_core_t),                    /* tp_basicsize */
-  0,                                        /* tp_itemsize */
-  nullptr,                                     /* tp_dealloc */
-  nullptr,                                     /* tp_print */
-  nullptr,                                     /* tp_getattr */
-  nullptr,                                     /* tp_setattr */
-  nullptr,                                     /* tp_as_async */
-  nullptr,                                     /* tp_repr */
-  nullptr,                                     /* tp_as_number */
-  nullptr,                                     /* tp_as_sequence */
-  nullptr,                                     /* tp_as_mapping */
-  nullptr,                                     /* tp_hash */
-  nullptr,                                     /* tp_call */
-  nullptr,                                     /* tp_str */
-  nullptr,                                     /* tp_getattro */
-  nullptr,                                     /* tp_setattro */
-  nullptr,                                     /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-  nullptr,                                     /* tp_doc */
-  nullptr,                                     /* tp_traverse */
-  nullptr,                                     /* tp_clear */
-  nullptr,                                     /* tp_richcompare */
-  0,                                        /* tp_weaklistoffset */
-  nullptr,                                     /* tp_iter */
-  nullptr,                                     /* tp_iternext */
-  buffer_core_methods,                      /* tp_methods */
-  nullptr,                                     /* tp_members */
-  nullptr,                                     /* tp_getset */
-  nullptr,                                     /* tp_base */
-  nullptr,                                     /* tp_dict */
-  nullptr,                                     /* tp_descr_get */
-  nullptr,                                     /* tp_descr_set */
-  0,                                        /* tp_dictoffset */
-  BufferCore_init,                          /* tp_init */
-  PyType_GenericAlloc,                      /* tp_alloc */
-  PyType_GenericNew,                        /* tp_new */
-  nullptr,                                     /* tp_free */
-  nullptr,                                     /* tp_is_gc */
-  nullptr,                                     /* tp_bases */
-  nullptr,                                     /* tp_mro */
-  nullptr,                                     /* tp_cache */
-  nullptr,                                     /* tp_subclasses */
-  nullptr,                                     /* tp_weaklist */
-  nullptr,                                     /* tp_del */
-  0,                                        /* tp_version_tag */
-  nullptr,                                     /* tp_finalize */
+  "_tf2.BufferCore",                           /* tp_name */
+  sizeof(buffer_core_t),                       /* tp_basicsize */
 };
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
 
 bool staticInit()
 {
+  // Initialize buffer_core_Type
+  buffer_core_Type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
+  buffer_core_Type.tp_methods = buffer_core_methods;
+  buffer_core_Type.tp_init = BufferCore_init;
+  buffer_core_Type.tp_alloc = PyType_GenericAlloc;
+  buffer_core_Type.tp_new = PyType_GenericNew;
+
 #if PYTHON_API_VERSION >= 1007
   tf2_exception =
     PyErr_NewException(const_cast<char *>("tf2.TransformException"), nullptr, nullptr);
