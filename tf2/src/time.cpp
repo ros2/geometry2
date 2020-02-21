@@ -43,7 +43,7 @@ std::string tf2::displayTimePoint(const tf2::TimePoint& stamp)
   int buff_size = snprintf(NULL, 0, format_str, current_time);
   if (buff_size < 0) {
     char errmsg[200];
-    rcutils_safe_strerror(errmsg, sizeof(errmsg));
+    rcutils_strerror(errmsg, sizeof(errmsg));
     throw std::runtime_error(errmsg);
   }
 
@@ -52,7 +52,7 @@ std::string tf2::displayTimePoint(const tf2::TimePoint& stamp)
   if (bytes_written < 0) {
     delete[] buffer;
     char errmsg[200];
-    rcutils_safe_strerror(errmsg, sizeof(errmsg));
+    rcutils_strerror(errmsg, sizeof(errmsg));
     throw std::runtime_error(errmsg);
   }
   std::string result = std::string(buffer);
