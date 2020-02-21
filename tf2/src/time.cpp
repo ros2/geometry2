@@ -32,15 +32,14 @@
 #include <stdexcept>
 #include <string>
 
+#include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
 #include "tf2/time.h"
 
-using namespace tf2;
-
-std::string tf2::displayTimePoint(const TimePoint& stamp)
+std::string tf2::displayTimePoint(const tf2::TimePoint& stamp)
 {
   const char * format_str = "%.6f";
-  double current_time = timeToSec(stamp);
+  double current_time = tf2::timeToSec(stamp);
   int buff_size = snprintf(NULL, 0, format_str, current_time);
   if (buff_size < 0) {
     char errmsg[200];
@@ -49,7 +48,7 @@ std::string tf2::displayTimePoint(const TimePoint& stamp)
   }
 
   char * buffer = new char[buff_size];
-  int bytes_written = snprintf(buffer, buff_size, format_str, current_time);
+  int bytes_written = rcutils_snprintf(buffer, buff_size, format_str, current_time);
   if (bytes_written < 0) {
     delete[] buffer;
     char errmsg[200];
