@@ -1015,6 +1015,7 @@ static PyTypeObject buffer_core_Type = {
   PyVarObject_HEAD_INIT(nullptr, 0)
   "_tf2.BufferCore",                           /* tp_name */
   sizeof(buffer_core_t),                       /* tp_basicsize */
+  // The other members are initialized in `staticInit`.
 };
 #ifndef _WIN32
 # pragma GCC diagnostic pop
