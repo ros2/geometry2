@@ -14,6 +14,7 @@
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
   <build_depend>bullet</build_depend>
   <build_depend>geometry_msgs</build_depend>
 
