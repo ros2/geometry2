@@ -25,6 +25,12 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+
+#ifndef TF2_BULLET__TF2_BULLET__TF2_BULLET_H_
+#define TF2_BULLET__TF2_BULLET__TF2_BULLET_H_
+
 #warning This header is at the wrong path you should include <tf2_bullet/tf2_bullet.h>
 
 #include <tf2_bullet/tf2_bullet.h>
+
+#endif  // TF2_BULLET__TF2_BULLET__TF2_BULLET_H_

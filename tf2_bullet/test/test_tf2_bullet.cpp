@@ -39,14 +39,14 @@ static const double EPS = 1e-3;
 
 TEST(TfBullet, ConvertVector)
 {
-  btVector3 v(1,2,3);
+  btVector3 v(1, 2, 3);
 
   btVector3 v1 = v;
   tf2::convert(v1, v1);
 
   EXPECT_EQ(v, v1);
 
-  btVector3 v2(3,4,5);
+  btVector3 v2(3, 4, 5);
   tf2::convert(v1, v2);
 
   EXPECT_EQ(v, v2);
@@ -54,8 +54,8 @@ TEST(TfBullet, ConvertVector)
 }
 
 
-
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
 
   int ret = RUN_ALL_TESTS();

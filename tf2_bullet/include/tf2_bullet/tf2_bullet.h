@@ -28,8 +28,8 @@
 
 /** \author Wim Meeussen */
 
-#ifndef TF2_BULLET_H
-#define TF2_BULLET_H
+#ifndef TF2_BULLET__TF2_BULLET_H_
+#define TF2_BULLET__TF2_BULLET_H_
 
 #include <tf2/convert.h>
 #include <LinearMath/btTransform.h>
@@ -43,12 +43,14 @@ namespace tf2
  * \return The transform message converted to a Bullet btTransform.
  */
 inline
-btTransform transformToBullet(const geometry_msgs::msg::TransformStamped& t)
-  {
-    return btTransform(btQuaternion(t.transform.rotation.x, t.transform.rotation.y,
-				    t.transform.rotation.z, t.transform.rotation.w),
-		       btVector3(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
-  }
+btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
+{
+  return btTransform(
+    btQuaternion(
+      t.transform.rotation.x, t.transform.rotation.y,
+      t.transform.rotation.z, t.transform.rotation.w),
+    btVector3(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
+}
 
 
 /** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Vector3 type.
@@ -57,12 +59,17 @@ btTransform transformToBullet(const geometry_msgs::msg::TransformStamped& t)
  * \param t_out The transformed vector, as a timestamped Bullet btVector3 data type.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template <>
+template<>
 inline
-  void doTransform(const tf2::Stamped<btVector3>& t_in, tf2::Stamped<btVector3>& t_out, const geometry_msgs::msg::TransformStamped& transform)
-  {
-    t_out = tf2::Stamped<btVector3>(transformToBullet(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-  }
+void doTransform(
+  const tf2::Stamped<btVector3> & t_in, tf2::Stamped<btVector3> & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  t_out =
+    tf2::Stamped<btVector3>(
+    transformToBullet(transform) * t_in,
+    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+}
 
 /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h
@@ -70,7 +77,7 @@ inline
  * \return The vector converted to a PointStamped message.
  */
 inline
-geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3>& in)
+geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3> & in)
 {
   geometry_msgs::msg::PointStamped msg;
   msg.header.stamp = tf2_ros::toMsg(in.stamp_);
@@ -87,7 +94,7 @@ geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3>& in)
  * \param out The point converted to a timestamped Bullet Vector3.
  */
 inline
-void fromMsg(const geometry_msgs::msg::PointStamped& msg, tf2::Stamped<btVector3>& out)
+void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped<btVector3> & out)
 {
   out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
@@ -103,14 +110,19 @@ void fromMsg(const geometry_msgs::msg::PointStamped& msg, tf2::Stamped<btVector3
  * \param t_out The transformed frame, as a timestamped Bullet btTransform.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template <>
+template<>
 inline
-  void doTransform(const tf2::Stamped<btTransform>& t_in, tf2::Stamped<btTransform>& t_out, const geometry_msgs::msg::TransformStamped& transform)
-  {
-    t_out = tf2::Stamped<btTransform>(transformToBullet(transform) * t_in, tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-  }
+void doTransform(
+  const tf2::Stamped<btTransform> & t_in, tf2::Stamped<btTransform> & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  t_out =
+    tf2::Stamped<btTransform>(
+    transformToBullet(transform) * t_in,
+    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+}
 
 
-} // namespace
+}  // namespace tf2
 
-#endif // TF2_BULLET_H
+#endif  // TF2_BULLET__TF2_BULLET_H_
