@@ -42,15 +42,15 @@ namespace tf2
  * \param t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to a Bullet btTransform.
  */
-inline
-btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
-{
-  return btTransform(
-    btQuaternion(
-      t.transform.rotation.x, t.transform.rotation.y,
-      t.transform.rotation.z, t.transform.rotation.w),
-    btVector3(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
-}
+  inline
+  btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
+  {
+    return btTransform(
+      btQuaternion(
+        t.transform.rotation.x, t.transform.rotation.y,
+        t.transform.rotation.z, t.transform.rotation.w),
+      btVector3(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
+  }
 
 
 /** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Vector3 type.
@@ -59,49 +59,49 @@ btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
  * \param t_out The transformed vector, as a timestamped Bullet btVector3 data type.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template<>
-inline
-void doTransform(
-  const tf2::Stamped<btVector3> & t_in, tf2::Stamped<btVector3> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out =
-    tf2::Stamped<btVector3>(
-    transformToBullet(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-}
+  template < >
+  inline
+  void doTransform(
+    const tf2::Stamped < btVector3 > & t_in, tf2::Stamped < btVector3 > & t_out,
+    const geometry_msgs::msg::TransformStamped & transform)
+  {
+    t_out =
+      tf2::Stamped < btVector3 > (
+      transformToBullet(transform) * t_in,
+      tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+  }
 
 /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h
  * \param in The timestamped Bullet btVector3 to convert.
  * \return The vector converted to a PointStamped message.
  */
-inline
-geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3> & in)
-{
-  geometry_msgs::msg::PointStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
-  msg.header.frame_id = in.frame_id_;
-  msg.point.x = in[0];
-  msg.point.y = in[1];
-  msg.point.z = in[2];
-  return msg;
-}
+  inline
+  geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped < btVector3 > & in)
+  {
+    geometry_msgs::msg::PointStamped msg;
+    msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+    msg.header.frame_id = in.frame_id_;
+    msg.point.x = in[0];
+    msg.point.y = in[1];
+    msg.point.z = in[2];
+    return msg;
+  }
 
 /** \brief Convert a PointStamped message type to a stamped Bullet-specific Vector3 type.
  * This function is a specialization of the fromMsg template defined in tf2/convert.h
  * \param msg The PointStamped message to convert.
  * \param out The point converted to a timestamped Bullet Vector3.
  */
-inline
-void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped<btVector3> & out)
-{
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
-  out.frame_id_ = msg.header.frame_id;
-  out[0] = msg.point.x;
-  out[1] = msg.point.y;
-  out[2] = msg.point.z;
-}
+  inline
+  void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped < btVector3 > & out)
+  {
+    out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+    out.frame_id_ = msg.header.frame_id;
+    out[0] = msg.point.x;
+    out[1] = msg.point.y;
+    out[2] = msg.point.z;
+  }
 
 
 /** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Transform data type.
@@ -110,17 +110,17 @@ void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped<btVector
  * \param t_out The transformed frame, as a timestamped Bullet btTransform.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template<>
-inline
-void doTransform(
-  const tf2::Stamped<btTransform> & t_in, tf2::Stamped<btTransform> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out =
-    tf2::Stamped<btTransform>(
-    transformToBullet(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-}
+  template < >
+  inline
+  void doTransform(
+    const tf2::Stamped < btTransform > & t_in, tf2::Stamped < btTransform > & t_out,
+    const geometry_msgs::msg::TransformStamped & transform)
+  {
+    t_out =
+      tf2::Stamped < btTransform > (
+      transformToBullet(transform) * t_in,
+      tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+  }
 
 
 }  // namespace tf2
