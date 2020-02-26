@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.5)
 project(tf2_bullet)
 
-find_package(PkgConfig REQUIRED)
-
-set(bullet_FOUND 0)
-pkg_check_modules(bullet REQUIRED bullet)
-
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-include_directories(include ${bullet_INCLUDE_DIRS})
+if(WIN32)
+  set(BULLET_ROOT $ENV{ChocolateyInstall}/lib/bullet)
+endif()
+find_package(Bullet REQUIRED)
+
+include_directories(include ${BULLET_INCLUDE_DIRS})
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
