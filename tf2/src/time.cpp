@@ -29,45 +29,31 @@
 
 /** \author Tully Foote */
 
-#include <errno.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
+#include <stdexcept>
+#include <string>
 
+#include "rcutils/snprintf.h"
+#include "rcutils/strerror.h"
 #include "tf2/time.h"
 
-using namespace tf2;
-
-std::string tf2::displayTimePoint(const TimePoint& stamp)
+std::string tf2::displayTimePoint(const tf2::TimePoint& stamp)
 {
   const char * format_str = "%.6f";
-  double current_time = timeToSec(stamp);
+  double current_time = tf2::timeToSec(stamp);
   int buff_size = snprintf(NULL, 0, format_str, current_time);
   if (buff_size < 0) {
-#ifdef _WIN32
-    // Using fixed buffer size since, strerrorlen_s not yet available
-    const int errormsglen = 200;
-    char errmsg[errormsglen];
-    strerror_s(errmsg, errormsglen, errno);
+    char errmsg[200];
+    rcutils_strerror(errmsg, sizeof(errmsg));
     throw std::runtime_error(errmsg);
-#else
-    throw std::runtime_error(strerror(errno));
-#endif // _WIN32
   }
 
   char * buffer = new char[buff_size];
-  int bytes_written = snprintf(buffer, buff_size, format_str, current_time);
+  int bytes_written = rcutils_snprintf(buffer, buff_size, format_str, current_time);
   if (bytes_written < 0) {
     delete[] buffer;
-#ifdef _WIN32
-    // Using fixed buffer size since, strerrorlen_s not yet available
-    const int errormsglen = 200;
-    char errmsg[errormsglen];
-    strerror_s(errmsg, errormsglen, errno);
+    char errmsg[200];
+    rcutils_strerror(errmsg, sizeof(errmsg));
     throw std::runtime_error(errmsg);
-#else
-    throw std::runtime_error(strerror(errno));
-#endif // _WIN32
   }
   std::string result = std::string(buffer);
   delete[] buffer;
