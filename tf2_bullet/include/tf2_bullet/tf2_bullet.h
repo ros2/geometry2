@@ -36,6 +36,8 @@
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <tf2_ros/buffer_interface.h>
 
+#include <iostream>
+
 namespace tf2
 {
 /** \brief Convert a timestamped transform to the equivalent Bullet data type.
@@ -46,10 +48,13 @@ namespace tf2
   btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
   {
     return btTransform(
-      btQuaternion(
-        t.transform.rotation.x, t.transform.rotation.y,
-        t.transform.rotation.z, t.transform.rotation.w),
-      btVector3(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
+      btQuaternion(static_cast<float>(t.transform.rotation.x),
+                   static_cast<float>(t.transform.rotation.y),
+                   static_cast<float>(t.transform.rotation.z),
+                   static_cast<float>(t.transform.rotation.w)),
+      btVector3(static_cast<float>(t.transform.translation.x),
+                static_cast<float>(t.transform.translation.y),
+                static_cast<float>(t.transform.translation.z)));
   }
 
 
@@ -98,9 +103,9 @@ namespace tf2
   {
     out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
     out.frame_id_ = msg.header.frame_id;
-    out[0] = msg.point.x;
-    out[1] = msg.point.y;
-    out[2] = msg.point.z;
+    out[0] = static_cast<float>(msg.point.x);
+    out[1] = static_cast<float>(msg.point.y);
+    out[2] = static_cast<float>(msg.point.z);
   }
 
 
