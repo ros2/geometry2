@@ -48,13 +48,15 @@ namespace tf2
   btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
   {
     return btTransform(
-      btQuaternion(static_cast<float>(t.transform.rotation.x),
-                   static_cast<float>(t.transform.rotation.y),
-                   static_cast<float>(t.transform.rotation.z),
-                   static_cast<float>(t.transform.rotation.w)),
-      btVector3(static_cast<float>(t.transform.translation.x),
-                static_cast<float>(t.transform.translation.y),
-                static_cast<float>(t.transform.translation.z)));
+      btQuaternion(
+        static_cast < float > (t.transform.rotation.x),
+        static_cast < float > (t.transform.rotation.y),
+        static_cast < float > (t.transform.rotation.z),
+        static_cast < float > (t.transform.rotation.w)),
+      btVector3(
+        static_cast < float > (t.transform.translation.x),
+        static_cast < float > (t.transform.translation.y),
+        static_cast < float > (t.transform.translation.z)));
   }
 
 
@@ -103,9 +105,9 @@ namespace tf2
   {
     out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
     out.frame_id_ = msg.header.frame_id;
-    out[0] = static_cast<float>(msg.point.x);
-    out[1] = static_cast<float>(msg.point.y);
-    out[2] = static_cast<float>(msg.point.z);
+    out[0] = static_cast < float > (msg.point.x);
+    out[1] = static_cast < float > (msg.point.y);
+    out[2] = static_cast < float > (msg.point.z);
   }
 
 
