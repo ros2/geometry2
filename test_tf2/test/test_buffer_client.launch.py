@@ -6,10 +6,12 @@ import unittest
 from launch import LaunchDescription
 import launch
 from launch_ros.actions import Node
-import launch_testing
 from launch.substitutions import LaunchConfiguration
+import launch_testing
+import launch_testing.actions
 
-def generate_test_description(ready_fn):
+
+def generate_test_description():
     node_under_test = Node(
         package='test_tf2',
         node_executable='test_buffer_client.py',
@@ -34,7 +36,7 @@ def generate_test_description(ready_fn):
         node_buffer_server,
         node_under_test,
         launch_testing.util.KeepAliveProc(),
-        launch.actions.OpaqueFunction(function=lambda context: ready_fn()),
+        launch_testing.actions.ReadyToTest(),
         ]), locals()
 
 
