@@ -81,7 +81,7 @@ public:
   void
   execute_timers()
   {
-    for (const auto elem : timer_to_callback_map_) {
+    for (const auto & elem : timer_to_callback_map_) {
       elem.second(elem.first);
     }
   }
