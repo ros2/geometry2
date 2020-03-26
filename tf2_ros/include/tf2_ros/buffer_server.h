@@ -46,6 +46,7 @@
 #include <tf2_msgs/action/lookup_transform.hpp>
 
 #include <tf2/buffer_core_interface.h>
+#include <tf2_ros/visibility_control.h>
 
 namespace tf2_ros
 {
