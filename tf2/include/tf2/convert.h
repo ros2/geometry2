@@ -40,7 +40,7 @@
 #include <tf2/impl/convert.h>
 #include <tf2/visibility_control.h>
 
-#include <rosidl_generator_cpp/traits.hpp>
+#include <rosidl_runtime_cpp/traits.hpp>
 
 namespace tf2 {
 
