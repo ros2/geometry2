@@ -13,19 +13,19 @@ import launch_testing.actions
 def generate_test_description():
     node_under_test = Node(
         package='test_tf2',
-        node_executable='test_static_publisher',
+        executable='test_static_publisher',
         output='screen',
         arguments=[],
     )
     node_static_transform_publisher_1 = Node(
         package='tf2_ros',
-        node_executable='static_transform_publisher',
+        executable='static_transform_publisher',
         output='screen',
         arguments=["1", "0", "0", "0", "0", "0", "1", "a", "b"]
     )
     node_static_transform_publisher_2 = Node(
         package='tf2_ros',
-        node_executable='static_transform_publisher',
+        executable='static_transform_publisher',
         output='screen',
         arguments=["0", "1", "0", "0", "0", "0", "1", "b", "c"]
     )
