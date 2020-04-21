@@ -131,14 +131,19 @@ public:
         buffer_(clock_)
   {
     tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
-    
+
     if (using_specific_chain_)
     {
-      std::cout << "Waiting for transform chain to become available between "<< framea_ << " and " << frameb_<< " " << std::flush;
-      while (rclcpp::ok() && !buffer_.canTransform(framea_, frameb_, tf2::TimePointZero, tf2::durationFromSec(1.0)))
-        std::cout << "." << std::flush;
-      std::cout << std::endl;
-     
+      std::string warning_msg;
+      while (rclcpp::ok() && !buffer_.canTransform(
+        framea_, frameb_, tf2::TimePoint(), &warning_msg))
+      {
+        RCLCPP_INFO_THROTTLE(node_->get_logger(), *clock_, 1000,
+          "Waiting for transform %s ->  %s: %s", framea_.c_str(), frameb_.c_str(),
+          warning_msg.c_str());
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      }
+
       try{
         buffer_._chainAsVector(frameb_, tf2::TimePointZero, framea_, tf2::TimePointZero, frameb_, chain_);
       }
@@ -190,6 +195,11 @@ public:
     double lowpass = 0.01;
     unsigned int counter = 0;
 
+    if (using_specific_chain_) {
+      std::cout << "Gathering data on " << framea_ << " -> " << frameb_ << " for 10 seconds...\n";
+    } else {
+      std::cout << "Gathering data on all frames for 10 seconds...\n";
+    }
 
 
   while (rclcpp::ok()){
