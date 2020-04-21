@@ -196,9 +196,9 @@ public:
     unsigned int counter = 0;
 
     if (using_specific_chain_) {
-      std::cout << "Gathering data on " << framea_ << " -> " << frameb_ << "...\n";
+      std::cout << "Gathering data on " << framea_ << " -> " << frameb_ << " for 10 seconds...\n";
     } else {
-      std::cout << "Gathering data on all frames...\n";
+      std::cout << "Gathering data on all frames for 10 seconds...\n";
     }
 
 
