@@ -108,7 +108,7 @@ int main(int argc, char ** argv)
   while (rclcpp::ok() && !echoListener.buffer_.canTransform(
     source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
   {
-    RCLCPP_INFO_THROTTLE(nh->get_logger(), *clock, 1000, "Waiting for transfrom %s ->  %s: %s",
+    RCLCPP_INFO_THROTTLE(nh->get_logger(), *clock, 1000, "Waiting for transform %s ->  %s: %s",
       source_frameid.c_str(), target_frameid.c_str(), warning_msg.c_str());
     rate.sleep();
   }
