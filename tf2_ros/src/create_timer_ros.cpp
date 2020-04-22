@@ -54,8 +54,8 @@ CreateTimerROS::createTimer(
   std::lock_guard<std::mutex> lock(timers_map_mutex_);
   auto timer_handle_index = next_timer_handle_index_++;
   auto timer = rclcpp::create_timer<std::function<void()>>(
-    node_base_.get(),
-    node_timers_.get(),
+    node_base_,
+    node_timers_,
     clock,
     period,
     std::bind(&CreateTimerROS::timerCallback, this, timer_handle_index, callback));
