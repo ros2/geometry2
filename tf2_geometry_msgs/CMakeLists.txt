@@ -28,12 +28,14 @@ ament_python_install_package(${PROJECT_NAME}
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(rclcpp REQUIRED)
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)
     ament_target_dependencies(test_tf2_geometry_msgs
       "geometry_msgs"
       "orocos_kdl"
+      "rclcpp"
       "tf2"
       "tf2_ros"
     )
