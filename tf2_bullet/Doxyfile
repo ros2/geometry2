@@ -24,3 +24,4 @@ TAGFILES += "../../../../doxygen_tag_files/cppreference-doxygen-web.tag.xml=http
 TAGFILES += "../../../../doxygen_tag_files/rcutils.tag=http://docs.ros2.org/latest/api/rcutils/"
 TAGFILES += "../../../../doxygen_tag_files/tf2.tag=http://docs.ros2.org/latest/api/tf2/"
 TAGFILES += "../../../../doxygen_tag_files/tf2_ros.tag=http://docs.ros2.org/latest/api/tf2_ros/"
+GENERATE_TAGFILE = "../../../../doxygen_tag_files/tf2_bullet.tag"

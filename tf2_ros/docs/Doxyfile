@@ -27,3 +27,4 @@ TAGFILES += "../../../../../../doxygen_tag_files/rclcpp_action.tag=http://docs.r
 TAGFILES += "../../../../../../doxygen_tag_files/rclcpp_components.tag=http://docs.ros2.org/latest/api/rclcpp_components/"
 TAGFILES += "../../../../../../doxygen_tag_files/rclcpy.tag=http://docs.ros2.org/latest/api/rclcpy/"
 TAGFILES += "../../../../../../doxygen_tag_files/tf2.tag=http://docs.ros2.org/latest/api/tf2/"
+GENERATE_TAGFILE = "../../../../../doxygen_tag_files/tf2_ros.tag"
