@@ -2,7 +2,9 @@
 
 PROJECT_NAME           = "tf2"
 PROJECT_NUMBER         = master
-PROJECT_BRIEF          = "tf2 maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform points, vectors, etc between any two coordinate frames at any desired point in time."
+PROJECT_BRIEF          = "tf2 maintains the relationship between coordinate frames in a tree \
+structure buffered in time, and lets the user transform points, vectors, etc between any two \
+coordinate frames at any desired point in time."
 
 INPUT                  = ./include mainpage.dox
 RECURSIVE              = YES
