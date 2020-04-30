@@ -2,6 +2,12 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix build error in Focal (`#241 <https://github.com/ros2/geometry2/issues/241>`_)
+* Style cleanup on tf2_py.cpp (`#222 <https://github.com/ros2/geometry2/issues/222>`_)
+* Contributors: Alejandro Hernández Cordero, Ivan Santiago Paunovic
+
 0.12.4 (2019-11-19)
 -------------------
 

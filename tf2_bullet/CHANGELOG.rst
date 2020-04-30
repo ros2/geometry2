@@ -2,6 +2,12 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
+* Porting tf2_bullet to ros2 (`#205 <https://github.com/ros2/geometry2/issues/205>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.5.15 (2017-01-24)
 -------------------
 

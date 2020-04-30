@@ -2,6 +2,11 @@
 Changelog for package geometry2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Uncommented tf2_bullet and tf2_tools (`#260 <https://github.com/ros2/geometry2/issues/260>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.12.4 (2019-11-19)
 -------------------
 

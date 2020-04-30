@@ -2,6 +2,14 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Replace deprecated launch_ros usage (`#250 <https://github.com/ros2/geometry2/issues/250>`_)
+* Remote ready_fn from launch_testing tests (`#243 <https://github.com/ros2/geometry2/issues/243>`_)
+* [test_tf2] Call project() and ament_package() if not building tests (`#233 <https://github.com/ros2/geometry2/issues/233>`_)
+* Porting test_tf2  (`#203 <https://github.com/ros2/geometry2/issues/203>`_)
+* Contributors: Alejandro Hernández Cordero, Jacob Perron, Peter Baughman
+
 0.5.15 (2017-01-24)
 -------------------
 

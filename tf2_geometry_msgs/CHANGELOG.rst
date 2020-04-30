@@ -2,6 +2,14 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
+* add missing test dependency (`#256 <https://github.com/ros2/geometry2/issues/256>`_)
+* use target_include_directories (`#231 <https://github.com/ros2/geometry2/issues/231>`_)
+* installed python tf2_geometry_msgs (`#207 <https://github.com/ros2/geometry2/issues/207>`_)
+* Contributors: Alejandro Hernández Cordero, Dirk Thomas, Karsten Knese
+
 0.12.4 (2019-11-19)
 -------------------
 
