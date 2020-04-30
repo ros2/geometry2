@@ -2,8 +2,8 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.0 (2020-04-30)
+-------------------
 * use target_include_directories (`#231 <https://github.com/ros2/geometry2/issues/231>`_)
 * Export tf2_sensor_msgs package dependency on Eigen3. (`#211 <https://github.com/ros2/geometry2/issues/211>`_)
 * Contributors: Karsten Knese, Michel Hidalgo

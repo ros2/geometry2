@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.0 (2020-04-30)
+-------------------
 * Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
 * add missing test dependency (`#256 <https://github.com/ros2/geometry2/issues/256>`_)
 * use target_include_directories (`#231 <https://github.com/ros2/geometry2/issues/231>`_)

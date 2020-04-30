@@ -2,8 +2,8 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.0 (2020-04-30)
+-------------------
 * Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
 * tf2_tools update the shebang line (`#226 <https://github.com/ros2/geometry2/issues/226>`_)
 * Adding support for view_frame (`#192 <https://github.com/ros2/geometry2/issues/192>`_)

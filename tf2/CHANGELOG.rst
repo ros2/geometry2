@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.0 (2020-04-30)
+-------------------
 * Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
 * Fix displayTimePoint truncation error (`#253 <https://github.com/ros2/geometry2/issues/253>`_)
 * rename rosidl_generator_cpp namespace to rosidl_runtime_cpp (`#248 <https://github.com/ros2/geometry2/issues/248>`_)
