@@ -12,12 +12,14 @@ find_package(console_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rcutils REQUIRED)
 
-include_directories(include src/bt)
-
 # export user definitions
 
 #CPP Libraries
 add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
+target_include_directories(tf2 PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/bt>"
+  "$<INSTALL_INTERFACE:include>")
 ament_target_dependencies(tf2
   "console_bridge"
   "geometry_msgs"
@@ -27,7 +29,7 @@ ament_target_dependencies(tf2
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(tf2 PRIVATE "TF2_BUILDING_DLL")
 
-install(TARGETS tf2
+install(TARGETS tf2 EXPORT tf2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -87,4 +89,5 @@ endif()
 ament_export_dependencies(console_bridge geometry_msgs rcutils)
 ament_export_include_directories(include)
 ament_export_libraries(tf2)
+ament_export_targets(tf2)
 ament_package()
