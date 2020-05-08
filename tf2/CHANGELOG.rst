@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.1 (2020-05-08)
+-------------------
 * export modern CMake interface target (`#263 <https://github.com/ros2/geometry2/issues/263>`_)
 * Contributors: Dirk Thomas
 
