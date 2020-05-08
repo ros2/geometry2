@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* export modern CMake interface target (`#263 <https://github.com/ros2/geometry2/issues/263>`_)
+* Contributors: Dirk Thomas
+
 0.13.0 (2020-04-30)
 -------------------
 * Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)

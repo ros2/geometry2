@@ -2,6 +2,9 @@
 Changelog for package geometry2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.13.0 (2020-04-30)
 -------------------
 * Uncommented tf2_bullet and tf2_tools (`#260 <https://github.com/ros2/geometry2/issues/260>`_)

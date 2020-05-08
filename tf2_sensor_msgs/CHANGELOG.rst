@@ -2,6 +2,9 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.13.0 (2020-04-30)
 -------------------
 * use target_include_directories (`#231 <https://github.com/ros2/geometry2/issues/231>`_)
