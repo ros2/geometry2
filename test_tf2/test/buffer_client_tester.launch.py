@@ -50,7 +50,7 @@ class TestBufferClient(unittest.TestCase):
 @launch_testing.post_shutdown_test()
 class BufferClientTestAfterShutdown(unittest.TestCase):
 
-    def test_exit_code(self):
+    def test_exit_code(self, proc_info):
         # Check that all processes in the launch (in this case, there's just one) exit
         # with code 0
-        launch_testing.asserts.assertExitCodes(self.proc_info)
+        launch_testing.asserts.assertExitCodes(proc_info)
