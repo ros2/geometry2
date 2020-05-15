@@ -256,26 +256,26 @@ bool BufferCore::setTransformImpl(const tf2::Transform& transform_in, const std:
   bool error_exists = false;
   if (stripped_child_frame_id == stripped_frame_id)
   {
-    CONSOLE_BRIDGE_logError("TF_SELF_TRANSFORM: Ignoring transform from authority \"%s\" with frame_id and child_frame_id  \"%s\" because they are the same",  authority.c_str(), stripped_child_frame_id.c_str());
+    CONSOLE_BRIDGE_logError("TF SELF_TRANSFORM: Ignoring transform from authority \"%s\" with frame_id and child_frame_id  \"%s\" because they are the same",  authority.c_str(), stripped_child_frame_id.c_str());
     error_exists = true;
   }
 
   if (stripped_child_frame_id == "")
   {
-    CONSOLE_BRIDGE_logError("TF_NO_CHILD_FRAME_ID: Ignoring transform from authority \"%s\" because child_frame_id not set ", authority.c_str());
+    CONSOLE_BRIDGE_logError("TF NO_CHILD_FRAME_ID: Ignoring transform from authority \"%s\" because child_frame_id not set ", authority.c_str());
     error_exists = true;
   }
 
   if (stripped_frame_id == "")
   {
-    CONSOLE_BRIDGE_logError("TF_NO_FRAME_ID: Ignoring transform with child_frame_id \"%s\"  from authority \"%s\" because frame_id not set", stripped_child_frame_id.c_str(), authority.c_str());
+    CONSOLE_BRIDGE_logError("TF NO_FRAME_ID: Ignoring transform with child_frame_id \"%s\"  from authority \"%s\" because frame_id not set", stripped_child_frame_id.c_str(), authority.c_str());
     error_exists = true;
   }
 
   if (std::isnan(transform_in.getOrigin().x()) || std::isnan(transform_in.getOrigin().y()) || std::isnan(transform_in.getOrigin().z())||
       std::isnan(transform_in.getRotation().x()) || std::isnan(transform_in.getRotation().y()) || std::isnan(transform_in.getRotation().z()) || std::isnan(transform_in.getRotation().w()))
   {
-    CONSOLE_BRIDGE_logError("TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because of a nan value in the transform (%f %f %f) (%f %f %f %f)",
+    CONSOLE_BRIDGE_logError("TF NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because of a nan value in the transform (%f %f %f) (%f %f %f %f)",
              stripped_child_frame_id.c_str(), authority.c_str(),
              transform_in.getOrigin().x(), transform_in.getOrigin().y(), transform_in.getOrigin().z(),
              transform_in.getRotation().x(), transform_in.getRotation().y(), transform_in.getRotation().z(), transform_in.getRotation().w()
@@ -290,7 +290,7 @@ bool BufferCore::setTransformImpl(const tf2::Transform& transform_in, const std:
 
   if (!valid) 
   {
-    CONSOLE_BRIDGE_logError("TF_DENORMALIZED_QUATERNION: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because of an invalid quaternion in the transform (%f %f %f %f)",
+    CONSOLE_BRIDGE_logError("TF DENORMALIZED_QUATERNION: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because of an invalid quaternion in the transform (%f %f %f %f)",
              stripped_child_frame_id.c_str(), authority.c_str(),
              transform_in.getRotation().x(), transform_in.getRotation().y(), transform_in.getRotation().z(), transform_in.getRotation().w());
     error_exists = true;
