@@ -33,4 +33,10 @@
 #
 # Author: Eitan Marder-Eppstein
 # **********************************************************
-from tf2_py._tf2_py import *  # noqa
+from rpyutils import add_dll_directories_from_env
+
+# Since Python 3.8, on Windows we should ensure DLL directories are explicitly added
+# to the search path.
+# See https://docs.python.org/3/whatsnew/3.8.html#bpo-36085-whatsnew
+with add_dll_directories_from_env('PATH'):
+    from tf2_py._tf2_py import *  # noqa
