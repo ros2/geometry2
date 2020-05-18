@@ -32,9 +32,14 @@ import unittest
 
 from geometry_msgs.msg import TransformStamped
 import rclpy
+from rpyutils import add_dll_directories_from_env
 
-from test_tf2_py._tf2_py import BufferCore
-from test_tf2_py._tf2_py import LookupException
+# Since Python 3.8, on Windows we should ensure DLL directories are explicitly added
+# to the search path.
+# See https://docs.python.org/3/whatsnew/3.8.html#bpo-36085-whatsnew
+with add_dll_directories_from_env('PATH'):
+    from test_tf2_py._tf2_py import BufferCore
+    from test_tf2_py._tf2_py import LookupException
 
 
 def build_transform(target_frame, source_frame, stamp):
