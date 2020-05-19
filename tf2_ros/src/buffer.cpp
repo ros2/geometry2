@@ -231,8 +231,8 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
         geometry_msgs::msg::TransformStamped msg_stamped = this->lookupTransform(target_frame, source_frame, time);
         promise->set_value(msg_stamped);
       } else {
-        promise->set_exception(std::make_exception_ptr<tf2::LookupException>(
-            "Failed to transform from " + source_frame + " to " + target_frame));
+        promise->set_exception(std::make_exception_ptr(tf2::LookupException(
+            "Failed to transform from " + source_frame + " to " + target_frame)));
       }
       callback(future);
     });
@@ -244,8 +244,8 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
     promise->set_value(msg_stamped);
   } else if (0xffffffffffffffffULL == handle) {
     // Never transformable
-    promise->set_exception(std::make_exception_ptr<tf2::LookupException>(
-          "Failed to transform from " + source_frame + " to " + target_frame));
+    promise->set_exception(std::make_exception_ptr(tf2::LookupException(
+          "Failed to transform from " + source_frame + " to " + target_frame)));
   } else {
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
     auto timer_handle = timer_interface_->createTimer(
@@ -281,7 +281,7 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
   if (timer_is_valid) {
     cancelTransformableRequest(request_handle);
     promise->set_exception(
-      std::make_exception_ptr<tf2::TimeoutException>(std::string("Timed out waiting for transform")));
+      std::make_exception_ptr(tf2::TimeoutException(std::string("Timed out waiting for transform"))));
     callback(future);
   }
 }
