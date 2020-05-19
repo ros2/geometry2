@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.2 (2020-05-18)
+-------------------
+* Modify error message to not match the pattern for Jenkins MSBuild errors (`#265 <https://github.com/ros2/geometry2/issues/265>`_)
+* Contributors: Dirk Thomas
+
 0.13.1 (2020-05-08)
 -------------------
 * export modern CMake interface target (`#263 <https://github.com/ros2/geometry2/issues/263>`_)

@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.2 (2020-05-18)
+-------------------
+* Fix deprecation warnings from launch (`#264 <https://github.com/ros2/geometry2/issues/264>`_)
+* Contributors: Chris Lalancette
+
 0.13.1 (2020-05-08)
 -------------------
 

@@ -2,6 +2,11 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.2 (2020-05-18)
+-------------------
+* Explicitly add DLL directories for Windows before importing (`#266 <https://github.com/ros2/geometry2/issues/266>`_)
+* Contributors: Jacob Perron
+
 0.13.1 (2020-05-08)
 -------------------
 
