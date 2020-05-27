@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.3 (2020-05-26)
+-------------------
+* Fixed in Exception constructor tf2_ros (`#267 <https://github.com/ros2/geometry2/issues/267>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.13.2 (2020-05-18)
 -------------------
 

@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.3 (2020-05-26)
+-------------------
+
 0.13.2 (2020-05-18)
 -------------------
 * Modify error message to not match the pattern for Jenkins MSBuild errors (`#265 <https://github.com/ros2/geometry2/issues/265>`_)
