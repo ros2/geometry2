@@ -50,6 +50,10 @@ namespace tf2
 class BufferCoreInterface
 {
 public:
+  TF2_PUBLIC
+  virtual
+  ~BufferCoreInterface() {}
+
   /**
    * \brief Clear internal state data.
    */
