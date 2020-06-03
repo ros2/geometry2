@@ -48,6 +48,9 @@ typedef std::pair<TimePoint, CompactFrameID> P_TimeAndFrameID;
 class TimeCacheInterface
 {
 public:
+  TF2_PUBLIC
+  virtual ~TimeCacheInterface() = default;
+
   /** \brief Access data from the cache */
   TF2_PUBLIC
   virtual bool getData(TimePoint time, TransformStorage & data_out, std::string* error_str = 0)=0; //returns false if data unavailable (should be thrown as lookup exception
