@@ -76,7 +76,7 @@ public:
 
   TF2_ROS_PUBLIC
   virtual
-  ~CreateTimerInterface() {}
+  ~CreateTimerInterface() = default;
 
   /**
    * \brief Create a new timer.

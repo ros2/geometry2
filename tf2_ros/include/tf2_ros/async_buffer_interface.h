@@ -53,7 +53,7 @@ class AsyncBufferInterface
 public:
   TF2_ROS_PUBLIC
   virtual
-  ~AsyncBufferInterface() {}
+  ~AsyncBufferInterface() = default;
 
   /**
    * \brief Wait for a transform between two frames to become available.

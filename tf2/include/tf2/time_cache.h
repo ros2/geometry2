@@ -49,7 +49,7 @@ class TimeCacheInterface
 {
 public:
   TF2_PUBLIC
-  virtual ~TimeCacheInterface() {}
+  virtual ~TimeCacheInterface() = default;
 
   /** \brief Access data from the cache */
   TF2_PUBLIC

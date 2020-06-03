@@ -52,7 +52,7 @@ class BufferCoreInterface
 public:
   TF2_PUBLIC
   virtual
-  ~BufferCoreInterface() {}
+  ~BufferCoreInterface() = default;
 
   /**
    * \brief Clear internal state data.
