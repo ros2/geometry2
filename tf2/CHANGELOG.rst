@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add missing virtual destructors (`#272 <https://github.com/ros2/geometry2/issues/272>`_)
+* Contributors: Ivan Santiago Paunovic
+
 0.13.3 (2020-05-26)
 -------------------
 

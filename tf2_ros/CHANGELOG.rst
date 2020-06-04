@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* export targets in addition to include directories / libraries (`#271 <https://github.com/ros2/geometry2/issues/271>`_)
+* Add missing virtual destructors (`#272 <https://github.com/ros2/geometry2/issues/272>`_)
+* Contributors: Dirk Thomas, Ivan Santiago Paunovic
+
 0.13.3 (2020-05-26)
 -------------------
 * Fixed in Exception constructor tf2_ros (`#267 <https://github.com/ros2/geometry2/issues/267>`_)
