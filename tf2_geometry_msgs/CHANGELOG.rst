@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.4 (2020-06-03)
+-------------------
 * export targets in addition to include directories / libraries (`#271 <https://github.com/ros2/geometry2/issues/271>`_)
 * Contributors: Dirk Thomas
 
