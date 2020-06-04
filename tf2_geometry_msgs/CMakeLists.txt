@@ -42,4 +42,16 @@ if(BUILD_TESTING)
   endif()
 endif()
 
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(${PROJECT_NAME} INTERFACE ${required_dependencies})
+
+install(
+  TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include
+)
+
+ament_export_targets(${PROJECT_NAME})
+ament_export_dependencies(${required_dependencies})
+
 ament_auto_package()
