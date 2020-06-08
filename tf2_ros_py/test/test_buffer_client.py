@@ -160,32 +160,14 @@ class TestBufferClient(unittest.TestCase):
         self.spinning = threading.Event()
         self.spin_thread = threading.Thread(target=self.spin)
         self.spin_thread.start()
-        return
 
     def tearDown(self):
         self.spinning.set()
         self.spin_thread.join()
-        return
-
-    def feedback_callback(self, feedback):
-        self.feedback = feedback
 
     def spin(self):
-        try:
-            while self.context.ok() and not self.spinning.is_set():
-                self.executor.spin_once(timeout_sec=0.05)
-        finally:
-            return
-
-    def timed_spin(self, duration):
-        start_time = time.time()
-        while (time.time() - start_time) < duration:
-            rclpy.spin_once(self.node, executor=self.executor, timeout_sec=0.1)
-
-    def execute_goal_callback(self, goal_handle):
-        print('execute_goal_callback')
-        goal_handle.set_succeeded()
-        return LookupTransform.Result()
+        while self.context.ok() and not self.spinning.is_set():
+            self.executor.spin_once(timeout_sec=0.05)
 
     def test_lookup_transform_true(self):
         buffer_client = BufferClient(
