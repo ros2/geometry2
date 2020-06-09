@@ -28,16 +28,16 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import threading
 import time
 import unittest
+
 import rclpy
-import threading
 
 from tf2_ros.buffer_client import BufferClient
 from geometry_msgs.msg import TransformStamped
 from tf2_msgs.action import LookupTransform
-from tf2_py import BufferCore, TransformException, TimeoutException, \
-    LookupException, InvalidArgumentException, ExtrapolationException, ConnectivityException
+from tf2_py import BufferCore, LookupException
 from rclpy.executors import SingleThreadedExecutor
 from tf2_msgs.msg import TF2Error
 
@@ -59,81 +59,36 @@ def build_transform(target_frame, source_frame, stamp):
     return transform
 
 
-class MockActionServer():
+class MockBufferServer():
     def __init__(self, node, buffer_core):
-        self.goal_srv = node.create_service(
-            LookupTransform.Impl.SendGoalService, '/lookup_transform/_action/send_goal',
-            self.goal_callback)
-        self.cancel_srv = node.create_service(
-            LookupTransform.Impl.CancelGoalService, '/lookup_transform/_action/cancel_goal',
-            self.cancel_callback)
-        self.result_srv = node.create_service(
-            LookupTransform.Impl.GetResultService, '/lookup_transform/_action/get_result',
-            self.result_callback)
-        self.feedback_pub = node.create_publisher(
-            LookupTransform.Impl.FeedbackMessage, '/lookup_transform/_action/feedback', 1)
+        self.action_server = rclpy.action.ActionServer(node, LookupTransform, 'lookup_transform', self.execute_callback)
         self.node = node
         self.buffer_core = buffer_core
         self.result_buffer = {}
 
-    def goal_callback(self, request, response):
-        response.accepted = True
-        bytes_goal_id = bytes(request.goal_id.uuid)
+    def execute_callback(self, goal_handle):
+        response = LookupTransform.Result()
+        response.transform = TransformStamped()
+        response.error = TF2Error()
+
         try:
-            if not request.goal.advanced:
-                transform = self.buffer_core.lookup_transform_core(target_frame=request.goal.target_frame,
-                                                                   source_frame=request.goal.source_frame,
-                                                                   time=request.goal.source_time)
-                self.result_buffer[bytes_goal_id] = (
-                    transform, TF2Error.NO_ERROR, '')
+            if not goal_handle.request.advanced:
+                transform = self.buffer_core.lookup_transform_core(target_frame=goal_handle.request.target_frame,
+                                                                   source_frame=goal_handle.request.source_frame,
+                                                                   time=goal_handle.request.source_time)
             else:
                 transform = self.buffer_core.lookup_transform_full_core(
-                    target_frame=request.goal.target_frame,
-                    source_frame=request.goal.source_frame,
-                    source_time=request.goal.source_time,
-                    target_time=request.goal.target_time,
-                    fixed_frame=request.goal.fixed_frame
+                    target_frame=goal_handle.request.target_frame,
+                    source_frame=goal_handle.request.source_frame,
+                    source_time=goal_handle.request.source_time,
+                    target_time=goal_handle.request.target_time,
+                    fixed_frame=goal_handle.request.fixed_frame
                 )
-                self.result_buffer[bytes_goal_id] = (
-                    transform, TF2Error.NO_ERROR, ''
-                )
-        except TimeoutException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.TIMEOUT_ERROR, e)
+            response.transform = transform
         except LookupException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.LOOKUP_ERROR, e)
-        except InvalidArgumentException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.INVALID_ARGUMENT_ERROR, e)
-        except ExtrapolationException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.EXTRAPOLATION_ERROR, e)
-        except ConnectivityException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.CONNECTIVITY_ERROR, e)
-        except TransformException as e:
-            self.result_buffer[bytes_goal_id] = (
-                TransformStamped(), TF2Error.TRANSFORM_ERROR, e)
+            response.error.error = TF2Error.LOOKUP_ERROR
 
         return response
-
-    def cancel_callback(self, request, response):
-        response.goals_canceling.append(request.goal_info)
-        return response
-
-    def result_callback(self, request, response):
-        bytes_goal_id = bytes(request.goal_id.uuid)
-        response.result.transform = self.result_buffer[bytes_goal_id][0]
-        response.result.error = TF2Error(
-            error=self.result_buffer[bytes_goal_id][1],
-            error_string=str(self.result_buffer[bytes_goal_id][2]))
-        return response
-
-    def publish_feedback(self, goal_id):
-        feedback_message = LookupTransform.Impl.FeedbackMessage()
-        feedback_message.goal_id = goal_id
-        self.feedback_pub.publish(feedback_message)
 
 
 class TestBufferClient(unittest.TestCase):
@@ -149,7 +104,7 @@ class TestBufferClient(unittest.TestCase):
         transform = build_transform('foo', 'bar', rclpy.time.Time().to_msg())
         buffer_core.set_transform(transform, 'unittest')
 
-        cls.mock_action_server = MockActionServer(cls.node, buffer_core)
+        cls.mock_action_server = MockBufferServer(cls.node, buffer_core)
 
     @classmethod
     def tearDownClass(cls):
