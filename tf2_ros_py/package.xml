@@ -1,6 +1,6 @@
 <package format="2">
   <name>tf2_ros_py</name>
-  <version>0.12.4</version>
+  <version>0.13.4</version>
   <description>
     This package contains the ROS Python bindings for the tf2 library
   </description>
@@ -15,23 +15,12 @@
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>python_cmake_module</buildtool_depend>
 
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-
   <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>tf2_py</exec_depend>
 
-  <depend>message_filters</depend>
-  <depend>rclcpp</depend>
-  <depend>rclcpp_action</depend>
-  <depend>rclcpp_components</depend>
-  <depend>rclpy</depend>
-  <depend>tf2</depend>
-  <depend>tf2_msgs</depend>
-  <depend>tf2_py</depend>
-  <depend>tf2_ros</depend>
-
-  <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_cmake_pytest</test_depend>
 
   <export>
