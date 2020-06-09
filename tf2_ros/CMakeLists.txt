@@ -14,9 +14,9 @@ find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
-find_package(rclcpp_components REQUIRED)
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
@@ -80,8 +80,8 @@ target_link_libraries(static_transform_broadcaster_node ${PROJECT_NAME})
 ament_target_dependencies(static_transform_broadcaster_node
   "geometry_msgs"
   "rclcpp"
-  "tf2_msgs"
   "rclcpp_components"
+  "tf2_msgs"
 )
 rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
 
@@ -134,7 +134,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
 )
 
-
 # Tests
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -178,10 +177,5 @@ endif()
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME} static_transform_broadcaster_node)
 ament_export_targets(${PROJECT_NAME} static_transform_broadcaster_node)
-ament_export_dependencies(message_filters)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_action)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(tf2_msgs)
-ament_export_dependencies(tf2)
+ament_export_dependencies(geometry_msgs message_filters rclcpp rclcpp_action rclcpp_components tf2 tf2_msgs)
 ament_package()
