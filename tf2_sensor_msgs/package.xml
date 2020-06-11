@@ -25,6 +25,8 @@
   <!-- <depend>python_orocos_kdl</depend> -->
   <!-- <test_depend>rostest</test_depend> -->
 
+  <exec_depend>tf2_ros_py</exec_depend>
+
   <test_depend>ament_cmake_gtest</test_depend>
 
   <export>

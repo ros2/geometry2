@@ -9,20 +9,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-if(NOT ANDROID)
-  set(TF2_PY tf2_py)
-endif()
-
 find_package(ament_cmake REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
-find_package(rclcpp_components REQUIRED)
-
-ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
@@ -86,8 +80,8 @@ target_link_libraries(static_transform_broadcaster_node ${PROJECT_NAME})
 ament_target_dependencies(static_transform_broadcaster_node
   "geometry_msgs"
   "rclcpp"
-  "tf2_msgs"
   "rclcpp_components"
+  "tf2_msgs"
 )
 rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
 
@@ -140,7 +134,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
 )
 
-
 # Tests
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -179,29 +172,10 @@ if(BUILD_TESTING)
   )
   target_link_libraries(${PROJECT_NAME}_test_listener ${PROJECT_NAME})
 
-  # Python test
-  # Provides PYTHON_EXECUTABLE_DEBUG
-  find_package(python_cmake_module REQUIRED)
-  find_package(PythonExtra REQUIRED)
-
-  set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
-  if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-  endif()
-
-  find_package(ament_cmake_pytest REQUIRED)
-  ament_add_pytest_test(tf2_ros_py_test test/py_test)
-
-  set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
 endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME} static_transform_broadcaster_node)
 ament_export_targets(${PROJECT_NAME} static_transform_broadcaster_node)
-ament_export_dependencies(message_filters)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_action)
-ament_export_dependencies(rclcpp_components)
-ament_export_dependencies(tf2_msgs)
-ament_export_dependencies(tf2)
+ament_export_dependencies(geometry_msgs message_filters rclcpp rclcpp_action rclcpp_components tf2 tf2_msgs)
 ament_package()
