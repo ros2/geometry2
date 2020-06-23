@@ -429,7 +429,8 @@ public:
         --message_count_;
       }
 
-      // Add the message to our list
+      // Add the message to our list while keeping a lock on the messages.
+      std::unique_lock<std::mutex> unique_lock(messages_mutex_);
       info.event = evt;
       messages_.push_back(info);
       ++message_count_;
