@@ -491,6 +491,9 @@ private:
   {
     namespace mt = message_filters::message_traits;
 
+    // We will be accessing and mutating messages now, require unique lock
+    std::unique_lock<std::mutex> lock(messages_mutex_);
+
     // find the message this request is associated with
     typename L_MessageInfo::iterator msg_it = messages_.begin();
     typename L_MessageInfo::iterator msg_end = messages_.end();
@@ -551,8 +554,6 @@ private:
       can_transform = false;
     }
 
-    // We will be mutating messages now, require unique lock
-    std::unique_lock<std::mutex> lock(messages_mutex_);
     if (can_transform) {
       TF2_ROS_MESSAGEFILTER_DEBUG("Message ready in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), message_count_ - 1);
