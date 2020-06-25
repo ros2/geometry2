@@ -496,7 +496,7 @@ private:
     typename L_MessageInfo::iterator msg_it = messages_.begin();
     typename L_MessageInfo::iterator msg_end = messages_.end();
 
-    MessageInfo saved_msg;
+    MEvent saved_event;
 
     {
       // We will be accessing and mutating messages now, require unique lock
@@ -509,11 +509,11 @@ private:
           // found msg_it
           ++info.success_count;
           if (info.success_count >= expected_success_count_) {
-            saved_msg = *msg_it;
+            saved_event = msg_it->event;
             messages_.erase(msg_it);
             --message_count_;
           } else {
-            return;
+            msg_it = msg_end;
           }
           break;
         }
@@ -525,7 +525,7 @@ private:
     }
 
     bool can_transform = true;
-    const MConstPtr & message = saved_msg.event.getMessage();
+    const MConstPtr & message = saved_event.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
 
@@ -567,13 +567,13 @@ private:
         frame_id.c_str(), stamp.seconds(), message_count_ - 1);
 
       ++successful_transform_count_;
-      messageReady(saved_msg.event);
+      messageReady(saved_event);
     } else {
       ++dropped_message_count_;
 
       TF2_ROS_MESSAGEFILTER_DEBUG("Discarding message in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), message_count_ - 1);
-      messageDropped(saved_msg.event, filter_failure_reasons::Unknown);
+      messageDropped(saved_event, filter_failure_reasons::Unknown);
     }
   }
 
@@ -759,4 +759,3 @@ private:
 } // namespace tf2
 
 #endif
-
