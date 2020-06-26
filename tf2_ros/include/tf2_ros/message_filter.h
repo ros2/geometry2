@@ -409,11 +409,12 @@ public:
     if (info.success_count == expected_success_count_) {
       messageReady(evt);
     } else {
+
+      // Keep a lock on the messages
+      std::unique_lock<std::mutex> unique_lock(messages_mutex_);
+
       // If this message is about to push us past our queue size, erase the oldest message
       if (queue_size_ != 0 && message_count_ + 1 > queue_size_) {
-
-        // While we're using the reference keep a lock on the messages.
-        std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
         ++dropped_message_count_;
         const MessageInfo & front = messages_.front();
@@ -494,13 +495,28 @@ private:
     // find the message this request is associated with
     typename L_MessageInfo::iterator msg_it = messages_.begin();
     typename L_MessageInfo::iterator msg_end = messages_.end();
-    for (; msg_it != msg_end; ++msg_it) {
-      MessageInfo & info = *msg_it;
-      auto handle_it = std::find(info.handles.begin(), info.handles.end(), handle);
-      if (handle_it != info.handles.end()) {
-        // found msg_it
-        ++info.success_count;
-        break;
+
+    MEvent saved_event;
+
+    {
+      // We will be accessing and mutating messages now, require unique lock
+      std::unique_lock<std::mutex> lock(messages_mutex_);
+
+      for (; msg_it != msg_end; ++msg_it) {
+        MessageInfo & info = *msg_it;
+        auto handle_it = std::find(info.handles.begin(), info.handles.end(), handle);
+        if (handle_it != info.handles.end()) {
+          // found msg_it
+          ++info.success_count;
+          if (info.success_count >= expected_success_count_) {
+            saved_event = msg_it->event;
+            messages_.erase(msg_it);
+            --message_count_;
+          } else {
+            msg_it = msg_end;
+          }
+          break;
+        }
       }
     }
 
@@ -508,13 +524,8 @@ private:
       return;
     }
 
-    const MessageInfo & info = *msg_it;
-    if (info.success_count < expected_success_count_) {
-      return;
-    }
-
     bool can_transform = true;
-    const MConstPtr & message = info.event.getMessage();
+    const MConstPtr & message = saved_event.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
 
@@ -551,24 +562,19 @@ private:
       can_transform = false;
     }
 
-    // We will be mutating messages now, require unique lock
-    std::unique_lock<std::mutex> lock(messages_mutex_);
     if (can_transform) {
       TF2_ROS_MESSAGEFILTER_DEBUG("Message ready in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), message_count_ - 1);
 
       ++successful_transform_count_;
-      messageReady(info.event);
+      messageReady(saved_event);
     } else {
       ++dropped_message_count_;
 
       TF2_ROS_MESSAGEFILTER_DEBUG("Discarding message in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), message_count_ - 1);
-      messageDropped(info.event, filter_failure_reasons::Unknown);
+      messageDropped(saved_event, filter_failure_reasons::Unknown);
     }
-
-    messages_.erase(msg_it);
-    --message_count_;
   }
 
   /**
