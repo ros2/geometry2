@@ -54,11 +54,12 @@ TEST(StaticTransformPublisher, a_b_different_times)
 
   int attempts = 0;
 
-  while(!mB.canTransform("a", "b", tf2::timeFromSec(0))){
+  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
-    if(attempts > MAX_ATTEMPTS)
+    if (attempts > MAX_ATTEMPTS) {
       FAIL();
+    }
   }
 
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
@@ -85,11 +86,12 @@ TEST(StaticTransformPublisher, a_c_different_times)
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
   int attempts = 0;
-  while(!mB.canTransform("a", "c", tf2::timeFromSec(0))){
+  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
-    if(attempts > MAX_ATTEMPTS)
+    if (attempts > MAX_ATTEMPTS) {
       FAIL();
+    }
   }
 
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
@@ -117,11 +119,12 @@ TEST(StaticTransformPublisher, a_d_different_times)
 
   int attempts = 0;
 
-  while(!mB.canTransform("a", "c", tf2::timeFromSec(0))){
+  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
-    if(attempts > MAX_ATTEMPTS)
+    if (attempts > MAX_ATTEMPTS) {
       FAIL();
+    }
   }
 
   geometry_msgs::msg::TransformStamped ts;
@@ -165,11 +168,12 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
   int attempts = 0;
 
-  while(!mB.canTransform("a", "b", tf2::timeFromSec(0))){
+  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
-    if(attempts > MAX_ATTEMPTS)
+    if (attempts > MAX_ATTEMPTS) {
       FAIL();
+    }
   }
 
   tf2_ros::StaticTransformBroadcaster stb(node);
