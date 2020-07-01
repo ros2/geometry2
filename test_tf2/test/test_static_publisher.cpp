@@ -36,6 +36,8 @@
 #include <tf2/buffer_core.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 
+const int MAX_ATTEMPTS = 100;
+
 TEST(StaticTransformPublisher, a_b_different_times)
 {
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_b_different_times_test");
@@ -50,7 +52,14 @@ TEST(StaticTransformPublisher, a_b_different_times)
   std::thread spin_thread = std::thread(
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  int attempts = 0;
+
+  while(!mB.canTransform("a", "b", tf2::timeFromSec(0))){
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    attempts++;
+    if(attempts > MAX_ATTEMPTS)
+      FAIL();
+  }
 
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(100)));
@@ -75,7 +84,13 @@ TEST(StaticTransformPublisher, a_c_different_times)
   std::thread spin_thread = std::thread(
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  int attempts = 0;
+  while(!mB.canTransform("a", "c", tf2::timeFromSec(0))){
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    attempts++;
+    if(attempts > MAX_ATTEMPTS)
+      FAIL();
+  }
 
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(10)));
@@ -100,7 +115,14 @@ TEST(StaticTransformPublisher, a_d_different_times)
   std::thread spin_thread = std::thread(
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  int attempts = 0;
+
+  while(!mB.canTransform("a", "c", tf2::timeFromSec(0))){
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    attempts++;
+    if(attempts > MAX_ATTEMPTS)
+      FAIL();
+  }
 
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
@@ -141,8 +163,14 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   std::thread spin_thread = std::thread(
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  int attempts = 0;
 
+  while(!mB.canTransform("a", "b", tf2::timeFromSec(0))){
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    attempts++;
+    if(attempts > MAX_ATTEMPTS)
+      FAIL();
+  }
 
   tf2_ros::StaticTransformBroadcaster stb(node);
   geometry_msgs::msg::TransformStamped ts;
