@@ -338,6 +338,7 @@ public:
       return;
     }
 
+    std::vector<std::tuple<uint64_t, tf2::TimePoint, std::string>> wait_params;
     // iterate through the target frames and add requests for each of them
     MessageInfo info;
     info.handles.reserve(expected_success_count_);
@@ -353,63 +354,17 @@ public:
       V_string::iterator end = target_frames_copy.end();
       for (; it != end; ++it) {
         const std::string & target_frame = *it;
-        auto future = buffer_.waitForTransform(
-            target_frame,
-            frame_id,
-            tf2::timeFromSec(stamp.seconds()),
-            buffer_timeout_,
-            std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
-
-        try {
-          const auto status = future.wait_for(std::chrono::seconds(0));
-          if (status == std::future_status::ready) {
-            future.get();
-            // Transform is available
-            ++info.success_count;
-          }
-          else {
-            info.handles.push_back(next_handle_index_++);
-          }
-        }
-        catch (const std::exception & e)  {
-          TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
-          messageDropped(evt, filter_failure_reasons::OutTheBack);
-          return;
-        }
+        wait_params.emplace_back(next_handle_index_, tf2::timeFromSec(stamp.seconds()), target_frame);
+        info.handles.push_back(next_handle_index_++);
 
         if (time_tolerance_.nanoseconds()) {
-          future = buffer_.waitForTransform(
-              target_frame,
-              frame_id,
-              tf2::timeFromSec((stamp + time_tolerance_).seconds()),
-              buffer_timeout_,
-              std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, next_handle_index_));
-          try {
-            const auto status = future.wait_for(std::chrono::seconds(0));
-            if (status == std::future_status::ready) {
-              future.get();
-              // Transform is available
-              ++info.success_count;
-            }
-            else {
-              info.handles.push_back(next_handle_index_++);
-            }
-          }
-          catch (const std::exception & e)  {
-            TF2_ROS_MESSAGEFILTER_WARN("Message dropped because: %s", e.what());
-            messageDropped(evt, filter_failure_reasons::OutTheBack);
-            return;
-          }
+          wait_params.emplace_back(next_handle_index_, tf2::timeFromSec((stamp + time_tolerance_).seconds()), target_frame);
+          info.handles.push_back(next_handle_index_++);
         }
       }
     }
 
-
-    // We can transform already
-    if (info.success_count == expected_success_count_) {
-      messageReady(evt);
-    } else {
-
+    {
       // Keep a lock on the messages
       std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
@@ -439,6 +394,18 @@ public:
     TF2_ROS_MESSAGEFILTER_DEBUG("Added message in frame %s at time %.3f, count now %d",
       frame_id.c_str(), stamp.seconds(), message_count_);
     ++incoming_message_count_;
+
+    for (const auto& param : wait_params) {
+      const auto& handle = std::get<0>(param);
+      const auto& stamp = std::get<1>(param);
+      const auto& target_frame = std::get<2>(param);
+      buffer_.waitForTransform(
+          target_frame,
+          frame_id,
+          stamp,
+          buffer_timeout_,
+          std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+    }
   }
 
   /**
