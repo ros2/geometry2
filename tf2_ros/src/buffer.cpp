@@ -242,10 +242,12 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
     // Immediately transformable
     geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(target_frame, source_frame, time);
     promise->set_value(msg_stamped);
+    callback(future);
   } else if (0xffffffffffffffffULL == handle) {
     // Never transformable
     promise->set_exception(std::make_exception_ptr(tf2::LookupException(
           "Failed to transform from " + source_frame + " to " + target_frame)));
+    callback(future);
   } else {
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
     auto timer_handle = timer_interface_->createTimer(

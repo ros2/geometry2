@@ -187,6 +187,47 @@ TEST(MessageFilter, postTransforms)
 
   EXPECT_EQ(1, n.count_);
 }
+
+TEST(MessageFilter, concurrentTransforms)
+{
+  const int messages = 30;
+  const int buffer_size = messages;
+  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+    node->get_node_base_interface(),
+    node->get_node_timers_interface());
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+
+  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  msg->header.stamp = stamp;
+  msg->header.frame_id = "frame2";
+
+  tf2_ros::Buffer buffer(clock);
+  for (int i = 0; i < 50; i++) {
+    buffer.setCreateTimerInterface(create_timer_interface);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", buffer_size, node);
+    Notification n(1);
+    filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
+
+    std::thread t([&](){
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+    });
+    for (int j = 0; j < messages; j++) {
+      filter.add(msg);
+    }
+    t.join();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    EXPECT_EQ(messages, n.count_);
+
+    buffer.clear();
+  }
+}
+
 // TODO (ahcorde): For some unknown reason message_filters::Connection registerFailureCallback is disable
 // with #if 0 https://github.com/ros2/geometry2/blob/ros2/tf2_ros/include/tf2_ros/message_filter.h#L463
 // rework this part when this is available
