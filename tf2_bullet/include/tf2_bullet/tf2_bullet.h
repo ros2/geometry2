@@ -32,11 +32,21 @@
 #define TF2_BULLET__TF2_BULLET_H_
 
 #include <tf2/convert.h>
+#include <LinearMath/btScalar.h>
 #include <LinearMath/btTransform.h>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <tf2_ros/buffer_interface.h>
 
 #include <iostream>
+
+#if (BT_BULLET_VERSION == 282)
+// Suppress compilation warning on older versions of Bullet.
+// TODO: Remove this when all platforms have the fix upstream.
+inline int bullet_btInfinityMask()
+{
+    return btInfinityMask;
+}
+#endif
 
 namespace tf2
 {
