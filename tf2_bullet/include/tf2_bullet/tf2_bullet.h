@@ -39,7 +39,7 @@
 
 #include <iostream>
 
-#if (BT_BULLET_VERSION == 282)
+#if (BT_BULLET_VERSION <= 282)
 // Suppress compilation warning on older versions of Bullet.
 // TODO(mjcarroll): Remove this when all platforms have the fix upstream.
 inline int bullet_btInfinityMask()
