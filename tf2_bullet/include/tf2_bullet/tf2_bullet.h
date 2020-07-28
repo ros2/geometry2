@@ -41,10 +41,10 @@
 
 #if (BT_BULLET_VERSION == 282)
 // Suppress compilation warning on older versions of Bullet.
-// TODO: Remove this when all platforms have the fix upstream.
+// TODO(mjcarroll): Remove this when all platforms have the fix upstream.
 inline int bullet_btInfinityMask()
 {
-    return btInfinityMask;
+  return btInfinityMask;
 }
 #endif
 
