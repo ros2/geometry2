@@ -261,7 +261,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
         else
           ts.child_frame_id = frames[i]; // connect first frame
         EXPECT_TRUE(mBC.setTransform(ts, "authority"));
-        if (interpolation_space > tf2::Duration())
+        if (interpolation_space > tf2::Duration(0))
         {
           // TODO (ahcorde): review this
           double time_stamp = time_seconds;// + time_interpolation_space;
@@ -306,7 +306,7 @@ void setupTree(tf2::BufferCore& mBC, const std::string& mode, const builtin_inte
     ts.header.frame_id = parents[i];
     ts.child_frame_id = children[i];
     EXPECT_TRUE(mBC.setTransform(ts, "authority"));
-    if (interpolation_space > tf2::Duration())
+    if (interpolation_space > tf2::Duration(0))
     {
       // TODO (ahcorde): review this
       double time_stamp = time_seconds;// + time_interpolation_space;
@@ -662,7 +662,7 @@ TEST(BufferCore_lookupTransform, i_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
@@ -992,7 +992,7 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   // permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
@@ -1034,7 +1034,7 @@ TEST(BufferCore_lookupTransform, v_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   //  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
@@ -1079,7 +1079,7 @@ TEST(BufferCore_lookupTransform, y_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   //  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
@@ -1123,7 +1123,7 @@ TEST(BufferCore_lookupTransform, multi_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   //  permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
@@ -1457,7 +1457,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   durations.push_back(tf2::durationFromSec(1.0));
   durations.push_back(tf2::durationFromSec(0.001));
   durations.push_back(tf2::durationFromSec(0.1));
-  tf2::Duration interpolation_space;
+  tf2::Duration interpolation_space(0);
   permuter.addOptionSet(durations, &interpolation_space);
 
   std::vector<std::string> frames;
