@@ -460,6 +460,7 @@ private:
     namespace mt = message_filters::message_traits;
 
     MEvent saved_event;
+    bool event_found = false;
 
     {
       // We will be accessing and mutating messages now, require unique lock
@@ -479,15 +480,14 @@ private:
             saved_event = msg_it->event;
             messages_.erase(msg_it);
             --message_count_;
-          } else {
-            msg_it = msg_end;
-          }
+            event_found = true;
+          } 
           break;
         }
       }
     }
 
-    if (msg_it == msg_end) {
+    if (!event_found) {
       return;
     }
 
