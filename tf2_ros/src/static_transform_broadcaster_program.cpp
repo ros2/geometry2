@@ -89,9 +89,9 @@ int main(int argc, char ** argv)
   std::string frame_id, child_id;
 
   if (args.size() == 9) {
-    // grab parameters from roll, pitch, yaw
+    // grab parameters from yaw, pitch, roll
     tf2::Quaternion quat;
-    quat.setRPY(std::stod(args[4]), std::stod(args[5]), std::stod(args[6]));
+    quat.setRPY(std::stod(args[6]), std::stod(args[5]), std::stod(args[4]));
     rx = quat.x();
     ry = quat.y();
     rz = quat.z();
