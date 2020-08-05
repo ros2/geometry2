@@ -140,6 +140,22 @@ class TestBuffer(unittest.TestCase):
         self.assertEqual(transform, cm.exception.value)
         coro.close()
 
+    def test_buffer_non_default_cache(self):
+        buffer = Buffer(cache_time=rclpy.duration.Duration(seconds=10.0))
+        clock = rclpy.clock.Clock()
+        rclpy_time = clock.now()
+        transform = self.build_transform('foo', 'bar', rclpy_time)
+
+        self.assertEqual(buffer.set_transform(transform, 'unittest'), None)
+
+        self.assertEqual(buffer.can_transform('foo', 'bar', rclpy_time), True)
+
+        output = buffer.lookup_transform('foo', 'bar', rclpy_time)
+        self.assertEqual(transform.child_frame_id, output.child_frame_id)
+        self.assertEqual(transform.transform.translation.x, output.transform.translation.x)
+        self.assertEqual(transform.transform.translation.y, output.transform.translation.y)
+        self.assertEqual(transform.transform.translation.z, output.transform.translation.z)
+
 
 if __name__ == '__main__':
     unittest.main()
