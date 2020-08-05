@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.5 (2020-08-05)
+-------------------
+* Make static_transform_broadcaster consistent with its command line description (`#294 <https://github.com/ros2/geometry2/issues/294>`_) (`#296 <https://github.com/ros2/geometry2/issues/296>`_)
+* Fix dependencies in tf2_ros (`#269 <https://github.com/ros2/geometry2/issues/269>`_) (`#288 <https://github.com/ros2/geometry2/issues/288>`_)
+* Moved unique_lock of messages_mutex\_ to guarantee pointer (`#279 <https://github.com/ros2/geometry2/issues/279>`_) (`#283 <https://github.com/ros2/geometry2/issues/283>`_)
+* Contributors: Chris Lalancette, Hunter L. Allen, Martin Ganeff
+
 0.13.4 (2020-06-03)
 -------------------
 * export targets in addition to include directories / libraries (`#271 <https://github.com/ros2/geometry2/issues/271>`_)
