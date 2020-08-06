@@ -262,6 +262,7 @@ namespace tf2_ros
 
     /// \brief A map from active timers to BufferCore request handles
     std::unordered_map<TimerHandle, tf2::TransformableRequestHandle> timer_to_request_map_;
+    std::unordered_map<TimerHandle, tf2::TransformableCallbackHandle> timer_to_callback_map_;
 
     /// \brief A mutex on the timer_to_request_map_ data
     std::mutex timer_to_request_map_mutex_;
