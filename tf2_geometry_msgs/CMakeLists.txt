@@ -18,10 +18,11 @@ set(required_dependencies
 )
 ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
-ament_python_install_package(${PROJECT_NAME}
-     PACKAGE_DIR src/${PROJECT_NAME})
+# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
+# ament_python_install_package(${PROJECT_NAME}
+#      PACKAGE_DIR src/${PROJECT_NAME})
 
-# TODO (ahcorde) Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
+# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
 # install(PROGRAMS scripts/test.py
 #    DESTINATION lib/${PROJECT_NAME}
 # )
