@@ -1,35 +1,38 @@
-/*
- * Copyright (c) 2008, Willow Garage, Inc.
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2008, Willow Garage, Inc. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//    * Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the distribution.
+//
+//    * Neither the name of the Willow Garage nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+#include <gtest/gtest.h>
 
 #include <chrono>
-#include <gtest/gtest.h>
-#include <tf2/buffer_core.h>
+#include <string>
+#include <vector>
+
+#include "tf2/buffer_core.h"
 #include "tf2/LinearMath/Vector3.h"
 #include "tf2/exceptions.h"
 #include "tf2/time.h"
@@ -39,7 +42,6 @@ TEST(tf2, setTransformFail)
   tf2::BufferCore tfc;
   geometry_msgs::msg::TransformStamped st;
   EXPECT_FALSE(tfc.setTransform(st, "authority1"));
-  
 }
 
 TEST(tf2, setTransformValid)
@@ -53,7 +55,6 @@ TEST(tf2, setTransformValid)
   st.child_frame_id = "child";
   st.transform.rotation.w = 1;
   EXPECT_TRUE(tfc.setTransform(st, "authority1"));
-  
 }
 
 TEST(tf2, setTransformValidWithCallback)
@@ -72,7 +73,8 @@ TEST(tf2, setTransformValidWithCallback)
   bool transform_available = false;
 
   auto cb_handle = buffer.addTransformableCallback(
-    [&received_request_handle, &received_target_frame, &received_source_frame, &received_time_point, &transform_available](
+    [&received_request_handle, &received_target_frame, &received_source_frame, &received_time_point,
+    &transform_available](
       tf2::TransformableRequestHandle request_handle,
       const std::string & target_frame,
       const std::string & source_frame,
@@ -89,7 +91,7 @@ TEST(tf2, setTransformValidWithCallback)
   tf2::TransformableRequestHandle request_handle = buffer.addTransformableRequest(
     cb_handle, target_frame, source_frame, time_point);
   ASSERT_NE(request_handle, 0u);
-  
+
   geometry_msgs::msg::TransformStamped transform_msg;
   transform_msg.header.frame_id = target_frame;
   transform_msg.header.stamp = builtin_interfaces::msg::Time();
@@ -117,21 +119,22 @@ TEST(tf2, setTransformInvalidQuaternion)
   st.child_frame_id = "child";
   st.transform.rotation.w = 0;
   EXPECT_FALSE(tfc.setTransform(st, "authority1"));
-  
 }
 
 TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
 {
   tf2::BufferCore tfc;
-  EXPECT_THROW(tfc.lookupTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))), tf2::LookupException);
-  
+  EXPECT_THROW(
+    tfc.lookupTransform(
+      "a", "b", tf2::TimePoint(
+        std::chrono::seconds(
+          1))), tf2::LookupException);
 }
 
 TEST(tf2_canTransform, Nothing_Exists)
 {
   tf2::BufferCore tfc;
   EXPECT_FALSE(tfc.canTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))));
-  
 }
 
 TEST(tf2_lookupTransform, LookupException_One_Exists)
@@ -145,8 +148,11 @@ TEST(tf2_lookupTransform, LookupException_One_Exists)
   st.child_frame_id = "child";
   st.transform.rotation.w = 1;
   EXPECT_TRUE(tfc.setTransform(st, "authority1"));
-  EXPECT_THROW(tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(1))), tf2::LookupException);
-  
+  EXPECT_THROW(
+    tfc.lookupTransform(
+      "foo", "bar", tf2::TimePoint(
+        std::chrono::seconds(
+          1))), tf2::LookupException);
 }
 
 TEST(tf2_canTransform, One_Exists)
@@ -210,7 +216,8 @@ TEST(tf2_time, To_From_Sec)
   // Exact representation of a time.
   tf2::TimePoint t1 = tf2::get_now();
 
-  // Approximate representation of the time in seconds as a double (floating point error introduced).
+  // Approximate representation of the time in seconds as a double (floating point
+  // error introduced).
   double t1_sec = tf2::timeToSec(t1);
 
   // Time point from the t1_sec approximation.
@@ -236,14 +243,14 @@ TEST(tf2_time, To_From_Duration)
     0.0,
   };
 
-  for (double expected_diff_sec : values )
-  {
+  for (double expected_diff_sec : values) {
     tf2::TimePoint t2 = tf2::timeFromSec(tf2::timeToSec(t1) + expected_diff_sec);
 
     // Check durationToSec.
     tf2::Duration duration1 = t2 - t1;
 
-    // Approximate representation of the duration in seconds as a double (floating point error introduced).
+    // Approximate representation of the duration in seconds as a double (floating point
+    // error introduced).
     double duration1_sec = tf2::durationToSec(duration1);
 
     // Check that the difference due to duration_sec being approximate is small.
@@ -262,8 +269,8 @@ TEST(tf2_time, To_From_Duration)
   }
 }
 
-
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

@@ -10,10 +10,10 @@ There is also a Python wrapper with the same API that class this library using C
 
 \section codeapi Code API
 
-The main interface is through the tf2::BufferCore interface.  
+The main interface is through the tf2::BufferCore interface.
 
-It uses the exceptions in exceptions.h and the Stamped datatype 
-in transform_datatypes.h. 
+It uses the exceptions in exceptions.h and the Stamped datatype
+in transform_datatypes.h.
 
 \section conversions Conversion Interface
 
@@ -32,5 +32,7 @@ Some packages that implement this interface:
 - tf2_sensor_msgs
 
 More documentation for the conversion interface is available on the <A HREF="http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions">ROS Wiki</A>.
+
+Some tutorials are available on <A HREF="https://index.ros.org/doc/ros2/Tutorials/tf2">https://index.ros.org/</A>.
 
 */

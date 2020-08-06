@@ -1,132 +1,142 @@
-/*
- * Copyright (c) 2013, Open Source Robotics Foundation
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2008, Willow Garage, Inc. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//    * Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the distribution.
+//
+//    * Neither the name of the Willow Garage nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
 
 /** \author Tully Foote */
 
-#ifndef TF2_CONVERT_H
-#define TF2_CONVERT_H
+#ifndef TF2__CONVERT_H_
+#define TF2__CONVERT_H_
 
-#include <builtin_interfaces/msg/time.hpp>
+#include <string>
 
-#include <tf2/transform_datatypes.h>
-#include <tf2/exceptions.h>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <tf2/impl/convert.h>
-#include <tf2/visibility_control.h>
+#include "builtin_interfaces/msg/time.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rosidl_runtime_cpp/traits.hpp"
+#include "tf2/exceptions.h"
+#include "tf2/impl/convert.h"
+#include "tf2/transform_datatypes.h"
+#include "tf2/visibility_control.h"
 
-#include <rosidl_runtime_cpp/traits.hpp>
-
-namespace tf2 {
+namespace tf2
+{
 
 /**\brief The templated function expected to be able to do a transform
  *
  * This is the method which tf2 will use to try to apply a transform for any given datatype.
- * \param data_in The data to be transformed.
- * \param data_out A reference to the output data.  Note this can point to data in and the method should be mutation safe.
- * \param transform The transform to apply to data_in to fill data_out.
+ * \param data_in[in] The data to be transformed.
+ * \param data_out[inout] A reference to the output data. Note this can point to data in and the method should be mutation safe.
+ * \param transform[in] The transform to apply to data_in to fill data_out.
  *
  * This method needs to be implemented by client library developers
  */
-template <class T>
-  void doTransform(const T& data_in, T& data_out, const geometry_msgs::msg::TransformStamped& transform);
+template<class T>
+void doTransform(
+  const T & data_in, T & data_out,
+  const geometry_msgs::msg::TransformStamped & transform);
 
 /**\brief Get the timestamp from data
- * \param t The data input.
+ * \param[in] t The data input.
  * \return The timestamp associated with the data.
  */
-template <class T>
-  tf2::TimePoint getTimestamp(const T& t);
+template<class T>
+tf2::TimePoint getTimestamp(const T & t);
 
 /**\brief Get the frame_id from data
- * \param t The data input.
+ * \param[in] t The data input.
  * \return The frame_id associated with the data.
  */
-template <class T>
-  std::string getFrameId(const T& t);
+template<class T>
+std::string getFrameId(const T & t);
 
+/**\brief Get the frame_id from data
+ *
+ * An implementation for Stamped<P> datatypes.
+ *
+ * \param[in] t The data input.
+ * \return The frame_id associated with the data.
+ */
+template<class P>
+tf2::TimePoint getTimestamp(const tf2::Stamped<P> & t)
+{
+  return t.stamp_;
+}
 
+/**\brief Get the frame_id from data
+ *
+ * An implementation for Stamped<P> datatypes.
+ *
+ * \param[in] t The data input.
+ * \return The frame_id associated with the data.
+ */
+template<class P>
+std::string getFrameId(const tf2::Stamped<P> & t)
+{
+  return t.frame_id_;
+}
 
-/* An implementation for Stamped<P> datatypes */
-template <class P>
-  tf2::TimePoint getTimestamp(const tf2::Stamped<P>& t)
-  {
-    return t.stamp_;
-  }
-
-/* An implementation for Stamped<P> datatypes */
-template <class P>
-  std::string getFrameId(const tf2::Stamped<P>& t)
-  {
-    return t.frame_id_;
-  }
-
-/** Function that converts from one type to a ROS message type. It has to be
+/**\brief Function that converts from one type to a ROS message type. It has to be
  * implemented by each data type in tf2_* (except ROS messages) as it is
  * used in the "convert" function.
  * \param a an object of whatever type
  * \return the conversion as a ROS message
  */
 template<typename A, typename B>
-  B toMsg(const A& a);
+B toMsg(const A & a);
 
-/** Function that converts from a ROS message type to another type. It has to be
+/**\brief Function that converts from a ROS message type to another type. It has to be
  * implemented by each data type in tf2_* (except ROS messages) as it is used
  * in the "convert" function.
  * \param a a ROS message to convert from
  * \param b the object to convert to
  */
 template<typename A, typename B>
-  void fromMsg(const A&, B& b);
+void fromMsg(const A &, B & b);
 
-/** Function that converts any type to any type (messages or not).
+/**\brief Function that converts any type to any type (messages or not).
  * Matching toMsg and from Msg conversion functions need to exist.
  * If they don't exist or do not apply (for example, if your two
  * classes are ROS messages), just write a specialization of the function.
  * \param a an object to convert from
  * \param b the object to convert to
  */
-
-template <class A, class B>
-void convert(const A& a, B& b)
+template<class A, class B>
+void convert(const A & a, B & b)
 {
   impl::Converter<rosidl_generator_traits::is_message<A>::value,
-                  rosidl_generator_traits::is_message<B>::value>::convert(a, b);
+    rosidl_generator_traits::is_message<B>::value>::convert(a, b);
 }
 
-template <class A>
-void convert(const A& a1, A& a2)
+template<class A>
+void convert(const A & a1, A & a2)
 {
-  if(&a1 != &a2)
+  if (&a1 != &a2) {
     a2 = a1;
+  }
 }
+}  // namespace tf2
 
-
-}
-
-#endif //TF2_CONVERT_H
+#endif  // TF2__CONVERT_H_
