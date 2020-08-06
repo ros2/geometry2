@@ -72,12 +72,6 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time, rclcpp:
     frames_server_ = node_->create_service<tf2_msgs::srv::FrameGraph>(
       "tf2_frames", std::bind(&Buffer::getFrames, this, std::placeholders::_1, std::placeholders::_2));
   }
-  // TODO(tfoote) reenable 
-  // if(debug && !ros::exists("~tf2_frames", false))
-  // {
-  //   ros::NodeHandle n("~");
-  //   frames_server_ = n.advertiseService("tf2_frames", &Buffer::getFrames, this);
-  // }
 }
 
 inline
