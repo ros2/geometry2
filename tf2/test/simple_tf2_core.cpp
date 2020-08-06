@@ -72,7 +72,7 @@ TEST(tf2, setTransformValidWithCallback)
   tf2::TimePoint received_time_point;
   bool transform_available = false;
 
-  auto cb_handle = buffer.addTransformableCallback(
+  auto cb =
     [&received_request_handle, &received_target_frame, &received_source_frame, &received_time_point,
     &transform_available](
       tf2::TransformableRequestHandle request_handle,
@@ -86,10 +86,10 @@ TEST(tf2, setTransformValidWithCallback)
       received_source_frame = source_frame;
       received_time_point = time;
       transform_available = tf2::TransformAvailable == result;
-    });
+    };
 
   tf2::TransformableRequestHandle request_handle = buffer.addTransformableRequest(
-    cb_handle, target_frame, source_frame, time_point);
+    cb, target_frame, source_frame, time_point);
   ASSERT_NE(request_handle, 0u);
 
   geometry_msgs::msg::TransformStamped transform_msg;

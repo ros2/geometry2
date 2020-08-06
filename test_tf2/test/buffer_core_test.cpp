@@ -1823,34 +1823,34 @@ TEST(BufferCore_transformableCallbacks, alreadyTransformable)
       std::chrono::seconds(1) +
       std::chrono::nanoseconds(0));
 
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+  tf2::BufferCore::TransformableCallback cb = std::bind(&TransformableHelper::callback,
       &h,
       std::placeholders::_1,
       std::placeholders::_2,
       std::placeholders::_3,
       std::placeholders::_4,
-      std::placeholders::_5));
+      std::placeholders::_5);
 
-  EXPECT_EQ(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
+  EXPECT_EQ(b.addTransformableRequest(cb, "a", "b", eval_time_time_point), 0U);
 }
 
 TEST(BufferCore_transformableCallbacks, waitForNewTransform)
 {
   tf2::BufferCore b;
   TransformableHelper h;
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+  tf2::BufferCore::TransformableCallback cb = std::bind(&TransformableHelper::callback,
       &h,
       std::placeholders::_1,
       std::placeholders::_2,
       std::placeholders::_3,
       std::placeholders::_4,
-      std::placeholders::_5));
+      std::placeholders::_5);
 
   tf2::TimePoint eval_time_time_point = tf2::TimePoint(
       std::chrono::seconds(10) +
       std::chrono::nanoseconds(0));
 
-  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
+  EXPECT_GT(b.addTransformableRequest(cb, "a", "b", eval_time_time_point), 0U);
 
   geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 1; i <= 10; ++i)
@@ -1876,19 +1876,19 @@ TEST(BufferCore_transformableCallbacks, waitForOldTransform)
 {
   tf2::BufferCore b;
   TransformableHelper h;
-  tf2::TransformableCallbackHandle cb_handle = b.addTransformableCallback(std::bind(&TransformableHelper::callback,
+  tf2::BufferCore::TransformableCallback cb = std::bind(&TransformableHelper::callback,
       &h,
       std::placeholders::_1,
       std::placeholders::_2,
       std::placeholders::_3,
       std::placeholders::_4,
-      std::placeholders::_5));
+      std::placeholders::_5);
 
   tf2::TimePoint eval_time_time_point = tf2::TimePoint(
       std::chrono::seconds(1) +
       std::chrono::nanoseconds(0));
 
-  EXPECT_GT(b.addTransformableRequest(cb_handle, "a", "b", eval_time_time_point), 0U);
+  EXPECT_GT(b.addTransformableRequest(cb, "a", "b", eval_time_time_point), 0U);
 
   geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 10; i > 0; --i)

@@ -54,7 +54,6 @@ namespace tf2
 {
 
 typedef std::pair<TimePoint, CompactFrameID> P_TimeAndFrameID;
-typedef uint32_t TransformableCallbackHandle;
 typedef uint64_t TransformableRequestHandle;
 
 class TimeCacheInterface;
@@ -256,14 +255,8 @@ public:
 
   /// \brief Internal use only
   TF2_PUBLIC
-  TransformableCallbackHandle addTransformableCallback(const TransformableCallback & cb);
-  /// \brief Internal use only
-  TF2_PUBLIC
-  void removeTransformableCallback(TransformableCallbackHandle handle);
-  /// \brief Internal use only
-  TF2_PUBLIC
   TransformableRequestHandle addTransformableRequest(
-    TransformableCallbackHandle handle,
+    const TransformableCallback & cb,
     const std::string & target_frame,
     const std::string & source_frame,
     TimePoint time);
@@ -380,6 +373,8 @@ private:
   /// How long to cache transform history
   tf2::Duration cache_time_;
 
+  typedef uint32_t TransformableCallbackHandle;
+
   typedef std::unordered_map<TransformableCallbackHandle,
       TransformableCallback> M_TransformableCallback;
   M_TransformableCallback transformable_callbacks_;
@@ -400,9 +395,6 @@ private:
   V_TransformableRequest transformable_requests_;
   std::mutex transformable_requests_mutex_;
   uint64_t transformable_requests_counter_;
-
-  struct RemoveRequestByCallback;
-  struct RemoveRequestByID;
 
 
   /************************* Internal Functions ****************************/
