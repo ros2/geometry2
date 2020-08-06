@@ -156,49 +156,6 @@ public:
     const std::string & source_frame, const TimePoint & source_time,
     const std::string & fixed_frame) const override;
 
-  /** \brief Lookup the twist of the tracking_frame with respect to the observation frame in the reference_frame using the reference point
-   * \param tracking_frame The frame to track
-   * \param observation_frame The frame from which to measure the twist
-   * \param reference_frame The reference frame in which to express the twist
-   * \param reference_point The reference point with which to express the twist
-   * \param reference_point_frame The frame_id in which the reference point is expressed
-   * \param time The time at which to get the velocity
-   * \param duration The period over which to average
-   * \return twist The twist output
-   *
-   * This will compute the average velocity on the interval
-   * (time - duration/2, time+duration/2). If that is too close to the most
-   * recent reading, in which case it will shift the interval up to
-   * duration/2 to prevent extrapolation.
-   *
-   * Possible exceptions tf2::LookupException, tf2::ConnectivityException,
-   * tf2::ExtrapolationException, tf2::InvalidArgumentException
-   *
-   * New in geometry 1.1
-   */
-  /*
-  geometry_msgs::Twist
-    lookupTwist(const std::string& tracking_frame, const std::string& observation_frame, const std::string& reference_frame,
-                const tf::Point & reference_point, const std::string& reference_point_frame,
-                const tf2::TimePoint& time, const tf2::Duration& averaging_interval) const;
-  */
-  /** \brief lookup the twist of the tracking frame with respect to the observational frame
-   *
-   * This is a simplified version of
-   * lookupTwist with it assumed that the reference point is the
-   * origin of the tracking frame, and the reference frame is the
-   * observation frame.
-   *
-   * Possible exceptions tf2::LookupException, tf2::ConnectivityException,
-   * tf2::ExtrapolationException, tf2::InvalidArgumentException
-   *
-   * New in geometry 1.1
-   */
-  /*
-  geometry_msgs::Twist
-    lookupTwist(const std::string& tracking_frame, const std::string& observation_frame,
-                const tf2::TimePoint& time, const tf2::Duration& averaging_interval) const;
-  */
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
    * \param source_frame The frame from which to transform
@@ -365,7 +322,7 @@ private:
   typedef std::unordered_map<std::string, CompactFrameID> M_StringToCompactFrameID;
   M_StringToCompactFrameID frameIDs_;
   /** \brief A map from CompactFrameID frame_id_numbers to string for debugging and output */
-  std::vector<std::string> frameIDs_reverse;
+  std::vector<std::string> frameIDs_reverse_;
   /** \brief A map to lookup the most recent authority for a given frame */
   std::map<CompactFrameID, std::string> frame_authority_;
 
