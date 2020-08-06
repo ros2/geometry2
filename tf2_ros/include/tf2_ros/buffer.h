@@ -261,7 +261,11 @@ namespace tf2_ros
     CreateTimerInterface::SharedPtr timer_interface_;
 
     /// \brief A map from active timers to BufferCore request handles
-    std::unordered_map<TimerHandle, tf2::TransformableRequestHandle> timer_to_request_map_;
+    typedef struct {
+      tf2::TransformableRequestHandle request_handle;
+      tf2::TransformableCallbackHandle callback_handle;
+    } TransformableHandles;
+    std::unordered_map<TimerHandle, TransformableHandles> timer_to_request_map_;
 
     /// \brief A mutex on the timer_to_request_map_ data
     std::mutex timer_to_request_map_mutex_;
