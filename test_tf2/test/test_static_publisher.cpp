@@ -46,7 +46,7 @@
 
 #include "permuter.hpp"
 
-const int MAX_ATTEMPTS = 100;
+const int MAX_ATTEMPTS = 400;
 
 TEST(StaticTransformPublisher, a_b_different_times)
 {

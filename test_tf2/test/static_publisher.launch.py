@@ -42,7 +42,7 @@ def generate_test_description():
 class TestBufferClient(unittest.TestCase):
 
     def test_termination(self, node_under_test, proc_info):
-        proc_info.assertWaitForShutdown(process=node_under_test, timeout=(10))
+        proc_info.assertWaitForShutdown(process=node_under_test, timeout=(60))
 
 
 @launch_testing.post_shutdown_test()
