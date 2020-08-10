@@ -48,8 +48,8 @@
 namespace tf2_ros
 {
 
-Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
-  BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
+Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time, rclcpp::Node::SharedPtr node) :
+  BufferCore(cache_time), clock_(clock), node_(node), timer_interface_(nullptr)
 {
   if (nullptr == clock_)
   {
@@ -68,12 +68,10 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
 
   jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
 
-  // TODO(tfoote) reenable 
-  // if(debug && !ros::exists("~tf2_frames", false))
-  // {
-  //   ros::NodeHandle n("~");
-  //   frames_server_ = n.advertiseService("tf2_frames", &Buffer::getFrames, this);
-  // }
+  if (node_) {
+    frames_server_ = node_->create_service<tf2_msgs::srv::FrameGraph>(
+      "tf2_frames", std::bind(&Buffer::getFrames, this, std::placeholders::_1, std::placeholders::_2));
+  }
 }
 
 inline
@@ -288,10 +286,10 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
   }
 }
 
-bool Buffer::getFrames(tf2_msgs::srv::FrameGraph::Request& req, tf2_msgs::srv::FrameGraph::Response& res) 
+bool Buffer::getFrames(const tf2_msgs::srv::FrameGraph::Request::SharedPtr req, tf2_msgs::srv::FrameGraph::Response::SharedPtr res)
 {
   (void)req;
-  res.frame_yaml = allFramesAsYAML();
+  res->frame_yaml = allFramesAsYAML();
   return true;
 }
 
