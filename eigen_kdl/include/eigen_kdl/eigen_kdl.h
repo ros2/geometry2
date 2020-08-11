@@ -39,6 +39,8 @@
 
 #include <kdl/frames.hpp>
 
+#include <tf2/impl/convert.h>
+
 namespace tf2 {
 
 /// Converts a KDL rotation into an Eigen quaternion
@@ -77,6 +79,93 @@ void wrenchKDLToEigen(const KDL::Wrench &k, Eigen::Matrix<double, 6, 1> &e);
 /// Converts an Eigen matrix into a KDL wrench
 void wrenchEigenToKDL(const Eigen::Matrix<double, 6, 1> &e, KDL::Wrench &k);
 
-} // namespace
+namespace impl {
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Rotation &a, Eigen::Quaterniond &b)
+{
+    quaternionKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Quaterniond &a, KDL::Rotation &b)
+{
+    quaternionEigenToKDL(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Frame &a, Eigen::Affine3d &b)
+{
+    transformKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Frame &a, Eigen::Isometry3d &b)
+{
+    transformKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Affine3d &a, KDL::Frame &b)
+{
+    transformEigenToKDL(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Isometry3d &a, KDL::Frame &b)
+{
+    transformEigenToKDL(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Twist &a, Eigen::Matrix<double, 6, 1> &b)
+{
+    twistKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Matrix<double, 6, 1> &a, KDL::Twist &b)
+{
+    twistEigenToKDL(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Vector &a, Eigen::Matrix<double, 3, 1> &b)
+{
+    vectorKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Matrix<double, 3, 1> &a, KDL::Vector &b)
+{
+    vectorEigenToKDL(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const KDL::Wrench &a, Eigen::Matrix<double, 6, 1> &b)
+{
+    wrenchKDLToEigen(a, b);
+}
+
+template<>
+template<>
+inline void Converter<false, false>::convert(const Eigen::Matrix<double, 6, 1> &a, KDL::Wrench &b)
+{
+    wrenchEigenToKDL(a, b);
+}
+} // namespace impl
+
+} // namespace tf2
 
 #endif
