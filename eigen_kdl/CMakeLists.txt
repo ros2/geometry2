@@ -28,11 +28,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
-  DESTINATION lib/${PROJECT_NAME})
+  DESTINATION lib)
 
 ament_export_include_directories(include)
 ament_export_dependencies(
   eigen3_cmake_module
   Eigen3
   orocos_kdl)
+ament_export_libraries(${PROJECT_NAME})
 ament_package()
