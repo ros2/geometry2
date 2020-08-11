@@ -14,15 +14,17 @@ find_package(orocos_kdl REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
 include_directories(include)
-
 
 add_library(${PROJECT_NAME} SHARED
   src/eigen_kdl.cpp
 )
 
-ament_target_dependencies(${PROJECT_NAME} orocos_kdl)
+ament_target_dependencies(${PROJECT_NAME}
+    orocos_kdl
+    eigen3_cmake_module
+    Eigen3
+)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME})
