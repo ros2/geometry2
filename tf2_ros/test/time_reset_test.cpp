@@ -57,13 +57,15 @@ TEST(tf2_ros_time_reset_test, time_backwards)
 
   auto clock_pub = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", 1);
 
+  // basic test
+  ASSERT_FALSE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
+
+  // make sure endpoints have discovered each other
+  spin_for_a_second(node_);
 
   rosgraph_msgs::msg::Clock c;
   c.clock = rclcpp::Time(100, 0);
   clock_pub->publish(c);
-
-  // basic test
-  ASSERT_FALSE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
   // set the transform
   geometry_msgs::msg::TransformStamped msg;
