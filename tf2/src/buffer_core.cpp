@@ -1283,6 +1283,23 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
   const std::string & source_frame,
   TimePoint time)
 {
+  // Even though we only modify transformable_requests_ at the end of the
+  // method, we still need to take the lock at the beginning.  This is to
+  // ensure that we don't have a TOCTTOU race between this method and
+  // testTransformableRequests.  If the lock were only at the end of this
+  // method, the race occurs like this:
+  //
+  // T1: addTransformableRequest, determines that needs to add to transformable_requests_
+  // T2: in testTransformableRequests already, holding the lock
+  // T1: blocked getting lock
+  // T2: calls all callbacks for outstanding transforms (doesn't include the current one)
+  // T2: unlocks
+  // T1: gets lock, adds to list
+  //
+  // If nothing ever calls setTransform() again, then the callback for the
+  // current request will never get called.  We fix this by holding the mutex
+  // across the entirety of this call.
+  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
   // shortcut if target == source
   if (target_frame == source_frame) {
     return 0;
@@ -1332,7 +1349,6 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     req.source_string = source_frame;
   }
 
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
   transformable_requests_.push_back(req);
 
   return req.request_handle;
