@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <map>
+#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1276,49 +1277,8 @@ std::string BufferCore::allFramesAsYAML() const
   return this->allFramesAsYAML(TimePointZero);
 }
 
-TransformableCallbackHandle BufferCore::addTransformableCallback(const TransformableCallback & cb)
-{
-  std::unique_lock<std::mutex> lock(transformable_callbacks_mutex_);
-  TransformableCallbackHandle handle = ++transformable_callbacks_counter_;
-  while (!transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
-    handle = ++transformable_callbacks_counter_;
-  }
-
-  return handle;
-}
-
-struct BufferCore::RemoveRequestByCallback
-{
-  explicit RemoveRequestByCallback(TransformableCallbackHandle handle)
-  : handle_(handle)
-  {}
-
-  bool operator()(const TransformableRequest & req)
-  {
-    return req.cb_handle == handle_;
-  }
-
-  TransformableCallbackHandle handle_;
-};
-
-void BufferCore::removeTransformableCallback(TransformableCallbackHandle handle)
-{
-  {
-    std::unique_lock<std::mutex> lock(transformable_callbacks_mutex_);
-    transformable_callbacks_.erase(handle);
-  }
-
-  {
-    std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-    V_TransformableRequest::iterator it = std::remove_if(
-      transformable_requests_.begin(), transformable_requests_.end(),
-      RemoveRequestByCallback(handle));
-    transformable_requests_.erase(it, transformable_requests_.end());
-  }
-}
-
 TransformableRequestHandle BufferCore::addTransformableRequest(
-  TransformableCallbackHandle handle,
+  const TransformableCallback & cb,
   const std::string & target_frame,
   const std::string & source_frame,
   TimePoint time)
@@ -1348,7 +1308,16 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     }
   }
 
-  req.cb_handle = handle;
+  {
+    std::unique_lock<std::mutex> lock(transformable_callbacks_mutex_);
+    TransformableCallbackHandle handle = ++transformable_callbacks_counter_;
+    while (!transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
+      handle = ++transformable_callbacks_counter_;
+    }
+
+    req.cb_handle = handle;
+  }
+
   req.time = time;
   req.request_handle = ++transformable_requests_counter_;
   if (req.request_handle == 0 || req.request_handle == 0xffffffffffffffffULL) {
@@ -1369,29 +1338,18 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
   return req.request_handle;
 }
 
-struct BufferCore::RemoveRequestByID
-{
-  explicit RemoveRequestByID(TransformableRequestHandle handle)
-  : handle_((TransformableCallbackHandle)handle)
-  {}
-
-  bool operator()(const TransformableRequest & req)
-  {
-    return req.request_handle == handle_;
-  }
-
-  TransformableCallbackHandle handle_;
-};
-
 void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
 {
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-  V_TransformableRequest::iterator it = std::remove_if(
-    transformable_requests_.begin(), transformable_requests_.end(), RemoveRequestByID(handle));
+  std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
+  std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
 
-  if (it != transformable_requests_.end()) {
-    transformable_requests_.erase(it, transformable_requests_.end());
+  V_TransformableRequest::iterator remove_it = std::remove_if(transformable_requests_.begin(), transformable_requests_.end(),
+                                                              [handle](TransformableRequest req) { return handle == req.request_handle; });
+  for (V_TransformableRequest::iterator it = remove_it; it != transformable_requests_.end(); ++it) {
+    transformable_callbacks_.erase(it->cb_handle);
   }
+
+  transformable_requests_.erase(remove_it, transformable_requests_.end());
 }
 
 // backwards compability for tf methods
@@ -1474,6 +1432,7 @@ void BufferCore::testTransformableRequests()
           cb(
             req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
               req.source_id), req.time, result);
+          transformable_callbacks_.erase(req.cb_handle);
         }
       }
 
@@ -1492,9 +1451,6 @@ void BufferCore::testTransformableRequests()
       ++it;
     }
   }
-
-  // unlock before allowing possible user callbacks to avoid potential detadlock (#91)
-  lock.unlock();
 }
 
 

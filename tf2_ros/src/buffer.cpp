@@ -200,7 +200,7 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
   auto promise = std::make_shared<std::promise<geometry_msgs::msg::TransformStamped>>();
   TransformStampedFuture future(promise->get_future());
 
-  auto cb_handle = addTransformableCallback([this, promise, callback, future](
+  auto cb = [this, promise, callback, future](
     tf2::TransformableRequestHandle request_handle, const std::string& target_frame,
     const std::string& source_frame, tf2::TimePoint time, tf2::TransformableResult result)
     {
@@ -233,9 +233,9 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
             "Failed to transform from " + source_frame + " to " + target_frame)));
       }
       callback(future);
-    });
+    };
 
-  auto handle = addTransformableRequest(cb_handle, target_frame, source_frame, time);
+  auto handle = addTransformableRequest(cb, target_frame, source_frame, time);
   if (0 == handle) {
     // Immediately transformable
     geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(target_frame, source_frame, time);
