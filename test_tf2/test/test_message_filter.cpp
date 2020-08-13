@@ -212,7 +212,6 @@ TEST(MessageFilter, concurrentTransforms)
       filter.add(msg);
     }
     t.join();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     EXPECT_EQ(messages, n.count_);
 
