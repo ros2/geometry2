@@ -2,6 +2,11 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add in pytest.ini so tests succeed locally. (`#280 <https://github.com/ros2/geometry2/issues/280>`_)
+* Contributors: Chris Lalancette
+
 0.13.4 (2020-06-03)
 -------------------
 

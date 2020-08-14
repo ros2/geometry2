@@ -2,6 +2,15 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Don't install python tf2_geometry_msgs (`#299 <https://github.com/ros2/geometry2/issues/299>`_)
+  It hasn't been ported yet.
+  Closes https://github.com/ros2/geometry2/issues/285
+* Split tf2_ros in tf2_ros and tf2_ros_py (`#210 <https://github.com/ros2/geometry2/issues/210>`_)
+  * Split tf2_ros in tf2_ros and tf2_ros_py
+* Contributors: Alejandro Hernández Cordero, Shane Loretz
+
 0.13.4 (2020-06-03)
 -------------------
 * export targets in addition to include directories / libraries (`#271 <https://github.com/ros2/geometry2/issues/271>`_)

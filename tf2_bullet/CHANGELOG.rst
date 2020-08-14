@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Suppress compiler warning on Centos (`#290 <https://github.com/ros2/geometry2/issues/290>`_)
+* Contributors: Michael Carroll
+
 0.13.4 (2020-06-03)
 -------------------
 

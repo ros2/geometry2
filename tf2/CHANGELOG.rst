@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix a TOCTTOU race in tf2. (`#307 <https://github.com/ros2/geometry2/issues/307>`_)
+* Fixed memory leak in Buffer::waitForTransform (`#281 <https://github.com/ros2/geometry2/issues/281>`_)
+* Add common linters to tf2. (`#258 <https://github.com/ros2/geometry2/issues/258>`_)
+* Contributors: Alejandro Hernández Cordero, Chris Lalancette, Martin Ganeff
+
 0.13.4 (2020-06-03)
 -------------------
 * Add missing virtual destructors (`#272 <https://github.com/ros2/geometry2/issues/272>`_)
@@ -37,7 +44,7 @@ Changelog for package tf2
 
 0.12.3 (2019-11-18)
 -------------------
-* Provide more available error messaging for nonexistent and invalid frames in canTransform (`#187 <https://github.com/ros2/geometry2/issues/187>`_)
+* Provide more available error messaging for nonexistent and invalid frames in canTransform (`ros2 #187 <https://github.com/ros2/geometry2/issues/187>`_)
 * Contributors: Emerson Knapp
 
 0.12.2 (2019-11-18)

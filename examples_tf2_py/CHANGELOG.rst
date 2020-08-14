@@ -2,6 +2,12 @@
 Changelog for package examples_tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add pytest.ini so local tests don't display warning (`#276 <https://github.com/ros2/geometry2/issues/276>`_)
+* Split tf2_ros in tf2_ros and tf2_ros_py (`#210 <https://github.com/ros2/geometry2/issues/210>`_)
+* Contributors: Alejandro Hernández Cordero, Chris Lalancette
+
 0.13.4 (2020-06-03)
 -------------------
 
