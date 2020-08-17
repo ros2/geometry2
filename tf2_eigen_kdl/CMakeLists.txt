@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(tf2 REQUIRED)
 
 include_directories(include)
 
@@ -24,6 +25,7 @@ ament_target_dependencies(${PROJECT_NAME}
     orocos_kdl
     eigen3_cmake_module
     Eigen3
+    tf2
 )
 
 install(DIRECTORY include/${PROJECT_NAME}/
@@ -36,6 +38,8 @@ ament_export_include_directories(include)
 ament_export_dependencies(
   eigen3_cmake_module
   Eigen3
-  orocos_kdl)
+  orocos_kdl
+  tf2
+)
 ament_export_libraries(${PROJECT_NAME})
 ament_package()
