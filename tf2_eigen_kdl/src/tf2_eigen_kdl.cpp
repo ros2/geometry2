@@ -40,9 +40,9 @@ void quaternionKDLToEigen(const KDL::Rotation &k, Eigen::Quaterniond &e)
   k.GetQuaternion(e.x(), e.y(), e.z(), e.w());
 
   // or this?
-  //double x, y, z, w;
-  //k.GetQuaternion(x, y, z, w);
-  //e = Eigen::Quaterniond(w, x, y, z);
+  // double x, y, z, w;
+  // k.GetQuaternion(x, y, z, w);
+  // e = Eigen::Quaterniond(w, x, y, z);
 }
 
 void quaternionEigenToKDL(const Eigen::Quaterniond &e, KDL::Rotation &k)
@@ -63,10 +63,10 @@ namespace {
       e(i/3, i%3) = k.M.data[i];
 
     // "identity" row
-    e(3,0) = 0.0;
-    e(3,1) = 0.0;
-    e(3,2) = 0.0;
-    e(3,3) = 1.0;
+    e(3, 0) = 0.0;
+    e(3, 1) = 0.0;
+    e(3, 2) = 0.0;
+    e(3, 3) = 1.0;
   }
 
   template<typename T>
@@ -78,7 +78,7 @@ namespace {
       k.M.data[i] = e(i/3, i%3);
   }
 
-}
+}  // namespace
 
 void transformKDLToEigen(const KDL::Frame &k, Eigen::Affine3d &e)
 {
@@ -136,4 +136,4 @@ void wrenchEigenToKDL(const Eigen::Matrix<double, 6, 1> &e, KDL::Wrench &k)
 }
 
 
-} // namespace
+}  // namespace tf2

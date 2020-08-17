@@ -34,8 +34,8 @@
  * Author: Adam Leeper, Stuart Glaser
  */
 
-#ifndef TF2_EIGEN_KDL_CONVERSIONS_H
-#define TF2_EIGEN_KDL_CONVERSIONS_H
+#ifndef TF2_EIGEN_KDL__TF2_EIGEN_KDL_H_
+#define TF2_EIGEN_KDL__TF2_EIGEN_KDL_H_
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -167,8 +167,8 @@ inline void Converter<false, false>::convert(const Eigen::Matrix<double, 6, 1> &
 {
     wrenchEigenToKDL(a, b);
 }
-} // namespace impl
+}  // namespace impl
 
-} // namespace tf2
+}  // namespace tf2
 
-#endif
+#endif  // TF2_EIGEN_KDL__TF2_EIGEN_KDL_H_
