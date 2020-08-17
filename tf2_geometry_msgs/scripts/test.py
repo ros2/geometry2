@@ -5,7 +5,7 @@ import rclpy
 import PyKDL
 import tf2_ros
 import tf2_geometry_msgs
-from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped, Quaternion
+from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped, PoseWithCovarianceStamped, Quaternion
 
 class GeometryMsgs(unittest.TestCase):
     def test_transform(self):
@@ -46,6 +46,27 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.position.x, 0)
         self.assertEqual(out.pose.position.y, -2)
         self.assertEqual(out.pose.position.z, -3)
+
+        v = PoseWithCovarianceStamped()
+        v.header.stamp = rclpy.time.Time(seconds=2.0).to_msg()
+        v.header.frame_id = 'a'
+        v.pose.covariance = (
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0
+        )
+        v.pose.pose.position.x = 1.0
+        v.pose.pose.position.y = 2.0
+        v.pose.pose.position.z = 3.0
+        v.pose.pose.orientation = Quaternion(w=0.0, x=1.0, y=0.0, z=0.0)
+        out = b.transform(v, 'b')
+        self.assertEqual(out.pose.pose.position.x, 0)
+        self.assertEqual(out.pose.pose.position.y, -2)
+        self.assertEqual(out.pose.pose.position.z, -3)
+        self.assertEqual(out.pose.covariance, v.pose.covariance)
 
         # Translation shouldn't affect Vector3
         t = TransformStamped()
