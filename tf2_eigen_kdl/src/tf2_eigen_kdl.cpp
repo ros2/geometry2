@@ -100,41 +100,41 @@ void transformEigenToKDL(const Eigen::Isometry3d &e, KDL::Frame &k)
 
 void twistEigenToKDL(const Eigen::Matrix<double, 6, 1> &e, KDL::Twist &k)
 {
-  for(int i = 0; i < 6; ++i) {
+  for(unsigned int i = 0; i < 6; ++i) {
     k[i] = e[i];
   }
 }
 
 void twistKDLToEigen(const KDL::Twist &k, Eigen::Matrix<double, 6, 1> &e)
 {
-  for(int i = 0; i < 6; ++i) {
+  for(unsigned int i = 0; i < 6; ++i) {
     e[i] = k[i];
   }
 }
 
 void vectorEigenToKDL(const Eigen::Matrix<double, 3, 1> &e, KDL::Vector &k)
 {
-  for(int i = 0; i < 3; ++i){
+  for(unsigned int i = 0; i < 3; ++i){
     k[i] = e[i];
   }
 }
 void vectorKDLToEigen(const KDL::Vector &k, Eigen::Matrix<double, 3, 1> &e)
 {
-  for(int i = 0; i < 3; ++i){
+  for(unsigned int i = 0; i < 3; ++i){
     e[i] = k[i];
   }
 }
 
 void wrenchKDLToEigen(const KDL::Wrench &k, Eigen::Matrix<double, 6, 1> &e)
 {
-  for(int i = 0; i < 6; ++i){
+  for(unsigned int i = 0; i < 6; ++i){
     e[i] = k[i];
   }
 }
 
 void wrenchEigenToKDL(const Eigen::Matrix<double, 6, 1> &e, KDL::Wrench &k)
 {
-  for(int i = 0; i < 6; ++i) {
+  for(unsigned int i = 0; i < 6; ++i) {
     k[i] = e[i];
   }
 }
