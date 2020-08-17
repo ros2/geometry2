@@ -36,13 +36,7 @@ namespace tf2 {
 
 void quaternionKDLToEigen(const KDL::Rotation &k, Eigen::Quaterniond &e)
 {
-  // // is it faster to do this?
   k.GetQuaternion(e.x(), e.y(), e.z(), e.w());
-
-  // or this?
-  // double x, y, z, w;
-  // k.GetQuaternion(x, y, z, w);
-  // e = Eigen::Quaterniond(w, x, y, z);
 }
 
 void quaternionEigenToKDL(const Eigen::Quaterniond &e, KDL::Rotation &k)
