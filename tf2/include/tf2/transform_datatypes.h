@@ -88,6 +88,63 @@ bool operator==(const Stamped<T> & a, const Stamped<T> & b)
          static_cast<const T &>(a) == static_cast<const T &>(b);
 }
 
+/** \brief The data type which will be cross compatable with geometry_msgs
+ * This is the tf2 datatype equivalent of a MessageWithCovarianceStamped */
+template<typename T>
+class WithCovarianceStamped : public T
+{
+public:
+  TimePoint stamp_;   ///< The timestamp associated with this data
+  std::string frame_id_;   ///< The frame_id associated this data
+  std::array<std::array<double, 6>, 6> cov_mat_;  ///< The covariance matrix associated with this data
+
+  /** Default constructor */
+  WithCovarianceStamped()
+  : frame_id_("NO_ID_STAMPED_DEFAULT_CONSTRUCTION"),
+    cov_mat_{}
+  {
+  }
+
+  /** Full constructor */
+  WithCovarianceStamped(
+    const T & input,
+    const TimePoint & timestamp,
+    const std::string & frame_id,
+    const std::array<std::array<double, 6>, 6> & covariance_matrix
+  )
+  : stamp_(timestamp),
+    frame_id_(frame_id),
+    cov_mat_(covariance_matrix)
+  {
+  }
+
+  /** Copy constructor */
+  WithCovarianceStamped(const WithCovarianceStamped<T> & w)
+  : T(w)
+  {
+  }
+
+  /** Set the data element */
+  void setData(const T & input) {*static_cast<T *>(this) = input;}
+
+  WithCovarianceStamped & operator=(const WithCovarianceStamped<T> & w)
+  {
+    T::operator=(w);
+    this->stamp_ = w.stamp_;
+    this->frame_id_ = w.frame_id_;
+    this->cov_mat_ = w.cov_mat_;
+    return *this;
+  }
+};
+
+/** \brief Comparison operator for WithCovarianceStamped datatypes */
+template<typename T>
+bool operator==(const WithCovarianceStamped<T> & a, const WithCovarianceStamped<T> & b)
+{
+  return a.frame_id_ == b.frame_id_ && a.stamp_ == b.stamp_ &&
+         a.cov_mat_ == b.cov_mat_ && static_cast<const T &>(a) == static_cast<const T &>(b);
+}
+
 }  // namespace tf2
 
 #endif  // TF2__TRANSFORM_DATATYPES_H_

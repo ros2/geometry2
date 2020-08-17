@@ -72,6 +72,13 @@ tf2::TimePoint getTimestamp(const T & t);
 template<class T>
 std::string getFrameId(const T & t);
 
+/**\brief Get the covariance matrix from data
+ * \param[in] t The data input.
+ * \return The covariance matrix associated with the data.
+ */
+template<class T>
+std::array<std::array<double, 6>, 6> getCovarianceMatrix(const T & t);
+
 /**\brief Get the frame_id from data
  *
  * An implementation for Stamped<P> datatypes.
@@ -96,6 +103,19 @@ template<class P>
 std::string getFrameId(const tf2::Stamped<P> & t)
 {
   return t.frame_id_;
+}
+
+/**\brief Get the covariance matrix from data
+ *
+ * An implementation for WithCovarianceStamped<P> datatypes.
+ *
+ * \param[in] c The data input.
+ * \return The covariance matrix associated with the data.
+ */
+template<class P>
+std::array<std::array<double, 6>, 6> getCovarianceMatrix(const tf2::WithCovarianceStamped<P> & t)
+{
+  return t.cov_mat_;
 }
 
 /**\brief Function that converts from one type to a ROS message type. It has to be
@@ -136,6 +156,48 @@ void convert(const A & a1, A & a2)
   if (&a1 != &a2) {
     a2 = a1;
   }
+}
+
+/**\brief Function that converts from a row-major representation of a 6x6
+ * covariance matrix to a nested array representation.
+ * \param row_major A row-major array of 36 covariance values.
+ * \param nested_array A nested array representation of 6x6 covariance values.
+ */
+inline
+std::array<std::array<double, 6>, 6> convertCovariance(const std::array<double, 36> & row_major)
+{
+  std::array<std::array<double, 6>, 6> nested_array = {};
+  size_t l1 = 0, l2 = 0;
+  for (const double & val : row_major) {
+    nested_array[l2][l1] = val;
+
+    l1++;
+
+    if (l1 == 6) {
+      l1 = 0;
+      l2++;
+    }
+  }
+  return nested_array;
+}
+
+/**\brief Function that converts from a nested array representation of a 6x6
+ * covariance matrix to a row-major representation.
+ * \param nested_array A nested array representation of 6x6 covariance values.
+ * \param row_major A row-major array of 36 covariance values.
+ */
+inline
+std::array<double, 36> convertCovariance(const std::array<std::array<double, 6>, 6> & nested_array)
+{
+  std::array<double, 36> row_major = {};
+  size_t counter = 0;
+  for (const auto & arr : nested_array) {
+    for (const double & val : arr) {
+      row_major[counter] = val;
+      counter++;
+    }
+  }
+  return row_major;
 }
 }  // namespace tf2
 
