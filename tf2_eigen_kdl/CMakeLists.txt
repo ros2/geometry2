@@ -45,7 +45,12 @@ ament_export_libraries(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_cppcheck REQUIRED)
+  list(APPEND AMENT_LINT_AUTO_EXCLUDE
+    ament_cmake_cppcheck
+  )
   ament_lint_auto_find_test_dependencies()
+  ament_cppcheck(LANGUAGE c++)
 endif()
 
 ament_package()
