@@ -30,7 +30,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <tf2_eigen_kdl/tf2_eigen_kdl.h>
+#include <tf2_eigen_kdl/tf2_eigen_kdl.hpp>
 
 namespace tf2 {
 
