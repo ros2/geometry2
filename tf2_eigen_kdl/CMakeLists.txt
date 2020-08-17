@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(eigen_kdl)
+project(tf2_eigen_kdl)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -17,7 +17,7 @@ find_package(Eigen3 REQUIRED)
 include_directories(include)
 
 add_library(${PROJECT_NAME} SHARED
-  src/eigen_kdl.cpp
+  src/tf2_eigen_kdl.cpp
 )
 
 ament_target_dependencies(${PROJECT_NAME}

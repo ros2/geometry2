@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <eigen_kdl/eigen_kdl.h>
+#include <tf2_eigen_kdl/tf2_eigen_kdl.h>
 
 namespace tf2 {
 

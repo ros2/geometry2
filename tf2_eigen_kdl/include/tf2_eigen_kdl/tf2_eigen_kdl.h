@@ -31,8 +31,8 @@
  * Author: Adam Leeper, Stuart Glaser
  */
 
-#ifndef EIGEN_KDL_CONVERSIONS_H
-#define EIGEN_KDL_CONVERSIONS_H
+#ifndef TF2_EIGEN_KDL_CONVERSIONS_H
+#define TF2_EIGEN_KDL_CONVERSIONS_H
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
