@@ -2,6 +2,30 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.14.0 (2020-08-14)
+-------------------
+* Split tf2_ros in tf2_ros and tf2_ros_py (`#210 <https://github.com/ros2/geometry2/issues/210>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.13.4 (2020-06-03)
+-------------------
+
+0.13.3 (2020-05-26)
+-------------------
+
+0.13.2 (2020-05-18)
+-------------------
+
+0.13.1 (2020-05-08)
+-------------------
+
+0.13.0 (2020-04-30)
+-------------------
+* Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
+* tf2_tools update the shebang line (`#226 <https://github.com/ros2/geometry2/issues/226>`_)
+* Adding support for view_frame (`#192 <https://github.com/ros2/geometry2/issues/192>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.5.15 (2017-01-24)
 -------------------
 

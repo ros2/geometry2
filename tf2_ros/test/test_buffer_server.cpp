@@ -176,7 +176,7 @@ TEST_F(TestBufferServer, lookup_transform_available)
 
   auto spin_result = executor_.spin_until_future_complete(
     result_ready_future, std::chrono::seconds(3));
-  ASSERT_EQ(spin_result, rclcpp::executor::FutureReturnCode::SUCCESS);
+  ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
 
   EXPECT_TRUE(mock_client_->accepted_);
   EXPECT_EQ(mock_client_->result_.code, rclcpp_action::ResultCode::SUCCEEDED);
@@ -193,7 +193,7 @@ TEST_F(TestBufferServer, lookup_transform_timeout)
   auto start_time = std::chrono::system_clock::now();
   auto spin_result = executor_.spin_until_future_complete(
     result_ready_future, std::chrono::seconds(3));
-  ASSERT_EQ(spin_result, rclcpp::executor::FutureReturnCode::SUCCESS);
+  ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
   auto end_time = std::chrono::system_clock::now();
 
   auto time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
@@ -214,7 +214,7 @@ TEST_F(TestBufferServer, lookup_transform_delayed)
   // Expect executor to timeout since transform is not available yet
   auto spin_result = executor_.spin_until_future_complete(
     result_ready_future, std::chrono::seconds(1));
-  EXPECT_EQ(spin_result, rclcpp::executor::FutureReturnCode::TIMEOUT);
+  EXPECT_EQ(spin_result, rclcpp::FutureReturnCode::TIMEOUT);
 
   EXPECT_TRUE(mock_client_->accepted_);
 
@@ -229,7 +229,7 @@ TEST_F(TestBufferServer, lookup_transform_delayed)
   // Wait some more
   spin_result = executor_.spin_until_future_complete(
     result_ready_future, std::chrono::seconds(3));
-  ASSERT_EQ(spin_result, rclcpp::executor::FutureReturnCode::SUCCESS);
+  ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
 
   EXPECT_EQ(mock_client_->result_.code, rclcpp_action::ResultCode::SUCCEEDED);
 }

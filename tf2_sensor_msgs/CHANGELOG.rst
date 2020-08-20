@@ -2,6 +2,29 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.14.0 (2020-08-14)
+-------------------
+* Split tf2_ros in tf2_ros and tf2_ros_py (`#210 <https://github.com/ros2/geometry2/issues/210>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.13.4 (2020-06-03)
+-------------------
+
+0.13.3 (2020-05-26)
+-------------------
+
+0.13.2 (2020-05-18)
+-------------------
+
+0.13.1 (2020-05-08)
+-------------------
+
+0.13.0 (2020-04-30)
+-------------------
+* use target_include_directories (`#231 <https://github.com/ros2/geometry2/issues/231>`_)
+* Export tf2_sensor_msgs package dependency on Eigen3. (`#211 <https://github.com/ros2/geometry2/issues/211>`_)
+* Contributors: Karsten Knese, Michel Hidalgo
+
 0.12.4 (2019-11-19)
 -------------------
 

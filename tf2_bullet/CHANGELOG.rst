@@ -2,6 +2,29 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.14.0 (2020-08-14)
+-------------------
+* Suppress compiler warning on Centos (`#290 <https://github.com/ros2/geometry2/issues/290>`_)
+* Contributors: Michael Carroll
+
+0.13.4 (2020-06-03)
+-------------------
+
+0.13.3 (2020-05-26)
+-------------------
+
+0.13.2 (2020-05-18)
+-------------------
+
+0.13.1 (2020-05-08)
+-------------------
+
+0.13.0 (2020-04-30)
+-------------------
+* Added doxyfiles and sphinx Makefiles (`#257 <https://github.com/ros2/geometry2/issues/257>`_)
+* Porting tf2_bullet to ros2 (`#205 <https://github.com/ros2/geometry2/issues/205>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.5.15 (2017-01-24)
 -------------------
 

@@ -31,7 +31,7 @@
 #*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 #*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #*  POSSIBILITY OF SUCH DAMAGE.
-#* 
+#*
 #* Author: Eitan Marder-Eppstein
 #***********************************************************
 from rclpy.action.client import ActionClient
@@ -65,14 +65,14 @@ class BufferClient(tf2_ros.BufferInterface):
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
 
-    # lookup, simple api 
+    # lookup, simple api
     def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest) 
+        :param time: The time at which to get the transform. (0 will get the latest)
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
         :rtype: :class:`geometry_msgs.msg.TransformStamped`
@@ -80,21 +80,21 @@ class BufferClient(tf2_ros.BufferInterface):
         goal = LookupTransform.Goal()
         goal.target_frame = target_frame
         goal.source_frame = source_frame
-        goal.source_time = time.to_msg()
+        goal.source_time = time
         goal.timeout = timeout.to_msg()
         goal.advanced = False
 
         return self.__process_goal(goal)
 
-    # lookup, advanced api 
+    # lookup, advanced api
     def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
@@ -118,7 +118,7 @@ class BufferClient(tf2_ros.BufferInterface):
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest) 
+        :param time: The time at which to get the transform. (0 will get the latest)
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
@@ -130,7 +130,7 @@ class BufferClient(tf2_ros.BufferInterface):
         except tf2.TransformException:
             return False
 
-    
+
     # can, advanced api
     def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
         """
@@ -139,9 +139,9 @@ class BufferClient(tf2_ros.BufferInterface):
         Must be implemented by a subclass of BufferInterface.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
@@ -221,4 +221,3 @@ class BufferClient(tf2_ros.BufferInterface):
             raise tf2.TransformException(result.error.error_string)
 
         return result.transform
-

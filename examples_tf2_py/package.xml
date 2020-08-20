@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>examples_tf2_py</name>
-  <version>0.12.4</version>
+  <version>0.14.0</version>
   <description>
     Has examples of using the tf2 Python API.
   </description>
@@ -10,8 +10,8 @@
   <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
   <license>Apache License 2.0</license>
 
-  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

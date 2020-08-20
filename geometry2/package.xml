@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>geometry2</name>
-  <version>0.12.4</version>
+  <version>0.14.0</version>
   <description>
     A metapackage to bring in the default packages second generation Transform Library in ros, tf2.
   </description>
@@ -10,13 +10,13 @@
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/geometry2</url>
-    
+
   <author>Tully Foote</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>tf2</exec_depend>
-  <!--exec_depend>tf2_bullet</exec_depend-->
+  <exec_depend>tf2_bullet</exec_depend>
   <exec_depend>tf2_eigen</exec_depend>
   <exec_depend>tf2_geometry_msgs</exec_depend>
   <exec_depend>tf2_kdl</exec_depend>
@@ -24,7 +24,7 @@
   <exec_depend>tf2_py</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>tf2_sensor_msgs</exec_depend>
-  <!--exec_depend>tf2_tools</exec_depend-->
+  <exec_depend>tf2_tools</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

@@ -18,26 +18,41 @@ set(required_dependencies
 )
 ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
-ament_python_install_package(${PROJECT_NAME}
-     PACKAGE_DIR src/${PROJECT_NAME})
+# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
+# ament_python_install_package(${PROJECT_NAME}
+#      PACKAGE_DIR src/${PROJECT_NAME})
 
-# TODO (ahcorde) Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
+# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
 # install(PROGRAMS scripts/test.py
 #    DESTINATION lib/${PROJECT_NAME}
 # )
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(rclcpp REQUIRED)
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)
     ament_target_dependencies(test_tf2_geometry_msgs
       "geometry_msgs"
       "orocos_kdl"
+      "rclcpp"
       "tf2"
       "tf2_ros"
     )
   endif()
 endif()
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(${PROJECT_NAME} INTERFACE ${required_dependencies})
+
+install(
+  TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+  INCLUDES DESTINATION include
+)
+
+ament_export_targets(${PROJECT_NAME})
+ament_export_dependencies(${required_dependencies})
 
 ament_auto_package()

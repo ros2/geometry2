@@ -27,11 +27,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <utility>
 #include <memory>
+#include <random>
 #include <stdexcept>
 #include <string>
-#include <random>
 
 #include "tf2_ros/static_transform_broadcaster_node.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -72,17 +71,17 @@ StaticTransformBroadcasterNode::StaticTransformBroadcasterNode(const rclcpp::Nod
   descriptor.read_only = true;
 
   tf_msg.header.stamp = this->now();
-  tf_msg.transform.translation.x = this->declare_parameter("/translation/x", 0.0, descriptor);
-  tf_msg.transform.translation.y = this->declare_parameter("/translation/y", 0.0, descriptor);
-  tf_msg.transform.translation.z = this->declare_parameter("/translation/z", 0.0, descriptor);
-  tf_msg.transform.rotation.x = this->declare_parameter("/rotation/x", 0.0, descriptor);
-  tf_msg.transform.rotation.y = this->declare_parameter("/rotation/y", 0.0, descriptor);
-  tf_msg.transform.rotation.z = this->declare_parameter("/rotation/z", 0.0, descriptor);
-  tf_msg.transform.rotation.w = this->declare_parameter("/rotation/w", 1.0, descriptor);
+  tf_msg.transform.translation.x = this->declare_parameter("translation.x", 0.0, descriptor);
+  tf_msg.transform.translation.y = this->declare_parameter("translation.y", 0.0, descriptor);
+  tf_msg.transform.translation.z = this->declare_parameter("translation.z", 0.0, descriptor);
+  tf_msg.transform.rotation.x = this->declare_parameter("rotation.x", 0.0, descriptor);
+  tf_msg.transform.rotation.y = this->declare_parameter("rotation.y", 0.0, descriptor);
+  tf_msg.transform.rotation.z = this->declare_parameter("rotation.z", 0.0, descriptor);
+  tf_msg.transform.rotation.w = this->declare_parameter("rotation.w", 1.0, descriptor);
   tf_msg.header.frame_id =
-    this->declare_parameter("/frame_id", std::string("/frame"), descriptor);
+    this->declare_parameter("frame_id", std::string("/frame"), descriptor);
   tf_msg.child_frame_id =
-    this->declare_parameter("/child_frame_id", std::string("/child"), descriptor);
+    this->declare_parameter("child_frame_id", std::string("/child"), descriptor);
 
   // check frame_id != child_frame_id
   if (tf_msg.header.frame_id == tf_msg.child_frame_id) {

@@ -30,6 +30,7 @@
 /** \author Wim Meeussen */
 
 
+#include <rclcpp/clock.hpp>
 #include <tf2_ros/transform_listener.h>
 #include <gtest/gtest.h>
 #include <tf2_ros/buffer.h>

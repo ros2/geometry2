@@ -51,6 +51,10 @@ using TransformReadyCallback = std::function<void(const TransformStampedFuture&)
 class AsyncBufferInterface
 {
 public:
+  TF2_ROS_PUBLIC
+  virtual
+  ~AsyncBufferInterface() = default;
+
   /**
    * \brief Wait for a transform between two frames to become available.
    * \param target_frame The frame into which to transform.

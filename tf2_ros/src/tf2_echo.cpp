@@ -103,8 +103,15 @@ int main(int argc, char ** argv)
   std::string source_frameid = std::string(argv[1]);
   std::string target_frameid = std::string(argv[2]);
 
-  // Wait for up to one second for the first transforms to become avaiable. 
-  echoListener.buffer_.canTransform(source_frameid, target_frameid, tf2::TimePoint(), tf2::durationFromSec(1.0));
+  // Wait for up to one second for the first transforms to become avaiable.
+  std::string warning_msg;
+  while (rclcpp::ok() && !echoListener.buffer_.canTransform(
+    source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
+  {
+    RCLCPP_INFO_THROTTLE(nh->get_logger(), *clock, 1000, "Waiting for transform %s ->  %s: %s",
+      source_frameid.c_str(), target_frameid.c_str(), warning_msg.c_str());
+    rate.sleep();
+  }
 
   //Nothing needs to be done except wait for a quit
   //The callbacks withing the listener class

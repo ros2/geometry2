@@ -28,38 +28,13 @@
  */
 
 #include <cstdio>
-#include <cstring>
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "rclcpp/clock.hpp"
-#include "rclcpp/time_source.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <tf2/LinearMath/Quaternion.h>
 #include "tf2_ros/static_transform_broadcaster_node.hpp"
-
-#include "builtin_interfaces/msg/time.hpp"
-
-#include "rcutils/logging_macros.h"
-
-//TODO(clalancette re-enable this)
-// bool validateXmlRpcTf(XmlRpc::XmlRpcValue tf_data) {
-//   // Validate a TF stored in XML RPC format: ensures the appropriate fields
-//   // exist. Note this does not check data types.
-//   return tf_data.hasMember("child_frame_id") &&
-//          tf_data.hasMember("header") &&
-//          tf_data["header"].hasMember("frame_id") &&
-//          tf_data.hasMember("transform") &&
-//          tf_data["transform"].hasMember("translation") &&
-//          tf_data["transform"]["translation"].hasMember("x") &&
-//          tf_data["transform"]["translation"].hasMember("y") &&
-//          tf_data["transform"]["translation"].hasMember("z") &&
-//          tf_data["transform"].hasMember("rotation") &&
-//          tf_data["transform"]["rotation"].hasMember("x") &&
-//          tf_data["transform"]["rotation"].hasMember("y") &&
-//          tf_data["transform"]["rotation"].hasMember("z") &&
-//          tf_data["transform"]["rotation"].hasMember("w");
-// };
 
 int main(int argc, char ** argv)
 {
@@ -70,14 +45,9 @@ int main(int argc, char ** argv)
 
   if (args.size() != 9 && args.size() != 10) {
     printf("A command line utility for manually sending a transform.\n");
-    //printf("It will periodicaly republish the given transform. \n");
     printf("Usage: static_transform_publisher x y z qx qy qz qw frame_id child_frame_id \n");
     printf("OR \n");
     printf("Usage: static_transform_publisher x y z yaw pitch roll frame_id child_frame_id \n");
-    //printf("OR \n");
-    //printf("Usage: static_transform_publisher /param_name \n");
-    //printf("\nThis transform is the transform of the coordinate frame from frame_id into the coordinate frame \n");
-    //printf("of the child_frame_id.  \n");
     RCUTILS_LOG_ERROR(
       "static_transform_publisher exited due to not having the right number of arguments");
     return 2;
@@ -89,9 +59,9 @@ int main(int argc, char ** argv)
   std::string frame_id, child_id;
 
   if (args.size() == 9) {
-    // grab parameters from roll, pitch, yaw
+    // grab parameters from yaw, pitch, roll
     tf2::Quaternion quat;
-    quat.setRPY(std::stod(args[4]), std::stod(args[5]), std::stod(args[6]));
+    quat.setRPY(std::stod(args[6]), std::stod(args[5]), std::stod(args[4]));
     rx = quat.x();
     ry = quat.y();
     rz = quat.z();
@@ -111,46 +81,19 @@ int main(int argc, char ** argv)
   // override default parameters with the desired transform
   options.parameter_overrides(
   {
-    {"/translation/x", x},
-    {"/translation/y", y},
-    {"/translation/z", z},
-    {"/rotation/x", rx},
-    {"/rotation/y", ry},
-    {"/rotation/z", rz},
-    {"/rotation/w", rw},
-    {"/frame_id", frame_id},
-    {"/child_frame_id", child_id},
+    {"translation.x", x},
+    {"translation.y", y},
+    {"translation.z", z},
+    {"rotation.x", rx},
+    {"rotation.y", ry},
+    {"rotation.z", rz},
+    {"rotation.w", rw},
+    {"frame_id", frame_id},
+    {"child_frame_id", child_id},
   });
 
   node = std::make_shared<tf2_ros::StaticTransformBroadcasterNode>(options);
 
-  // else if (args.size() == 2) {
-  //   const std::string param_name = args[1];
-  //   ROS_INFO_STREAM("Looking for TF in parameter: " << param_name);
-  //   XmlRpc::XmlRpcValue tf_data;
-
-  //   if (!ros::param::has(param_name) || !ros::param::get(param_name, tf_data)) {
-  //     ROS_FATAL_STREAM("Could not read TF from parameter server: " << param_name);
-  //     return -1;
-  //   }
-
-  //   // Check that all required members are present & of the right type.
-  //   if (!validateXmlRpcTf(tf_data)) {
-  //     ROS_FATAL_STREAM("Could not validate XmlRpcC for TF data: " << tf_data);
-  //     return -1;
-  //   }
-
-  //   msg.transform.translation.x = (double) tf_data["transform"]["translation"]["x"];
-  //   msg.transform.translation.y = (double) tf_data["transform"]["translation"]["y"];
-  //   msg.transform.translation.z = (double) tf_data["transform"]["translation"]["z"];
-  //   msg.transform.rotation.x = (double) tf_data["transform"]["rotation"]["x"];
-  //   msg.transform.rotation.y = (double) tf_data["transform"]["rotation"]["y"];
-  //   msg.transform.rotation.z = (double) tf_data["transform"]["rotation"]["z"];
-  //   msg.transform.rotation.w = (double) tf_data["transform"]["rotation"]["w"];
-  //   msg.header.stamp = clock->now();
-  //   msg.header.frame_id = (std::string) tf_data["header"]["frame_id"];
-  //   msg.child_frame_id = (std::string) tf_data["child_frame_id"];
-  // }
   RCLCPP_INFO(
     node->get_logger(), "Spinning until killed publishing transform from '%s' to '%s'",
     frame_id.c_str(), child_id.c_str());

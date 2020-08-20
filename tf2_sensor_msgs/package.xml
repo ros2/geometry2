@@ -1,6 +1,6 @@
 <package format="2">
   <name>tf2_sensor_msgs</name>
-  <version>0.12.4</version>
+  <version>0.14.0</version>
   <description>
     Small lib to transform sensor_msgs with tf. Most notably, PointCloud2
   </description>
@@ -24,6 +24,8 @@
   <depend>tf2_ros</depend>
   <!-- <depend>python_orocos_kdl</depend> -->
   <!-- <test_depend>rostest</test_depend> -->
+
+  <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
 
