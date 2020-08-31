@@ -72,7 +72,7 @@ def main(args=None):
     else:
         node.get_logger().info(
             'Result:'+ str(result) )
-        data = yaml.load(result.frame_yaml)
+        data = yaml.safe_load(result.frame_yaml)
         with open('frames.gv', 'w') as f:
            f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
         subprocess.Popen('dot -Tpdf frames.gv -o frames.pdf'.split(' ')).communicate()
