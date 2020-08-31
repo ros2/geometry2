@@ -31,6 +31,7 @@
 #ifndef TF2__TRANSFORM_DATATYPES_H_
 #define TF2__TRANSFORM_DATATYPES_H_
 
+#include <array>
 #include <chrono>
 #include <string>
 
@@ -112,7 +113,8 @@ public:
     const std::string & frame_id,
     const std::array<std::array<double, 6>, 6> & covariance_matrix
   )
-  : stamp_(timestamp),
+  : T(input),
+    stamp_(timestamp),
     frame_id_(frame_id),
     cov_mat_(covariance_matrix)
   {
@@ -120,7 +122,10 @@ public:
 
   /** Copy constructor */
   WithCovarianceStamped(const WithCovarianceStamped<T> & w)
-  : T(w)
+  : T(w),
+    stamp_(w.stamp_),
+    frame_id_(w.frame_id_),
+    cov_mat_(w.cov_mat_)
   {
   }
 

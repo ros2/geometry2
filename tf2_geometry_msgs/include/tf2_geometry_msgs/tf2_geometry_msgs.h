@@ -284,7 +284,7 @@ inline
  */
 template <>
 inline
-  std::array<std::array<double, 6>, 6> getCovarianceMatrix(const geometry_msgs::msg::PoseWithCovarianceStamped& t)  {return convertCovariance(t.pose.covariance);}
+  std::array<std::array<double, 6>, 6> getCovarianceMatrix(const geometry_msgs::msg::PoseWithCovarianceStamped& t)  {return covarianceRowMajorToNested(t.pose.covariance);}
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Pose type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
@@ -343,7 +343,7 @@ geometry_msgs::msg::PoseWithCovarianceStamped toMsg(const tf2::WithCovarianceSta
   geometry_msgs::msg::PoseWithCovarianceStamped out;
   out.header.stamp = tf2_ros::toMsg(in.stamp_);
   out.header.frame_id = in.frame_id_;
-  out.pose.covariance = convertCovariance(in.cov_mat_);
+  out.pose.covariance = covarianceNestedToRowMajor(in.cov_mat_);
   out.pose.pose.orientation.x = in.getRotation().getX();
   out.pose.pose.orientation.y = in.getRotation().getY();
   out.pose.pose.orientation.z = in.getRotation().getZ();
@@ -365,7 +365,7 @@ void fromMsg(const geometry_msgs::msg::PoseWithCovarianceStamped& in, tf2::WithC
 {
   out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
   out.frame_id_ = in.header.frame_id;
-  out.cov_mat_ = convertCovariance(in.pose.covariance);
+  out.cov_mat_ = covarianceRowMajorToNested(in.pose.covariance);
   tf2::Transform tmp;
   fromMsg(in.pose.pose, tmp);
   out.setData(tmp);

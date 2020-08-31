@@ -31,6 +31,7 @@
 #ifndef TF2__CONVERT_H_
 #define TF2__CONVERT_H_
 
+#include <array>
 #include <string>
 
 #include "builtin_interfaces/msg/time.hpp"
@@ -161,10 +162,10 @@ void convert(const A & a1, A & a2)
 /**\brief Function that converts from a row-major representation of a 6x6
  * covariance matrix to a nested array representation.
  * \param row_major A row-major array of 36 covariance values.
- * \param nested_array A nested array representation of 6x6 covariance values.
+ * \return A nested array representation of 6x6 covariance values.
  */
 inline
-std::array<std::array<double, 6>, 6> convertCovariance(const std::array<double, 36> & row_major)
+std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array<double, 36> & row_major)
 {
   std::array<std::array<double, 6>, 6> nested_array = {};
   size_t l1 = 0, l2 = 0;
@@ -173,7 +174,7 @@ std::array<std::array<double, 6>, 6> convertCovariance(const std::array<double, 
 
     l1++;
 
-    if (l1 == 6) {
+    if (l1 == nested_array[0].size()) {
       l1 = 0;
       l2++;
     }
@@ -184,10 +185,10 @@ std::array<std::array<double, 6>, 6> convertCovariance(const std::array<double, 
 /**\brief Function that converts from a nested array representation of a 6x6
  * covariance matrix to a row-major representation.
  * \param nested_array A nested array representation of 6x6 covariance values.
- * \param row_major A row-major array of 36 covariance values.
+ * \return A row-major array of 36 covariance values.
  */
 inline
-std::array<double, 36> convertCovariance(const std::array<std::array<double, 6>, 6> & nested_array)
+std::array<double, 36> covarianceNestedToRowMajor(const std::array<std::array<double, 6>, 6> & nested_array)
 {
   std::array<double, 36> row_major = {};
   size_t counter = 0;
