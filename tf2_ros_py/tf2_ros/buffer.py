@@ -1,9 +1,9 @@
 # Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,6 +26,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # author: Wim Meeussen
+from typing import TypeVar
+from typing import Optional
+from typing import Any
+from typing import List
+from typing import Tuple
+from typing import Callable
 
 import threading
 
@@ -33,11 +39,17 @@ import rclpy
 import tf2_py as tf2
 import tf2_ros
 from tf2_msgs.srv import FrameGraph
+from geometry_msgs.msg import TransformStamped
 # TODO(vinnamkim): It seems rosgraph is not ready
 # import rosgraph.masterapi
 from time import sleep
+from rclpy.node import Node
+from rclpy.time import Time
 from rclpy.duration import Duration
 from rclpy.task import Future
+
+FrameGraphSrvRequest = TypeVar('FrameGraphSrvRequest')
+FrameGraphSrvResponse = TypeVar('FrameGraphSrvResponse')
 
 
 class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
@@ -48,15 +60,19 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
     Stores known frames and offers a ROS service, "tf_frames", which responds to client requests
     with a response containing a :class:`tf2_msgs.FrameGraph` representing the relationship of
-    known frames. 
+    known frames.
     """
 
-    def __init__(self, cache_time = None, node = None):
+    def __init__(
+        self,
+        cache_time: Optional[Duration] = None,
+        node: Optional[Node] = None
+    ) -> None:
         """
         Constructor.
 
-        :param cache_time: (Optional) Duration object describing how long to retain past information in BufferCore.
-        :param node: (Optional) If node create a tf2_frames service, It responses all frames as a yaml
+        :param cache_time: Duration object describing how long to retain past information in BufferCore.
+        :param node: If node create a tf2_frames service, It responses all frames as a yaml
         """
         if cache_time is not None:
             tf2.BufferCore.__init__(self, cache_time)
@@ -64,25 +80,29 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             tf2.BufferCore.__init__(self)
         tf2_ros.BufferInterface.__init__(self)
 
-        self._new_data_callbacks = []
-        self._callbacks_to_remove = []
+        self._new_data_callbacks: List[Callable[[None], None]] = []
+        self._callbacks_to_remove: List[Callable[[None], None]] = []
         self._callbacks_lock = threading.RLock()
 
         if node is not None:
             self.srv = node.create_service(FrameGraph, 'tf2_frames', self.__get_frames)
 
-    def __get_frames(self, req, res):
-       return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
+    def __get_frames(
+        self,
+        req: FrameGraphSrvRequest,
+        res: FrameGraphSrvResponse
+    ) -> FrameGraphSrvResponse:
+        return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
 
-    def set_transform(self, *args, **kwargs):
+    def set_transform(self, *args: Tuple[TransformStamped, str], **kwargs: Any) -> None:
         super().set_transform(*args, **kwargs)
         self._call_new_data_callbacks()
 
-    def set_transform_static(self, *args, **kwargs):
+    def set_transform_static(self, *args: Tuple[TransformStamped, str], **kwargs: Any) -> None:
         super().set_transform_static(*args, **kwargs)
         self._call_new_data_callbacks()
 
-    def _call_new_data_callbacks(self):
+    def _call_new_data_callbacks(self) -> None:
         with self._callbacks_lock:
             for callback in self._new_data_callbacks:
                 callback()
@@ -91,82 +111,108 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
                 self._new_data_callbacks.remove(callback)
             self._callbacks_to_remove.clear()
 
-    def _remove_callback(self, callback):
+    def _remove_callback(self, callback: Callable[[None], None]) -> None:
         with self._callbacks_lock:
             # Actually remove the callback later
             self._callbacks_to_remove.append(callback)
 
-    def lookup_transform(self, target_frame, source_frame, time, timeout=Duration()):
+    def lookup_transform(
+        self,
+        target_frame: str,
+        source_frame: str,
+        time: Time,
+        timeout: Duration = Duration()
+    ) -> TransformStamped:
         """
         Get the transform from the source frame to the target frame.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest) 
+        :param time: The time at which to get the transform. (0 will get the latest)
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
-        :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
-
         self.can_transform(target_frame, source_frame, time, timeout)
         return self.lookup_transform_core(target_frame, source_frame, time)
 
-    async def lookup_transform_async(self, target_frame, source_frame, time):
+    async def lookup_transform_async(
+        self,
+        target_frame: str,
+        source_frame: str,
+        time: Time
+    ) -> TransformStamped:
         """
         Get the transform from the source frame to the target frame asyncronously.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform. (0 will get the latest)
-        :return: the transform
-        :rtype: :class:`geometry_msgs.msg.TransformStamped`
+        :return: The transform between the frames.
         """
         await self.wait_for_transform_async(target_frame, source_frame, time)
         return self.lookup_transform_core(target_frame, source_frame, time)
 
-
-    def lookup_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration()):
+    def lookup_transform_full(
+        self,
+        target_frame: str,
+        target_time: Time,
+        source_frame: str,
+        source_time: Time,
+        fixed_frame: str,
+        timeout: Duration = Duration()
+    ) -> TransformStamped:
         """
         Get the transform from the source frame to the target frame using the advanced API.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :return: The transform between the frames.
-        :rtype: :class:`geometry_msgs.msg.TransformStamped`
         """
         self.can_transform_full(target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
         return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
 
-    async def lookup_transform_full_async(self, target_frame, target_time, source_frame, source_time, fixed_frame):
+    async def lookup_transform_full_async(
+        self,
+        target_frame: str,
+        target_time: Time,
+        source_frame: str,
+        source_time: Time,
+        fixed_frame: str
+    ) -> TransformStamped:
         """
         Get the transform from the source frame to the target frame using the advanced API asyncronously.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
-        :return: the transform
-        :rtype: :class:`geometry_msgs.msg.TransformStamped`
+        :return: The transform between the frames.
         """
         await self.wait_for_transform_full_async(target_frame, target_time, source_frame, source_time, fixed_frame)
         return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
 
-    def can_transform(self, target_frame, source_frame, time, timeout=Duration(), return_debug_tuple=False):
+    def can_transform(
+        self,
+        target_frame: str,
+        source_frame: str,
+        time: Time,
+        timeout: Duration = Duration(),
+        return_debug_tuple: bool = False
+    ) -> bool:
         """
         Check if a transform from the source frame to the target frame is possible.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest) 
+        :param time: The time at which to get the transform. (0 will get the latest)
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
-        :rtype: bool
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
@@ -185,23 +231,29 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             return core_result
         return core_result[0]
 
-    def can_transform_full(self, target_frame, target_time, source_frame, source_time, fixed_frame, timeout=Duration(),
-
-                           return_debug_tuple=False):
+    def can_transform_full(
+        self,
+        target_frame: str,
+        target_time: Time,
+        source_frame: str,
+        source_time: Time,
+        fixed_frame: str,
+        timeout: Duration = Duration(),
+        return_debug_tuple: bool = False
+    ) -> bool:
         """
         Check if a transform from the source frame to the target frame is possible (advanced API).
 
         Must be implemented by a subclass of BufferInterface.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: (Optional) Time to wait for the target frame to become available.
         :param return_debug_type: (Optional) If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
-        :rtype: bool
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
@@ -219,15 +271,19 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             return core_result
         return core_result[0]
 
-    def wait_for_transform_async(self, target_frame, source_frame, time):
+    def wait_for_transform_async(
+        self,
+        target_frame: str,
+        source_frame: str,
+        time: Time
+    ) -> Future:
         """
         Wait for a transform from the source frame to the target frame to become possible.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest) 
-        :return: A future that becomes true when the transform is available
-        :rtype: rclpy.task.Future
+        :param time: The time at which to get the transform. (0 will get the latest)
+        :return: A future that becomes true when the transform is available.
         """
         fut = rclpy.task.Future()
         if self.can_transform_core(target_frame, source_frame, time)[0]:
@@ -247,17 +303,23 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         return fut
 
-    def wait_for_transform_full_async(self, target_frame, target_time, source_frame, source_time, fixed_frame):
+    def wait_for_transform_full_async(
+        self,
+        target_frame: str,
+        target_time: Time,
+        source_frame: str,
+        source_time: Time,
+        fixed_frame: str
+    ) -> Future:
         """
         Wait for a transform from the source frame to the target frame to become possible.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest) 
+        :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest) 
+        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
-        :return: A future that becomes true when the transform is available
-        :rtype: rclpy.task.Future
+        :return: A future that becomes true when the transform is available.
         """
         fut = rclpy.task.Future()
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
