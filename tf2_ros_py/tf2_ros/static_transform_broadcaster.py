@@ -29,7 +29,11 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+from typing import Optional
+from typing import Union
+from typing import List
 
+from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
@@ -42,7 +46,7 @@ class StaticTransformBroadcaster:
     :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"/tf_static"`` message topic.
     """
 
-    def __init__(self, node, qos=None):
+    def __init__(self, node: Node, qos: Optional[Union[QoSProfile, int]] = None) -> None:
         """
         Constructor.
 
@@ -57,12 +61,10 @@ class StaticTransformBroadcaster:
                 )
         self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
 
-    def sendTransform(self, transform):
+    def sendTransform(self, transform: Union[TransformStamped, List[TransformStamped]]) -> None:
         if not isinstance(transform, list):
             if hasattr(transform, '__iter__'):
                 transform = list(transform)
             else:
                 transform = [transform]
         self.pub_tf.publish(TFMessage(transforms=transform))
-
-

@@ -1,9 +1,9 @@
 # Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,15 +26,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # author: Wim Meeussen
+from typing import Optional
+from typing import Union
 
+from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 import tf2_ros
+from tf2_ros.buffer import Buffer
 from tf2_msgs.msg import TFMessage
 from threading import Thread
+
 
 class TransformListener:
     """
@@ -42,7 +47,15 @@ class TransformListener:
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
     it propagates changes to the tf frame graph.
     """
-    def __init__(self, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
+    def __init__(
+        self,
+        buffer: Buffer,
+        node: Node,
+        *,
+        spin_thread: bool = False,
+        qos: Optional[Union[QoSProfile, int]] = None,
+        static_qos: Optional[Union[QoSProfile, int]] = None
+    ) -> None:
         """
         Constructor.
 
@@ -85,26 +98,26 @@ class TransformListener:
             self.dedicated_listener_thread = Thread(target=run_func)
             self.dedicated_listener_thread.start()
 
-    def __del__(self):
+    def __del__(self) -> None:
         if hasattr(self, 'dedicated_listener_thread') and hasattr(self, 'executor'):
             self.executor.shutdown()
             self.dedicated_listener_thread.join()
 
         self.unregister()
 
-    def unregister(self):
+    def unregister(self) -> None:
         """
         Unregisters all tf subscribers.
         """
         self.node.destroy_subscription(self.tf_sub)
         self.node.destroy_subscription(self.tf_static_sub)
 
-    def callback(self, data):
+    def callback(self, data: TFMessage) -> None:
         who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform(transform, who)
 
-    def static_callback(self, data):
+    def static_callback(self, data: TFMessage) -> None:
         who = 'default_authority'
         for transform in data.transforms:
             self.buffer.set_transform_static(transform, who)

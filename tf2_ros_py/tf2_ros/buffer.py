@@ -80,8 +80,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             tf2.BufferCore.__init__(self)
         tf2_ros.BufferInterface.__init__(self)
 
-        self._new_data_callbacks: List[Callable[[None], None]] = []
-        self._callbacks_to_remove: List[Callable[[None], None]] = []
+        self._new_data_callbacks: List[Callable[[], None]] = []
+        self._callbacks_to_remove: List[Callable[[], None]] = []
         self._callbacks_lock = threading.RLock()
 
         if node is not None:
@@ -111,7 +111,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
                 self._new_data_callbacks.remove(callback)
             self._callbacks_to_remove.clear()
 
-    def _remove_callback(self, callback: Callable[[None], None]) -> None:
+    def _remove_callback(self, callback: Callable[[], None]) -> None:
         with self._callbacks_lock:
             # Actually remove the callback later
             self._callbacks_to_remove.append(callback)
