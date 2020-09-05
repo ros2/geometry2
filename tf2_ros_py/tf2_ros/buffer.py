@@ -111,7 +111,11 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
                 self._new_data_callbacks.remove(callback)
             self._callbacks_to_remove.clear()
 
+<<<<<<< HEAD
     def _remove_callback(self, callback: Callable[[], None]) -> None:
+=======
+    def _remove_callback(self, callback: Callable[[None], None]) -> None:
+>>>>>>> 8c41ad794990c24bc385949ec336ce571ba3f8f6
         with self._callbacks_lock:
             # Actually remove the callback later
             self._callbacks_to_remove.append(callback)
