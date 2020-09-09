@@ -282,7 +282,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
-        :param time: The time at which to get the transform. (0 will get the latest)
+        :param time: The time at which to get the transform (0 will get the latest).
         :return: A future that becomes true when the transform is available.
         """
         fut = rclpy.task.Future()
