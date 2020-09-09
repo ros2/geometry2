@@ -126,7 +126,7 @@ class BufferClient(tf2_ros.BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
-        :param timeout: (Optional) Time to wait for the target frame to become available.
+        :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
         goal = LookupTransform.Goal()
