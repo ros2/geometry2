@@ -275,7 +275,7 @@ class TransformRegistration():
         key: TransformableObjectType
     ) -> Callable[[TransformableObject, TransformStamped], TransformableObject]:
         if not key in TransformRegistration.__type_map:
-            raise TypeException('Type %s is not loaded or supported'% str(key))
+            raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return TransformRegistration.__type_map[key]
 
