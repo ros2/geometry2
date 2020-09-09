@@ -198,7 +198,7 @@ class BufferInterface:
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
-        :param timeout: (Optional) Time to wait for the target frame to become available.
+        :param timeout: Time to wait for the target frame to become available.
         :return: True if the transform is possible, false otherwise.
         """
         raise NotImplementedException()
