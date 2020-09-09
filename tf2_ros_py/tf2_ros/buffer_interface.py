@@ -311,7 +311,7 @@ class ConvertRegistration():
         key: TransformableObjectType
     ) -> Callable[[MsgStamped], TransformableObject]:
         if not key in ConvertRegistration.__from_msg_map:
-            raise TypeException('Type %s is not loaded or supported'% str(key))
+            raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return ConvertRegistration.__from_msg_map[key]
 
