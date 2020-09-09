@@ -210,8 +210,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
-        :param timeout: (Optional) Time to wait for the target frame to become available.
-        :param return_debug_type: (Optional) If true, return a tuple representing debug information.
+        :param timeout: Time to wait for the target frame to become available.
+        :param return_debug_type: If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
         """
         clock = rclpy.clock.Clock()
