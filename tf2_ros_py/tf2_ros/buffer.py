@@ -187,7 +187,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         Get the transform from the source frame to the target frame using the advanced API asyncronously.
 
         :param target_frame: Name of the frame to transform into.
-        :param target_time: The time to transform to. (0 will get the latest)
+        :param target_time: The time to transform to (0 will get the latest).
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
