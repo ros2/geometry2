@@ -58,6 +58,7 @@ class TransformBroadcaster:
         """
         if qos is None:
             qos = QoSProfile(depth=100)
+            
         self.pub_tf = node.create_publisher(TFMessage, "/tf", qos)
 
     def sendTransform(
