@@ -94,12 +94,12 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     ) -> FrameGraphSrvResponse:
         return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
 
-    def set_transform(self, *args: Tuple[TransformStamped, str], **kwargs: Any) -> None:
-        super().set_transform(*args, **kwargs)
+    def set_transform(self, transform: TransformStamped, authority: str) -> None:
+        super().set_transform(transform, authority)
         self._call_new_data_callbacks()
 
-    def set_transform_static(self, *args: Tuple[TransformStamped, str], **kwargs: Any) -> None:
-        super().set_transform_static(*args, **kwargs)
+    def set_transform_static(self, transform: TransformStamped, authority: str) -> None:
+        super().set_transform_static(transform, authority)
         self._call_new_data_callbacks()
 
     def _call_new_data_callbacks(self) -> None:
