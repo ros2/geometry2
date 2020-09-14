@@ -33,6 +33,9 @@
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
 
+#include <memory>
+#include <string>
+
 class NodeWrapper
 {
 public:

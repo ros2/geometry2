@@ -27,10 +27,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono>
-#include <future>
-#include <thread>
-
 #include <gtest/gtest.h>
 
 #include <tf2_msgs/action/lookup_transform.hpp>
@@ -40,7 +36,13 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/buffer_client.h>
 
-static const std::string ACTION_NAME = "test_tf2_buffer_action";
+#include <chrono>
+#include <future>
+#include <memory>
+#include <string>
+#include <thread>
+
+static const char ACTION_NAME[] = "test_tf2_buffer_action";
 
 class MockBufferServer : public rclcpp::Node
 {
@@ -49,8 +51,8 @@ class MockBufferServer : public rclcpp::Node
 
 public:
   MockBufferServer()
-    : rclcpp::Node("mock_buffer_server"),
-      transform_available_(false)
+  : rclcpp::Node("mock_buffer_server"),
+    transform_available_(false)
   {
     action_server_ = rclcpp_action::create_server<LookupTransformAction>(
       get_node_base_interface(),
@@ -59,8 +61,8 @@ public:
       get_node_waitables_interface(),
       ACTION_NAME,
       [](const rclcpp_action::GoalUUID &, std::shared_ptr<const LookupTransformAction::Goal>)
-        {return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;},
-      [](const std::shared_ptr<GoalHandle>){return rclcpp_action::CancelResponse::ACCEPT;},
+      {return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;},
+      [](const std::shared_ptr<GoalHandle>) {return rclcpp_action::CancelResponse::ACCEPT;},
       std::bind(&MockBufferServer::handleAccepted, this, std::placeholders::_1));
   }
 
@@ -128,7 +130,9 @@ protected:
     ASSERT_TRUE(client_->waitForServer(std::chrono::seconds(10)));
     // This hack ensure the action server can see the client
     // TODO(jacobperron): Replace with discovery rclcpp API when it exists
-    while (mock_server_->count_subscribers("/" + ACTION_NAME + "/_action/feedback") < 1u) {
+    while (mock_server_->count_subscribers(
+        "/" + std::string(ACTION_NAME) + "/_action/feedback") < 1u)
+    {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
@@ -187,7 +191,8 @@ TEST_F(TestBufferClient, can_transform_unavailable)
   EXPECT_FALSE(client_->canTransform("test_target_frame", "test_source_frame", tf2::get_now()));
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

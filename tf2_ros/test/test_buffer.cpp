@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2018, Open Source Robotics Foundation, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
  *     * Neither the name of the Willow Garage, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,16 +27,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono>
-#include <exception>
-#include <future>
+
 #include <gtest/gtest.h>
+#include <tf2_ros/buffer.h>
 #include <tf2_ros/create_timer_interface.h>
 #include <tf2_ros/transform_listener.h>
 #include <rclcpp/rclcpp.hpp>
 
-
-using namespace tf2;
+#include <chrono>
+#include <exception>
+#include <future>
+#include <memory>
+#include <unordered_map>
 
 class MockCreateTimer final : public tf2_ros::CreateTimerInterface
 {
@@ -182,9 +184,15 @@ TEST(test_buffer, wait_for_transform_valid)
   EXPECT_DOUBLE_EQ(transform.transform.translation.x, transform_result.transform.translation.x);
   EXPECT_DOUBLE_EQ(transform.transform.translation.y, transform_result.transform.translation.y);
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, transform_result.transform.translation.z);
-  EXPECT_DOUBLE_EQ(transform.transform.translation.x, transform_callback_result.transform.translation.x);
-  EXPECT_DOUBLE_EQ(transform.transform.translation.y, transform_callback_result.transform.translation.y);
-  EXPECT_DOUBLE_EQ(transform.transform.translation.z, transform_callback_result.transform.translation.z);
+  EXPECT_DOUBLE_EQ(
+    transform.transform.translation.x,
+    transform_callback_result.transform.translation.x);
+  EXPECT_DOUBLE_EQ(
+    transform.transform.translation.y,
+    transform_callback_result.transform.translation.y);
+  EXPECT_DOUBLE_EQ(
+    transform.transform.translation.z,
+    transform_callback_result.transform.translation.z);
 
   // Expect there to be exactly one timer
   EXPECT_EQ(mock_create_timer->timer_to_callback_map_.size(), 1u);
@@ -287,8 +295,8 @@ TEST(test_buffer, wait_for_transform_race)
   EXPECT_FALSE(callback_timeout);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

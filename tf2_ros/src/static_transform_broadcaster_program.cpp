@@ -27,18 +27,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <tf2/LinearMath/Quaternion.h>
+
+#include <rclcpp/rclcpp.hpp>
+#include <tf2_ros/static_transform_broadcaster_node.hpp>
+
 #include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "rclcpp/rclcpp.hpp"
-#include <tf2/LinearMath/Quaternion.h>
-#include "tf2_ros/static_transform_broadcaster_node.hpp"
-
 int main(int argc, char ** argv)
 {
-  //Initialize ROS
+  // Initialize ROS
   std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
   rclcpp::NodeOptions options;
   std::shared_ptr<tf2_ros::StaticTransformBroadcasterNode> node;

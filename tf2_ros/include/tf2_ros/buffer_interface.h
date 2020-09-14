@@ -29,90 +29,97 @@
 
 /** \author Wim Meeussen */
 
-#ifndef TF2_ROS_BUFFER_INTERFACE_H
-#define TF2_ROS_BUFFER_INTERFACE_H
+#ifndef TF2_ROS__BUFFER_INTERFACE_H_
+#define TF2_ROS__BUFFER_INTERFACE_H_
 
-#include <rclcpp/rclcpp.hpp>
 #include <tf2_ros/visibility_control.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2/exceptions.h>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <sstream>
 #include <tf2/convert.h>
+
+#include <builtin_interfaces/msg/duration.hpp>
+#include <builtin_interfaces/msg/time.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include <chrono>
+#include <functional>
+#include <future>
+#include <string>
 
 namespace tf2_ros
 {
-  using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
-  using TransformReadyCallback = std::function<void(const TransformStampedFuture&)>;
+using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
+using TransformReadyCallback = std::function<void (const TransformStampedFuture &)>;
 
-  inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
-  {
-    std::chrono::nanoseconds ns = \
-      std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
-    std::chrono::seconds s = \
-      std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
-    builtin_interfaces::msg::Time time_msg;
-    time_msg.sec = (int32_t)s.count();
-    time_msg.nanosec = (uint32_t)(ns.count() % 1000000000ull);
-    return time_msg;
-  }
+inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
+{
+  std::chrono::nanoseconds ns =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
+  std::chrono::seconds s =
+    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
+  builtin_interfaces::msg::Time time_msg;
+  time_msg.sec = static_cast<int32_t>(s.count());
+  time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  return time_msg;
+}
 
-  inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
-  {
-    int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-    std::chrono::nanoseconds ns(d);
-    return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
-  }
+inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
+{
+  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
+  std::chrono::nanoseconds ns(d);
+  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
+}
 
-  inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
-  {
-    std::chrono::nanoseconds ns = \
-      std::chrono::duration_cast<std::chrono::nanoseconds>(t);
-    std::chrono::seconds s = \
-      std::chrono::duration_cast<std::chrono::seconds>(t);
-    builtin_interfaces::msg::Duration duration_msg;
-    duration_msg.sec = (int32_t)s.count();
-    duration_msg.nanosec = (uint32_t)(ns.count() % 1000000000ull);
-    return duration_msg;
-  }
+inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
+{
+  std::chrono::nanoseconds ns =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(t);
+  std::chrono::seconds s =
+    std::chrono::duration_cast<std::chrono::seconds>(t);
+  builtin_interfaces::msg::Duration duration_msg;
+  duration_msg.sec = static_cast<int32_t>(s.count());
+  duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  return duration_msg;
+}
 
-  inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
-  {
-    int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
-    std::chrono::nanoseconds ns(d);
-    return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
-  }
+inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
+{
+  int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
+  std::chrono::nanoseconds ns(d);
+  return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
+}
 
-  inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
-  {
-    auto ns = std::chrono::duration<double, std::nano>(time_msg.nanosec);
-    auto s = std::chrono::duration<double>(time_msg.sec);
-    return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
-  }
+inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
+{
+  auto ns = std::chrono::duration<double, std::nano>(time_msg.nanosec);
+  auto s = std::chrono::duration<double>(time_msg.sec);
+  return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
+}
 
-  inline tf2::TimePoint fromRclcpp(const rclcpp::Time & time)
-  {
-    // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
-    // Ignore that, and assume the clock used from rclcpp time points is consistent.
-    return tf2::TimePoint(std::chrono::nanoseconds(time.nanoseconds()));
-  }
+inline tf2::TimePoint fromRclcpp(const rclcpp::Time & time)
+{
+  // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
+  // Ignore that, and assume the clock used from rclcpp time points is consistent.
+  return tf2::TimePoint(std::chrono::nanoseconds(time.nanoseconds()));
+}
 
-  inline rclcpp::Time toRclcpp(const tf2::TimePoint & time)
-  {
-    // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
-    // Use whatever the default clock is.
-    return rclcpp::Time(std::chrono::nanoseconds(time.time_since_epoch()).count());
-  }
+inline rclcpp::Time toRclcpp(const tf2::TimePoint & time)
+{
+  // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
+  // Use whatever the default clock is.
+  return rclcpp::Time(std::chrono::nanoseconds(time.time_since_epoch()).count());
+}
 
-  inline tf2::Duration fromRclcpp(const rclcpp::Duration & duration)
-  {
-    return tf2::Duration(std::chrono::nanoseconds(duration.nanoseconds()));
-  }
+inline tf2::Duration fromRclcpp(const rclcpp::Duration & duration)
+{
+  return tf2::Duration(std::chrono::nanoseconds(duration.nanoseconds()));
+}
 
-  inline rclcpp::Duration toRclcpp(const tf2::Duration & duration)
-  {
-    return rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
-  }
+inline rclcpp::Duration toRclcpp(const tf2::Duration & duration)
+{
+  return rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
+}
 
 /** \brief Abstract interface for wrapping tf2::BufferCoreInterface in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.
@@ -132,15 +139,16 @@ public:
    */
   TF2_ROS_PUBLIC
   virtual geometry_msgs::msg::TransformStamped
-    lookupTransform(const std::string& target_frame, const std::string& source_frame, 
-		    const tf2::TimePoint& time, const tf2::Duration timeout) const = 0;
+  lookupTransform(
+    const std::string & target_frame, const std::string & source_frame,
+    const tf2::TimePoint & time, const tf2::Duration timeout) const = 0;
 
   /** \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed
    * \param target_time The time to which the data should be transformed. (0 will get the latest)
    * \param source_frame The frame where the data originated
    * \param source_time The time at which the source_frame should be evaluated. (0 will get the latest)
-   * \param fixed_frame The frame in which to assume the transform is constant in time. 
+   * \param fixed_frame The frame in which to assume the transform is constant in time.
    * \param timeout How long to block before failing
    * \return The transform between the frames
    *
@@ -148,10 +156,11 @@ public:
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_ROS_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped 
-    lookupTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
-		    const std::string& source_frame, const tf2::TimePoint& source_time,
-		    const std::string& fixed_frame, const tf2::Duration timeout) const = 0;
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame, const tf2::TimePoint & target_time,
+    const std::string & source_frame, const tf2::TimePoint & source_time,
+    const std::string & fixed_frame, const tf2::Duration timeout) const = 0;
 
 
   /** \brief Test if a transform is possible
@@ -160,12 +169,14 @@ public:
    * \param time The time at which to transform
    * \param timeout How long to block before failing
    * \param errstr A pointer to a string which will be filled with why the transform failed, if not NULL
-   * \return True if the transform is possible, false otherwise 
+   * \return True if the transform is possible, false otherwise
    */
   TF2_ROS_PUBLIC
   virtual bool
-    canTransform(const std::string& target_frame, const std::string& source_frame, 
-		 const tf2::TimePoint& time, const tf2::Duration timeout, std::string* errstr = NULL) const = 0;
+  canTransform(
+    const std::string & target_frame, const std::string & source_frame,
+    const tf2::TimePoint & time, const tf2::Duration timeout,
+    std::string * errstr = NULL) const = 0;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -175,13 +186,15 @@ public:
    * \param fixed_frame The frame in which to treat the transform as constant in time
    * \param timeout How long to block before failing
    * \param errstr A pointer to a string which will be filled with why the transform failed, if not NULL
-   * \return True if the transform is possible, false otherwise 
+   * \return True if the transform is possible, false otherwise
    */
   TF2_ROS_PUBLIC
   virtual bool
-    canTransform(const std::string& target_frame, const tf2::TimePoint& target_time,
-		 const std::string& source_frame, const tf2::TimePoint& source_time,
-		 const std::string& fixed_frame, const tf2::Duration timeout, std::string* errstr = NULL) const = 0;
+  canTransform(
+    const std::string & target_frame, const tf2::TimePoint & target_time,
+    const std::string & source_frame, const tf2::TimePoint & source_time,
+    const std::string & fixed_frame, const tf2::Duration timeout,
+    std::string * errstr = NULL) const = 0;
 
   /** \brief Transform an input into the target frame.
    * This function is templated and can take as input any valid mathematical object that tf knows
@@ -194,12 +207,14 @@ public:
    * \param target_frame The string identifer for the frame to transform into.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    */
-  template <class T>
-    T& transform(const T& in, T& out, 
-        	 const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class T>
+  T & transform(
+    const T & in, T & out,
+    const std::string & target_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
     // do the transform
-    tf2::doTransform(in, out, lookupTransform(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout));
+    tf2::doTransform(
+      in, out, lookupTransform(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout));
     return out;
   }
 
@@ -214,12 +229,13 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output.
    */
-  template <class T>
-    T transform(const T& in, 
-        	const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class T>
+  T transform(
+    const T & in,
+    const std::string & target_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
     T out;
-    return transform(in, out, target_frame, timeout);
+    return this->transform(in, out, target_frame, timeout);
   }
 
   /** \brief Transform an input into the target frame and convert to a specified output type.
@@ -239,11 +255,12 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output, converted to the specified type.
    */
-  template <class A, class B>
-    B& transform(const A& in, B& out,
-        const std::string& target_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class A, class B>
+  B & transform(
+    const A & in, B & out,
+    const std::string & target_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
-    A copy = transform(in, target_frame, timeout);
+    A copy = this->transform(in, target_frame, timeout);
     tf2::convert(copy, out);
     return out;
   }
@@ -263,15 +280,18 @@ public:
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    */
-  template <class T>
-    T& transform(const T& in, T& out, 
-        	 const std::string& target_frame, const tf2::TimePoint& target_time,
-        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class T>
+  T & transform(
+    const T & in, T & out,
+    const std::string & target_frame, const tf2::TimePoint & target_time,
+    const std::string & fixed_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
     // do the transform
-    tf2::doTransform(in, out, lookupTransform(target_frame, target_time, 
-                                              tf2::getFrameId(in), tf2::getTimestamp(in), 
-                                              fixed_frame, timeout));
+    tf2::doTransform(
+      in, out, lookupTransform(
+        target_frame, target_time,
+        tf2::getFrameId(in), tf2::getTimestamp(in),
+        fixed_frame, timeout));
     return out;
   }
 
@@ -290,13 +310,14 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output.
    */
-  template <class T>
-    T transform(const T& in, 
-        	 const std::string& target_frame, const tf2::TimePoint& target_time,
-        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class T>
+  T transform(
+    const T & in,
+    const std::string & target_frame, const tf2::TimePoint & target_time,
+    const std::string & fixed_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
     T out;
-    return transform(in, out, target_frame, target_time, fixed_frame, timeout);
+    return this->transform(in, out, target_frame, target_time, fixed_frame, timeout);
   }
 
   /** \brief Transform an input into the target frame and convert to a specified output type (advanced).
@@ -320,13 +341,14 @@ public:
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output, converted to the specified output type.
    */
-  template <class A, class B>
-    B& transform(const A& in, B& out, 
-        	 const std::string& target_frame, const tf2::TimePoint& target_time,
-        	 const std::string& fixed_frame, tf2::Duration timeout=tf2::durationFromSec(0.0)) const
+  template<class A, class B>
+  B & transform(
+    const A & in, B & out,
+    const std::string & target_frame, const tf2::TimePoint & target_time,
+    const std::string & fixed_frame, tf2::Duration timeout = tf2::durationFromSec(0.0)) const
   {
     // do the transform
-    A copy = transform(in, target_frame, target_time, fixed_frame, timeout);
+    A copy = this->transform(in, target_frame, target_time, fixed_frame, timeout);
     tf2::convert(copy, out);
     return out;
   }
@@ -334,9 +356,8 @@ public:
   virtual ~BufferInterface()
   {
   }
- }; // class
+};
 
+}  // namespace tf2_ros
 
-} // namespace
-
-#endif // TF2_ROS_BUFFER_INTERFACE_H
+#endif  // TF2_ROS__BUFFER_INTERFACE_H_
