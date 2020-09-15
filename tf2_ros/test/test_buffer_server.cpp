@@ -82,8 +82,7 @@ public:
 
     auto send_goal_options = rclcpp_action::Client<LookupTransformAction>::SendGoalOptions();
     send_goal_options.goal_response_callback =
-      [this](std::shared_future<GoalHandle::SharedPtr> future) {
-        auto goal_handle = future.get();
+      [this](GoalHandle::SharedPtr goal_handle) {
         if (!goal_handle) {
           this->accepted_ = false;
         } else {
