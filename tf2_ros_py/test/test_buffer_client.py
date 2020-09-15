@@ -39,6 +39,7 @@ from geometry_msgs.msg import TransformStamped
 from tf2_msgs.action import LookupTransform
 from tf2_py import BufferCore, LookupException
 from rclpy.executors import SingleThreadedExecutor
+from rclpy.time import Time
 from tf2_msgs.msg import TF2Error
 
 
@@ -75,13 +76,13 @@ class MockBufferServer():
             if not goal_handle.request.advanced:
                 transform = self.buffer_core.lookup_transform_core(target_frame=goal_handle.request.target_frame,
                                                                    source_frame=goal_handle.request.source_frame,
-                                                                   time=goal_handle.request.source_time)
+                                                                   time=Time.from_msg(goal_handle.request.source_time))
             else:
                 transform = self.buffer_core.lookup_transform_full_core(
                     target_frame=goal_handle.request.target_frame,
+                    target_time=Time.from_msg(goal_handle.request.target_time),
                     source_frame=goal_handle.request.source_frame,
-                    source_time=goal_handle.request.source_time,
-                    target_time=goal_handle.request.target_time,
+                    source_time=Time.from_msg(goal_handle.request.source_time),
                     fixed_frame=goal_handle.request.fixed_frame
                 )
             response.transform = transform
@@ -129,7 +130,7 @@ class TestBufferClient(unittest.TestCase):
             self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)
 
         result = buffer_client.lookup_transform(
-            'foo', 'bar', rclpy.time.Time().to_msg(), rclpy.duration.Duration(seconds=5.0))
+            'foo', 'bar', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
 
         self.assertEqual(build_transform(
             'foo', 'bar', rclpy.time.Time().to_msg()), result)
@@ -140,7 +141,7 @@ class TestBufferClient(unittest.TestCase):
 
         with self.assertRaises(LookupException) as ex:
             result = buffer_client.lookup_transform(
-                'bar', 'baz', rclpy.time.Time().to_msg(), rclpy.duration.Duration(seconds=5.0))
+                'bar', 'baz', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
 
         self.assertEqual(LookupException, type(ex.exception))
 
