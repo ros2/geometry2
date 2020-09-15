@@ -44,9 +44,12 @@ from rclpy.duration import Duration
 from rclpy.time import Time
 from rclpy.clock import Clock
 from time import sleep
+
+import builtin_interfaces.msg
 import tf2_py as tf2
 import tf2_ros
 import threading
+import warnings
 
 from tf2_msgs.action import LookupTransform
 
@@ -99,10 +102,20 @@ class BufferClient(tf2_ros.BufferInterface):
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
+        if isinstance(time, builtin_interfaces.msg.Time):
+            source_time = Time.from_msg(time)
+            warnings.warn(
+                'Passing a builtin_interfaces.msg.Time argument is deprecated, and will be removed in the near future. '
+                'Use rclpy.time.Time instead.')
+        elif isinstance(time, Time):
+            source_time = time
+        else:
+            raise TypeError('Must pass a rclpy.time.Time object.')
+
         goal = LookupTransform.Goal()
         goal.target_frame = target_frame
         goal.source_frame = source_frame
-        goal.source_time = time
+        goal.source_time = source_time.to_msg()
         goal.timeout = timeout.to_msg()
         goal.advanced = False
 
