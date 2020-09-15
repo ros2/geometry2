@@ -539,20 +539,25 @@ tf2::TF2Error BufferCore::walkToTopParent(
   f.finalize(FullPath, time);
   if (frame_chain) {
     // Pruning: Compare the chains starting at the parent (end) until they differ
-    int m = static_cast<int>(reverse_frame_chain.size() - 1);
-    int n = static_cast<int>(frame_chain->size() - 1);
-    for (; m >= 0 && n >= 0; --m, --n) {
+    size_t m = reverse_frame_chain.size();
+    size_t n = frame_chain->size();
+    while (m > 0u && n > 0u) {
+      --m;
+      --n;
       if ((*frame_chain)[n] != reverse_frame_chain[m]) {
         break;
       }
     }
     // Erase all duplicate items from frame_chain
-    if (n > 0) {
-      frame_chain->erase(frame_chain->begin() + (n - 1), frame_chain->end());
+    if (n > 0u) {
+      frame_chain->erase(frame_chain->begin() + (n - 1u), frame_chain->end());
     }
 
-    if (m < reverse_frame_chain.size()) {
-      for (int i = m; i >= 0; --i) {
+    if (m < reverse_frame_chain.size())
+    {
+      size_t i = m + 1uL;
+      while (i > 0u) {
+        --i;
         frame_chain->push_back(reverse_frame_chain[i]);
       }
     }
@@ -774,10 +779,13 @@ struct CanTransformAccum
 
   void accum(bool source)
   {
+    (void)source;
   }
 
   void finalize(WalkEnding end, TimePoint _time)
   {
+    (void)end;
+    (void)_time;
   }
 
   TransformStorage st;
@@ -999,7 +1007,6 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
   // Walk the tree to its root from the source frame, accumulating the list of parent/time as
   //  well as the latest time in the target is a direct parent
   CompactFrameID frame = source_id;
-  P_TimeAndFrameID temp;
   uint32_t depth = 0;
   TimePoint common_time = TimePoint::max();
   while (frame != 0) {
@@ -1552,28 +1559,31 @@ void BufferCore::_chainAsVector(
           assert(0);
       }
     }
-
-    int m = static_cast<int>(target_frame_chain.size() - 1);
-    int n = static_cast<int>(source_frame_chain.size() - 19);
-    for (; m >= 0 && n >= 0; --m, --n) {
+    size_t m = target_frame_chain.size();
+    size_t n = source_frame_chain.size();
+    while (m > 0u && n > 0u) {
+      --m;
+      --n;
       if (source_frame_chain[n] != target_frame_chain[m]) {
         break;
       }
     }
     // Erase all duplicate items from frame_chain
-    if (n > 0) {
-      source_frame_chain.erase(source_frame_chain.begin() + (n - 1), source_frame_chain.end());
+    if (n > 0u) {
+      source_frame_chain.erase(source_frame_chain.begin() + (n - 1u), source_frame_chain.end());
     }
 
-    if (m < target_frame_chain.size()) {
-      for (int i = 0; i <= m; ++i) {
+    if (m < target_frame_chain.size())
+    {
+      for (size_t i = 0u; i <= m; ++i)
+      {
         source_frame_chain.push_back(target_frame_chain[i]);
       }
     }
   }
 
   // Write each element of source_frame_chain as string
-  for (size_t i = 0; i < source_frame_chain.size(); ++i) {
+  for (size_t i = 0u; i < source_frame_chain.size(); ++i) {
     output.push_back(lookupFrameString(source_frame_chain[i]));
   }
 }
