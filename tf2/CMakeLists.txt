@@ -6,10 +6,6 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
-if(NOT WIN32)
-  add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
-endif()
-
 find_package(ament_cmake)
 find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
 find_package(console_bridge REQUIRED)

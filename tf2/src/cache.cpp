@@ -50,11 +50,11 @@ TransformStorage::TransformStorage()
 TransformStorage::TransformStorage(
   const TimePoint & stamp, const Quaternion & q, const Vector3 & t,
   CompactFrameID frame_id, CompactFrameID child_frame_id)
-: rotation_(q),
-  translation_(t),
-  stamp_(stamp),
+: stamp_(stamp),
   frame_id_(frame_id),
-  child_frame_id_(child_frame_id)
+  child_frame_id_(child_frame_id),
+  rotation_(q),
+  translation_(t)
 {
 }
 
