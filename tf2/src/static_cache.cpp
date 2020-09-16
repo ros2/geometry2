@@ -58,8 +58,8 @@ unsigned tf2::StaticCache::getListLength() {return 1;}
 
 tf2::CompactFrameID tf2::StaticCache::getParent(tf2::TimePoint time, std::string * error_str)
 {
-  (void)error_str;
   (void)time;
+  (void)error_str;
   return storage_.frame_id_;
 }
 

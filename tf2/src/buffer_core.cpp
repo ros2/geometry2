@@ -553,8 +553,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       frame_chain->erase(frame_chain->begin() + (n - 1u), frame_chain->end());
     }
 
-    if (m < reverse_frame_chain.size())
-    {
+    if (m < reverse_frame_chain.size()) {
       size_t i = m + 1uL;
       while (i > 0u) {
         --i;
@@ -1573,10 +1572,8 @@ void BufferCore::_chainAsVector(
       source_frame_chain.erase(source_frame_chain.begin() + (n - 1u), source_frame_chain.end());
     }
 
-    if (m < target_frame_chain.size())
-    {
-      for (size_t i = 0u; i <= m; ++i)
-      {
+    if (m < target_frame_chain.size()) {
+      for (size_t i = 0u; i <= m; ++i) {
         source_frame_chain.push_back(target_frame_chain[i]);
       }
     }
