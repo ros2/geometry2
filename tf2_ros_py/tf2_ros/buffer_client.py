@@ -44,7 +44,6 @@ from rclpy.duration import Duration
 from rclpy.time import Time
 from rclpy.clock import Clock
 from rclpy.timer import Rate
-from time import sleep
 
 import builtin_interfaces.msg
 import tf2_py as tf2
