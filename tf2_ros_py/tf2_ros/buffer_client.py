@@ -241,6 +241,7 @@ class BufferClient(tf2_ros.BufferInterface):
         t.start()
 
         event.wait()
+
         rate.destroy()
 
         #This shouldn't happen, but could in rare cases where the server hangs
