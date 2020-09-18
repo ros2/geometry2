@@ -43,6 +43,7 @@ from rclpy.action.client import ActionClient
 from rclpy.duration import Duration
 from rclpy.time import Time
 from rclpy.clock import Clock
+from rclpy.timer import Rate
 from time import sleep
 
 import builtin_interfaces.msg
@@ -221,7 +222,7 @@ class BufferClient(tf2_ros.BufferInterface):
         send_goal_future = self.action_client.send_goal_async(goal)
         send_goal_future.add_done_callback(unblock)
 
-        def unblock_by_timeout():
+        def unblock_by_timeout(rate):
             nonlocal send_goal_future, goal, event
             clock = Clock()
             start_time = clock.now()
@@ -230,17 +231,17 @@ class BufferClient(tf2_ros.BufferInterface):
             while not send_goal_future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
-                # TODO(vinnamkim): rclpy.Rate is not ready
-                # See https://github.com/ros2/rclpy/issues/186
-                #r = rospy.Rate(self.check_frequency)
-                sleep(1.0 / self.check_frequency)
+
+                rate.sleep()
 
             event.set()
 
-        t = threading.Thread(target=unblock_by_timeout)
+        rate = self.node.create_rate(self.check_frequency)
+        t = threading.Thread(target=unblock_by_timeout, args=(rate,))
         t.start()
 
         event.wait()
+        rate.destroy()
 
         #This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
