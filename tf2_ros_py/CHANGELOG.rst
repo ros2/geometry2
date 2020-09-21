@@ -2,6 +2,14 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add deprecation warnings to lookup_transform to handle the passing of the incorrect Time object. (`#319 <https://github.com/ros2/geometry2/issues/319>`_)
+* change signature to show true arguments (`#321 <https://github.com/ros2/geometry2/issues/321>`_)
+* Handle when None passed to qos argument in the constructor of TransformBroadcaster. (`#320 <https://github.com/ros2/geometry2/issues/320>`_)
+* Add type hints to tf2_ros_py code(`#275 <https://github.com/ros2/geometry2/issues/275>`_) (`#315 <https://github.com/ros2/geometry2/issues/315>`_)
+* Contributors: surfertas
+
 0.14.0 (2020-08-14)
 -------------------
 * Clear callbacks_to_remove variable after removing (`#303 <https://github.com/ros2/geometry2/issues/303>`_)

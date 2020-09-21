@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Activate usual compiler warnings and fix errors (`#270 <https://github.com/ros2/geometry2/issues/270>`_)
+* Contributors: Ivan Santiago Paunovic
+
 0.14.0 (2020-08-14)
 -------------------
 * Suppress compiler warning on Centos (`#290 <https://github.com/ros2/geometry2/issues/290>`_)

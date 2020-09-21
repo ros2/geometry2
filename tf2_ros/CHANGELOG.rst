@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update goal response callback signature (`#323 <https://github.com/ros2/geometry2/issues/323>`_)
+* Activate usual compiler warnings and fix errors (`#270 <https://github.com/ros2/geometry2/issues/270>`_)
+* Contributors: Ivan Santiago Paunovic, Jacob Perron
+
 0.14.0 (2020-08-14)
 -------------------
 * Fixed memory leak in Buffer::waitForTransform (`#281 <https://github.com/ros2/geometry2/issues/281>`_)

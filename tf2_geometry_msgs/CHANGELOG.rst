@@ -2,6 +2,12 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Activate usual compiler warnings and fix errors (`#270 <https://github.com/ros2/geometry2/issues/270>`_)
+* Add PoseWithCovarianceStamped transform support (`#312 <https://github.com/ros2/geometry2/issues/312>`_)
+* Contributors: Ivan Santiago Paunovic, Joshua Whitley
+
 0.14.0 (2020-08-14)
 -------------------
 * Don't install python tf2_geometry_msgs (`#299 <https://github.com/ros2/geometry2/issues/299>`_)

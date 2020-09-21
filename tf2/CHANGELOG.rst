@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Active usual compiler warnings in tf2 (`#322 <https://github.com/ros2/geometry2/issues/322>`_)
+* Cleanups in buffer_core.cpp. (`#301 <https://github.com/ros2/geometry2/issues/301>`_)
+* Add PoseWithCovarianceStamped transform support (`#312 <https://github.com/ros2/geometry2/issues/312>`_)
+* Contributors: Chris Lalancette, Ivan Santiago Paunovic, Joshua Whitley
+
 0.14.0 (2020-08-14)
 -------------------
 * Fix a TOCTTOU race in tf2. (`#307 <https://github.com/ros2/geometry2/issues/307>`_)
