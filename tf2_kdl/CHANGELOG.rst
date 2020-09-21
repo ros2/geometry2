@@ -2,8 +2,8 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.14.1 (2020-09-21)
+-------------------
 * Activate usual compiler warnings and fix errors (`#270 <https://github.com/ros2/geometry2/issues/270>`_)
 * Contributors: Ivan Santiago Paunovic
 
