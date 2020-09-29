@@ -43,7 +43,7 @@ from geometry_msgs.msg import TransformStamped
 
 class StaticTransformBroadcaster:
     """
-    :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"/tf_static"`` message topic.
+    :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"tf_static"`` message topic.
     """
 
     def __init__(self, node: Node, qos: Optional[Union[QoSProfile, int]] = None) -> None:
@@ -59,7 +59,7 @@ class StaticTransformBroadcaster:
                 durability=DurabilityPolicy.TRANSIENT_LOCAL,
                 history=HistoryPolicy.KEEP_LAST,
                 )
-        self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
+        self.pub_tf = node.create_publisher(TFMessage, "tf_static", qos)
 
     def sendTransform(self, transform: Union[TransformStamped, List[TransformStamped]]) -> None:
         if not isinstance(transform, list):

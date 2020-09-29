@@ -45,7 +45,7 @@ class TFMonitor
 public:
   std::string framea_, frameb_;
   bool using_specific_chain_;
-  
+
   rclcpp::Node::SharedPtr node_;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_tf_, subscriber_tf_message_;
   std::vector<std::string> chain_;
@@ -53,14 +53,14 @@ public:
   std::map<std::string, std::vector<double> > delay_map;
   std::map<std::string, std::vector<double> > authority_map;
   std::map<std::string, std::vector<double> > authority_frequency_map;
-  
+
   rclcpp::Clock::SharedPtr clock_;
   tf2_ros::Buffer buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_;
 
   tf2_msgs::msg::TFMessage message_;
   std::mutex map_mutex_;
-  
+
   void callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
   {
     const tf2_msgs::msg::TFMessage& message = *(msg);
@@ -68,14 +68,14 @@ public:
     std::string authority = "<no authority available>"; //msg_evt.getPublisherName(); // lookup the authority
 
     double average_offset = 0;
-    std::unique_lock<std::mutex> my_lock(map_mutex_);  
+    std::unique_lock<std::mutex> my_lock(map_mutex_);
     for (unsigned int i = 0; i < message.transforms.size(); i++)
     {
       frame_authority_map[message.transforms[i].child_frame_id] = authority;
 
       double offset = clock_->now().seconds() - tf2_ros::timeToSec(message.transforms[i].header.stamp);
       average_offset  += offset;
-      
+
       std::map<std::string, std::vector<double> >::iterator it = delay_map.find(message.transforms[i].child_frame_id);
       if (it == delay_map.end())
       {
@@ -84,12 +84,12 @@ public:
       else
       {
         it->second.push_back(offset);
-        if (it->second.size() > 1000) 
+        if (it->second.size() > 1000)
           it->second.erase(it->second.begin());
       }
-      
-    } 
-    
+
+    }
+
     average_offset /= std::max((size_t) 1, message.transforms.size());
 
     //create the authority log
@@ -101,10 +101,10 @@ public:
     else
     {
       it2->second.push_back(average_offset);
-      if (it2->second.size() > 1000) 
+      if (it2->second.size() > 1000)
         it2->second.erase(it2->second.begin());
     }
-    
+
     //create the authority frequency log
     std::map<std::string, std::vector<double> >::iterator it3 = authority_frequency_map.find(authority);
     if (it3 == authority_frequency_map.end())
@@ -114,10 +114,10 @@ public:
     else
     {
       it3->second.push_back(clock_->now().seconds());
-      if (it3->second.size() > 1000) 
+      if (it3->second.size() > 1000)
         it3->second.erase(it3->second.begin());
     }
-    
+
   };
 
   TFMonitor(
@@ -150,7 +150,7 @@ public:
       catch(tf2::TransformException& ex){
         RCLCPP_WARN(node->get_logger(), "Transform Exception %s", ex.what());
         return;
-      } 
+      }
 
       /*      cout << "Chain currently is:" <<endl;
       for (unsigned int i = 0; i < chain_.size(); i++)
@@ -161,10 +161,10 @@ public:
     }
 
     subscriber_tf_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf", tf2_ros::DynamicListenerQoS(),
+      "tf", tf2_ros::DynamicListenerQoS(),
       std::bind(&TFMonitor::callback, this, std::placeholders::_1));
     subscriber_tf_message_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf_static", tf2_ros::StaticListenerQoS(),
+      "tf_static", tf2_ros::StaticListenerQoS(),
       std::bind(&TFMonitor::callback, this, std::placeholders::_1));
 
     // subscriber_tf_ = node_->create_subscriber.subscribe<tf::tfMessage>("tf", 100, boost::bind(&TFMonitor::callback, this, _1));
@@ -185,10 +185,10 @@ public:
     ss << "Frame: " << it->first << ", published by "<< frame_authority << ", Average Delay: " << average_delay << ", Max Delay: " << max_delay << std::endl;
     return ss.str();
   }
-  
+
   void spin()
-  {  
-    
+  {
+
     // create tf listener
     double max_diff = 0;
     double avg_diff = 0;
@@ -231,7 +231,7 @@ public:
       }
       else
         std::cout <<std::endl<< std::endl<< std::endl<< "RESULTS: for all Frames" <<std::endl;
-      std::unique_lock<std::mutex> lock(map_mutex_);  
+      std::unique_lock<std::mutex> lock(map_mutex_);
       std::cout <<std::endl << "Frames:" <<std::endl;
       std::map<std::string, std::vector<double> >::iterator it = delay_map.begin();
       for ( ; it != delay_map.end() ; ++it)
@@ -242,13 +242,13 @@ public:
           {
             if (it->first != chain_[i])
               continue;
-            
+
             std::cout << outputFrameInfo(it, frame_authority_map[it->first]);
           }
         }
         else
           std::cout << outputFrameInfo(it, frame_authority_map[it->first]);
-      }          
+      }
       std::cerr <<std::endl<< "All Broadcasters:" << std::endl;
       std::map<std::string, std::vector<double> >::iterator it1 = authority_map.begin();
       std::map<std::string, std::vector<double> >::iterator it2 = authority_frequency_map.begin();
@@ -266,7 +266,7 @@ public:
         //cout << "output" <<&(*it2) <<" " << it2->second.back() <<" " << it2->second.front() <<" " << std::max((size_t)1, it2->second.size()) << " " << frequency_out << endl;
         std::cout << "Node: " <<it1->first << " " << frequency_out <<" Hz, Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
       }
-      
+
     }
   }
 
@@ -278,8 +278,8 @@ int main(int argc, char ** argv)
 {
   //Initialize ROS
   std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
-  
-  //TODO(tfoote) make anonymous 
+
+  //TODO(tfoote) make anonymous
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_monitor_main");
 
 
@@ -295,7 +295,7 @@ int main(int argc, char ** argv)
     RCLCPP_INFO(nh->get_logger(), "TF_Monitor: usage: tf2_monitor framea frameb");
     return -1;
   }
-  
+
   // TODO(tfoote) restore simtime logic
   // //Make sure we don't start before recieving time when in simtime
   // int iterations = 0;

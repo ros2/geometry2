@@ -87,13 +87,13 @@ private:
 
     message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
       node,
-      "/tf",
+      "tf",
       qos,
       std::move(cb),
       options);
     message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
       node,
-      "/tf_static",
+      "tf_static",
       static_qos,
       std::move(static_cb),
       options);
