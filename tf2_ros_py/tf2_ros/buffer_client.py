@@ -242,7 +242,6 @@ class BufferClient(tf2_ros.BufferInterface):
 
         event.wait()
 
-
         #This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
