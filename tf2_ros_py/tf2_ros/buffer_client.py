@@ -43,7 +43,7 @@ from rclpy.action.client import ActionClient
 from rclpy.duration import Duration
 from rclpy.time import Time
 from rclpy.clock import Clock
-from rclpy.timer import Rate
+from time import sleep
 
 import builtin_interfaces.msg
 import tf2_py as tf2
@@ -221,7 +221,7 @@ class BufferClient(tf2_ros.BufferInterface):
         send_goal_future = self.action_client.send_goal_async(goal)
         send_goal_future.add_done_callback(unblock)
 
-        def unblock_by_timeout(rate):
+        def unblock_by_timeout():
             nonlocal send_goal_future, goal, event
             clock = Clock()
             start_time = clock.now()
@@ -237,13 +237,11 @@ class BufferClient(tf2_ros.BufferInterface):
 
             event.set()
 
-        rate = self.node.create_rate(self.check_frequency)
-        t = threading.Thread(target=unblock_by_timeout, args=(rate,))
+        t = threading.Thread(target=unblock_by_timeout)
         t.start()
 
         event.wait()
 
-        rate.destroy()
 
         #This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
