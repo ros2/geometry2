@@ -6,11 +6,10 @@
   </description>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <license>BSD</license>
+  <url type="website">http://ros.org/wiki/tf2</url>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>
-  <license>BSD</license>
-
-  <url type="website">http://ros.org/wiki/tf2</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

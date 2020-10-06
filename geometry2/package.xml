@@ -8,8 +8,8 @@
   </description>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
-  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
   <url type="website">http://www.ros.org/wiki/geometry2</url>
 

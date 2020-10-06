@@ -8,9 +8,9 @@
   </description>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <license>Apache License 2.0</license>
   <author email="sloretz@openrobotics.org">Shane Loretz</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
-  <license>Apache License 2.0</license>
 
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>

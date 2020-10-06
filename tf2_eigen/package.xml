@@ -3,11 +3,11 @@
   <name>tf2_eigen</name>
   <version>0.14.1</version>
   <description>tf2_eigen</description>
-  <author>Koji Terada</author>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
-  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
+  <author>Koji Terada</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>

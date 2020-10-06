@@ -4,14 +4,12 @@
   <description>
     tf2 unit tests
   </description>
-  <author>Tully Foote</author>
-  <author>Eitan Marder-Eppstein</author>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
-  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
-
   <url type="website">http://www.ros.org/wiki/geometry_experimental</url>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
+  <author>Eitan Marder-Eppstein</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

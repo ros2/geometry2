@@ -6,11 +6,10 @@
   </description>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <license>BSD</license>
+  <url type="website">http://www.ros.org/wiki/tf2_ros</url>
   <author>Vincent Rabaud</author>
   <author email="vincent.rabaud@gmail.com">Vincent Rabaud</author>
-  <license>BSD</license>
-
-  <url type="website">http://www.ros.org/wiki/tf2_ros</url>
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>
