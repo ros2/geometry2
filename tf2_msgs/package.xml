@@ -6,8 +6,10 @@
   <description>
     tf2_msgs
   </description>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <author>Eitan Marder-Eppstein</author>
-  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/tf2_msgs</url>
@@ -22,7 +24,7 @@
   <exec_depend>rosidl_default_runtime</exec_depend>
 
   <test_depend>ament_lint_common</test_depend>
-  
+
   <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>

@@ -4,7 +4,9 @@
   <version>0.14.1</version>
   <description>tf2_eigen</description>
   <author>Koji Terada</author>
-  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

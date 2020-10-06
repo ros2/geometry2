@@ -4,9 +4,11 @@
   <description>
     This package contains the C++ ROS bindings for the tf2 library
   </description>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <author>Eitan Marder-Eppstein</author>
   <author>Wim Meeussen</author>
-  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/tf2_ros</url>
