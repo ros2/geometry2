@@ -231,7 +231,8 @@ class BufferClient(tf2_ros.BufferInterface):
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
                 # TODO(Anyone): We can't use Rate here because it would never expire
-                # with a single-threaded executor.  See #327 for ideas on
+                # with a single-threaded executor.
+                # See https://github.com/ros2/geometry2/issues/327 for ideas on
                 # how to timeout waiting for transforms that don't block the executor.
                 sleep(1.0 / self.check_frequency)
 
