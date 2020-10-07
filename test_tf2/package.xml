@@ -4,14 +4,12 @@
   <description>
     tf2 unit tests
   </description>
-  <author>Tully Foote</author>
-  <author>Eitan Marder-Eppstein</author>
-  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <license>BSD</license>
-
   <url type="website">http://www.ros.org/wiki/geometry_experimental</url>
-    
-  <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
+  <author>Eitan Marder-Eppstein</author>
 
   <build_depend>rosconsole</build_depend>
   <build_depend>roscpp</build_depend>
@@ -39,5 +37,3 @@
   <test_depend>rosbash</test_depend>
 
 </package>
-
-

@@ -6,11 +6,12 @@
   <description>
     tf2_msgs
   </description>
-  <author>Eitan Marder-Eppstein</author>
-  <maintainer email="tfoote@osrfoundation.org">Tully Foote</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <license>BSD</license>
-
   <url type="website">http://www.ros.org/wiki/tf2_msgs</url>
+  <author>Eitan Marder-Eppstein</author>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
