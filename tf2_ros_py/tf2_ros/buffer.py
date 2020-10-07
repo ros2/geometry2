@@ -217,13 +217,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         clock = rclpy.clock.Clock()
         if timeout != Duration():
             start_time = clock.now()
-            # TODO(vinnamkim): rclpy.Rate is not ready
-            # See https://github.com/ros2/rclpy/issues/186
-            # r = rospy.Rate(20)
             while (clock.now() < start_time + timeout and
                    not self.can_transform_core(target_frame, source_frame, time)[0] and
                    (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
-                # r.sleep()
+                # TODO(Anyone): We can't use Rate here because it would never expire
+                # with a single-threaded executor.
+                # See https://github.com/ros2/geometry2/issues/327 for ideas on
+                # how to timeout waiting for transforms that don't block the executor.
                 sleep(0.02)
 
         core_result = self.can_transform_core(target_frame, source_frame, time)
@@ -258,13 +258,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         clock = rclpy.clock.Clock()
         if timeout != Duration():
             start_time = clock.now()
-            # TODO(vinnamkim): rclpy.Rate is not ready
-            # See https://github.com/ros2/rclpy/issues/186
-            # r = rospy.Rate(20)
             while (clock.now() < start_time + timeout and
                    not self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0] and
                    (clock.now() + Duration(seconds=3.0)) >= start_time): # big jumps in time are likely bag loops, so break for them
-                # r.sleep()
+                # TODO(Anyone): We can't use Rate here because it would never expire
+                # with a single-threaded executor.
+                # See https://github.com/ros2/geometry2/issues/327 for ideas on
+                # how to timeout waiting for transforms that don't block the executor.
                 sleep(0.02)
         core_result = self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
         if return_debug_tuple:

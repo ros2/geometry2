@@ -230,9 +230,10 @@ class BufferClient(tf2_ros.BufferInterface):
             while not send_goal_future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
-                # TODO(vinnamkim): rclpy.Rate is not ready
-                # See https://github.com/ros2/rclpy/issues/186
-                #r = rospy.Rate(self.check_frequency)
+                # TODO(Anyone): We can't use Rate here because it would never expire
+                # with a single-threaded executor.
+                # See https://github.com/ros2/geometry2/issues/327 for ideas on
+                # how to timeout waiting for transforms that don't block the executor.
                 sleep(1.0 / self.check_frequency)
 
             event.set()
