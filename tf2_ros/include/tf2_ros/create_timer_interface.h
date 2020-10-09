@@ -27,38 +27,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_ROS__CREATE_TIMER_INTERFACE_H
-#define TF2_ROS__CREATE_TIMER_INTERFACE_H
-
-#include <functional>
-
-#include <rclcpp/rclcpp.hpp>
+#ifndef TF2_ROS__CREATE_TIMER_INTERFACE_H_
+#define TF2_ROS__CREATE_TIMER_INTERFACE_H_
 
 #include <tf2/time.h>
 
 #include <tf2_ros/visibility_control.h>
 
+#include <rclcpp/rclcpp.hpp>
+
+#include <functional>
+#include <memory>
+#include <stdexcept>
+#include <string>
+
+
 namespace tf2_ros
 {
 
 using TimerHandle = uint64_t;
-using TimerCallbackType = std::function<void(const TimerHandle &)>;
+using TimerCallbackType = std::function<void (const TimerHandle &)>;
 
-class CreateTimerInterfaceException: public std::runtime_error
+class CreateTimerInterfaceException : public std::runtime_error
 {
 public:
   TF2_ROS_PUBLIC
-  CreateTimerInterfaceException(const std::string errorDescription)
+  explicit CreateTimerInterfaceException(const std::string & errorDescription)
   : std::runtime_error(errorDescription)
   {
   }
 };
 
-class InvalidTimerHandleException: public std::runtime_error
+class InvalidTimerHandleException : public std::runtime_error
 {
 public:
   TF2_ROS_PUBLIC
-  InvalidTimerHandleException(const std::string description)
+  explicit InvalidTimerHandleException(const std::string & description)
   : std::runtime_error(description)
   {
   }
@@ -133,4 +137,4 @@ public:
 
 }  // namespace tf2_ros
 
-#endif // TF2_ROS__CREATE_TIMER_INTERFACE_H
+#endif  // TF2_ROS__CREATE_TIMER_INTERFACE_H_

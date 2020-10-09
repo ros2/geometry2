@@ -34,12 +34,16 @@
 *
 * Author: Wim Meeussen
 *********************************************************************/
+
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/buffer_server.h>
 #include <tf2_ros/transform_listener.h>
+
 #include <rclcpp/rclcpp.hpp>
 
-int main(int argc, char** argv)
+#include <memory>
+
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto node = std::make_shared<rclcpp::Node>("tf_buffer");

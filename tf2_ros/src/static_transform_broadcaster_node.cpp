@@ -39,7 +39,7 @@ namespace
 {
 std::string get_unique_node_name()
 {
-  const static std::string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  static const std::string chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static std::random_device rd;
   static std::minstd_rand g{rd()};
 
@@ -58,7 +58,7 @@ std::string get_unique_node_name()
 
   return s;
 }
-}
+}  // namespace
 
 namespace tf2_ros
 {
@@ -85,7 +85,8 @@ StaticTransformBroadcasterNode::StaticTransformBroadcasterNode(const rclcpp::Nod
 
   // check frame_id != child_frame_id
   if (tf_msg.header.frame_id == tf_msg.child_frame_id) {
-    RCLCPP_ERROR(this->get_logger(),
+    RCLCPP_ERROR(
+      this->get_logger(),
       "cannot publish static transform from '%s' to '%s', exiting",
       tf_msg.header.frame_id.c_str(), tf_msg.child_frame_id.c_str());
     throw std::runtime_error("child_frame_id cannot equal frame_id");

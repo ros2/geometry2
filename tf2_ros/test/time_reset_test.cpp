@@ -27,20 +27,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono>
 #include <gtest/gtest.h>
+#include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
-#include <rosgraph_msgs/msg/clock.hpp>
+
 #include <builtin_interfaces/msg/time.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rosgraph_msgs/msg/clock.hpp>
 
-void spin_for_a_second(std::shared_ptr<rclcpp::Node>& node)
+#include <chrono>
+#include <memory>
+
+void spin_for_a_second(std::shared_ptr<rclcpp::Node> & node)
 {
   rclcpp::Rate r(10);
   rclcpp::spin_some(node);
-  for (int i = 0; i < 10; ++i)
-  {
+  for (int i = 0; i < 10; ++i) {
     r.sleep();
     rclcpp::spin_some(node);
   }
@@ -48,7 +51,8 @@ void spin_for_a_second(std::shared_ptr<rclcpp::Node>& node)
 
 TEST(tf2_ros_time_reset_test, time_backwards)
 {
-  std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>("transform_listener_backwards_reset");
+  std::shared_ptr<rclcpp::Node> node_ = std::make_shared<rclcpp::Node>(
+    "transform_listener_backwards_reset");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
   tf2_ros::Buffer buffer(clock);
@@ -86,7 +90,7 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   // verify it's been set
   ASSERT_TRUE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
-  // TODO (ahcorde). review this
+  // TODO(ahcorde): review this
   // c.clock.sec = 90;
   // c.clock.nanosec = 0;
   // clock_pub->publish(c);
@@ -110,7 +114,8 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   // ASSERT_FALSE(buffer.canTransform("foo", "bar", tf2::timeFromSec(101)));
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
   return RUN_ALL_TESTS();

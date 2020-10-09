@@ -27,8 +27,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <chrono>
-#include <future>
 
 #include <gtest/gtest.h>
 
@@ -39,7 +37,12 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/buffer_server.h>
 
-static const std::string ACTION_NAME = "test_tf2_buffer_action";
+#include <chrono>
+#include <future>
+#include <memory>
+#include <string>
+
+static const char ACTION_NAME[] = "test_tf2_buffer_action";
 
 class MockBufferClient : public rclcpp::Node
 {
@@ -48,8 +51,8 @@ class MockBufferClient : public rclcpp::Node
 
 public:
   MockBufferClient()
-    : rclcpp::Node("mock_buffer_client"),
-      accepted_(false)
+  : rclcpp::Node("mock_buffer_client"),
+    accepted_(false)
   {
     action_client_ = rclcpp_action::create_client<LookupTransformAction>(
       get_node_base_interface(),
@@ -91,9 +94,9 @@ public:
       };
 
     send_goal_options.result_callback = [this, promise](const GoalHandle::WrappedResult & result) {
-      this->result_ = result;
-      promise->set_value(true);
-    };
+        this->result_ = result;
+        promise->set_value(true);
+      };
     action_client_->async_send_goal(goal, send_goal_options);
     return std::shared_future<bool>(promise->get_future());
   }
@@ -233,8 +236,8 @@ TEST_F(TestBufferServer, lookup_transform_delayed)
   EXPECT_EQ(mock_client_->result_.code, rclcpp_action::ResultCode::SUCCEEDED);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

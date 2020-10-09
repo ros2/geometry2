@@ -27,16 +27,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_ROS__CREATE_TIMER_ROS_H
-#define TF2_ROS__CREATE_TIMER_ROS_H
-
-#include <mutex>
-#include <unordered_map>
-
-#include <rclcpp/rclcpp.hpp>
+#ifndef TF2_ROS__CREATE_TIMER_ROS_H_
+#define TF2_ROS__CREATE_TIMER_ROS_H_
 
 #include <tf2_ros/create_timer_interface.h>
 #include <tf2_ros/visibility_control.h>
+#include <tf2/time.h>
+
+#include <rclcpp/rclcpp.hpp>
+
+#include <mutex>
+#include <unordered_map>
 
 namespace tf2_ros
 {
@@ -66,7 +67,7 @@ public:
    * \param callback The callback function to execute every interval
    */
   TF2_ROS_PUBLIC
-  virtual TimerHandle
+  TimerHandle
   createTimer(
     rclcpp::Clock::SharedPtr clock,
     const tf2::Duration & period,
@@ -81,7 +82,7 @@ public:
    * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
    */
   TF2_ROS_PUBLIC
-  virtual void
+  void
   cancel(const TimerHandle & timer_handle) override;
 
   /**
@@ -93,7 +94,7 @@ public:
    * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
    */
   TF2_ROS_PUBLIC
-  virtual void
+  void
   reset(const TimerHandle & timer_handle) override;
 
   /**
@@ -105,11 +106,10 @@ public:
    * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
    */
   TF2_ROS_PUBLIC
-  virtual void
+  void
   remove(const TimerHandle & timer_handle) override;
 
 private:
-
   void
   cancelNoLock(const TimerHandle & timer_handle);
 
@@ -127,4 +127,4 @@ private:
 
 }  // namespace tf2_ros
 
-#endif // TF2_ROS__CREATE_TIMER_INTERFACE_H
+#endif  // TF2_ROS__CREATE_TIMER_ROS_H_
