@@ -44,6 +44,9 @@ ament_export_dependencies(
 ament_export_libraries(${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(tf2_eigen_kdl_test test/tf2_eigen_kdl_test.cpp)

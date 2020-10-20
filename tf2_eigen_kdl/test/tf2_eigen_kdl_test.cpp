@@ -58,7 +58,7 @@ TEST(TfEigenKdl, TestQuaternionRotation)
 
 TEST(TfEigenKdl, TestFrameIsometry3d)
 {
-  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1,2,3));
+  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1, 2, 3));
   Eigen::Isometry3d eigen_v = Eigen::Isometry3d::Identity();
   tf2::convert(kdl_v, eigen_v);
   KDL::Frame kdl_v1;
@@ -68,7 +68,8 @@ TEST(TfEigenKdl, TestFrameIsometry3d)
 
 TEST(TfEigenKdl, TestIsometry3dFrame)
 {
-  const Eigen::Isometry3d eigen_v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxisd(1, Eigen::Vector3d::UnitX()));
+  const Eigen::Isometry3d eigen_v(
+    Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxisd(1, Eigen::Vector3d::UnitX()));
   KDL::Frame kdl_v;
   tf2::convert(eigen_v, kdl_v);
   Eigen::Isometry3d eigen_v1;
@@ -79,7 +80,7 @@ TEST(TfEigenKdl, TestIsometry3dFrame)
 
 TEST(TfEigenKdl, TestFrameAffine3d)
 {
-  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1,2,3));
+  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1, 2, 3));
   Eigen::Affine3d eigen_v = Eigen::Affine3d::Identity();
   tf2::convert(kdl_v, eigen_v);
   KDL::Frame kdl_v1;
@@ -89,7 +90,7 @@ TEST(TfEigenKdl, TestFrameAffine3d)
 
 TEST(TfEigenKdl, TestTwistMatrix)
 {
-  const auto kdl_v = KDL::Twist(KDL::Vector(1,2,3), KDL::Vector(4,5,6));
+  const auto kdl_v = KDL::Twist(KDL::Vector(1, 2, 3), KDL::Vector(4, 5, 6));
   Vector6d eigen_v;
   tf2::convert(kdl_v, eigen_v);
   KDL::Twist kdl_v1;
@@ -131,7 +132,8 @@ TEST(TfEigenKdl, TestVector3dVector)
   EXPECT_EQ(eigen_v, eigen_v1);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
