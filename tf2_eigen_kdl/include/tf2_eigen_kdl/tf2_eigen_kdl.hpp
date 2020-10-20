@@ -44,43 +44,57 @@
 
 #include <tf2/impl/convert.h>
 
+#include "tf2_eigen_kdl/visibility_control.h"
+
 namespace tf2
 {
 
 /// Converts a KDL rotation into an Eigen quaternion
+TF2_EIGEN_KDL_PUBLIC
 void quaternionKDLToEigen(const KDL::Rotation & k, Eigen::Quaterniond & e);
 
 /// Converts an Eigen quaternion into a KDL rotation
+TF2_EIGEN_KDL_PUBLIC
 void quaternionEigenToKDL(const Eigen::Quaterniond & e, KDL::Rotation & k);
 
 /// Converts a KDL frame into an Eigen Affine3d
+TF2_EIGEN_KDL_PUBLIC
 void transformKDLToEigen(const KDL::Frame & k, Eigen::Affine3d & e);
 
 /// Converts a KDL frame into an Eigen Isometry3d
+TF2_EIGEN_KDL_PUBLIC
 void transformKDLToEigen(const KDL::Frame & k, Eigen::Isometry3d & e);
 
 /// Converts an Eigen Affine3d into a KDL frame
+TF2_EIGEN_KDL_PUBLIC
 void transformEigenToKDL(const Eigen::Affine3d & e, KDL::Frame & k);
 
 /// Converts an Eigen Isometry3d into a KDL frame
+TF2_EIGEN_KDL_PUBLIC
 void transformEigenToKDL(const Eigen::Isometry3d & e, KDL::Frame & k);
 
 /// Converts a KDL twist into an Eigen matrix
+TF2_EIGEN_KDL_PUBLIC
 void twistKDLToEigen(const KDL::Twist & k, Eigen::Matrix<double, 6, 1> & e);
 
 /// Converts an Eigen matrix into a KDL Twist
+TF2_EIGEN_KDL_PUBLIC
 void twistEigenToKDL(const Eigen::Matrix<double, 6, 1> & e, KDL::Twist & k);
 
 /// Converts a KDL vector into an Eigen matrix
+TF2_EIGEN_KDL_PUBLIC
 void vectorKDLToEigen(const KDL::Vector & k, Eigen::Matrix<double, 3, 1> & e);
 
 /// Converts an Eigen matrix into a KDL vector
+TF2_EIGEN_KDL_PUBLIC
 void vectorEigenToKDL(const Eigen::Matrix<double, 3, 1> & e, KDL::Vector & k);
 
 /// Converts a KDL wrench into an Eigen matrix
+TF2_EIGEN_KDL_PUBLIC
 void wrenchKDLToEigen(const KDL::Wrench & k, Eigen::Matrix<double, 6, 1> & e);
 
 /// Converts an Eigen matrix into a KDL wrench
+TF2_EIGEN_KDL_PUBLIC
 void wrenchEigenToKDL(const Eigen::Matrix<double, 6, 1> & e, KDL::Wrench & k);
 
 namespace impl

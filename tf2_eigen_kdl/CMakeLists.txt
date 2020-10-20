@@ -27,6 +27,9 @@ ament_target_dependencies(${PROJECT_NAME}
   orocos_kdl
   tf2
 )
+# Causes the visibility macros to use dllexport rather than dllimport,
+# which is appropriate when building the dll but not consuming it.
+target_compile_definitions(${PROJECT_NAME} PRIVATE "TF2_EIGEN_KDL_BUILDING_DLL")
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME})
