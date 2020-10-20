@@ -15,12 +15,12 @@ find_package(eigen3_cmake_module REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 
-include_directories(include)
-
 add_library(${PROJECT_NAME} SHARED
   src/tf2_eigen_kdl.cpp
 )
-
+target_include_directories(${PROJECT_NAME} PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>")
 ament_target_dependencies(${PROJECT_NAME}
   Eigen3
   eigen3_cmake_module
@@ -32,7 +32,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME}
-  DESTINATION lib)
+  EXPORT ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib)
 
 ament_export_include_directories(include)
 ament_export_dependencies(
@@ -42,6 +45,7 @@ ament_export_dependencies(
   tf2
 )
 ament_export_libraries(${PROJECT_NAME})
+ament_export_targets(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
