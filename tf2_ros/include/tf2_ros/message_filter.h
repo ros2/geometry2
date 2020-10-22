@@ -333,7 +333,6 @@ public:
     TF2_ROS_MESSAGEFILTER_DEBUG("%s", "Cleared");
 
     messages_.clear();
-    message_count_ = 0;
 
     warned_about_empty_frame_id_ = false;
   }
@@ -389,30 +388,28 @@ public:
       std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
       // If this message is about to push us past our queue size, erase the oldest message
-      if (queue_size_ != 0 && message_count_ + 1 > queue_size_) {
+      if (queue_size_ != 0 && messages_.size() + 1 > queue_size_) {
         ++dropped_message_count_;
         const MessageInfo & front = messages_.front();
         TF2_ROS_MESSAGEFILTER_DEBUG(
           "Removed oldest message because buffer is full, count now %d (frame_id=%s, stamp=%f)",
-          message_count_,
+          messages_.size(),
           (mt::FrameId<M>::value(*front.event.getMessage())).c_str(),
           mt::TimeStamp<M>::value(*front.event.getMessage()).seconds());
 
         messageDropped(front.event, filter_failure_reasons::Unknown);
 
         messages_.pop_front();
-        --message_count_;
       }
 
       // Add the message to our list
       info.event = evt;
       messages_.push_back(info);
-      ++message_count_;
     }
 
     TF2_ROS_MESSAGEFILTER_DEBUG(
       "Added message in frame %s at time %.3f, count now %d",
-      frame_id.c_str(), stamp.seconds(), message_count_);
+      frame_id.c_str(), stamp.seconds(), messages_.size());
     ++incoming_message_count_;
 
     for (const auto & param : wait_params) {
@@ -464,7 +461,6 @@ public:
 private:
   void init()
   {
-    message_count_ = 0;
     successful_transform_count_ = 0;
     failed_out_the_back_count_ = 0;
     transform_message_count_ = 0;
@@ -499,7 +495,6 @@ private:
           if (info.success_count >= expected_success_count_) {
             saved_event = msg_it->event;
             messages_.erase(msg_it);
-            --message_count_;
             event_found = true;
           }
           break;
@@ -552,7 +547,7 @@ private:
     if (can_transform) {
       TF2_ROS_MESSAGEFILTER_DEBUG(
         "Message ready in frame %s at time %.3f, count now %d",
-        frame_id.c_str(), stamp.seconds(), message_count_ - 1);
+        frame_id.c_str(), stamp.seconds(), messages_.size());
 
       ++successful_transform_count_;
       messageReady(saved_event);
@@ -561,7 +556,7 @@ private:
 
       TF2_ROS_MESSAGEFILTER_DEBUG(
         "Discarding message in frame %s at time %.3f, count now %d",
-        frame_id.c_str(), stamp.seconds(), message_count_ - 1);
+        frame_id.c_str(), stamp.seconds(), messages_.size());
       messageDropped(saved_event, filter_failure_reasons::Unknown);
     }
   }
@@ -581,12 +576,12 @@ private:
     }
 
     if (node_clock_->get_clock()->now() >= next_failure_warning_) {
-      if (incoming_message_count_ - message_count_ == 0) {
+      if (incoming_message_count_ - messages_.size() == 0) {
         return;
       }
 
       double dropped_pct = static_cast<double>(dropped_message_count_) /
-        static_cast<double>(incoming_message_count_ - message_count_);
+        static_cast<double>(incoming_message_count_ - messages_.size());
       if (dropped_pct > 0.95) {
         TF2_ROS_MESSAGEFILTER_WARN(
           "Dropped %.2f%% of messages so far. Please turn the "
@@ -718,8 +713,6 @@ private:
   typedef std::list<MessageInfo> L_MessageInfo;
   L_MessageInfo messages_;
 
-  ///< The number of messages in the list.  Used because \<container\>.size() may have linear cost
-  uint64_t message_count_;
   ///< The mutex used for locking message list operations
   std::mutex messages_mutex_;
   uint64_t expected_success_count_;
