@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_) (`#332 <https://github.com/ros2/geometry2/issues/332>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.13.5 (2020-08-05)
 -------------------
 * Fix test_static_publisher (`#284 <https://github.com/ros2/geometry2/issues/284>`_) (`#287 <https://github.com/ros2/geometry2/issues/287>`_)

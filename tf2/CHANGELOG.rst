@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [Foxy backport] Add PoseWithCovarianceStamped transform support (`#336 <https://github.com/ros2/geometry2/issues/336>`_)
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_) (`#332 <https://github.com/ros2/geometry2/issues/332>`_)
+* Contributors: Alejandro Hernández Cordero, Nikolai Morin
+
 0.13.5 (2020-08-05)
 -------------------
 

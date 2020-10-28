@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_) (`#332 <https://github.com/ros2/geometry2/issues/332>`_)
+* Clear callbacks_to_remove variable after removing (`#314 <https://github.com/ros2/geometry2/issues/314>`_)
+* Add pytest.ini to tf2_ros
+* Contributors: Alejandro Hernández Cordero, Jacob Perron, Matthijs den Toom
+
 0.13.5 (2020-08-05)
 -------------------
 * Make static_transform_broadcaster consistent with its command line description (`#294 <https://github.com/ros2/geometry2/issues/294>`_) (`#296 <https://github.com/ros2/geometry2/issues/296>`_)

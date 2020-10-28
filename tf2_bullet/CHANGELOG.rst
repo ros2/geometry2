@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_) (`#332 <https://github.com/ros2/geometry2/issues/332>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.13.5 (2020-08-05)
 -------------------
 
