@@ -30,5 +30,6 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <doxygen_inputs>include docs/mainpage.dox</doxygen_inputs>
   </export>
 </package>
