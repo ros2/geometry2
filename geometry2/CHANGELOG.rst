@@ -2,8 +2,8 @@
 Changelog for package geometry2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.0 (2020-11-02)
+-------------------
 * Port eigen_kdl.h/cpp to ROS2 (`#311 <https://github.com/ros2/geometry2/issues/311>`_)
 * Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
 * Contributors: Chris Lalancette, Jafar Abdi

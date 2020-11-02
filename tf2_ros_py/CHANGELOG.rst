@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.0 (2020-11-02)
+-------------------
 * Update rclpy.Rate TODO with url to issue (`#324 <https://github.com/ros2/geometry2/issues/324>`_)
 * Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
 * Contributors: Chris Lalancette, surfertas

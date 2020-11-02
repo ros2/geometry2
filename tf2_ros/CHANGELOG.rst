@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.0 (2020-11-02)
+-------------------
 * Remove usage of deprecated rclcpp::Duration constructor (`#340 <https://github.com/ros2/geometry2/issues/340>`_)
 * Remove messages_count member from tf2_ros::MessageFilter. (`#335 <https://github.com/ros2/geometry2/issues/335>`_)
 * Style fixup in tf2_ros. (`#325 <https://github.com/ros2/geometry2/issues/325>`_)
