@@ -90,7 +90,7 @@ inline
 rclcpp::Duration
 to_rclcpp(const tf2::Duration & duration)
 {
-  return rclcpp::Duration(std::chrono::nanoseconds(duration).count());
+  return rclcpp::Duration(std::chrono::nanoseconds(duration));
 }
 
 geometry_msgs::msg::TransformStamped

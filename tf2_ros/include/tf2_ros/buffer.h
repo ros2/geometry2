@@ -98,7 +98,8 @@ public:
   geometry_msgs::msg::TransformStamped
   lookupTransform(
     const std::string & target_frame, const std::string & source_frame,
-    const rclcpp::Time & time, const rclcpp::Duration timeout = rclcpp::Duration(0)) const
+    const rclcpp::Time & time,
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const
   {
     return lookupTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout));
   }
@@ -132,7 +133,8 @@ public:
   lookupTransform(
     const std::string & target_frame, const rclcpp::Time & target_time,
     const std::string & source_frame, const rclcpp::Time & source_time,
-    const std::string & fixed_frame, const rclcpp::Duration timeout = rclcpp::Duration(0)) const
+    const std::string & fixed_frame,
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const
   {
     return lookupTransform(
       target_frame, fromRclcpp(target_time),
@@ -163,7 +165,8 @@ public:
   bool
   canTransform(
     const std::string & target_frame, const std::string & source_frame,
-    const rclcpp::Time & time, const rclcpp::Duration timeout = rclcpp::Duration(0),
+    const rclcpp::Time & time,
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
     std::string * errstr = NULL) const
   {
     return canTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr);
@@ -198,7 +201,8 @@ public:
   canTransform(
     const std::string & target_frame, const rclcpp::Time & target_time,
     const std::string & source_frame, const rclcpp::Time & source_time,
-    const std::string & fixed_frame, const rclcpp::Duration timeout = rclcpp::Duration(0),
+    const std::string & fixed_frame,
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
     std::string * errstr = NULL) const
   {
     return canTransform(
