@@ -2,6 +2,11 @@
 Changelog for package examples_tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
+* Contributors: Chris Lalancette
+
 0.14.1 (2020-09-21)
 -------------------
 

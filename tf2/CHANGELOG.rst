@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
+* Contributors: Chris Lalancette
+
 0.14.1 (2020-09-21)
 -------------------
 * Active usual compiler warnings in tf2 (`#322 <https://github.com/ros2/geometry2/issues/322>`_)

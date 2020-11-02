@@ -2,6 +2,12 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update rclpy.Rate TODO with url to issue (`#324 <https://github.com/ros2/geometry2/issues/324>`_)
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
+* Contributors: Chris Lalancette, surfertas
+
 0.14.1 (2020-09-21)
 -------------------
 * Add deprecation warnings to lookup_transform to handle the passing of the incorrect Time object. (`#319 <https://github.com/ros2/geometry2/issues/319>`_)
