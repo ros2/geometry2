@@ -44,9 +44,12 @@
 #define ROS_INFO printf
 #define ROS_WARN printf
 
-
 namespace tf2_ros
 {
+
+// Added to backport: https://github.com/ros2/geometry2/pull/281
+std::mutex g_object_map_to_cb_handle_mutex;
+std::map<void*, std::unordered_map<TimerHandle, tf2::TransformableCallbackHandle>> g_object_map_to_cb_handle;
 
 Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
   BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
@@ -74,6 +77,18 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
   //   ros::NodeHandle n("~");
   //   frames_server_ = n.advertiseService("tf2_frames", &Buffer::getFrames, this);
   // }
+  {
+    std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
+    // Add a new default constructed callback function.
+    g_object_map_to_cb_handle[this];
+  }
+}
+
+Buffer::~Buffer()
+{
+  std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
+  // Add a new default constructed callback function.
+  g_object_map_to_cb_handle.erase(this);
 }
 
 inline
@@ -217,8 +232,12 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
             // The request handle was found, so a timeout has not occurred
             auto timer_handle = it->first;
             this->timer_interface_->remove(timer_handle);
-            this->timer_to_callback_map_.erase(timer_handle);
             this->timer_to_request_map_.erase(timer_handle);
+            {
+              std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
+              // Add a new default constructed callback function.
+              g_object_map_to_cb_handle[this].erase(timer_handle);
+            }
             timeout_occurred = false;
             break;
           }
@@ -261,7 +280,10 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
 
     // Save association between timer and request/callback handle
     timer_to_request_map_[timer_handle] = handle;
-    timer_to_callback_map_[timer_handle] = cb_handle;
+    {
+      std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
+      g_object_map_to_cb_handle[this][timer_handle] = cb_handle;
+    }
   }
   return future;
 }
@@ -276,14 +298,18 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
   tf2::TransformableCallbackHandle callback_handle = 0u;
   {
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
-    auto timer_and_callback_it = timer_to_callback_map_.find(timer_handle);
-    timer_is_valid = (timer_to_callback_map_.end() != timer_and_callback_it);
+    {
+      std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
+      auto timer_and_callback_it = g_object_map_to_cb_handle[this].find(timer_handle);
+      timer_is_valid = (g_object_map_to_cb_handle[this].end() != timer_and_callback_it);
 
-    if (timer_is_valid) {
-      callback_handle = timer_and_callback_it->second;
+      if (timer_is_valid) {
+        callback_handle = timer_and_callback_it->second;
+      }
+
+      g_object_map_to_cb_handle[this].erase(timer_handle);
     }
     timer_to_request_map_.erase(timer_handle);
-    timer_to_callback_map_.erase(timer_handle);
     timer_interface_->remove(timer_handle);
   }
 
