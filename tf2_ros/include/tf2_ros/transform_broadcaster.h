@@ -68,11 +68,9 @@ public:
 
   /** \brief Send a TransformStamped message
    *
-   * The transform \f$^hT_c\f$ added is from `child_frame_id` \f$c\f$ to
-   * `header.frame_id` \f$h\f$. That is, position in `child_frame_id`
-   * \f$^c\mathbf{p} \in \mathbb{R}^3\f$ can be transformed to position in
-   * `header.frame_id` \f$^h\mathbf{p} \in \mathbb{R}^3 \f$ such that
-   * \f$^h\mathbf{p} = ^hT_c {}^c\mathbf{p}\f$.
+   * The transform ʰTₐ added is from `child_frame_id`, `a` to `header.frame_id`,
+   * `h`. That is, position in `child_frame_id` ᵃp can be transformed to
+   * position in `header.frame_id` ʰp such that ʰp = ʰTₐ ᵃp .
    *
    */
   TF2_ROS_PUBLIC
@@ -80,11 +78,9 @@ public:
 
   /** \brief Send a vector of TransformStamped messages
    *
-   * The transforms \f$^hT_c\f$ added are from `child_frame_id` \f$c\f$ to
-   * `header.frame_id` \f$h\f$. That is, position in `child_frame_id`
-   * \f$^c\mathbf{p} \in \mathbb{R}^3\f$ can be transformed to position in
-   * `header.frame_id` \f$^h\mathbf{p} \in \mathbb{R}^3 \f$ such that
-   * \f$^h\mathbf{p} = ^hT_c {}^c\mathbf{p}\f$.
+   * The transforms ʰTₐ added are from `child_frame_id`, `a` to `header.frame_id`,
+   * `h`. That is, position in `child_frame_id` ᵃp can be transformed to
+   * position in `header.frame_id` ʰp such that ʰp = ʰTₐ ᵃp .
    */
   TF2_ROS_PUBLIC
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
