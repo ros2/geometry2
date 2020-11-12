@@ -67,12 +67,25 @@ public:
   }
 
   /** \brief Send a TransformStamped message
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
+   *
+   * The transform \f$^hT_c\f$ added is from `child_frame_id` \f$c\f$ to
+   * `header.frame_id` \f$h\f$. That is, position in `child_frame_id`
+   * \f$^c\mathbf{p} \in \mathbb{R}^3\f$ can be transformed to position in
+   * `header.frame_id` \f$^h\mathbf{p} \in \mathbb{R}^3 \f$ such that
+   * \f$^h\mathbf{p} = ^hT_c {}^c\mathbf{p}\f$.
+   *
+   */
   TF2_ROS_PUBLIC
   void sendTransform(const geometry_msgs::msg::TransformStamped & transform);
 
   /** \brief Send a vector of TransformStamped messages
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
+   *
+   * The transforms \f$^hT_c\f$ added are from `child_frame_id` \f$c\f$ to
+   * `header.frame_id` \f$h\f$. That is, position in `child_frame_id`
+   * \f$^c\mathbf{p} \in \mathbb{R}^3\f$ can be transformed to position in
+   * `header.frame_id` \f$^h\mathbf{p} \in \mathbb{R}^3 \f$ such that
+   * \f$^h\mathbf{p} = ^hT_c {}^c\mathbf{p}\f$.
+   */
   TF2_ROS_PUBLIC
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
