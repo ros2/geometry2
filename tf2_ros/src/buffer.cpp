@@ -34,9 +34,11 @@
 
 #include <exception>
 #include <limits>
+#include <map>
 #include <mutex>
 #include <sstream>
 #include <thread>
+#include <unordered_map>
 
 //TODO(tfoote replace these terrible macros)
 #define ROS_ERROR printf
@@ -48,8 +50,23 @@ namespace tf2_ros
 {
 
 // Added to backport: https://github.com/ros2/geometry2/pull/281
-std::mutex g_object_map_to_cb_handle_mutex;
-std::map<void*, std::unordered_map<TimerHandle, tf2::TransformableCallbackHandle>> g_object_map_to_cb_handle;
+static std::mutex g_object_map_to_cb_handle_mutex;
+static std::map<Buffer*, std::unordered_map<TimerHandle, tf2::TransformableCallbackHandle>> g_object_map_to_cb_handle;
+
+void deleteTransformCallbackHandle(Buffer *class_ptr, const TimerHandle &timer_handle)
+{
+  if (g_object_map_to_cb_handle.find(class_ptr) == g_object_map_to_cb_handle.end())
+  {
+    // Return if the object map cb handle is already removed
+    return;
+  }
+
+  g_object_map_to_cb_handle.at(class_ptr).erase(timer_handle);
+  if (g_object_map_to_cb_handle.at(class_ptr).size() == 0)
+  {
+    g_object_map_to_cb_handle.erase(class_ptr);
+  }
+}
 
 Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
   BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
@@ -77,18 +94,6 @@ Buffer::Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time) :
   //   ros::NodeHandle n("~");
   //   frames_server_ = n.advertiseService("tf2_frames", &Buffer::getFrames, this);
   // }
-  {
-    std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-    // Add a new default constructed callback function.
-    g_object_map_to_cb_handle[this];
-  }
-}
-
-Buffer::~Buffer()
-{
-  std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-  // Add a new default constructed callback function.
-  g_object_map_to_cb_handle.erase(this);
 }
 
 inline
@@ -235,8 +240,8 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
             this->timer_to_request_map_.erase(timer_handle);
             {
               std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-              // Add a new default constructed callback function.
-              g_object_map_to_cb_handle[this].erase(timer_handle);
+              // Remove the  callback function.
+              deleteTransformCallbackHandle(this, timer_handle);
             }
             timeout_occurred = false;
             break;
@@ -282,7 +287,11 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
     timer_to_request_map_[timer_handle] = handle;
     {
       std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-      g_object_map_to_cb_handle[this][timer_handle] = cb_handle;
+      if (g_object_map_to_cb_handle.find(this) == g_object_map_to_cb_handle.end())
+      {
+        g_object_map_to_cb_handle[this];
+      }
+      g_object_map_to_cb_handle.at(this)[timer_handle] = cb_handle;
     }
   }
   return future;
@@ -300,14 +309,18 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
     {
       std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-      auto timer_and_callback_it = g_object_map_to_cb_handle[this].find(timer_handle);
-      timer_is_valid = (g_object_map_to_cb_handle[this].end() != timer_and_callback_it);
+      if (g_object_map_to_cb_handle.find(this) != g_object_map_to_cb_handle.end())
+      {
+        // Only if the map to callback handle isn't alreade removed.
+        auto timer_and_callback_it = g_object_map_to_cb_handle.at(this).find(timer_handle);
+        timer_is_valid = (g_object_map_to_cb_handle.at(this).end() != timer_and_callback_it);
 
-      if (timer_is_valid) {
-        callback_handle = timer_and_callback_it->second;
+        if (timer_is_valid) {
+          callback_handle = timer_and_callback_it->second;
+        }
+
+        deleteTransformCallbackHandle(this, timer_handle);
       }
-
-      g_object_map_to_cb_handle[this].erase(timer_handle);
     }
     timer_to_request_map_.erase(timer_handle);
     timer_interface_->remove(timer_handle);

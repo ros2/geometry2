@@ -69,7 +69,6 @@ namespace tf2_ros
      * @return 
      */
     TF2_ROS_PUBLIC Buffer(rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME));
-    TF2_ROS_PUBLIC ~Buffer();
 
     /** \brief Get the transform between two frames by frame ID.
      * \param target_frame The frame to which data should be transformed
