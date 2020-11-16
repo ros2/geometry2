@@ -240,7 +240,7 @@ Buffer::waitForTransform(const std::string& target_frame, const std::string& sou
             this->timer_to_request_map_.erase(timer_handle);
             {
               std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
-              // Remove the  callback function.
+              // Remove the callback function.
               deleteTransformCallbackHandle(this, timer_handle);
             }
             timeout_occurred = false;
@@ -311,7 +311,7 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
       std::lock_guard<std::mutex> lock(g_object_map_to_cb_handle_mutex);
       if (g_object_map_to_cb_handle.find(this) != g_object_map_to_cb_handle.end())
       {
-        // Only if the map to callback handle isn't alreade removed.
+        // Only if the map to callback handle isn't already removed.
         auto timer_and_callback_it = g_object_map_to_cb_handle.at(this).find(timer_handle);
         timer_is_valid = (g_object_map_to_cb_handle.at(this).end() != timer_and_callback_it);
 
