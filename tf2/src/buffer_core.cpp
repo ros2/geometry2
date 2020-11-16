@@ -1491,6 +1491,7 @@ void BufferCore::testTransformableRequests()
         {
           const TransformableCallback& cb = it->second;
           cb(req.request_handle, lookupFrameString(req.target_id), lookupFrameString(req.source_id), req.time, result);
+          transformable_callbacks_.erase(req.cb_handle);
         }
       }
 
