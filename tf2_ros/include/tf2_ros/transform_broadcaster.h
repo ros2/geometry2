@@ -67,12 +67,21 @@ public:
   }
 
   /** \brief Send a TransformStamped message
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
+   *
+   * The transform ʰTₐ added is from `child_frame_id`, `a` to `header.frame_id`,
+   * `h`. That is, position in `child_frame_id` ᵃp can be transformed to
+   * position in `header.frame_id` ʰp such that ʰp = ʰTₐ ᵃp .
+   *
+   */
   TF2_ROS_PUBLIC
   void sendTransform(const geometry_msgs::msg::TransformStamped & transform);
 
   /** \brief Send a vector of TransformStamped messages
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
+   *
+   * The transforms ʰTₐ added are from `child_frame_id`, `a` to `header.frame_id`,
+   * `h`. That is, position in `child_frame_id` ᵃp can be transformed to
+   * position in `header.frame_id` ʰp such that ʰp = ʰTₐ ᵃp .
+   */
   TF2_ROS_PUBLIC
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
