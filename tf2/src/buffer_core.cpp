@@ -408,13 +408,13 @@ tf2::TF2Error BufferCore::walkToTopParent(
   // Short circuit if zero length transform to allow lookups on non existant links
   if (source_id == target_id) {
     f.finalize(Identity, time);
-    return tf2::TF2Error::NO_ERROR;
+    return tf2::TF2Error::TF2_NO_ERROR;
   }
 
   // If getting the latest get the latest common time
   if (time == TimePointZero) {
     tf2::TF2Error retval = getLatestCommonTime(target_id, source_id, time, error_string);
-    if (retval != tf2::TF2Error::NO_ERROR) {
+    if (retval != tf2::TF2Error::TF2_NO_ERROR) {
       return retval;
     }
   }
@@ -450,7 +450,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
     // Early out... target frame is a direct parent of the source frame
     if (frame == target_id) {
       f.finalize(TargetParentOfSource, time);
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::TF2_NO_ERROR;
     }
 
     f.accum(true);
@@ -466,7 +466,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
           allFramesAsStringNoLock() << std::endl;
         *error_string = ss.str();
       }
-      return tf2::TF2Error::LOOKUP_ERROR;
+      return tf2::TF2Error::TF2_LOOKUP_ERROR;
     }
   }
 
@@ -494,7 +494,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
         *error_string = ss.str();
       }
 
-      return tf2::TF2Error::EXTRAPOLATION_ERROR;
+      return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
     }
 
     // Early out... source frame is a direct parent of the target frame
@@ -503,7 +503,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       if (frame_chain) {
         frame_chain->swap(reverse_frame_chain);
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::TF2_NO_ERROR;
     }
 
     f.accum(false);
@@ -518,7 +518,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
           allFramesAsStringNoLock() << std::endl;
         *error_string = ss.str();
       }
-      return tf2::TF2Error::LOOKUP_ERROR;
+      return tf2::TF2Error::TF2_LOOKUP_ERROR;
     }
   }
 
@@ -530,10 +530,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
           lookupFrameString(source_id) << "] to frame [" << lookupFrameString(target_id) << "]";
         *error_string = ss.str();
       }
-      return tf2::TF2Error::EXTRAPOLATION_ERROR;
+      return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
     }
     createConnectivityErrorString(source_id, target_id, error_string);
-    return tf2::TF2Error::CONNECTIVITY_ERROR;
+    return tf2::TF2Error::TF2_CONNECTIVITY_ERROR;
   }
 
   f.finalize(FullPath, time);
@@ -562,7 +562,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
     }
   }
 
-  return tf2::TF2Error::NO_ERROR;
+  return tf2::TF2Error::TF2_NO_ERROR;
 }
 
 struct TransformAccum
@@ -730,13 +730,13 @@ void BufferCore::lookupTransformImpl(
   std::string error_string;
   TransformAccum accum;
   tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string);
-  if (retval != tf2::TF2Error::NO_ERROR) {
+  if (retval != tf2::TF2Error::TF2_NO_ERROR) {
     switch (retval) {
-      case tf2::TF2Error::CONNECTIVITY_ERROR:
+      case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
         throw ConnectivityException(error_string);
-      case tf2::TF2Error::EXTRAPOLATION_ERROR:
+      case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
         throw ExtrapolationException(error_string);
-      case tf2::TF2Error::LOOKUP_ERROR:
+      case tf2::TF2Error::TF2_LOOKUP_ERROR:
         throw LookupException(error_string);
       default:
         CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
@@ -806,7 +806,7 @@ bool BufferCore::canTransformNoLock(
   }
 
   CanTransformAccum accum;
-  if (walkToTopParent(accum, time, target_id, source_id, error_msg) == tf2::TF2Error::NO_ERROR) {
+  if (walkToTopParent(accum, time, target_id, source_id, error_msg) == tf2::TF2Error::TF2_NO_ERROR) {
     return true;
   }
 
@@ -988,7 +988,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
   TimePoint & time, std::string * error_string) const
 {
   // Error if one of the frames don't exist.
-  if (source_id == 0 || target_id == 0) {return tf2::TF2Error::LOOKUP_ERROR;}
+  if (source_id == 0 || target_id == 0) {return tf2::TF2Error::TF2_LOOKUP_ERROR;}
 
   if (source_id == target_id) {
     TimeCacheInterfacePtr cache = getFrame(source_id);
@@ -998,7 +998,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
     } else {
       time = TimePointZero;
     }
-    return tf2::TF2Error::NO_ERROR;
+    return tf2::TF2Error::TF2_NO_ERROR;
   }
 
   std::vector<P_TimeAndFrameID> lct_cache;
@@ -1037,7 +1037,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
       if (time == TimePoint::max()) {
         time = TimePointZero;
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::TF2_NO_ERROR;
     }
 
     ++depth;
@@ -1048,7 +1048,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
           allFramesAsStringNoLock() << std::endl;
         *error_string = ss.str();
       }
-      return tf2::TF2Error::LOOKUP_ERROR;
+      return tf2::TF2Error::TF2_LOOKUP_ERROR;
     }
   }
 
@@ -1091,7 +1091,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
       if (time == TimePoint::max()) {
         time = TimePointZero;
       }
-      return tf2::TF2Error::NO_ERROR;
+      return tf2::TF2Error::TF2_NO_ERROR;
     }
 
     ++depth;
@@ -1102,13 +1102,13 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
           allFramesAsStringNoLock() << std::endl;
         *error_string = ss.str();
       }
-      return tf2::TF2Error::LOOKUP_ERROR;
+      return tf2::TF2Error::TF2_LOOKUP_ERROR;
     }
   }
 
   if (common_parent == 0) {
     createConnectivityErrorString(source_id, target_id, error_string);
-    return tf2::TF2Error::CONNECTIVITY_ERROR;
+    return tf2::TF2Error::TF2_CONNECTIVITY_ERROR;
   }
 
   // Loop through the source -> root list until we hit the common parent
@@ -1131,7 +1131,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
   }
 
   time = common_time;
-  return tf2::TF2Error::NO_ERROR;
+  return tf2::TF2Error::TF2_NO_ERROR;
 }
 
 std::string BufferCore::allFramesAsYAML(TimePoint current_time) const
@@ -1525,13 +1525,13 @@ void BufferCore::_chainAsVector(
   tf2::TF2Error retval = walkToTopParent(
     accum, source_time, fixed_id, source_id, &error_string,
     &source_frame_chain);
-  if (retval != tf2::TF2Error::NO_ERROR) {
+  if (retval != tf2::TF2Error::TF2_NO_ERROR) {
     switch (retval) {
-      case tf2::TF2Error::CONNECTIVITY_ERROR:
+      case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
         throw ConnectivityException(error_string);
-      case tf2::TF2Error::EXTRAPOLATION_ERROR:
+      case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
         throw ExtrapolationException(error_string);
-      case tf2::TF2Error::LOOKUP_ERROR:
+      case tf2::TF2Error::TF2_LOOKUP_ERROR:
         throw LookupException(error_string);
       default:
         CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
@@ -1545,13 +1545,13 @@ void BufferCore::_chainAsVector(
       accum, target_time, target_id, fixed_id, &error_string,
       &target_frame_chain);
 
-    if (retval != tf2::TF2Error::NO_ERROR) {
+    if (retval != tf2::TF2Error::TF2_NO_ERROR) {
       switch (retval) {
-        case tf2::TF2Error::CONNECTIVITY_ERROR:
+        case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
           throw ConnectivityException(error_string);
-        case tf2::TF2Error::EXTRAPOLATION_ERROR:
+        case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
           throw ExtrapolationException(error_string);
-        case tf2::TF2Error::LOOKUP_ERROR:
+        case tf2::TF2Error::TF2_LOOKUP_ERROR:
           throw LookupException(error_string);
         default:
           CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
