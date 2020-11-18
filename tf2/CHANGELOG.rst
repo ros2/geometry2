@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [Foxy backport] Fixed memory leak in Buffer::waitForTransform (`#281 <https://github.com/ros2/geometry2/issues/281>`_) (`#330 <https://github.com/ros2/geometry2/issues/330>`_)
+* Contributors: Matthijs den Toom
+
 0.13.6 (2020-10-28)
 -------------------
 * [Foxy backport] Add PoseWithCovarianceStamped transform support (`#336 <https://github.com/ros2/geometry2/issues/336>`_)
