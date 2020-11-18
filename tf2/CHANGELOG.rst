@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.7 (2020-11-18)
+-------------------
 * [Foxy backport] Fixed memory leak in Buffer::waitForTransform (`#281 <https://github.com/ros2/geometry2/issues/281>`_) (`#330 <https://github.com/ros2/geometry2/issues/330>`_)
 * Contributors: Matthijs den Toom
 
