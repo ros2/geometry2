@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 # Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +12,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,27 +27,31 @@
 
 # author: Wim Meeussen
 
-import rclpy
-import tf2_py as tf2
-import yaml
 import subprocess
-from tf2_msgs.srv import FrameGraph
-import tf2_ros
+import sys
 import time
+
+import yaml
+
+import rclpy
+from tf2_msgs.srv import FrameGraph
+import tf2_py as tf2
+import tf2_ros
+
 
 def main(args=None):
     rclpy.init(args=args)
 
     node = rclpy.create_node('view_frames')
 
-    buffer = tf2_ros.Buffer(node=node)
-    listener = tf2_ros.TransformListener(buffer, node, spin_thread=False)
+    buf = tf2_ros.Buffer(node=node)
+    listener = tf2_ros.TransformListener(buf, node, spin_thread=False)
 
     executor = rclpy.executors.SingleThreadedExecutor()
     executor.add_node(node)
 
     # listen to tf for 5 seconds
-    node.get_logger().info('Listening to tf data during 5 seconds...')
+    node.get_logger().info('Listening to tf data for 5 seconds...')
     start_time = time.time()
     while (time.time() - start_time) < 5.0:
         rclpy.spin_once(node, timeout_sec=0.1)
@@ -63,10 +66,10 @@ def main(args=None):
     future = cli.call_async(req)
     rclpy.spin_until_future_complete(node, future)
 
-    raised = True
+    ret = 1
     try:
         result = future.result()
-        raised = False
+        ret = 0
     except Exception as e:
         node.get_logger().error('Service call failed %r' % (e,))
     else:
@@ -80,20 +83,20 @@ def main(args=None):
         cli.destroy()
         node.destroy_node()
         rclpy.shutdown()
-        return not raised
+        return ret
 
 def generate_dot(data, recorded_time):
     if len(data) == 0:
         return 'digraph G { "No tf data received" }'
 
     dot = 'digraph G {\n'
-    for el in data: 
+    for el in data:
         map = data[el]
         dot += '"'+map['parent']+'" -> "'+str(el)+'"'
         dot += '[label=" '
         dot += 'Broadcaster: '+map['broadcaster']+'\\n'
         dot += 'Average rate: '+str(map['rate'])+'\\n'
-        dot += 'Buffer length: '+str(map['buffer_length'])+'\\n' 
+        dot += 'Buffer length: '+str(map['buffer_length'])+'\\n'
         dot += 'Most recent transform: '+str(map['most_recent_transform'])+'\\n'
         dot += 'Oldest transform: '+str(map['oldest_transform'])+'\\n'
         dot += '"];\n'
@@ -107,4 +110,4 @@ def generate_dot(data, recorded_time):
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
