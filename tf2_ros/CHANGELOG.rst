@@ -2,6 +2,15 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.12.6 (2020-12-04)
+-------------------
+* Add missing visibility header include (`#246 <https://github.com/ros2/geometry2/issues/246>`_) (`#352 <https://github.com/ros2/geometry2/issues/352>`_)
+* Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_) (`#331 <https://github.com/ros2/geometry2/issues/331>`_)
+* Moved unique_lock of messages_mutex\_ to guarantee pointer (`#279 <https://github.com/ros2/geometry2/issues/279>`_) (`#282 <https://github.com/ros2/geometry2/issues/282>`_)
+* Porting more tests to tf2_ros (`#202 <https://github.com/ros2/geometry2/issues/202>`_) (`#225 <https://github.com/ros2/geometry2/issues/225>`_)
+* message filter fix (`#216 <https://github.com/ros2/geometry2/issues/216>`_) (`#221 <https://github.com/ros2/geometry2/issues/221>`_)
+* Contributors: Alejandro Hernández Cordero, Jacob Perron, Martin Ganeff
+
 0.12.5 (2020-01-17)
 -------------------
 * Adding support for view_frame (`#192 <https://github.com/ros2/geometry2/issues/192>`_)
