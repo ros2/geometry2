@@ -13,19 +13,15 @@
   <author>Wim Meeussen</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <build_depend>tf2_msgs</build_depend>
-  <build_depend>tf2</build_depend>
-  <build_depend>tf2_ros</build_depend>
-
+  <exec_depend>graphviz</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rclpy</exec_depend>
   <exec_depend>tf2_msgs</exec_depend>
-  <exec_depend>tf2</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_py</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
 
   <export>
-    <build_type>ament_cmake</build_type>
+    <build_type>ament_python</build_type>
   </export>
 
 </package>
