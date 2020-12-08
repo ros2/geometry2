@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.1 (2020-12-08)
+-------------------
 * Clarify the role of child_frame_id and header.frame_id in the documentation. (`#345 <https://github.com/ros2/geometry2/issues/345>`_)
 * Contributors: Vikas Dhiman
 
