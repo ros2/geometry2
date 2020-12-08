@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.8 (2020-12-08)
+-------------------
+* Generate callbacks after updating message\_ (`#274 <https://github.com/ros2/geometry2/issues/274>`_) (`#353 <https://github.com/ros2/geometry2/issues/353>`_)
+* Contributors: ymd-stella
+
 0.13.7 (2020-11-18)
 -------------------
 

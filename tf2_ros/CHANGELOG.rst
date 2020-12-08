@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.8 (2020-12-08)
+-------------------
+* Generate callbacks after updating message\_ (`#274 <https://github.com/ros2/geometry2/issues/274>`_) (`#353 <https://github.com/ros2/geometry2/issues/353>`_)
+  * Generate callbacks after updating message\_
+  * Add test for multithread TransformListener to test_message_filter
+  Co-authored-by: ymd-stella <7959916+ymd-stella@users.noreply.github.com>
+* Contributors: Jacob Perron
+
 0.13.7 (2020-11-18)
 -------------------
 * [Foxy backport] Fixed memory leak in Buffer::waitForTransform (`#281 <https://github.com/ros2/geometry2/issues/281>`_) (`#330 <https://github.com/ros2/geometry2/issues/330>`_)
