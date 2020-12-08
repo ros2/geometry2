@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Clarify the role of child_frame_id and header.frame_id in the documentation. (`#345 <https://github.com/ros2/geometry2/issues/345>`_)
+* Contributors: Vikas Dhiman
+
 0.15.0 (2020-11-02)
 -------------------
 * Remove usage of deprecated rclcpp::Duration constructor (`#340 <https://github.com/ros2/geometry2/issues/340>`_)

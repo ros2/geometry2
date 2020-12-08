@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Cleanup tf2_tools to be more modern. (`#351 <https://github.com/ros2/geometry2/issues/351>`_)
+* Contributors: Chris Lalancette
+
 0.15.0 (2020-11-02)
 -------------------
 * Update maintainers of the ros2/geometry2 fork. (`#328 <https://github.com/ros2/geometry2/issues/328>`_)
