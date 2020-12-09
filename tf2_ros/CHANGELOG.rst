@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.9 (2020-12-09)
+-------------------
+
 0.13.8 (2020-12-08)
 -------------------
 * Generate callbacks after updating message\_ (`#274 <https://github.com/ros2/geometry2/issues/274>`_) (`#353 <https://github.com/ros2/geometry2/issues/353>`_)
