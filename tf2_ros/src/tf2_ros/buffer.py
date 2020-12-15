@@ -58,7 +58,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param cache_time: (Optional) How long to retain past information in BufferCore.
         :param node: (Optional) If node create a tf2_frames service, It responses all frames as a yaml
         """
-        if cache_time != None:
+        if cache_time is not None:
             tf2.BufferCore.__init__(self, cache_time)
         else:
             tf2.BufferCore.__init__(self)
