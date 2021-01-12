@@ -521,10 +521,12 @@ private:
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
 
     bool transform_available = true;
+    FilterFailureReason error = filter_failure_reasons::Unknown;
     try {
       future.get();
     } catch (...) {
       transform_available = false;
+      error = filter_failure_reasons::OutTheBack;
     }
 
     if (transform_available) {
@@ -566,7 +568,7 @@ private:
       TF2_ROS_MESSAGEFILTER_DEBUG(
         "Discarding message in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), messages_.size());
-      messageDropped(saved_event, filter_failure_reasons::NoTransformFound);
+      messageDropped(saved_event, error);
     }
   }
 
