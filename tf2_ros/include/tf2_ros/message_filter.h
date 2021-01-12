@@ -106,7 +106,7 @@ static std::string get_filter_failure_reason_string(
     case filter_failure_reasons::EmptyFrameID:
       return "the frame id of the message is empty";
     case filter_failure_reasons::NoTransformFound:
-      return "did not found a valid transform, this usually happen at startup ...";
+      return "did not find a valid transform, this usually happens at startup ...";
     case filter_failure_reasons::QueueFull:
       return "discarding message because the queue is full";
     case filter_failure_reasons::Unknown:  // fallthrough
