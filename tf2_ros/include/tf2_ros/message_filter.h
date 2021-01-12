@@ -80,8 +80,7 @@ enum FilterFailureReason
   /// The message buffer overflowed, and this message was pushed off the back of the queue, but the
   // reason it was unable to be transformed is unknown.
   Unknown,
-  /// The timestamp on the message is more than the cache length earlier than the newest data in
-  // the transform cache
+  /// The timestamp on the message is earlier than all the data in the transform cache
   OutTheBack,
   /// The frame_id on the message is empty
   EmptyFrameID,
@@ -101,8 +100,7 @@ static std::string get_filter_failure_reason_string(
   switch (reason) {
     case filter_failure_reasons::OutTheBack:
       return
-        "the timestamp on the message is more than the cache length earlier than the newest data"
-        "in the transform cache";
+        "the timestamp on the message is earlier than all the data in the transform cache";
     case filter_failure_reasons::EmptyFrameID:
       return "the frame id of the message is empty";
     case filter_failure_reasons::NoTransformFound:
