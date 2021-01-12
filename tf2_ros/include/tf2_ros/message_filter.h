@@ -85,6 +85,10 @@ enum FilterFailureReason
   OutTheBack,
   /// The frame_id on the message is empty
   EmptyFrameID,
+  /// No transform found
+  NoTransformFound,
+  /// Queue size full
+  QueueFull,
   /// Max enum value for iteration, keep it at the end of the enum
   FilterFailureReasonCount,
 };
@@ -95,14 +99,19 @@ static std::string get_filter_failure_reason_string(
   filter_failure_reasons::FilterFailureReason reason)
 {
   switch (reason) {
-    case filter_failure_reasons::Unknown:
-      return "Unknown";
     case filter_failure_reasons::OutTheBack:
-      return "OutTheBack";
+      return
+        "the timestamp on the message is more than the cache length earlier than the newest data"
+        "in the transform cache";
     case filter_failure_reasons::EmptyFrameID:
-      return "EmptyFrameID";
+      return "the frame id of the message is empty";
+    case filter_failure_reasons::NoTransformFound:
+      return "did not found a valid transform, this usually happen at startup ...";
+    case filter_failure_reasons::QueueFull:
+      return "discarding message because the queue is full";
+    case filter_failure_reasons::Unknown:  // fallthrough
     default:
-      return "Invalid Failure Reason";
+      return "unknown";
   }
 }
 
@@ -397,7 +406,7 @@ public:
           (mt::FrameId<M>::value(*front.event.getMessage())).c_str(),
           mt::TimeStamp<M>::value(*front.event.getMessage()).seconds());
 
-        messageDropped(front.event, filter_failure_reasons::Unknown);
+        messageDropped(front.event, filter_failure_reasons::QueueFull);
 
         messages_.pop_front();
       }
@@ -557,7 +566,7 @@ private:
       TF2_ROS_MESSAGEFILTER_DEBUG(
         "Discarding message in frame %s at time %.3f, count now %d",
         frame_id.c_str(), stamp.seconds(), messages_.size());
-      messageDropped(saved_event, filter_failure_reasons::Unknown);
+      messageDropped(saved_event, filter_failure_reasons::NoTransformFound);
     }
   }
 
