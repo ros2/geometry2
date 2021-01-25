@@ -38,62 +38,13 @@
 #include <string>
 
 #include "exceptions.h"
-#include "transform_datatypes.h"
+#include "impl/convert.h"
+#include "impl/stamped_traits.h"
+#include "time.h"
 #include "visibility_control.h"
 
 namespace tf2
 {
-namespace impl
-{
-/**
- * \brief Mapping between Datatypes (like \c Vector3d ) and their default ROS Message types.
- *
- * This struct should be specialized for each non-Message datatypes,
- * and it should contain an alias of the Message class with the name \c type .
- * This alias will be used to deduce the return value of tf2::toMsg().
- *
- * \tparam Datatype Non-Message datatype like \c Vector3d
- */
-template <class Datatype, class = void>
-struct defaultMessage
-{
-  // using type = ...;
-};
-
-/**
- * \brief Conversion details between a Message and a non-Message datatype.
- * \tparam Datatype Non-Message datatype like \c Vector3d
- * \tparam Message  The ROS Message class
- *
- * The specializations of this struct should contain two static methods,
- * which convert a ROS Message into the requested datatype and vice versa.
- * They should have the following signature:
- * \code
- * template<>
- * struct defautMessage<Datatype, Message>
- * {
- *   static void toMsg(const Datatype&, Message&);
- *   static void fromMsg(const Message&, Datatype&);
- * }:
- * \endcode
- * Note that the conversion between tf2::Stamped\<Datatype\> and
- * geometry_msgs::...Stamped is done automatically.
- */
-template <class Datatype, class Message, class = void>
-struct ImplDetails
-{
-  // void toMsg(const Datatype&, Message&);
-  // void fromMsg(const Message&, Datatype&);
-};
-
-// Forward declaration for the extraction of timestamps and frame IDs
-template <typename T, int = 0>
-struct DefaultStampedImpl;
-// Forward declaration for the tf2::convert() implementation
-template <bool, bool>
-class Converter;
-
-}  // namespace impl
 
 /**\brief The templated function expected to be able to do a transform
  *
@@ -270,8 +221,5 @@ std::array<double, 36> covarianceNestedToRowMajor(const std::array<std::array<do
   return row_major;
 }
 }  // namespace tf2
-
-#include "impl/convert.h"
-#include "impl/stamped_traits.h"
 
 #endif  // TF2__CONVERT_H_

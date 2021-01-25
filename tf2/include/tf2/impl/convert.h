@@ -31,24 +31,55 @@
 #ifndef TF2__IMPL__CONVERT_H_
 #define TF2__IMPL__CONVERT_H_
 
-#include <builtin_interfaces/msg/time.hpp>
-
-#include "../convert.h"
 #include "../time.h"
-
-namespace builtin_interfaces
-{
-namespace msg
-{
-template <class Alloc>
-class Time_;
-}
-}  // namespace builtin_interfaces
+#include "forward.h"
 
 namespace tf2
 {
 namespace impl
 {
+/**
+ * \brief Mapping between Datatypes (like \c Vector3d ) and their default ROS Message types.
+ *
+ * This struct should be specialized for each non-Message datatypes,
+ * and it should contain an alias of the Message class with the name \c type .
+ * This alias will be used to deduce the return value of tf2::toMsg().
+ *
+ * \tparam Datatype Non-Message datatype like \c Vector3d
+ */
+template <class Datatype, class>
+struct defaultMessage
+{
+  // using type = ...;
+};
+
+/**
+ * \brief Conversion details between a Message and a non-Message datatype.
+ * \tparam Datatype Non-Message datatype like \c Vector3d
+ * \tparam Message  The ROS Message class
+ *
+ * The specializations of this struct should contain two static methods,
+ * which convert a ROS Message into the requested datatype and vice versa.
+ * They should have the following signature:
+ * \code
+ * template<>
+ * struct defautMessage<Datatype, Message>
+ * {
+ *   static void toMsg(const Datatype&, Message&);
+ *   static void fromMsg(const Message&, Datatype&);
+ * }:
+ * \endcode
+ * Note that the conversion between tf2::Stamped\<Datatype\> and
+ * geometry_msgs::...Stamped is done automatically.
+ */
+template <class Datatype, class Message, class>
+struct ImplDetails
+{
+  // void toMsg(const Datatype&, Message&);
+  // void fromMsg(const Message&, Datatype&);
+};
+
+
 /**
  * \brief Mapping of unstamped Messages for stamped Messages
  *
@@ -152,27 +183,6 @@ struct ImplDetails<tf2::Stamped<Datatype>, StampedMessage>
     tf2::fromMsg<>(traits::getMessage(msg), static_cast<Datatype &>(s));
     tf2::fromMsg<>(msg.header.stamp, s.stamp_);
     s.frame_id_ = msg.header.frame_id;
-  }
-};
-
-template <>
-struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
-{
-  static void toMsg(const tf2::TimePoint & t, builtin_interfaces::msg::Time & time_msg)
-  {
-    std::chrono::nanoseconds ns =
-      std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
-    std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
-
-    time_msg.sec = static_cast<int32_t>(s.count());
-    time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  }
-
-  static void fromMsg(const builtin_interfaces::msg::Time & time_msg, tf2::TimePoint & t)
-  {
-    int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-    std::chrono::nanoseconds ns(d);
-    t = tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
   }
 };
 

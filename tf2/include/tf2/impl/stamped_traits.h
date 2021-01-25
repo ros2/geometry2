@@ -34,6 +34,8 @@
 #ifndef TF2_IMPL_STAMPED_TRAITS_H_
 #define TF2_IMPL_STAMPED_TRAITS_H_
 
+#include "forward.h"
+
 // forward declarations
 namespace geometry_msgs
 {
@@ -82,8 +84,6 @@ namespace tf2
 {
 namespace impl
 {
-template <class UnstampedMessage>
-struct unstampedMessageTraits;
 
 template <typename Alloc>
 struct unstampedMessageTraits<geometry_msgs::msg::Point_<Alloc>>
@@ -138,9 +138,6 @@ struct unstampedMessageTraits<geometry_msgs::msg::Vector3_<Alloc>>
 {
   using stampedType = geometry_msgs::msg::Vector3Stamped_<Alloc>;
 };
-
-template <class StampedMessage>
-struct stampedMessageTraits;
 
 template <class StampedMessage, class UnstampedMessage, UnstampedMessage StampedMessage::*member>
 struct defaultStampedMessageTraits
