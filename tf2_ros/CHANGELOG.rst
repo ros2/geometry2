@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.16.0 (2021-01-25)
+-------------------
 * Improve message filters error messages (`#364 <https://github.com/ros2/geometry2/issues/364>`_)
 * Contributors: Ivan Santiago Paunovic
 
