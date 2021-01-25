@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.15.1 (2020-12-08)
 -------------------
 * fix order of find eigen3_cmake_module & find eigen3 (`#344 <https://github.com/ros2/geometry2/issues/344>`_)

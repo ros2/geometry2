@@ -2,6 +2,9 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.15.1 (2020-12-08)
 -------------------
 * Cleanup tf2_tools to be more modern. (`#351 <https://github.com/ros2/geometry2/issues/351>`_)
