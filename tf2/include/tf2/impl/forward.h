@@ -33,6 +33,12 @@
 
 namespace tf2
 {
+namespace impl
+{
+template <class Datatype, class = void>
+struct defaultMessage;
+}
+
 template <typename T>
 class Stamped;
 
@@ -41,6 +47,9 @@ class WithCovarianceStamped;
 
 template <typename A, typename B>
 B & toMsg(const A & a, B & b);
+
+template <typename A, typename B = typename impl::defaultMessage<A>::type>
+B toMsg(const A & a);
 
 template <typename A, typename B>
 void fromMsg(const A & a, B & b);
@@ -55,9 +64,6 @@ struct stampedMessageTraits;
 
 template <class UnstampedMessage>
 struct unstampedMessageTraits;
-
-template <class Datatype, class = void>
-struct defaultMessage;
 
 template <typename T, int = 0>
 struct DefaultStampedImpl;

@@ -216,7 +216,7 @@ template <>
 template <typename A, typename B>
 inline void Converter<false, true>::convert(const A & a, B & b)
 {
-  b = toMsg<>(a);
+  b = toMsg<A, B>(a);
 }
 
 template <>

@@ -111,7 +111,7 @@ std::array<std::array<double, 6>, 6> getCovarianceMatrix(const tf2::WithCovarian
  * \tparam B ROS message Datatype. The default value will be taken from impl::defaultMessage\<A\>::type.
  * \return the conversion as a ROS message
  */
-template <typename A, typename B = typename impl::defaultMessage<A>::type>
+template <typename A, typename B>
 inline B toMsg(const A & a)
 {
   B b;
