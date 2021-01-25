@@ -24,24 +24,26 @@ find_package(Eigen3 REQUIRED)
 
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)
+ament_export_dependencies(tf2)
 
-# TODO enable tests
-#if(BUILD_TESTING)
-#  catkin_add_nosetests(test/test_tf2_sensor_msgs.py)
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_pytest REQUIRED)
 
-#find_package(catkin REQUIRED COMPONENTS
-#  sensor_msgs
-#  rostest
-#  tf2_ros
-#  tf2
-#)
-#include_directories(${EIGEN_INCLUDE_DIRS})
-#add_executable(test_tf2_sensor_msgs_cpp EXCLUDE_FROM_ALL test/test_tf2_sensor_msgs.cpp)
-#target_link_libraries(test_tf2_sensor_msgs_cpp ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-#if(TARGET tests)
-#  add_dependencies(tests test_tf2_sensor_msgs_cpp)
-#endif()
-#add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test.launch)
-#endif()
+  # TODO(ros2/orocos_kinematics_dynamics): reenable when PyKDL is ready to use
+  #ament_add_pytest_test(test_tf2_sensor_msgs_py test/test_tf2_sensor_msgs.py)
+
+  ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
+  if(TARGET test_tf2_sensor_msgs_cpp)
+    target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
+    ament_target_dependencies(test_tf2_sensor_msgs_cpp
+      "Eigen3"
+      "rclcpp"
+      "sensor_msgs"
+      "tf2"
+      "tf2_ros"
+    )
+  endif()
+endif()
 
 ament_auto_package()
