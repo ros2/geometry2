@@ -24,18 +24,17 @@ find_package(geometry_msgs REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
-# TODO (ahcorde): activate when tf2_bullet is merged
-# find_package(tf2_bullet REQUIRED)
+find_package(tf2_bullet REQUIRED)
+find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_kdl REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 ament_find_gtest()
 
-# TODO (ahcorde): activate when tf2_bullet is merged
-# find_package(PkgConfig REQUIRED)
-# pkg_check_modules(bullet REQUIRED bullet)
-# include_directories(include ${bullet_INCLUDE_DIRS})
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(bullet REQUIRED bullet)
+include_directories(include ${bullet_INCLUDE_DIRS})
 
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
@@ -60,14 +59,16 @@ if(TARGET test_message_filter)
   )
 endif()
 
-# TODO (ahcorde): activate when tf2_bullet is merged
-# ament_add_gtest(test_convert test/test_convert.cpp)
-# if(TARGET test_convert)
-#   ament_target_dependencies(test_convert
-#     tf2
-#     tf2_bullet
-#   )
-# endif()
+ament_add_gtest(test_convert test/test_convert.cpp)
+if(TARGET test_convert)
+  ament_target_dependencies(test_convert
+    tf2
+    tf2_bullet
+    tf2_eigen
+    tf2_geometry_msgs
+    tf2_kdl
+  )
+endif()
 
 ament_add_gtest(test_utils test/test_utils.cpp)
 if(TARGET test_utils)

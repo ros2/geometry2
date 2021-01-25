@@ -115,19 +115,19 @@ TEST(tf2Convert, PointVectorDefaultMessagetype)
   // as it can return a Vector3 or a Point for certain datatypes
   {
     // Bullet
-    const tf2::Stamped<btVector3> b1{btVector3{1.0, 3.0, 4.0}, ros::Time(), "my_frame" };
-    const geometry_msgs::PointStamped msg = tf2::toMsg(b1);
+    const tf2::Stamped<btVector3> b1{btVector3{1.0, 3.0, 4.0}, tf2::get_now(), "my_frame" };
+    const geometry_msgs::msg::PointStamped msg = tf2::toMsg(b1);
 
     EXPECT_EQ(msg.point.x, 1.0);
     EXPECT_EQ(msg.point.y, 3.0);
     EXPECT_EQ(msg.point.z, 4.0);
     EXPECT_EQ(msg.header.frame_id, b1.frame_id_);
-    EXPECT_EQ(msg.header.stamp, b1.stamp_);
+    EXPECT_EQ(msg.header.stamp, tf2::toMsg<>(b1.stamp_));
   }
   {
     // Eigen
     const Eigen::Vector3d e1{2.0, 4.0, 5.0};
-    const geometry_msgs::Point msg = tf2::toMsg(e1);
+    const geometry_msgs::msg::Point msg = tf2::toMsg(e1);
 
     EXPECT_EQ(msg.x, 2.0);
     EXPECT_EQ(msg.y, 4.0);
@@ -136,7 +136,7 @@ TEST(tf2Convert, PointVectorDefaultMessagetype)
   {
     // tf2
     const tf2::Vector3 t1{2.0, 4.0, 5.0};
-    const geometry_msgs::Vector3 msg = tf2::toMsg(t1);
+    const geometry_msgs::msg::Vector3 msg = tf2::toMsg(t1);
 
     EXPECT_EQ(msg.x, 2.0);
     EXPECT_EQ(msg.y, 4.0);
@@ -144,14 +144,14 @@ TEST(tf2Convert, PointVectorDefaultMessagetype)
   }
   {
     // KDL
-    const tf2::Stamped<KDL::Vector> k1{KDL::Vector{1.0, 3.0, 4.0}, ros::Time(), "my_frame"};
-    const geometry_msgs::PointStamped msg = tf2::toMsg(k1);
+    const tf2::Stamped<KDL::Vector> k1{KDL::Vector{1.0, 3.0, 4.0}, tf2::get_now(), "my_frame"};
+    const geometry_msgs::msg::PointStamped msg = tf2::toMsg(k1);
 
     EXPECT_EQ(msg.point.x, 1.0);
     EXPECT_EQ(msg.point.y, 3.0);
     EXPECT_EQ(msg.point.z, 4.0);
     EXPECT_EQ(msg.header.frame_id, k1.frame_id_);
-    EXPECT_EQ(msg.header.stamp, k1.stamp_);
+    EXPECT_EQ(msg.header.stamp, tf2::toMsg<>(k1.stamp_));
   }
 }
 
@@ -159,8 +159,8 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
 {
   {
     const tf2::Vector3 t1{2.0, 4.0, 5.0};
-    geometry_msgs::Point msg;
-    const geometry_msgs::Point& msg2 = tf2::toMsg(t1, msg);
+    geometry_msgs::msg::Point msg;
+    const geometry_msgs::msg::Point& msg2 = tf2::toMsg(t1, msg);
 
     // returned reference is second argument
     EXPECT_EQ(&msg2, &msg);
@@ -171,8 +171,8 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
   {
     // Eigen
     const Eigen::Vector3d e1{2.0, 4.0, 5.0};
-    geometry_msgs::Vector3 msg;
-    const geometry_msgs::Vector3& msg2 = tf2::toMsg(e1, msg);
+    geometry_msgs::msg::Vector3 msg;
+    const geometry_msgs::msg::Vector3& msg2 = tf2::toMsg(e1, msg);
 
     // returned reference is second argument
     EXPECT_EQ(&msg2, &msg);
