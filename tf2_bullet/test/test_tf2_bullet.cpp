@@ -60,8 +60,10 @@ TEST(TfBullet, ConvertTransform)
 
   btTransform transform_bt;
   tf2::convert(transform, transform_bt);
-  EXPECT_EQ(transform_bt.getRotation(), btQuaternion(1.0f, 0.0f, 0.0f, 0.0f));
-  EXPECT_EQ(transform_bt.getOrigin(), btVector3(0.0f, 0.0f, 2.0f));
+  EXPECT_EQ(transform_bt.getRotation(), btQuaternion(1, 0, 0, 0));
+  // vector has 4 entries, set last one to 0 to make comparsion more stable
+  transform_bt.getOrigin().setW(0);
+  EXPECT_EQ(transform_bt.getOrigin(), btVector3(0, 0, 2));
 
   geometry_msgs::msg::Transform transform2;
   tf2::convert(transform_bt, transform2);
