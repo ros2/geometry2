@@ -43,6 +43,12 @@
 #include <geometry_msgs/msg/wrench_stamped.hpp>
 #include <kdl/frames.hpp>
 
+namespace Eigen
+{
+template <typename T, int, int, int, int, int>
+class Matrix;
+}
+
 namespace tf2
 {
 /** \brief Convert a timestamped transform to the equivalent KDL data type.
@@ -244,6 +250,14 @@ struct defaultMessage<KDL::Wrench>
   using type = geometry_msgs::msg::Wrench;
 };
 }  // namespace impl
+
+template <int options, int rows, int cols>
+void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::Wrench & out)
+{
+  const auto msg =
+    toMsg<Eigen::Matrix<double, 6, 1, options, rows, cols>, geometry_msgs::msg::Wrench>(in);
+  fromMsg<>(msg, out);
+}
 
 // ---------------------
 // Frame

@@ -39,6 +39,7 @@
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/wrench.hpp>
 
 namespace tf2
 {
@@ -402,6 +403,35 @@ template <>
 struct defaultMessage<Eigen::Matrix<double, 6, 1>>
 {
   using type = geometry_msgs::msg::Twist;
+};
+
+template <>
+struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Wrench>
+{
+  static void toMsg(const Eigen::Matrix<double, 6, 1> & in, geometry_msgs::msg::Wrench & msg)
+  {
+    msg.force.x = in[0];
+    msg.force.y = in[1];
+    msg.force.z = in[2];
+    msg.torque.x = in[3];
+    msg.torque.y = in[4];
+    msg.torque.z = in[5];
+  }
+
+  /** \brief Convert a Twist message transform type to a Eigen 6x1 Matrix.
+   * This function is a specialization of the toMsg template defined in tf2/convert.h.
+   * \param msg The Twist message to convert.
+   * \param out The twist converted to a Eigen 6x1 Matrix.
+   */
+  static void fromMsg(const geometry_msgs::msg::Wrench & msg, Eigen::Matrix<double, 6, 1> & out)
+  {
+    out[0] = msg.force.x;
+    out[1] = msg.force.y;
+    out[2] = msg.force.z;
+    out[3] = msg.torque.x;
+    out[4] = msg.torque.y;
+    out[5] = msg.torque.z;
+  }
 };
 
 }  // namespace impl

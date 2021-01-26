@@ -41,6 +41,8 @@
 #include <tf2_eigen/tf2_eigen.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+using Vector6d = Eigen::Matrix<double, 6, 1>;
+
 TEST(tf2Convert, kdlToBullet)
 {
   double epsilon = 1e-9;
@@ -232,6 +234,34 @@ TEST(TfEigenKdl, TestFrameAffine3d)
   KDL::Frame kdl_v1;
   tf2::convert(eigen_v, kdl_v1);
   EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestTwistMatrix)
+{
+  const auto kdl_v = KDL::Twist(KDL::Vector(1, 2, 3), KDL::Vector(4, 5, 6));
+  Vector6d eigen_v;
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Twist kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+
+TEST(TfEigenKdl, TestMatrixWrench)
+{
+  Vector6d eigen_v;
+  eigen_v << 1, 2, 3, 3, 2, 1;
+  KDL::Wrench kdl_v;
+  tf2::convert(eigen_v, kdl_v);
+  std::array<tf2::Vector3, 2> tf2_v;
+  tf2::convert(kdl_v, tf2_v);
+  Vector6d eigen_v1;
+  tf2::convert(tf2_v, eigen_v1);
+  std::array<tf2::Vector3, 2> tf2_v1;
+  tf2::convert(eigen_v1, tf2_v1);
+  Vector6d eigen_v2;
+  tf2::convert(tf2_v1, eigen_v2);
+  EXPECT_EQ(eigen_v, eigen_v2);
 }
 
 

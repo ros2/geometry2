@@ -48,9 +48,14 @@
 #include <geometry_msgs/msg/wrench.hpp>
 #include <kdl/frames.hpp>
 
+namespace Eigen
+{
+template <typename T, int, int, int, int, int>
+class Matrix;
+}
+
 namespace tf2
 {
-
 /** \brief Convert a TransformStamped message to a KDL frame.
  * \param t TransformStamped message to convert.
  * \return The converted KDL Frame.
@@ -446,7 +451,21 @@ struct ImplDetails<std::array<tf2::Vector3, 2>, geometry_msgs::msg::Wrench>
   }
 };
 
+template <>
+struct defaultMessage<std::array<tf2::Vector3, 2> >
+{
+  using type = geometry_msgs::msg::Wrench;
+};
 }  // namespace impl
+
+template <int options, int row, int cols>
+void convert(
+  const Eigen::Matrix<double, 6, 1, options, row, cols> & in, std::array<tf2::Vector3, 2> & out)
+{
+  out[0] = tf2::Vector3{in(0), in(1), in(2)};
+  out[1] = tf2::Vector3{in(3), in(4), in(5)};
+}
+
 }  // namespace tf2
 
 #endif  // TF2_GEOMETRY_MSGS_H
