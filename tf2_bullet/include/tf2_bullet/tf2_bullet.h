@@ -52,25 +52,25 @@ namespace tf2
 {
 namespace impl
 {
-template <>
+template<>
 struct defaultMessage<btVector3>
 {
   using type = geometry_msgs::msg::Point;
 };
 
-template <>
+template<>
 struct defaultMessage<btQuaternion>
 {
   using type = geometry_msgs::msg::Quaternion;
 };
 
-template <>
+template<>
 struct defaultMessage<btTransform>
 {
   using type = geometry_msgs::msg::Transform;
 };
 
-template <class Message>
+template<class Message>
 struct BulletVectorImpl
 {
   /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
@@ -98,19 +98,19 @@ struct BulletVectorImpl
   }
 };
 
-template <>
+template<>
 struct ImplDetails<btVector3, geometry_msgs::msg::Point>
-: BulletVectorImpl<geometry_msgs::msg::Point>
+  : BulletVectorImpl<geometry_msgs::msg::Point>
 {
 };
 
-template <>
+template<>
 struct ImplDetails<btVector3, geometry_msgs::msg::Vector3>
-: BulletVectorImpl<geometry_msgs::msg::Vector3>
+  : BulletVectorImpl<geometry_msgs::msg::Vector3>
 {
 };
 
-template <>
+template<>
 struct ImplDetails<btQuaternion, geometry_msgs::msg::Quaternion>
 {
   static void toMsg(const btQuaternion & in, geometry_msgs::msg::Quaternion & msg)
@@ -127,11 +127,11 @@ struct ImplDetails<btQuaternion, geometry_msgs::msg::Quaternion>
     out[1] = msg.y;
     out[2] = msg.z;
     out[3] = msg.w;
-    if (msg.w < 0) out *= -1;
+    if (msg.w < 0) {out *= -1;}
   }
 };
 
-template <>
+template<>
 struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
 {
   static void fromMsg(geometry_msgs::msg::Transform const & in, btTransform & out)
@@ -168,7 +168,7 @@ inline btTransform transformToBullet(const geometry_msgs::msg::TransformStamped 
  * \param t_out The transformed vector, as a timestamped Bullet btVector3 data type.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template <>
+template<>
 inline void doTransform(
   const tf2::Stamped<btVector3> & t_in, tf2::Stamped<btVector3> & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
@@ -183,7 +183,7 @@ inline void doTransform(
  * \param t_out The transformed frame, as a timestamped Bullet btTransform.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-template <>
+template<>
 inline void doTransform(
   const tf2::Stamped<btTransform> & t_in, tf2::Stamped<btTransform> & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
