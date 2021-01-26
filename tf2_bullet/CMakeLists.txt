@@ -28,13 +28,16 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  find_package(ament_cmake_cppcheck REQUIRED)
   list(APPEND AMENT_LINT_AUTO_EXCLUDE
     ament_cmake_cppcheck
+    ament_cmake_uncrustify
   )
+  find_package(ament_lint_auto REQUIRED)
+  find_package(ament_cmake_uncrustify REQUIRED)
+  find_package(ament_cmake_cppcheck REQUIRED)
   ament_lint_auto_find_test_dependencies()
-  ament_cppcheck(LANGUAGE c++)
+  ament_cppcheck(LANGUAGE "c++")
+  ament_uncrustify(LANGUAGE "c++")
 
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_bullet test/test_tf2_bullet.cpp)
