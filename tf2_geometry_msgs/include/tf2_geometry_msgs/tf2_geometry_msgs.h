@@ -121,12 +121,15 @@ inline void doTransformWithTf(
  */
 template <>
 inline void doTransform(
-  const geometry_msgs::msg::Vector3Stamped & t_in, geometry_msgs::msg::Vector3Stamped & t_out,
+  const geometry_msgs::msg::Vector3 & t_in, geometry_msgs::msg::Vector3 & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
 {
-  impl::doTransformWithTf<tf2::Vector3>(t_in.vector, t_out.vector, transform);
-  t_out.header.stamp = transform.header.stamp;
-  t_out.header.frame_id = transform.header.frame_id;
+  tf2::Vector3 in_tf;
+  tf2::Transform transform_tf;
+  tf2::convert(t_in, in_tf);
+  tf2::convert(transform.transform, transform_tf);
+  const tf2::Vector3 out_tf = transform_tf.getBasis() * in_tf;
+  tf2::convert(out_tf, t_out);
 }
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Vector type.
@@ -137,10 +140,12 @@ inline void doTransform(
  */
 template <>
 inline void doTransform(
-  const geometry_msgs::msg::Vector3 & t_in, geometry_msgs::msg::Vector3 & t_out,
+  const geometry_msgs::msg::Vector3Stamped & t_in, geometry_msgs::msg::Vector3Stamped & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
 {
-  impl::doTransformWithTf<tf2::Vector3>(t_in, t_out, transform);
+  doTransform<>(t_in.vector, t_out.vector, transform);
+  t_out.header.stamp = transform.header.stamp;
+  t_out.header.frame_id = transform.header.frame_id;
 }
 
 /******************/
