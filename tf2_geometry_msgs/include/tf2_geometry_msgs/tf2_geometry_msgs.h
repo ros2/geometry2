@@ -74,38 +74,15 @@ namespace impl
 /** Vector3 **/
 /*************/
 
-template <typename Msg>
-struct tf2VectorImplDetails
-{
-  /** \brief Convert a tf2 Vector3 type to its equivalent geometry_msgs representation.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in A tf2 Vector3 object.
-   * \return The Vector3 converted to a geometry_msgs message type.
-   */
-  static void toMsg(const tf2::Vector3 & in, Msg & out)
-  {
-    out.x = in.getX();
-    out.y = in.getY();
-    out.z = in.getZ();
-  }
-
-  /** \brief Convert a Vector3 message to its equivalent tf2 representation.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h.
-   * \param in A Vector3 message type.
-   * \param out The Vector3 converted to a tf2 type.
-   */
-  static void fromMsg(const Msg & in, tf2::Vector3 & out) { out = tf2::Vector3(in.x, in.y, in.z); }
-};
-
 template <>
 struct ImplDetails<tf2::Vector3, geometry_msgs::msg::Vector3>
-: tf2VectorImplDetails<geometry_msgs::msg::Vector3>
+: DefaultVectorImpl<tf2::Vector3,geometry_msgs::msg::Vector3>
 {
 };
 
 template <>
 struct ImplDetails<tf2::Vector3, geometry_msgs::msg::Point>
-: tf2VectorImplDetails<geometry_msgs::msg::Point>
+: DefaultVectorImpl<tf2::Vector3,geometry_msgs::msg::Point>
 {
 };
 
@@ -274,31 +251,7 @@ namespace impl
 {
 template <>
 struct ImplDetails<tf2::Quaternion, geometry_msgs::msg::Quaternion>
-{
-  /** \brief Convert a tf2 Quaternion type to its equivalent geometry_msgs representation.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in A tf2 Quaternion object.
-   * \return The Quaternion converted to a geometry_msgs message type.
-   */
-  static void toMsg(const tf2::Quaternion & in, geometry_msgs::msg::Quaternion & out)
-  {
-    out.w = in.getW();
-    out.x = in.getX();
-    out.y = in.getY();
-    out.z = in.getZ();
-  }
-
-  /** \brief Convert a Quaternion message to its equivalent tf2 representation.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h.
-   * \param in A Quaternion message type.
-   * \param out The Quaternion converted to a tf2 type.
-   */
-  static void fromMsg(const geometry_msgs::msg::Quaternion & in, tf2::Quaternion & out)
-  {
-    // w at the end in the constructor
-    out = tf2::Quaternion(in.x, in.y, in.z, in.w);
-  }
-};
+: DefaultQuaternionImpl<tf2::Quaternion> {};
 
 template <>
 struct defaultMessage<tf2::Quaternion>

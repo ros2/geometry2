@@ -31,6 +31,8 @@
 #ifndef TF2__IMPL__CONVERT_H_
 #define TF2__IMPL__CONVERT_H_
 
+#include <geometry_msgs/msg/quaternion.hpp>
+
 #include "../time.h"
 #include "forward.h"
 
@@ -78,7 +80,6 @@ struct ImplDetails
   // void toMsg(const Datatype&, Message&);
   // void fromMsg(const Message&, Datatype&);
 };
-
 
 /**
  * \brief Mapping of unstamped Messages for stamped Messages
@@ -286,6 +287,59 @@ struct DefaultStampedImpl<tf2::Stamped<T>>
    * reference is bound to the lifetime of the argument.
    */
   static std::string getFrameId(const tf2::Stamped<T> & t) { return t.frame_id_; }
+};
+
+template <class VectorType, class Message>
+struct DefaultVectorImpl
+{
+  /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
+   * This function is a specialization of the toMsg template defined in tf2/convert.h
+   * \param in The timestamped Bullet btVector3 to convert.
+   * \return The vector converted to a PointStamped message.
+   */
+  static void toMsg(const VectorType & in, Message & msg)
+  {
+    msg.x = in[0];
+    msg.y = in[1];
+    msg.z = in[2];
+  }
+
+  /** \brief Convert a PointStamped message type to a stamped Bullet-specific Vector3 type.
+   * This function is a specialization of the fromMsg template defined in tf2/convert.h
+   * \param msg The PointStamped message to convert.
+   * \param out The point converted to a timestamped Bullet Vector3.
+   */
+  static void fromMsg(const Message & msg, VectorType & out)
+  {
+    out = VectorType(msg.x, msg.y, msg.z);
+  }
+};
+
+template <class QuaternionType>
+struct DefaultQuaternionImpl
+{
+  /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
+   * This function is a specialization of the toMsg template defined in tf2/convert.h
+   * \param in The timestamped Bullet btVector3 to convert.
+   * \return The vector converted to a PointStamped message.
+   */
+  static void toMsg(const QuaternionType & in, geometry_msgs::msg::Quaternion & msg)
+  {
+    msg.x = in[0];
+    msg.y = in[1];
+    msg.z = in[2];
+    msg.w = in[3];
+  }
+
+  /** \brief Convert a PointStamped message type to a stamped Bullet-specific Vector3 type.
+   * This function is a specialization of the fromMsg template defined in tf2/convert.h
+   * \param msg The PointStamped message to convert.
+   * \param out The point converted to a timestamped Bullet Vector3.
+   */
+  static void fromMsg(const geometry_msgs::msg::Quaternion & msg, QuaternionType & out)
+  {
+    out = QuaternionType(msg.x, msg.y, msg.z, msg.w);
+  }
 };
 
 }  // namespace impl

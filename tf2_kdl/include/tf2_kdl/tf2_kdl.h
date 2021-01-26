@@ -98,43 +98,15 @@ inline void doTransform(
 
 namespace impl
 {
-template <class Msg>
-struct KDLVectorImplDetails
-{
-  /** \brief Convert a stamped KDL Vector type to a PointStamped message.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in The timestamped KDL Vector to convert.
-   * \return The vector converted to a PointStamped message.
-   */
-  static void toMsg(const KDL::Vector & in, Msg & msg)
-  {
-    msg.x = in[0];
-    msg.y = in[1];
-    msg.z = in[2];
-  }
-
-  /** \brief Convert a PointStamped message type to a stamped KDL-specific Vector type.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h
-   * \param msg The PointStamped message to convert.
-   * \param out The point converted to a timestamped KDL Vector.
-   */
-  static void fromMsg(const Msg & msg, KDL::Vector & out)
-  {
-    out[0] = msg.x;
-    out[1] = msg.y;
-    out[2] = msg.z;
-  }
-};
-
 template <>
 struct ImplDetails<KDL::Vector, geometry_msgs::msg::Vector3>
-: KDLVectorImplDetails<geometry_msgs::msg::Vector3>
+: DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Vector3>
 {
 };
 
 template <>
 struct ImplDetails<KDL::Vector, geometry_msgs::msg::Point>
-: KDLVectorImplDetails<geometry_msgs::msg::Point>
+: DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Point>
 {
 };
 

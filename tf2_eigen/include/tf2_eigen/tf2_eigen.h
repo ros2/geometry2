@@ -129,43 +129,15 @@ void doTransform(
 
 namespace impl
 {
-template <class Message>
-struct Vector3ImplDetails
-{
-  /** \brief Convert a Eigen Vector3d type to a Point message.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in The timestamped Eigen Vector3d to convert.
-   * \return The vector converted to a Point message.
-   */
-  static void toMsg(const Eigen::Vector3d & in, Message & msg)
-  {
-    msg.x = in.x();
-    msg.y = in.y();
-    msg.z = in.z();
-  }
-
-  /** \brief Convert a Point message type to a Eigen-specific Vector3d type.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h
-   * \param msg The Point message to convert.
-   * \param out The point converted to a Eigen Vector3d.
-   */
-  static void fromMsg(const Message & msg, Eigen::Vector3d & out)
-  {
-    out.x() = msg.x;
-    out.y() = msg.y;
-    out.z() = msg.z;
-  }
-};
-
 template <>
 struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Point>
-: public Vector3ImplDetails<geometry_msgs::msg::Point>
+: DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Point>
 {
 };
 
 template <>
 struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Vector3>
-: public Vector3ImplDetails<geometry_msgs::msg::Vector3>
+: DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Vector3>
 {
 };
 
