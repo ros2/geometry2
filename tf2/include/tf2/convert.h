@@ -101,7 +101,11 @@ inline std::string getFrameId(const T & t)
  * \return The covariance matrix associated with the data.
  */
 template<class T>
-std::array<std::array<double, 6>, 6> getCovarianceMatrix(const T & t);
+std::array<std::array<double, 6>, 6> getCovarianceMatrix(const T & t)
+{
+  using traits = impl::stampedMessageTraits<T>;
+  return covarianceRowMajorToNested(traits::getCovariance(t));
+}
 
 /**\brief Get the covariance matrix from data
  *

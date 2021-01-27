@@ -162,6 +162,13 @@ struct defaultMessage<tf2::Stamped<T>>
   using type = typename unstampedMessageTraits<typename defaultMessage<T>::type>::stampedType;
 };
 
+template <class T>
+struct defaultMessage<tf2::WithCovarianceStamped<T>>
+{
+  using type =
+    typename unstampedMessageTraits<typename defaultMessage<T>::type>::stampedTypeWithCovariance;
+};
+
 /**
  * \brief Partial specialization of impl::ImplDetails for stamped types
  *
@@ -190,6 +197,32 @@ struct ImplDetails<tf2::Stamped<Datatype>, StampedMessage>
     tf2::fromMsg<>(traits::getMessage(msg), static_cast<Datatype &>(s));
     tf2::fromMsg<>(msg.header.stamp, s.stamp_);
     s.frame_id_ = msg.header.frame_id;
+  }
+};
+
+template <class Datatype, class CovarianceStampedMessage>
+struct ImplDetails<tf2::WithCovarianceStamped<Datatype>, CovarianceStampedMessage>
+{
+  using traits = stampedMessageTraits<CovarianceStampedMessage>;
+  static void toMsg(tf2::WithCovarianceStamped<Datatype> const & in, CovarianceStampedMessage & out)
+  {
+    CovarianceStampedMessage tmp;
+    tf2::toMsg<>(in.stamp_, tmp.header.stamp);
+    tmp.header.frame_id = in.frame_id_;
+    traits::accessCovariance(tmp) = tf2::covarianceNestedToRowMajor(in.cov_mat_);
+    tf2::toMsg<>(static_cast<Datatype const &>(in), traits::accessMessage(tmp));
+    out = std::move(tmp);
+  }
+
+  static void fromMsg(
+    CovarianceStampedMessage const & in, tf2::WithCovarianceStamped<Datatype> & out)
+  {
+    tf2::WithCovarianceStamped<Datatype> tmp;
+    tf2::fromMsg<>(in.header.stamp, tmp.stamp_);
+    tf2::fromMsg<>(traits::getMessage(in), static_cast<Datatype &>(tmp));
+    tmp.frame_id_ = in.header.frame_id;
+    tmp.cov_mat_ = tf2::covarianceRowMajorToNested(traits::getCovariance(in));
+    out = std::move(tmp);
   }
 };
 

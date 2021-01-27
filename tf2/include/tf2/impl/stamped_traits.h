@@ -77,6 +77,8 @@ template <typename Alloc>
 class Vector3_;
 template <typename Alloc>
 class Vector3Stamped_;
+template <typename Alloc>
+class TwistWithCovarianceStamped_;
 }  // namespace msg
 }  // namespace geometry_msgs
 
@@ -107,12 +109,14 @@ template <typename Alloc>
 struct unstampedMessageTraits<geometry_msgs::msg::Pose_<Alloc>>
 {
   using stampedType = geometry_msgs::msg::PoseStamped_<Alloc>;
+  using stampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
 };
 
 template <typename Alloc>
 struct unstampedMessageTraits<geometry_msgs::msg::Twist_<Alloc>>
 {
   using stampedType = geometry_msgs::msg::TwistStamped_<Alloc>;
+  using stampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
 };
 
 template <typename Alloc>
@@ -191,15 +195,6 @@ struct stampedMessageTraits<geometry_msgs::msg::TwistStamped_<Alloc>>
 };
 
 template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>>
-: defaultStampedMessageTraits<
-    geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>,
-    geometry_msgs::msg::PoseWithCovariance_<Alloc>,
-    &geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>::pose>
-{
-};
-
-template <typename Alloc>
 struct stampedMessageTraits<geometry_msgs::msg::WrenchStamped_<Alloc>>
 : defaultStampedMessageTraits<
     geometry_msgs::msg::WrenchStamped_<Alloc>, geometry_msgs::msg::Wrench_<Alloc>,
@@ -221,6 +216,32 @@ struct stampedMessageTraits<geometry_msgs::msg::Vector3Stamped_<Alloc>>
     geometry_msgs::msg::Vector3Stamped_<Alloc>, geometry_msgs::msg::Vector3_<Alloc>,
     &geometry_msgs::msg::Vector3Stamped_<Alloc>::vector>
 {
+};
+
+template <typename Alloc>
+struct stampedMessageTraits<geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>>
+{
+  using unstampedType = geometry_msgs::msg::Pose_<Alloc>;
+  using stampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
+  using covarianceType = std::array<double, 36>;
+
+  static unstampedType & accessMessage(stampedTypeWithCovariance & stamped) { return stamped.pose.pose; }
+  static unstampedType getMessage(stampedTypeWithCovariance const & stamped) { return stamped.pose.pose; }
+  static covarianceType & accessCovariance(stampedTypeWithCovariance & stamped) { return stamped.pose.covariance; }
+  static covarianceType getCovariance(stampedTypeWithCovariance const & stamped) { return stamped.pose.covariance; }
+};
+
+template <typename Alloc>
+struct stampedMessageTraits<geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>>
+{
+  using unstampedType = geometry_msgs::msg::Twist_<Alloc>;
+  using stampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
+  using covarianceType = std::array<double, 36>;
+
+  static unstampedType & accessMessage(stampedTypeWithCovariance & stamped) { return stamped.twist.twist; }
+  static unstampedType getMessage(stampedTypeWithCovariance const & stamped) { return stamped.twist.twist; }
+  static covarianceType & accessCovariance(stampedTypeWithCovariance & stamped) { return stamped.twist.covariance; }
+  static covarianceType getCovariance(stampedTypeWithCovariance const & stamped) { return stamped.twist.covariance; }
 };
 
 }  // namespace impl

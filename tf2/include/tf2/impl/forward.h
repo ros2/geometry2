@@ -31,6 +31,8 @@
 #ifndef TF2__IMPL__FORWARD_H_
 #define TF2__IMPL__FORWARD_H_
 
+#include <array>
+
 namespace tf2
 {
 namespace impl
@@ -55,6 +57,11 @@ B toMsg(const A & a);
 
 template <typename A, typename B>
 void fromMsg(const A & a, B & b);
+
+std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
+  const std::array<double, 36> & row_major);
+std::array<double, 36> covarianceNestedToRowMajor(
+  const std::array<std::array<double, 6>, 6> & nested_array);
 
 namespace impl
 {

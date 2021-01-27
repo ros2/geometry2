@@ -220,15 +220,6 @@ inline void doTransform(
 /** PoseWithCovarianceStamped **/
 /*******************************/
 
-/** \brief Extract a covariance matrix from a PoseWithCovarianceStamped message.
- * This function is a specialization of the getCovarianceMatrix template defined in tf2/convert.h.
- * \param t PoseWithCovarianceStamped message to extract the covariance matrix from.
- * \return A nested-array representation of the covariance matrix from the message.
- */
-template <>
-inline
-  std::array<std::array<double, 6>, 6> getCovarianceMatrix(const geometry_msgs::msg::PoseWithCovarianceStamped& t)  {return covarianceRowMajorToNested(t.pose.covariance);}
-
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Pose type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
  * \param t_in The pose to transform, as a timestamped Pose3 message with covariance.
@@ -245,46 +236,6 @@ inline void doTransform(
   t_out.header.stamp = transform.header.stamp;
   t_out.header.frame_id = transform.header.frame_id;
   t_out.pose.covariance = t_in.pose.covariance;
-}
-
-/** \brief Convert a tf2 TransformWithCovarianceStamped type to its equivalent geometry_msgs representation.
- * This function is a specialization of the toMsg template defined in tf2/convert.h.
- * \param in A instance of the tf2::Transform specialization of the tf2::WithCovarianceStamped template.
- * \return The TransformWithCovarianceStamped converted to a geometry_msgs PoseStamped message type.
- */
-template<>
-inline
-geometry_msgs::msg::PoseWithCovarianceStamped toMsg(const tf2::WithCovarianceStamped<tf2::Transform>& in)
-{
-  geometry_msgs::msg::PoseWithCovarianceStamped out;
-  tf2::toMsg<>(in.stamp_, out.header.stamp);
-  out.header.frame_id = in.frame_id_;
-  out.pose.covariance = covarianceNestedToRowMajor(in.cov_mat_);
-  out.pose.pose.orientation.x = in.getRotation().getX();
-  out.pose.pose.orientation.y = in.getRotation().getY();
-  out.pose.pose.orientation.z = in.getRotation().getZ();
-  out.pose.pose.orientation.w = in.getRotation().getW();
-  out.pose.pose.position.x = in.getOrigin().getX();
-  out.pose.pose.position.y = in.getOrigin().getY();
-  out.pose.pose.position.z = in.getOrigin().getZ();
-  return out;
-}
-
-/** \brief Convert a PoseWithCovarianceStamped message to its equivalent tf2 representation.
- * This function is a specialization of the toMsg template defined in tf2/convert.h.
- * \param in A PoseWithCovarianceStamped message type.
- * \param out The PoseWithCovarianceStamped converted to the equivalent tf2 type.
- */
-template<>
-inline
-void fromMsg(const geometry_msgs::msg::PoseWithCovarianceStamped& in, tf2::WithCovarianceStamped<tf2::Transform>& out)
-{
-  tf2::fromMsg<>(in.header.stamp, out.stamp_);
-  out.frame_id_ = in.header.frame_id;
-  out.cov_mat_ = covarianceRowMajorToNested(in.pose.covariance);
-  tf2::Transform tmp;
-  fromMsg<>(in.pose.pose, tmp);
-  out.setData(tmp);
 }
 
 /****************/
