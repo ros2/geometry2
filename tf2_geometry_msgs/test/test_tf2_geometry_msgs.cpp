@@ -105,6 +105,52 @@ TEST(TfGeometry, Conversions)
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_stamped_msg.transform.translation.z, EPS);
     EXPECT_EQ(tf_from_msg.frame_id_, tf_stamped_msg.header.frame_id);
   }
+  {
+    geometry_msgs::msg::PoseWithCovarianceStamped v1;
+    v1.pose.pose.position.x = 1;
+    v1.pose.pose.position.y = 2;
+    v1.pose.pose.position.z = 3;
+    v1.pose.pose.orientation.w = 0;
+    v1.pose.pose.orientation.x = 1;
+    v1.pose.pose.orientation.y = 0;
+    v1.pose.pose.orientation.z = 0;
+    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.frame_id = "A";
+    v1.pose.covariance = {
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+    };
+    const std::array<std::array<double, 6>, 6> cov{
+      std::array<double, 6>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+    };
+
+    EXPECT_EQ(tf2::getCovarianceMatrix(v1), cov);
+
+    tf2::WithCovarianceStamped<tf2::Transform> tf_from_msg;
+    tf2::convert(v1, tf_from_msg);
+    EXPECT_EQ(tf_from_msg.getOrigin(), tf2::Vector3(1.0, 2.0, 3.0));
+    EXPECT_EQ(tf_from_msg.getRotation(), tf2::Quaternion(1.0, 0.0, 0.0, 0.0));
+    EXPECT_EQ(tf_from_msg.cov_mat_, cov);
+    EXPECT_EQ(tf_from_msg.frame_id_, "A");
+    EXPECT_EQ(tf_from_msg.stamp_, tf2::timeFromSec(2));
+
+    tf_from_msg.setRotation({0.0, 0.0, 0.0, 1.0});
+    v1.pose.pose.orientation.w = 1;
+    v1.pose.pose.orientation.x = 0;
+
+    geometry_msgs::msg::PoseWithCovarianceStamped v2;
+    tf2::convert(tf_from_msg, v2);
+    EXPECT_EQ(v1, v2);
+  }
 }
 
 TEST(TfGeometry, Frame)
