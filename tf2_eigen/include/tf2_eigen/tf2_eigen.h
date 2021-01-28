@@ -91,9 +91,16 @@ geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Isometry3d & 
 
 namespace impl
 {
-template <int mode>
+/** \brief Template for Eigen::Isometry3d and Eigen::Affine3d conversion
+ * \tparam mode Mode argument for Eigen::Transform template
+ */
+template<int mode>
 struct EigenTransformImpl
 {
+  /** \brief Convert a Transform message to an Eigen type.
+   * \param msg The message to convert
+   * \param out The converted message, as an Eigen type
+   */
   static void fromMsg(
     const geometry_msgs::msg::Transform & msg, Eigen::Transform<double, 3, mode> & out)
   {
@@ -104,6 +111,10 @@ struct EigenTransformImpl
     out = Eigen::Translation3d(v) * q;
   }
 
+  /** \brief Convert an Eigen Transform to a Transform message
+   * \param in The Eigen Transform to convert
+   * \param msg The converted Transform, as a message
+   */
   static void toMsg(
     const Eigen::Transform<double, 3, mode> & in, geometry_msgs::msg::Transform & msg)
   {
@@ -112,27 +123,31 @@ struct EigenTransformImpl
   }
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Transform and Eigen::Affine3d
+template<>
 struct ImplDetails<Eigen::Affine3d, geometry_msgs::msg::Transform>
-: EigenTransformImpl<Eigen::Affine>
+  : EigenTransformImpl<Eigen::Affine>
 {
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Transform and Eigen::Isometry3d
+template<>
 struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Transform>
-: EigenTransformImpl<Eigen::Isometry>
+  : EigenTransformImpl<Eigen::Isometry>
 {
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Point and Eigen::Vector3d
+template<>
 struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Point>
-: DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Point>
+  : DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Point>
 {
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Vector3d and Eigen::Vector3d
+template<>
 struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Vector3>
-: DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Vector3>
+  : DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Vector3>
 {
 };
 
@@ -149,14 +164,15 @@ struct defaultMessage<Eigen::Vector3d>
   using type = geometry_msgs::msg::Point;
 };
 
-/** \brief Convert a Eigen Quaterniond type to a Quaternion message.
- * This function is a specialization of the toMsg template defined in tf2/convert.h.
- * \param in The Eigen Quaterniond to convert.
- * \return The quaternion converted to a Quaterion message.
- */
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond
+template<>
 struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
 {
+
+  /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
+   * \param in The Eigen Quaterniond to convert.
+   * \param msg The quaternion converted to a Quaterion message.
+   */
   static void toMsg(const Eigen::Quaterniond & in, geometry_msgs::msg::Quaternion & msg)
   {
     msg.w = in.w();
@@ -166,7 +182,6 @@ struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
   }
 
   /** \brief Convert a Quaternion message type to a Eigen-specific Quaterniond type.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h
    * \param msg The Quaternion message to convert.
    * \param out The quaternion converted to a Eigen Quaterniond.
    */
