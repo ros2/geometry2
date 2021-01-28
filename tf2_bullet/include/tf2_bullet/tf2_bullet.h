@@ -52,43 +52,57 @@ namespace tf2
 {
 namespace impl
 {
+/// \brief Default return type of tf2::toMsg() for btVector3.
 template<>
 struct defaultMessage<btVector3>
 {
+  /// \brief Default return type of tf2::toMsg() for btVector3.
   using type = geometry_msgs::msg::Point;
 };
 
+/// \brief Default return type of tf2::toMsg() for btQuaternion.
 template<>
 struct defaultMessage<btQuaternion>
 {
+  /// \brief Default return type of tf2::toMsg() for btQuaternion.
   using type = geometry_msgs::msg::Quaternion;
 };
 
+/// \brief Default return type of tf2::toMsg() for btTransform.
 template<>
 struct defaultMessage<btTransform>
 {
+  /// \brief Default return type of tf2::toMsg() for btTransform.
   using type = geometry_msgs::msg::Transform;
 };
 
+/// \brief Conversion implementation for geometry_msgs::msg::Point and btVector3.
 template<>
 struct ImplDetails<btVector3, geometry_msgs::msg::Point>
   : DefaultVectorImpl<btVector3, geometry_msgs::msg::Point>
 {
 };
 
+/// \brief Conversion implementation for geometry_msgs::msg::Vector3 and btVector3.
 template<>
 struct ImplDetails<btVector3, geometry_msgs::msg::Vector3>
   : DefaultVectorImpl<btVector3, geometry_msgs::msg::Vector3>
 {
 };
 
+/// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
 template<>
 struct ImplDetails<btQuaternion, geometry_msgs::msg::Quaternion>
   : DefaultQuaternionImpl<btQuaternion> {};
 
+/// \brief Conversion implementation for geometry_msgs::msg::Transform and btTransform.
 template<>
 struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
 {
+  /** \brief Convert a Transform message to a btTransform type.
+   * \param[in] in The message to convert.
+   * \param[out] out The converted message, as a btTransform type.
+   */
   static void fromMsg(geometry_msgs::msg::Transform const & in, btTransform & out)
   {
     btVector3 trans;
@@ -98,6 +112,10 @@ struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
     out = btTransform(rot, trans);
   }
 
+  /** \brief Convert a btTransform to a Transform message.
+   * \param[in] in The btTransform to convert.
+   * \param[out] out The converted Transform, as a message.
+   */
   static void toMsg(btTransform const & in, geometry_msgs::msg::Transform & out)
   {
     tf2::toMsg<>(in.getRotation(), out.rotation);
@@ -105,27 +123,33 @@ struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
   }
 };
 
+/// \brief Default Type for automatic tf2::doTransform() implementation for btTransform.
 template<>
 struct DefaultTransformType<btTransform>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for btTransform.
   using type = btTransform;
 };
 
+/// \brief Default Type for automatic tf2::doTransform() implementation for btVector3.
 template<>
 struct DefaultTransformType<btVector3>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for btVector3.
   using type = btTransform;
 };
 
+/// \brief Default Type for automatic tf2::doTransform() implementation for btQuaternion.
 template<>
 struct DefaultTransformType<btQuaternion>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for btTransform.
   using type = btTransform;
 };
 }  // namespace impl
 
 /** \brief Convert a timestamped transform to the equivalent Bullet data type.
- * \param t The transform to convert, as a geometry_msgs TransformedStamped message.
+ * \param[in] t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to a Bullet btTransform.
  */
 inline btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
