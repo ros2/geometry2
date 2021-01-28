@@ -29,8 +29,8 @@
 
 /** \author Wim Meeussen, Bjarne von Horn */
 
-#ifndef TF2_KDL_H
-#define TF2_KDL_H
+#ifndef TF2_KDL__TF2_KDL_H_
+#define TF2_KDL__TF2_KDL_H_
 
 #include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
@@ -45,14 +45,15 @@
 
 namespace Eigen
 {
-template <typename T, int, int, int, int, int>
+/// Forward declaration.
+template<typename T, int, int, int, int, int>
 class Matrix;
 }
 
 namespace tf2
 {
 /** \brief Convert a timestamped transform to the equivalent KDL data type.
- * \param t The transform to convert, as a geometry_msgs TransformedStamped message.
+ * \param[in] t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to an KDL Frame.
  */
 inline KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped & t)
@@ -63,7 +64,7 @@ inline KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped & t)
 }
 
 /** \brief Convert an KDL Frame to the equivalent geometry_msgs message type.
- * \param k The transform to convert, as an KDL Frame.
+ * \param[in] k The transform to convert, as an KDL Frame.
  * \return The transform converted to a TransformStamped message.
  */
 inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
@@ -75,9 +76,14 @@ inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
 
 namespace impl
 {
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Transform and KDL::Frame.
+template<>
 struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
 {
+  /** \brief Convert a Transform message type to a KDL Frame.
+   * \param[in] in The Transform message to convert.
+   * \param[out] out The transform converted to a KDL Frame.
+   */
   static void fromMsg(geometry_msgs::msg::Transform const & in, KDL::Frame & out)
   {
     KDL::Rotation r;
@@ -87,6 +93,10 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
     out = KDL::Frame(r, v);
   }
 
+  /** \brief Convert a KDL Frame type to a Transform message.
+   * \param[in] in The KDL Frame to convert.
+   * \param[out] out The KDL Frame converted to a Transform message.
+   */
   static void toMsg(KDL::Frame const & in, geometry_msgs::msg::Transform & out)
   {
     tf2::toMsg<>(in.p, out.translation);
@@ -94,25 +104,30 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
   }
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Vector3 and KDL::Vector.
+template<>
 struct ImplDetails<KDL::Vector, geometry_msgs::msg::Vector3>
-: DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Vector3>
+  : DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Vector3>
 {
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Point and KDL::Vector.
+template<>
 struct ImplDetails<KDL::Vector, geometry_msgs::msg::Point>
-: DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Point>
+  : DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Point>
 {
 };
 
-template <>
+/// \brief Default return type of tf2::toMsg() for KDL::Vector.
+template<>
 struct defaultMessage<KDL::Vector>
 {
+  /// \brief Default return type of tf2::toMsg() for KDL::Vector.
   using type = geometry_msgs::msg::Point;
 };
 
-template <>
+/// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Frame.
+template<>
 struct DefaultTransformType<KDL::Vector>
 {
   using type = KDL::Frame;
@@ -122,13 +137,13 @@ struct DefaultTransformType<KDL::Vector>
 // Twist
 // ---------------------
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Twist and KDL::Twist.
+template<>
 struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
 {
-  /** \brief Convert a stamped KDL Twist type to a TwistStamped message.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in The timestamped KDL Twist to convert.
-   * \return The twist converted to a TwistStamped message.
+  /** \brief Convert a KDL Twist type to a Twist message.
+   * \param[in] in The KDL Twist to convert.
+   * \param[out] msg The twist converted to a Twist message.
    */
   static void toMsg(const KDL::Twist & in, geometry_msgs::msg::Twist & msg)
   {
@@ -136,10 +151,9 @@ struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
     tf2::toMsg<>(in.rot, msg.angular);
   }
 
-  /** \brief Convert a TwistStamped message type to a stamped KDL-specific Twist type.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h
-   * \param msg The TwistStamped message to convert.
-   * \param out The twist converted to a timestamped KDL Twist.
+  /** \brief Convert a Twistmessage type to a KDL-specific Twist type.
+   * \param[in] msg The Twist message to convert.
+   * \param[out] out The twist converted to a KDL Twist.
    */
   static void fromMsg(const geometry_msgs::msg::Twist & msg, KDL::Twist & out)
   {
@@ -148,15 +162,19 @@ struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
   }
 };
 
-template <>
+/// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Twist.
+template<>
 struct DefaultTransformType<KDL::Twist>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Twist.
   using type = KDL::Frame;
 };
 
-template <>
+/// \brief Default return type of tf2::toMsg() for KDL::Twist.
+template<>
 struct defaultMessage<KDL::Twist>
 {
+  /// \brief Default return type of tf2::toMsg() for KDL::Twist.
   using type = geometry_msgs::msg::Twist;
 };
 
@@ -164,13 +182,13 @@ struct defaultMessage<KDL::Twist>
 // Wrench
 // ---------------------
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Wrench and KDL::Wrench.
+template<>
 struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
 {
-  /** \brief Convert a stamped KDL Wrench type to a WrenchStamped message.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in The timestamped KDL Wrench to convert.
-   * \return The wrench converted to a WrenchStamped message.
+  /** \brief Convert a KDL Wrench type to a Wrench message.
+   * \param[in] in The KDL Wrench to convert.
+   * \param[out] msg The wrench converted to a Wrench message.
    */
   static void toMsg(const KDL::Wrench & in, geometry_msgs::msg::Wrench & msg)
   {
@@ -178,10 +196,9 @@ struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
     tf2::toMsg<>(in.torque, msg.torque);
   }
 
-  /** \brief Convert a WrenchStamped message type to a stamped KDL-specific Wrench type.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h
-   * \param msg The WrenchStamped message to convert.
-   * \param out The wrench converted to a timestamped KDL Wrench.
+  /** \brief Convert a Wrench message type to a KDL-specific Wrench type.
+   * \param[in] msg The Wrench message to convert.
+   * \param[out] out The wrench converted to a KDL Wrench.
    */
   static void fromMsg(const geometry_msgs::msg::Wrench & msg, KDL::Wrench & out)
   {
@@ -190,20 +207,35 @@ struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
   }
 };
 
-template <>
+/// \brief Default return type of tf2::toMsg() for KDL::Wrench.
+template<>
 struct defaultMessage<KDL::Wrench>
 {
+  /// \brief Default return type of tf2::toMsg() for KDL::Wrench.
   using type = geometry_msgs::msg::Wrench;
 };
 
-template <>
+/// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Wrench.
+template<>
 struct DefaultTransformType<KDL::Wrench>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Wrench.
   using type = KDL::Frame;
 };
 }  // namespace impl
 
-template <int options, int rows, int cols>
+/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
+ *
+ * This specialization of the template defined in tf2/convert.h
+ * is for a Wrench represented in an Eigen matrix.
+ * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
+ * \param[in] in Wrench, as Eigen matrix
+ * \param[out] out The Wrench as KDL::Wrench type
+ * \tparam options Eigen::Matrix template parameter
+ * \tparam row Eigen::Matrix template parameter
+ * \tparam cols Eigen::Matrix template parameter
+ */
+template<int options, int rows, int cols>
 void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::Wrench & out)
 {
   const auto msg =
@@ -216,13 +248,13 @@ void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::W
 // ---------------------
 namespace impl
 {
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Pose and KDL::Frame.
+template<>
 struct ImplDetails<KDL::Frame, geometry_msgs::msg::Pose>
 {
-  /** \brief Convert a stamped KDL Frame type to a Pose message.
-   * This function is a specialization of the toMsg template defined in tf2/convert.h.
-   * \param in The timestamped KDL Frame to convert.
-   * \return The frame converted to a Pose message.
+  /** \brief Convert a KDL Frame type to a Pose message.
+   * \param[in] in The KDL Frame to convert.
+   * \param[out] msg The frame converted to a Pose message.
    */
   static void toMsg(const KDL::Frame & in, geometry_msgs::msg::Pose & msg)
   {
@@ -231,9 +263,8 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Pose>
   }
 
   /** \brief Convert a Pose message type to a KDL Frame.
-   * This function is a specialization of the fromMsg template defined in tf2/convert.h.
-   * \param msg The Pose message to convert.
-   * \param out The pose converted to a KDL Frame.
+   * \param[in] msg The Pose message to convert.
+   * \param[out] out The pose converted to a KDL Frame.
    */
   static void fromMsg(const geometry_msgs::msg::Pose & msg, KDL::Frame & out)
   {
@@ -242,35 +273,50 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Pose>
   }
 };
 
-template <>
+/// \brief Default return type of tf2::toMsg() for KDL::Frame.
+template<>
 struct defaultMessage<KDL::Frame>
 {
+  /// \brief Default return type of tf2::toMsg() for KDL::Frame.
   using type = geometry_msgs::msg::Pose;
 };
 
-template <>
+/// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Frame.
+template<>
 struct DefaultTransformType<KDL::Frame>
 {
+  /// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Frame.
   using type = KDL::Frame;
 };
 
-template <>
+/// \brief Conversion implementation for geometry_msgs::msg::Quaternion and KDL::Rotation.
+template<>
 struct ImplDetails<KDL::Rotation, geometry_msgs::msg::Quaternion>
 {
+  /** \brief Convert a KDL Rotation type to a Quaternion message.
+   * \param[in] r The KDL Rotation to convert.
+   * \param[out] q The frame converted to a Quaternion message.
+   */
   static void toMsg(KDL::Rotation const & r, geometry_msgs::msg::Quaternion & q)
   {
     r.GetQuaternion(q.x, q.y, q.z, q.w);
   }
 
+  /** \brief Convert a Quaternion message type to a KDL Rotation.
+   * \param[in] q The Quaternion message to convert.
+   * \param[out] r The quaternion converted to a KDL Rotation.
+   */
   static void fromMsg(geometry_msgs::msg::Quaternion const & q, KDL::Rotation & r)
   {
     r = KDL::Rotation::Quaternion(q.x, q.y, q.z, q.w);
   }
 };
 
-template <>
+/// \brief Default return type of tf2::toMsg() for KDL::Rotation.
+template<>
 struct defaultMessage<KDL::Rotation>
 {
+  /// \brief Default return type of tf2::toMsg() for KDL::Rotation.
   using type = geometry_msgs::msg::Quaternion;
 };
 
@@ -279,11 +325,12 @@ struct defaultMessage<KDL::Rotation>
 /**
  * \brief Transform a KDL::Rotation
  *
- * \param[in] data_in The data to be transformed.
- * \param[in,out] data_out A reference to the output data.
+ * \param[in] in The data to be transformed.
+ * \param[in,out] out A reference to the output data.
  * \param[in] transform The transform to apply to data_in to fill data_out.
  */
 template<>
+inline
 void doTransform(
   const KDL::Rotation & in, KDL::Rotation & out,
   const geometry_msgs::msg::TransformStamped & transform)
@@ -295,4 +342,4 @@ void doTransform(
 
 }  // namespace tf2
 
-#endif  // TF2_KDL_H
+#endif  // TF2_KDL__TF2_KDL_H_
