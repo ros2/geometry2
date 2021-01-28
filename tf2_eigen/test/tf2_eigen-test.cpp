@@ -26,18 +26,26 @@
 
 /** \author Wim Meeussen */
 
+// To get M_PI, especially on Windows.
+
 #ifdef _MSC_VER
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
 #endif
 
-// To get M_PI, especially on Windows.
 #include <math.h>
 
-#include <tf2_eigen/tf2_eigen.h>
+
 #include <gtest/gtest.h>
 #include <tf2/convert.h>
+#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+
+
+#include <memory>
+#include <rclcpp/clock.hpp>
 
 // TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
 // TEST(TfEigen, ConvertVector3dStamped)
@@ -124,7 +132,151 @@ TEST(TfEigen, ConvertTransform)
   EXPECT_TRUE(tm.isApprox(Iback.matrix()));
 }
 
-int main(int argc, char **argv){
+struct EigenBufferTransform : public ::testing::Test
+{
+  static void SetUpTestSuite()
+  {
+    rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+    tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+    tf_buffer->setUsingDedicatedThread(true);
+
+    // populate buffer
+    geometry_msgs::msg::TransformStamped t;
+    t.transform.translation.x = 10;
+    t.transform.translation.y = 20;
+    t.transform.translation.z = 30;
+    t.transform.rotation.w = 0;
+    t.transform.rotation.x = 1;
+    t.transform.rotation.y = 0;
+    t.transform.rotation.z = 0;
+    t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    t.header.frame_id = "A";
+    t.child_frame_id = "B";
+    tf_buffer->setTransform(t, "test");
+  }
+
+  template<int mode>
+  void testEigenTransform();
+
+  ::testing::AssertionResult doTestEigenQuaternion(
+    const Eigen::Quaterniond & parameter, const Eigen::Quaterniond & expected);
+
+  static std::unique_ptr<tf2_ros::Buffer> tf_buffer;
+  static constexpr double EPS = 1e-3;
+};
+
+std::unique_ptr<tf2_ros::Buffer> EigenBufferTransform::tf_buffer;
+
+template<int mode>
+void EigenBufferTransform::testEigenTransform()
+{
+  using T = Eigen::Transform<double, 3, mode>;
+  using stampedT = tf2::Stamped<T>;
+
+  const stampedT i1{
+    T{Eigen::Translation3d{1, 2, 3} *Eigen::Quaterniond{0, 1, 0, 0}}, tf2::timeFromSec(2), "A"};
+
+  // simple api
+  const stampedT i_simple = tf_buffer->transform(i1, "B", tf2::durationFromSec(2.0));
+  EXPECT_NEAR(i_simple.translation().x(), -9, EPS);
+  EXPECT_NEAR(i_simple.translation().y(), 18, EPS);
+  EXPECT_NEAR(i_simple.translation().z(), 27, EPS);
+  const auto q1 = Eigen::Quaterniond(i_simple.linear());
+  EXPECT_NEAR(q1.x(), 0.0, EPS);
+  EXPECT_NEAR(q1.y(), 0.0, EPS);
+  EXPECT_NEAR(q1.z(), 0.0, EPS);
+  EXPECT_NEAR(q1.w(), 1.0, EPS);
+
+  // advanced api
+  const stampedT v_advanced =
+    tf_buffer->transform(i1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+  EXPECT_NEAR(v_advanced.translation().x(), -9, EPS);
+  EXPECT_NEAR(v_advanced.translation().y(), 18, EPS);
+  EXPECT_NEAR(v_advanced.translation().z(), 27, EPS);
+  const auto q2 = Eigen::Quaterniond(v_advanced.linear());
+  EXPECT_NEAR(q2.x(), 0.0, EPS);
+  EXPECT_NEAR(q2.y(), 0.0, EPS);
+  EXPECT_NEAR(q2.z(), 0.0, EPS);
+  EXPECT_NEAR(q2.w(), 1.0, EPS);
+}
+
+TEST_F(EigenBufferTransform, Affine3d) {
+  testEigenTransform<Eigen::Affine>();
+}
+
+TEST_F(EigenBufferTransform, Isometry3d) {
+  testEigenTransform<Eigen::Isometry>();
+}
+
+TEST_F(EigenBufferTransform, Vector)
+{
+  const tf2::Stamped<Eigen::Vector3d> v1{{1, 2, 3}, tf2::timeFromSec(2), "A"};
+
+  // simple api
+  const tf2::Stamped<Eigen::Vector3d> v_simple =
+    tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+  EXPECT_NEAR(v_simple.x(), -9, EPS);
+  EXPECT_NEAR(v_simple.y(), 18, EPS);
+  EXPECT_NEAR(v_simple.z(), 27, EPS);
+
+  // advanced api
+  const tf2::Stamped<Eigen::Vector3d> v_advanced =
+    tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+  EXPECT_NEAR(v_advanced.x(), -9, EPS);
+  EXPECT_NEAR(v_advanced.y(), 18, EPS);
+  EXPECT_NEAR(v_advanced.z(), 27, EPS);
+}
+
+// helper method for Quaternion tests
+::testing::AssertionResult EigenBufferTransform::doTestEigenQuaternion(
+  const Eigen::Quaterniond & parameter, const Eigen::Quaterniond & expected)
+{
+  const tf2::Stamped<Eigen::Quaterniond> q1{parameter, tf2::timeFromSec(2), "A"};
+  // avoid linking error
+  const double eps = EPS;
+
+  // simple api
+  const tf2::Stamped<Eigen::Quaterniond> q_simple =
+    tf_buffer->transform(q1, "B", tf2::durationFromSec(2.0));
+  // compare rotation matrices, as the quaternions can be ambigous
+  EXPECT_TRUE(q_simple.toRotationMatrix().isApprox(expected.toRotationMatrix(), eps));
+
+  // advanced api
+  const tf2::Stamped<Eigen::Quaterniond> q_advanced =
+    tf_buffer->transform(q1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+  EXPECT_TRUE(q_advanced.toRotationMatrix().isApprox(expected.toRotationMatrix(), eps));
+  return ::testing::AssertionSuccess();
+}
+
+TEST_F(EigenBufferTransform, QuaternionRotY)
+{
+  // rotated by -90° around y
+  // 0, 0, -1
+  // 0, 1, 0,
+  // 1, 0, 0
+  const Eigen::Quaterniond param{Eigen::AngleAxisd(-1 * M_PI_2, Eigen::Vector3d::UnitY())};
+  const Eigen::Quaterniond expected{0, M_SQRT1_2, 0, -1 * M_SQRT1_2};
+  EXPECT_TRUE(doTestEigenQuaternion(param, expected));
+}
+
+TEST_F(EigenBufferTransform, QuaternionRotX)
+{
+  // rotated by 90° around y
+  const Eigen::Quaterniond param{Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitX())};
+  const Eigen::Quaterniond expected{Eigen::AngleAxisd(-1 * M_PI_2, Eigen::Vector3d::UnitX())};
+  EXPECT_TRUE(doTestEigenQuaternion(param, expected));
+}
+
+TEST_F(EigenBufferTransform, QuaternionRotZ)
+{
+  // rotated by 180° around z
+  const Eigen::Quaterniond param{Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())};
+  const Eigen::Quaterniond expected{Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY())};
+  EXPECT_TRUE(doTestEigenQuaternion(param, expected));
+}
+
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
 
   return RUN_ALL_TESTS();
