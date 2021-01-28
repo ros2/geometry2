@@ -276,6 +276,23 @@ struct defaultMessage<KDL::Rotation>
 
 }  // namespace impl
 
+/**
+ * \brief Transform a KDL::Rotation
+ *
+ * \param[in] data_in The data to be transformed.
+ * \param[in,out] data_out A reference to the output data.
+ * \param[in] transform The transform to apply to data_in to fill data_out.
+ */
+template<>
+void doTransform(
+  const KDL::Rotation & in, KDL::Rotation & out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  KDL::Rotation t;
+  tf2::fromMsg<>(transform.transform.rotation, t);
+  out = t * in;
+}
+
 }  // namespace tf2
 
 #endif  // TF2_KDL_H

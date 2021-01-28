@@ -96,6 +96,32 @@ TEST(TfKDL, Vector)
   EXPECT_NEAR(v_advanced[2], 27, EPS);
 }
 
+TEST(TfKDL, Quaternion)
+{
+  const tf2::Stamped<KDL::Rotation> q1{KDL::Rotation::Rot({0, 1, 0}, -0.5 * M_PI), tf2::timeFromSec(
+      2.0), "A"};
+
+  // simple api
+  const tf2::Stamped<KDL::Rotation> q_simple =
+    tf_buffer->transform(q1, "B", tf2::durationFromSec(2.0));
+  double x, y, z, w;
+  q_simple.GetQuaternion(x, y, z, w);
+  EXPECT_NEAR(x, 0.707107, EPS);
+  EXPECT_NEAR(y, 0, EPS);
+  EXPECT_NEAR(z, -0.707107, EPS);
+  EXPECT_NEAR(w, 0, EPS);
+
+  // advanced api
+  const tf2::Stamped<KDL::Rotation> q_advanced = tf_buffer->transform(
+    q1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
+  q_advanced.GetQuaternion(x, y, z, w);
+  EXPECT_NEAR(x, 0.707107, EPS);
+  EXPECT_NEAR(y, 0, EPS);
+  EXPECT_NEAR(z, -0.707107, EPS);
+  EXPECT_NEAR(w, 0, EPS);
+}
+
 TEST(TfKDL, ConvertVector)
 {
   tf2::Stamped<KDL::Vector> v(
@@ -219,6 +245,7 @@ int main(int argc, char **argv){
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+  tf_buffer->setUsingDedicatedThread(true);
 
   // populate buffer
   geometry_msgs::msg::TransformStamped t;
