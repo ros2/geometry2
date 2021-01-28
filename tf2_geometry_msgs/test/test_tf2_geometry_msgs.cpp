@@ -29,6 +29,14 @@
 
 /** \author Wim Meeussen */
 
+#ifdef _MSC_VER
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#endif
+
+// To get M_PI, especially on Windows.
+#include <math.h>
 
 #include <rclcpp/clock.hpp>
 #include <tf2_ros/transform_listener.h>
@@ -228,6 +236,39 @@ TEST(TfGeometry, Point)
   EXPECT_NEAR(v_advanced.point.x, -9, EPS);
   EXPECT_NEAR(v_advanced.point.y, 18, EPS);
   EXPECT_NEAR(v_advanced.point.z, 27, EPS);
+}
+
+TEST(TfGeometry, Quaternion)
+{
+  // rotated by -90° around y
+  // 0, 0, -1
+  // 0, 1, 0,
+  // 1, 0, 0
+  geometry_msgs::msg::QuaternionStamped q1, res;
+  q1.quaternion.x = 0;
+  q1.quaternion.y = -1 * M_SQRT1_2;
+  q1.quaternion.z = 0;
+  q1.quaternion.w = M_SQRT1_2;
+  q1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+  q1.header.frame_id = "A";
+
+  // simple api
+  const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
+    q1, "B", tf2::durationFromSec(
+      2.0));
+  EXPECT_NEAR(q_simple.quaternion.x, M_SQRT1_2, EPS);
+  EXPECT_NEAR(q_simple.quaternion.y, 0, EPS);
+  EXPECT_NEAR(q_simple.quaternion.z, -1 * M_SQRT1_2, EPS);
+  EXPECT_NEAR(q_simple.quaternion.w, 0, EPS);
+
+  // advanced api
+  const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
+    q1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
+  EXPECT_NEAR(q_advanced.quaternion.x, M_SQRT1_2, EPS);
+  EXPECT_NEAR(q_advanced.quaternion.y, 0, EPS);
+  EXPECT_NEAR(q_advanced.quaternion.z, -1 * M_SQRT1_2, EPS);
+  EXPECT_NEAR(q_advanced.quaternion.w, 0, EPS);
 }
 
 
