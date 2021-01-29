@@ -41,13 +41,65 @@
 #include <tf2_eigen/tf2_eigen.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include <geometry_msgs/msg/vector3_stamped.hpp>
+
+
+// test of tf2 type traits
+static_assert(
+  !tf2::impl::MessageHasStdHeader<geometry_msgs::msg::Vector3>::value,
+  "MessageHasStdHeader traits error");
+static_assert(
+  tf2::impl::MessageHasStdHeader<geometry_msgs::msg::Vector3Stamped>::value,
+  "MessageHasStdHeader traits error");
+
+namespace
+{
+struct MyPODMessage
+{
+  int header;
+};
+
+template<typename Alloc>
+struct MyAllocMessage
+{
+  int header;
+};
+
+static_assert(
+  !tf2::impl::MessageHasStdHeader<MyPODMessage>::value,
+  "MessageHasStdHeader traits error");
+
+template<typename T>
+struct MyAllocator
+{
+  using value_type = T;
+  using size_type = unsigned int;
+  T * allocate(size_type);
+  void deallocate(T *, size_type);
+  template<class U>
+  struct rebind { typedef MyAllocator<U> other; };
+};
+using MyVec = geometry_msgs::msg::Vector3_<MyAllocator<void>>;
+using MyVecStamped = geometry_msgs::msg::Vector3Stamped_<MyAllocator<void>>;
+using MyMessage = MyAllocMessage<MyAllocator<void>>;
+
+static_assert(!tf2::impl::MessageHasStdHeader<MyVec>::value, "MessageHasStdHeader traits error");
+static_assert(
+  tf2::impl::MessageHasStdHeader<MyVecStamped>::value,
+  "MessageHasStdHeader traits error");
+
+static_assert(
+  !tf2::impl::MessageHasStdHeader<MyMessage>::value,
+  "MessageHasStdHeader traits error");
+}
+
 using Vector6d = Eigen::Matrix<double, 6, 1>;
 
 TEST(tf2Convert, kdlToBullet)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame");
+  tf2::Stamped<btVector3> b(btVector3(1, 2, 3), tf2::timeFromSec(0), "my_frame");
 
   tf2::Stamped<btVector3> b1 = b;
   tf2::Stamped<KDL::Vector> k1;
@@ -74,7 +126,7 @@ TEST(tf2Convert, kdlBulletROSConversions)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b1(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame"), b2, b3, b4;
+  tf2::Stamped<btVector3> b1(btVector3(1, 2, 3), tf2::timeFromSec(0), "my_frame"), b2, b3, b4;
   geometry_msgs::msg::PointStamped r1, r2, r3;
   tf2::Stamped<KDL::Vector> k1, k2, k3;
 
@@ -101,7 +153,7 @@ TEST(tf2Convert, kdlBulletROSConversions)
 
 TEST(tf2Convert, ConvertTf2Quaternion)
 {
-  tf2::Quaternion tq(1,2,3,4);
+  tf2::Quaternion tq(1, 2, 3, 4);
   Eigen::Quaterniond eq;
   tf2::convert(tq, eq);
 
@@ -117,7 +169,7 @@ TEST(tf2Convert, PointVectorDefaultMessagetype)
   // as it can return a Vector3 or a Point for certain datatypes
   {
     // Bullet
-    const tf2::Stamped<btVector3> b1{btVector3{1.0, 3.0, 4.0}, tf2::get_now(), "my_frame" };
+    const tf2::Stamped<btVector3> b1{btVector3{1.0, 3.0, 4.0}, tf2::get_now(), "my_frame"};
     const geometry_msgs::msg::PointStamped msg = tf2::toMsg(b1);
 
     EXPECT_EQ(msg.point.x, 1.0);
@@ -162,7 +214,7 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
   {
     const tf2::Vector3 t1{2.0, 4.0, 5.0};
     geometry_msgs::msg::Point msg;
-    const geometry_msgs::msg::Point& msg2 = tf2::toMsg(t1, msg);
+    const geometry_msgs::msg::Point & msg2 = tf2::toMsg(t1, msg);
 
     // returned reference is second argument
     EXPECT_EQ(&msg2, &msg);
@@ -174,7 +226,7 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
     // Eigen
     const Eigen::Vector3d e1{2.0, 4.0, 5.0};
     geometry_msgs::msg::Vector3 msg;
-    const geometry_msgs::msg::Vector3& msg2 = tf2::toMsg(e1, msg);
+    const geometry_msgs::msg::Vector3 & msg2 = tf2::toMsg(e1, msg);
 
     // returned reference is second argument
     EXPECT_EQ(&msg2, &msg);
@@ -286,7 +338,7 @@ TEST(TfEigenKdl, TestVector3dVector)
   EXPECT_EQ(eigen_v, eigen_v1);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -32,14 +32,49 @@
 #define TF2__IMPL__CONVERT_H_
 
 #include <geometry_msgs/msg/quaternion.hpp>
+#include <std_msgs/msg/header.hpp>
 
 #include "../time.h"
 #include "forward.h"
+
+#include <type_traits>
+
 
 namespace tf2
 {
 namespace impl
 {
+
+/// Helper to always trigger \c static_assert s
+template<typename T>
+constexpr bool alwaysFalse = false;
+
+/** \brief Check whether a message is stamped and has a std_msgs::msg::Header member.
+ *
+ * It will be indicated with the static member valiable \c value .
+ * \tparam Message The message to check
+ */
+template<typename Message, typename = int>
+struct MessageHasStdHeader : std::false_type {};
+
+/** \brief Check whether a message is stamped and has a std_msgs::msg::Header member.
+ *
+ * It will be indicated with the static member valiable \c value .
+ * \tparam Message The message to check
+ */
+template<typename Message>
+class MessageHasStdHeader<Message, decltype(&Message::header, 0)>
+{
+  template<typename Alloc>
+  static std::true_type headerIsStdHeader(std_msgs::msg::Header_<Alloc>);
+  template<typename = void>
+  static std::false_type headerIsStdHeader(...);
+
+public:
+  /// true if Message has a member \c header of type std_msgs::msg::Header.
+  static constexpr bool value = decltype(headerIsStdHeader(std::declval<Message>().header))::value;
+};
+
 /**
  * \brief Mapping between Datatypes (like \c Vector3d ) and their default ROS Message types.
  *
@@ -52,6 +87,9 @@ namespace impl
 template<class Datatype, class>
 struct DefaultMessageForDatatype
 {
+  static_assert(
+    alwaysFalse<Datatype>, "No default message type defined, "
+    "please check your header file includes!");
   // using type = ...;
 };
 
@@ -73,6 +111,9 @@ struct DefaultMessageForDatatype
 template<class Datatype, class>
 struct DefaultTransformType
 {
+  static_assert(
+    alwaysFalse<Datatype>, "No default transform type defined, "
+    "please check your header file includes!");
   // using type = ...;
 };
 
@@ -100,6 +141,9 @@ struct DefaultTransformType
 template<class Datatype, class Message, class>
 struct ConversionImplementation
 {
+  static_assert(
+    alwaysFalse<Datatype>, "No Conversion Implementation available, "
+    "please check your header file includes!");
   // void toMsg(const Datatype&, Message&);
   // void fromMsg(const Message&, Datatype&);
 };
@@ -140,6 +184,9 @@ struct ConversionImplementation
 template<class StampedMessage>
 struct StampedMessageTraits
 {
+  static_assert(
+    alwaysFalse<StampedMessage>, "No traits for this stamped message type available, "
+    "please check your header file includes!");
   // using UntampedType = ...;
   // static UntampedType& accessMessage(StampedMsg &);
   // static UntampedType getMessage(StampedMsg const&);
@@ -172,6 +219,9 @@ struct StampedMessageTraits
 template<class UnstampedMessage>
 struct UnstampedMessageTraits
 {
+  static_assert(
+    alwaysFalse<UnstampedMessage>, "No traits for this message type available, "
+    "please check your header file includes!");
   // using StampedType = ...;
   // using StampedTypeWithCovariance = ...;
 };
@@ -364,41 +414,36 @@ inline void Converter<false, false>::convert(const A & a, B & b)
   fromMsg<>(toMsg<>(a), b);
 }
 
-template<typename T>
-using void_t = void;
-
 /**
  * \brief Default implementation for extracting timestamps and frame IDs.
  *
  * Both static member functions are for stamped ROS messages.
- * They are SFINAE'd out if T is not a stamped ROS message.
  *
  * \tparam T Arbitrary datatype
  */
 template<typename T, int>
 struct StampedAttributesHelper
 {
+  static_assert(
+    MessageHasStdHeader<T>::value,
+    "Trying to use default implementation for stamped message, "
+    "but the datatype does not have a Header member.");
+
   /**\brief Get the timestamp from data
-   * \param t The data input.
+   * \param[in] t The data input.
    * \return The timestamp associated with the data.
-   *
-   * The second parameter is needed to hide the default implementation if T is not a stamped ROS message.
    */
-  static tf2::TimePoint getTimestamp(
-    const T & t, void_t<typename StampedMessageTraits<T>::UntampedType> * = nullptr)
+  static tf2::TimePoint getTimestamp(const T & t)
   {
     tf2::TimePoint timestamp;
     tf2::fromMsg<>(t.header.stamp, timestamp);
     return timestamp;
   }
   /**\brief Get the frame_id from data
-   * \param t The data input.
+   * \param[in] t The data input.
    * \return The frame_id associated with the data.
-   *
-   * The second parameter is needed to hide the default implementation if T is not a stamped ROS message.
    */
-  static std::string getFrameId(
-    const T & t, void_t<typename StampedMessageTraits<T>::UntampedType> * = nullptr)
+  static std::string getFrameId(const T & t)
   {
     return t.header.frame_id;
   }
