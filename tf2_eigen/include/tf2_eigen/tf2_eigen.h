@@ -125,29 +125,29 @@ struct EigenTransformImpl
 
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and Eigen::Affine3d.
 template<>
-struct ImplDetails<Eigen::Affine3d, geometry_msgs::msg::Transform>
+struct ConversionImplementation<Eigen::Affine3d, geometry_msgs::msg::Transform>
   : EigenTransformImpl<Eigen::Affine>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and Eigen::Isometry3d.
 template<>
-struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Transform>
+struct ConversionImplementation<Eigen::Isometry3d, geometry_msgs::msg::Transform>
   : EigenTransformImpl<Eigen::Isometry>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Point and Eigen::Vector3d.
 template<>
-struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Point>
-  : DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Point>
+struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3d and Eigen::Vector3d.
 template<>
-struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Vector3>
-  : DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Vector3>
+struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
 {
 };
 
@@ -161,7 +161,7 @@ struct DefaultTransformType<Eigen::Vector3d>
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
 template<>
-struct defaultMessage<Eigen::Vector3d>
+struct DefaultMessageForDatatype<Eigen::Vector3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
   using type = geometry_msgs::msg::Point;
@@ -169,7 +169,7 @@ struct defaultMessage<Eigen::Vector3d>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
 template<>
-struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
+struct ConversionImplementation<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
 {
   /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
    * \param[in] in The Eigen Quaterniond to convert.
@@ -195,7 +195,7 @@ struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
 template<>
-struct defaultMessage<Eigen::Quaterniond>
+struct DefaultMessageForDatatype<Eigen::Quaterniond>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
   using type = geometry_msgs::msg::Quaternion;
@@ -280,21 +280,21 @@ struct EigenPoseImpl
 
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and Eigen::Affine3d.
 template<>
-struct ImplDetails<Eigen::Affine3d, geometry_msgs::msg::Pose>
+struct ConversionImplementation<Eigen::Affine3d, geometry_msgs::msg::Pose>
   : public EigenPoseImpl<Eigen::Affine3d>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and Eigen::Isometry3d.
 template<>
-struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Pose>
+struct ConversionImplementation<Eigen::Isometry3d, geometry_msgs::msg::Pose>
   : public EigenPoseImpl<Eigen::Isometry3d>
 {
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
 template<>
-struct defaultMessage<Eigen::Affine3d>
+struct DefaultMessageForDatatype<Eigen::Affine3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
   using type = geometry_msgs::msg::Pose;
@@ -302,7 +302,7 @@ struct defaultMessage<Eigen::Affine3d>
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
 template<>
-struct defaultMessage<Eigen::Isometry3d>
+struct DefaultMessageForDatatype<Eigen::Isometry3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
   using type = geometry_msgs::msg::Pose;
@@ -310,7 +310,7 @@ struct defaultMessage<Eigen::Isometry3d>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Twist and Eigen::Matrix<double, 6, 1>.
 template<>
-struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
+struct ConversionImplementation<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
 {
   /** \brief Convert a Eigen 6x1 Matrix type to a Twist message.
    * \param[in] in The 6x1 Eigen Matrix to convert.
@@ -343,7 +343,7 @@ struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Matrix<double, 6, 1>.
 template<>
-struct defaultMessage<Eigen::Matrix<double, 6, 1>>
+struct DefaultMessageForDatatype<Eigen::Matrix<double, 6, 1>>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Matrix<double, 6, 1>.
   using type = geometry_msgs::msg::Twist;
@@ -351,7 +351,7 @@ struct defaultMessage<Eigen::Matrix<double, 6, 1>>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Wrench and Eigen::Matrix<double, 6, 1>.
 template<>
-struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Wrench>
+struct ConversionImplementation<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Wrench>
 {
   /** \brief Convert a Eigen 6x1 Matrix type to a Wrench message.
   * \param[in] in The 6x1 Eigen Matrix to convert.

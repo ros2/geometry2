@@ -38,7 +38,7 @@ namespace tf2
 namespace impl
 {
 template <class Datatype, class = void>
-struct defaultMessage;
+struct DefaultMessageForDatatype;
 template <class Datatype, class = void>
 struct DefaultTransformType;
 }  // namespace impl
@@ -52,7 +52,7 @@ class WithCovarianceStamped;
 template <typename A, typename B>
 B & toMsg(const A & a, B & b);
 
-template <typename A, typename B = typename impl::defaultMessage<A>::type>
+template <typename A, typename B = typename impl::DefaultMessageForDatatype<A>::type>
 B toMsg(const A & a);
 
 template <typename A, typename B>
@@ -66,16 +66,16 @@ std::array<double, 36> covarianceNestedToRowMajor(
 namespace impl
 {
 template <class Datatype, class Message, class = void>
-struct ImplDetails;
+struct ConversionImplementation;
 
 template <class StampedMessage>
-struct stampedMessageTraits;
+struct StampedMessageTraits;
 
 template <class UnstampedMessage>
-struct unstampedMessageTraits;
+struct UnstampedMessageTraits;
 
 template <typename T, int = 0>
-struct DefaultStampedImpl;
+struct StampedAttributesHelper;
 
 template <bool IS_MESSAGE_A, bool IS_MESSAGE_B>
 class Converter;

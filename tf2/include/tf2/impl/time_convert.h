@@ -42,9 +42,14 @@ namespace tf2
 {
 namespace impl
 {
-template <>
-struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
+/// \brief Conversion implementation for builtin_interfaces::msg::Time and tf2::TimePoint.
+template<>
+struct ConversionImplementation<tf2::TimePoint, builtin_interfaces::msg::Time>
 {
+  /** \brief Convert a tf2::TimePoint to a Time message.
+   * \param[in] t The tf2::TimePoint to convert.
+   * \param[out] time_msg The converted tf2::TimePoint, as a Time message.
+   */
   static void toMsg(const tf2::TimePoint & t, builtin_interfaces::msg::Time & time_msg)
   {
     std::chrono::nanoseconds ns =
@@ -55,6 +60,10 @@ struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
     time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
   }
 
+  /** \brief Convert a Time message to a tf2::TimePoint.
+   * \param[in] time_msg The Time message to convert.
+   * \param[out] t The converted message, as a tf2::TimePoint.
+   */
   static void fromMsg(const builtin_interfaces::msg::Time & time_msg, tf2::TimePoint & t)
   {
     int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
@@ -63,9 +72,14 @@ struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
   }
 };
 
-template <>
-struct ImplDetails<tf2::Duration, builtin_interfaces::msg::Duration>
+/// \brief Conversion implementation for builtin_interfaces::msg::Duration and tf2::Duration.
+template<>
+struct ConversionImplementation<tf2::Duration, builtin_interfaces::msg::Duration>
 {
+  /** \brief Convert a tf2::Duration to a Duration message.
+   * \param[in] t The tf2::Duration to convert.
+   * \param[out] duration_msg The converted tf2::Duration, as a Duration message.
+   */
   static void toMsg(const tf2::Duration & t, builtin_interfaces::msg::Duration & duration_msg)
   {
     std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t);
@@ -74,6 +88,10 @@ struct ImplDetails<tf2::Duration, builtin_interfaces::msg::Duration>
     duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
   }
 
+  /** \brief Convert a Duration message to a tf2::Duration.
+   * \param[in] duration_msg The Duration message to convert.
+   * \param[out] duration The converted message, as a tf2::Duration.
+   */
   static void fromMsg(
     const builtin_interfaces::msg::Duration & duration_msg, tf2::Duration & duration)
   {
@@ -83,19 +101,27 @@ struct ImplDetails<tf2::Duration, builtin_interfaces::msg::Duration>
   }
 };
 
-template <>
-struct defaultMessage<tf2::TimePoint>
+/// \brief Default return type of tf2::toMsg() for tf2::TimePoint.
+template<>
+struct DefaultMessageForDatatype<tf2::TimePoint>
 {
+  /// \brief Default return type of tf2::toMsg() for tf2::TimePoint.
   using type = builtin_interfaces::msg::Time;
 };
 
-template <>
-struct defaultMessage<tf2::Duration>
+/// \brief Default return type of tf2::toMsg() for tf2::Duration.
+template<>
+struct DefaultMessageForDatatype<tf2::Duration>
 {
+  /// \brief Default return type of tf2::toMsg() for tf2::Duration.
   using type = builtin_interfaces::msg::Duration;
 };
 }  // namespace impl
 
+/** \brief Convert a Time message to a tf2::TimePoint.
+ * \param[in] time_msg The Time message to convert.
+ * \return The converted message, as a tf2::TimePoint.
+ */
 inline tf2::TimePoint TimePointFromMsg(const builtin_interfaces::msg::Time & time_msg)
 {
   TimePoint tp;
@@ -103,6 +129,10 @@ inline tf2::TimePoint TimePointFromMsg(const builtin_interfaces::msg::Time & tim
   return tp;
 }
 
+/** \brief Convert a Duration message to a tf2::Duration.
+ * \param[in] duration_msg The Duration message to convert.
+ * \return The converted message, as a tf2::Duration.
+ */
 inline tf2::Duration DurationFromMsg(const builtin_interfaces::msg::Duration & duration_msg)
 {
   Duration d;

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2021, Bjarne von Horn
  * All rights reserved.
@@ -41,43 +40,43 @@ namespace geometry_msgs
 {
 namespace msg
 {
-template <typename Alloc>
+template<typename Alloc>
 class Point_;
-template <typename Alloc>
+template<typename Alloc>
 class Vector_;
-template <typename Alloc>
+template<typename Alloc>
 class Quaternion_;
-template <typename Alloc>
+template<typename Alloc>
 class Pose_;
-template <typename Alloc>
+template<typename Alloc>
 class Twist_;
-template <typename Alloc>
+template<typename Alloc>
 class PoseWithCovariance_;
-template <typename Alloc>
+template<typename Alloc>
 class Wrench_;
-template <typename Alloc>
+template<typename Alloc>
 class PointStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class VectorStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class QuaternionStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class PoseStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class TwistStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class PoseWithCovarianceStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class WrenchStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class TransformStamped_;
-template <typename Alloc>
+template<typename Alloc>
 class Transform_;
-template <typename Alloc>
+template<typename Alloc>
 class Vector3_;
-template <typename Alloc>
+template<typename Alloc>
 class Vector3Stamped_;
-template <typename Alloc>
+template<typename Alloc>
 class TwistWithCovarianceStamped_;
 }  // namespace msg
 }  // namespace geometry_msgs
@@ -87,161 +86,307 @@ namespace tf2
 namespace impl
 {
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Point_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Point.
+ * \tparam Alloc Message Allocator
+*/
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Point_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::PointStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::PointStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Vector_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Vector.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Vector_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::VectorStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::VectorStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Quaternion_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Quaternion.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Quaternion_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::QuaternionStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::QuaternionStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Pose_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Pose.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Pose_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::PoseStamped_<Alloc>;
-  using stampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::PoseStamped_<Alloc>;
+  /// The corresponding stamped message type with covariance.
+  using StampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Twist_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Twist.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Twist_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::TwistStamped_<Alloc>;
-  using stampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::TwistStamped_<Alloc>;
+  /// The corresponding stamped message type with covariance.
+  using StampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::PoseWithCovariance_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::PoseWithCovariance.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::PoseWithCovariance_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
+  /// The corresponding stamped message type with covariance.
+  using StampedType = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Wrench_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Wrench.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Wrench_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::WrenchStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::WrenchStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Transform_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Transform.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Transform_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::TransformStamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::TransformStamped_<Alloc>;
 };
 
-template <typename Alloc>
-struct unstampedMessageTraits<geometry_msgs::msg::Vector3_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::Vector3.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct UnstampedMessageTraits<geometry_msgs::msg::Vector3_<Alloc>>
 {
-  using stampedType = geometry_msgs::msg::Vector3Stamped_<Alloc>;
+  /// The corresponding stamped message type.
+  using StampedType = geometry_msgs::msg::Vector3Stamped_<Alloc>;
 };
 
-template <class StampedMessage, class UnstampedMessage, UnstampedMessage StampedMessage::*member>
-struct defaultStampedMessageTraits
+/** \brief Template for fast implementation of StampedMessageTraits.
+ * \tparam StampedMessage Type of the stamped message.
+ * \tparam UnstampedMessage Type of the underlying message.
+ * \tparam member Pointer-to-member of the underlying message, e.g. \c &PoseStamped::pose .
+ */
+template<class StampedMessage, class UnstampedMessage, UnstampedMessage StampedMessage::* member>
+struct DefaultStampedMessageTraits
 {
-  using unstampedType = UnstampedMessage;
-  static unstampedType & accessMessage(StampedMessage & stamped) { return stamped.*member; }
-  static unstampedType getMessage(StampedMessage const & stamped) { return stamped.*member; }
+  /// The underlying message type.
+  using UntampedType = UnstampedMessage;
+
+  /** \brief Read-Write access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Reference to the unstamped message.
+   */
+  static UntampedType & accessMessage(StampedMessage & stamped) {return stamped.*member;}
+
+  /** \brief Read-only access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Copy of the unstamped message.
+   */
+  static UntampedType getMessage(StampedMessage const & stamped) {return stamped.*member;}
 };
 
 // we use partial specializations (with the allocator as template parameter)
 // to avoid including all the message definitons
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::PointStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::PointStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::PointStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::PointStamped_<Alloc>, geometry_msgs::msg::Point_<Alloc>,
-    &geometry_msgs::msg::PointStamped_<Alloc>::point>
+    & geometry_msgs::msg::PointStamped_<Alloc>::point>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::VectorStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::VectorStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::VectorStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::VectorStamped_<Alloc>, geometry_msgs::msg::Vector_<Alloc>,
-    &geometry_msgs::msg::VectorStamped_<Alloc>::vector>
+    & geometry_msgs::msg::VectorStamped_<Alloc>::vector>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::QuaternionStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::QuaternionStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::QuaternionStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::QuaternionStamped_<Alloc>, geometry_msgs::msg::Quaternion_<Alloc>,
-    &geometry_msgs::msg::QuaternionStamped_<Alloc>::quaternion>
+    & geometry_msgs::msg::QuaternionStamped_<Alloc>::quaternion>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::PoseStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::PoseStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::PoseStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::PoseStamped_<Alloc>, geometry_msgs::msg::Pose_<Alloc>,
-    &geometry_msgs::msg::PoseStamped_<Alloc>::pose>
+    & geometry_msgs::msg::PoseStamped_<Alloc>::pose>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::TwistStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::TwistStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::TwistStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::TwistStamped_<Alloc>, geometry_msgs::msg::Twist_<Alloc>,
-    &geometry_msgs::msg::TwistStamped_<Alloc>::twist>
+    & geometry_msgs::msg::TwistStamped_<Alloc>::twist>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::WrenchStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::WrenchStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::WrenchStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::WrenchStamped_<Alloc>, geometry_msgs::msg::Wrench_<Alloc>,
-    &geometry_msgs::msg::WrenchStamped_<Alloc>::wrench>
+    & geometry_msgs::msg::WrenchStamped_<Alloc>::wrench>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::TransformStamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::TransformStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::TransformStamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::TransformStamped_<Alloc>, geometry_msgs::msg::Transform_<Alloc>,
-    &geometry_msgs::msg::TransformStamped_<Alloc>::transform>
+    & geometry_msgs::msg::TransformStamped_<Alloc>::transform>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::Vector3Stamped_<Alloc>>
-: defaultStampedMessageTraits<
+/** \brief Traits for geometry_msgs::msg::Vector3Stamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::Vector3Stamped_<Alloc>>
+  : DefaultStampedMessageTraits<
     geometry_msgs::msg::Vector3Stamped_<Alloc>, geometry_msgs::msg::Vector3_<Alloc>,
-    &geometry_msgs::msg::Vector3Stamped_<Alloc>::vector>
+    & geometry_msgs::msg::Vector3Stamped_<Alloc>::vector>
 {
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::PoseWithCovarianceStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>>
 {
-  using unstampedType = geometry_msgs::msg::Pose_<Alloc>;
-  using stampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
-  using covarianceType = std::array<double, 36>;
+  /// The underlying message type.
+  using UntampedType = geometry_msgs::msg::Pose_<Alloc>;
+  /// The message type itself.
+  using StampedTypeWithCovariance = geometry_msgs::msg::PoseWithCovarianceStamped_<Alloc>;
+  /// The covariance type.
+  using CovarianceType = std::array<double, 36>;
 
-  static unstampedType & accessMessage(stampedTypeWithCovariance & stamped) { return stamped.pose.pose; }
-  static unstampedType getMessage(stampedTypeWithCovariance const & stamped) { return stamped.pose.pose; }
-  static covarianceType & accessCovariance(stampedTypeWithCovariance & stamped) { return stamped.pose.covariance; }
-  static covarianceType getCovariance(stampedTypeWithCovariance const & stamped) { return stamped.pose.covariance; }
+  /** \brief Read-Write access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Reference to the unstamped message.
+   */
+  static UntampedType & accessMessage(StampedTypeWithCovariance & stamped)
+  {
+    return stamped.pose.pose;
+  }
+  /** \brief Read-only access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Copy of the unstamped message.
+   */
+  static UntampedType getMessage(StampedTypeWithCovariance const & stamped)
+  {
+    return stamped.pose.pose;
+  }
+  /** \brief Read-Write access to the covariance.
+   * \param[in] stamped Reference to the stamped message with covariance.
+   * \return Reference to the covariance.
+   */
+  static CovarianceType & accessCovariance(StampedTypeWithCovariance & stamped)
+  {
+    return stamped.pose.covariance;
+  }
+  /** \brief Read-only access to the covariance.
+   * \param[in] stamped Reference to the stamped message with covariance.
+   * \return Copy of the covariance.
+   */
+  static CovarianceType getCovariance(StampedTypeWithCovariance const & stamped)
+  {
+    return stamped.pose.covariance;
+  }
 };
 
-template <typename Alloc>
-struct stampedMessageTraits<geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>>
+/** \brief Traits for geometry_msgs::msg::TwistWithCovarianceStamped.
+ * \tparam Alloc Message Allocator
+ */
+template<typename Alloc>
+struct StampedMessageTraits<geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>>
 {
-  using unstampedType = geometry_msgs::msg::Twist_<Alloc>;
-  using stampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
-  using covarianceType = std::array<double, 36>;
+  /// The underlying message type.
+  using UntampedType = geometry_msgs::msg::Twist_<Alloc>;
+  /// The message type itself.
+  using StampedTypeWithCovariance = geometry_msgs::msg::TwistWithCovarianceStamped_<Alloc>;
+  /// The covariance type.
+  using CovarianceType = std::array<double, 36>;
 
-  static unstampedType & accessMessage(stampedTypeWithCovariance & stamped) { return stamped.twist.twist; }
-  static unstampedType getMessage(stampedTypeWithCovariance const & stamped) { return stamped.twist.twist; }
-  static covarianceType & accessCovariance(stampedTypeWithCovariance & stamped) { return stamped.twist.covariance; }
-  static covarianceType getCovariance(stampedTypeWithCovariance const & stamped) { return stamped.twist.covariance; }
+  /** \brief Read-Write access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Reference to the unstamped message.
+   */
+  static UntampedType & accessMessage(StampedTypeWithCovariance & stamped)
+  {
+    return stamped.twist.twist;
+  }
+  /** \brief Read-only access to the underlying message.
+   * \param[in] stamped Reference to the stamped message.
+   * \return Copy of the unstamped message.
+   */
+  static UntampedType getMessage(StampedTypeWithCovariance const & stamped)
+  {
+    return stamped.twist.twist;
+  }
+  /** \brief Read-Write access to the covariance.
+   * \param[in] stamped Reference to the stamped message with covariance.
+   * \return Reference to the covariance.
+   */
+  static CovarianceType & accessCovariance(StampedTypeWithCovariance & stamped)
+  {
+    return stamped.twist.covariance;
+  }
+  /** \brief Read-only access to the covariance.
+   * \param[in] stamped Reference to the stamped message with covariance.
+   * \return Copy of the covariance.
+   */
+  static CovarianceType getCovariance(StampedTypeWithCovariance const & stamped)
+  {
+    return stamped.twist.covariance;
+  }
 };
 
 }  // namespace impl

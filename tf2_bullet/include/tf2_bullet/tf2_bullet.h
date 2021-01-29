@@ -54,7 +54,7 @@ namespace impl
 {
 /// \brief Default return type of tf2::toMsg() for btVector3.
 template<>
-struct defaultMessage<btVector3>
+struct DefaultMessageForDatatype<btVector3>
 {
   /// \brief Default return type of tf2::toMsg() for btVector3.
   using type = geometry_msgs::msg::Point;
@@ -62,7 +62,7 @@ struct defaultMessage<btVector3>
 
 /// \brief Default return type of tf2::toMsg() for btQuaternion.
 template<>
-struct defaultMessage<btQuaternion>
+struct DefaultMessageForDatatype<btQuaternion>
 {
   /// \brief Default return type of tf2::toMsg() for btQuaternion.
   using type = geometry_msgs::msg::Quaternion;
@@ -70,7 +70,7 @@ struct defaultMessage<btQuaternion>
 
 /// \brief Default return type of tf2::toMsg() for btTransform.
 template<>
-struct defaultMessage<btTransform>
+struct DefaultMessageForDatatype<btTransform>
 {
   /// \brief Default return type of tf2::toMsg() for btTransform.
   using type = geometry_msgs::msg::Transform;
@@ -78,26 +78,26 @@ struct defaultMessage<btTransform>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Point and btVector3.
 template<>
-struct ImplDetails<btVector3, geometry_msgs::msg::Point>
-  : DefaultVectorImpl<btVector3, geometry_msgs::msg::Point>
+struct ConversionImplementation<btVector3, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Point>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3 and btVector3.
 template<>
-struct ImplDetails<btVector3, geometry_msgs::msg::Vector3>
-  : DefaultVectorImpl<btVector3, geometry_msgs::msg::Vector3>
+struct ConversionImplementation<btVector3, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Vector3>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
 template<>
-struct ImplDetails<btQuaternion, geometry_msgs::msg::Quaternion>
-  : DefaultQuaternionImpl<btQuaternion> {};
+struct ConversionImplementation<btQuaternion, geometry_msgs::msg::Quaternion>
+  : DefaultQuaternionConversionImplementation<btQuaternion> {};
 
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and btTransform.
 template<>
-struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
+struct ConversionImplementation<btTransform, geometry_msgs::msg::Transform>
 {
   /** \brief Convert a Transform message to a btTransform type.
    * \param[in] in The message to convert.

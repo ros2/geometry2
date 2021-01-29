@@ -80,21 +80,21 @@ namespace impl
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3 and tf2::Vector3.
 template<>
-struct ImplDetails<tf2::Vector3, geometry_msgs::msg::Vector3>
-  : DefaultVectorImpl<tf2::Vector3, geometry_msgs::msg::Vector3>
+struct ConversionImplementation<tf2::Vector3, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<tf2::Vector3, geometry_msgs::msg::Vector3>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Point and tf2::Vector3.
 template<>
-struct ImplDetails<tf2::Vector3, geometry_msgs::msg::Point>
-  : DefaultVectorImpl<tf2::Vector3, geometry_msgs::msg::Point>
+struct ConversionImplementation<tf2::Vector3, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<tf2::Vector3, geometry_msgs::msg::Point>
 {
 };
 
 /// \brief Default return type of tf2::toMsg() for tf2::Vector3.
 template<>
-struct defaultMessage<tf2::Vector3>
+struct DefaultMessageForDatatype<tf2::Vector3>
 {
   /// \brief Default return type of tf2::toMsg() for tf2::Vector3.
   using type = geometry_msgs::msg::Vector3;
@@ -265,12 +265,12 @@ namespace impl
 {
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and tf2::Quaternion.
 template<>
-struct ImplDetails<tf2::Quaternion, geometry_msgs::msg::Quaternion>
-  : DefaultQuaternionImpl<tf2::Quaternion> {};
+struct ConversionImplementation<tf2::Quaternion, geometry_msgs::msg::Quaternion>
+  : DefaultQuaternionConversionImplementation<tf2::Quaternion> {};
 
 /// \brief Default return type of tf2::toMsg() for tf2::Quaternion.
 template<>
-struct defaultMessage<tf2::Quaternion>
+struct DefaultMessageForDatatype<tf2::Quaternion>
 {
   /// \brief Default return type of tf2::toMsg() for tf2::Quaternion.
   using type = geometry_msgs::msg::Quaternion;
@@ -327,7 +327,7 @@ namespace impl
 {
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and tf2::Transform.
 template<>
-struct ImplDetails<tf2::Transform, geometry_msgs::msg::Transform>
+struct ConversionImplementation<tf2::Transform, geometry_msgs::msg::Transform>
 {
   /** \brief Convert a tf2 Transform type to its equivalent geometry_msgs representation.
    * \param[in] in in A tf2 Transform object.
@@ -357,7 +357,7 @@ struct ImplDetails<tf2::Transform, geometry_msgs::msg::Transform>
 
 /// \brief Default return type of tf2::toMsg() for tf2::Transform.
 template<>
-struct defaultMessage<tf2::Transform>
+struct DefaultMessageForDatatype<tf2::Transform>
 {
   /// \brief Default return type of tf2::toMsg() for tf2::Transform.
   using type = geometry_msgs::msg::Transform;
@@ -388,7 +388,7 @@ namespace impl
 
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and tf2::Transform.
 template<>
-struct ImplDetails<tf2::Transform, geometry_msgs::msg::Pose>
+struct ConversionImplementation<tf2::Transform, geometry_msgs::msg::Pose>
 {
   /** \brief Convert a tf2 Transform type to an equivalent geometry_msgs Pose message.
    * \param[in] in A tf2 Transform object.
@@ -427,7 +427,7 @@ struct DefaultTransformType<tf2::Transform>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Wrench and tf2::Transform.
 template<>
-struct ImplDetails<std::array<tf2::Vector3, 2>, geometry_msgs::msg::Wrench>
+struct ConversionImplementation<std::array<tf2::Vector3, 2>, geometry_msgs::msg::Wrench>
 {
   /** \brief Convert a tf2 Wrench to an equivalent geometry_msgs Wrench message.
    * \param[in] in A tf2 Wrench object.
@@ -452,7 +452,7 @@ struct ImplDetails<std::array<tf2::Vector3, 2>, geometry_msgs::msg::Wrench>
 
 /// \brief Default return type of tf2::toMsg() for std::array<tf2::Vector3, 2>.
 template<>
-struct defaultMessage<std::array<tf2::Vector3, 2>>
+struct DefaultMessageForDatatype<std::array<tf2::Vector3, 2>>
 {
   /// \brief Default return type of tf2::toMsg() for std::array<tf2::Vector3, 2>.
   using type = geometry_msgs::msg::Wrench;

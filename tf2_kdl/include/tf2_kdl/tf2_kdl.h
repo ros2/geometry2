@@ -78,7 +78,7 @@ namespace impl
 {
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and KDL::Frame.
 template<>
-struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
+struct ConversionImplementation<KDL::Frame, geometry_msgs::msg::Transform>
 {
   /** \brief Convert a Transform message type to a KDL Frame.
    * \param[in] in The Transform message to convert.
@@ -106,21 +106,21 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3 and KDL::Vector.
 template<>
-struct ImplDetails<KDL::Vector, geometry_msgs::msg::Vector3>
-  : DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Vector3>
+struct ConversionImplementation<KDL::Vector, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<KDL::Vector, geometry_msgs::msg::Vector3>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Point and KDL::Vector.
 template<>
-struct ImplDetails<KDL::Vector, geometry_msgs::msg::Point>
-  : DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Point>
+struct ConversionImplementation<KDL::Vector, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<KDL::Vector, geometry_msgs::msg::Point>
 {
 };
 
 /// \brief Default return type of tf2::toMsg() for KDL::Vector.
 template<>
-struct defaultMessage<KDL::Vector>
+struct DefaultMessageForDatatype<KDL::Vector>
 {
   /// \brief Default return type of tf2::toMsg() for KDL::Vector.
   using type = geometry_msgs::msg::Point;
@@ -139,7 +139,7 @@ struct DefaultTransformType<KDL::Vector>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Twist and KDL::Twist.
 template<>
-struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
+struct ConversionImplementation<KDL::Twist, geometry_msgs::msg::Twist>
 {
   /** \brief Convert a KDL Twist type to a Twist message.
    * \param[in] in The KDL Twist to convert.
@@ -172,7 +172,7 @@ struct DefaultTransformType<KDL::Twist>
 
 /// \brief Default return type of tf2::toMsg() for KDL::Twist.
 template<>
-struct defaultMessage<KDL::Twist>
+struct DefaultMessageForDatatype<KDL::Twist>
 {
   /// \brief Default return type of tf2::toMsg() for KDL::Twist.
   using type = geometry_msgs::msg::Twist;
@@ -184,7 +184,7 @@ struct defaultMessage<KDL::Twist>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Wrench and KDL::Wrench.
 template<>
-struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
+struct ConversionImplementation<KDL::Wrench, geometry_msgs::msg::Wrench>
 {
   /** \brief Convert a KDL Wrench type to a Wrench message.
    * \param[in] in The KDL Wrench to convert.
@@ -209,7 +209,7 @@ struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
 
 /// \brief Default return type of tf2::toMsg() for KDL::Wrench.
 template<>
-struct defaultMessage<KDL::Wrench>
+struct DefaultMessageForDatatype<KDL::Wrench>
 {
   /// \brief Default return type of tf2::toMsg() for KDL::Wrench.
   using type = geometry_msgs::msg::Wrench;
@@ -250,7 +250,7 @@ namespace impl
 {
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and KDL::Frame.
 template<>
-struct ImplDetails<KDL::Frame, geometry_msgs::msg::Pose>
+struct ConversionImplementation<KDL::Frame, geometry_msgs::msg::Pose>
 {
   /** \brief Convert a KDL Frame type to a Pose message.
    * \param[in] in The KDL Frame to convert.
@@ -275,7 +275,7 @@ struct ImplDetails<KDL::Frame, geometry_msgs::msg::Pose>
 
 /// \brief Default return type of tf2::toMsg() for KDL::Frame.
 template<>
-struct defaultMessage<KDL::Frame>
+struct DefaultMessageForDatatype<KDL::Frame>
 {
   /// \brief Default return type of tf2::toMsg() for KDL::Frame.
   using type = geometry_msgs::msg::Pose;
@@ -291,7 +291,7 @@ struct DefaultTransformType<KDL::Frame>
 
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and KDL::Rotation.
 template<>
-struct ImplDetails<KDL::Rotation, geometry_msgs::msg::Quaternion>
+struct ConversionImplementation<KDL::Rotation, geometry_msgs::msg::Quaternion>
 {
   /** \brief Convert a KDL Rotation type to a Quaternion message.
    * \param[in] r The KDL Rotation to convert.
@@ -314,7 +314,7 @@ struct ImplDetails<KDL::Rotation, geometry_msgs::msg::Quaternion>
 
 /// \brief Default return type of tf2::toMsg() for KDL::Rotation.
 template<>
-struct defaultMessage<KDL::Rotation>
+struct DefaultMessageForDatatype<KDL::Rotation>
 {
   /// \brief Default return type of tf2::toMsg() for KDL::Rotation.
   using type = geometry_msgs::msg::Quaternion;
