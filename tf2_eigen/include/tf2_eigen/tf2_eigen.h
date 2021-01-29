@@ -59,10 +59,14 @@ Eigen::Isometry3d transformToEigen(const geometry_msgs::msg::Transform & t)
  * \param t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to an Eigen Isometry3d transform.
  */
+[[deprecated("Please use tf2::fromMsg()")]]
 inline
-Eigen::Isometry3d transformToEigen(const geometry_msgs::msg::TransformStamped & t)
+Eigen::Isometry3d transformToEigen(
+  const geometry_msgs::msg::TransformStamped & t)
 {
-  return transformToEigen(t.transform);
+  Eigen::Isometry3d res;
+  tf2::fromMsg<>(t.transform, res);
+  return res;
 }
 
 /** \brief Convert an Eigen Affine3d transform to the equivalent geometry_msgs message type.

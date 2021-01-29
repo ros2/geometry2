@@ -56,7 +56,9 @@ namespace tf2
  * \param[in] t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to an KDL Frame.
  */
-inline KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped & t)
+[[deprecated("Please use tf2::fromMsg()")]] inline KDL::Frame
+transformToKDL(
+  const geometry_msgs::msg::TransformStamped & t)
 {
   KDL::Frame ans;
   tf2::fromMsg<>(t.transform, ans);
@@ -67,7 +69,8 @@ inline KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped & t)
  * \param[in] k The transform to convert, as an KDL Frame.
  * \return The transform converted to a TransformStamped message.
  */
-inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
+[[deprecated("Please use tf2::toMsg()")]] inline geometry_msgs::msg::TransformStamped
+kdlToTransform(const KDL::Frame & k)
 {
   geometry_msgs::msg::TransformStamped ans;
   tf2::toMsg<>(k, ans.transform);

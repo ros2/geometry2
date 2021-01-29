@@ -152,7 +152,9 @@ struct DefaultTransformType<btQuaternion>
  * \param[in] t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to a Bullet btTransform.
  */
-inline btTransform transformToBullet(const geometry_msgs::msg::TransformStamped & t)
+[[deprecated("Please use tf2::fromMsg()")]]
+inline btTransform transformToBullet(
+  const geometry_msgs::msg::TransformStamped & t)
 {
   btTransform ans;
   fromMsg<>(t.transform, ans);

@@ -62,8 +62,10 @@ namespace tf2
  * \param t TransformStamped message to convert.
  * \return The converted KDL Frame.
  */
+[[deprecated("Please use tf2::fromMsg()")]]
 inline
-KDL::Frame gmTransformToKDL(const geometry_msgs::msg::TransformStamped & t)
+KDL::Frame
+gmTransformToKDL(const geometry_msgs::msg::TransformStamped & t)
 {
   return KDL::Frame(
     KDL::Rotation::Quaternion(
