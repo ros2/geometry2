@@ -41,11 +41,9 @@ import tf2_ros
 
 
 def main():
-    print(f'sys.argv {sys.argv}')
     rclpy.init(args=sys.argv)
 
     args_without_ros = rclpy.utilities.remove_ros_args(sys.argv)
-    print(f'args no ros: {args_without_ros}')
     parser = argparse.ArgumentParser(
         description='Create a diagram of the TF frames being broadcast over ROS')
     parser.add_argument(
