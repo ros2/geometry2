@@ -27,6 +27,7 @@
 
 # author: Wim Meeussen
 
+import argparse
 import subprocess
 import sys
 import time
@@ -39,8 +40,18 @@ import tf2_py as tf2
 import tf2_ros
 
 
-def main(args=None):
-    rclpy.init(args=args)
+def main():
+    print(f'sys.argv {sys.argv}')
+    rclpy.init(args=sys.argv)
+
+    args_without_ros = rclpy.utilities.remove_ros_args(sys.argv)
+    print(f'args no ros: {args_without_ros}')
+    parser = argparse.ArgumentParser(
+        description='Create a diagram of the TF frames being broadcast over ROS')
+    parser.add_argument(
+        '--wait-time', '-t', type=float, default=5.0,
+        help='Listen to the /tf topic for this many seconds before rendering the frame tree')
+    parsed_args = parser.parse_args(args=args_without_ros[1:])
 
     node = rclpy.create_node('view_frames')
 
@@ -51,9 +62,9 @@ def main(args=None):
     executor.add_node(node)
 
     # listen to tf for 5 seconds
-    node.get_logger().info('Listening to tf data for 5 seconds...')
+    node.get_logger().info(f'Listening to tf data for {parsed_args.wait_time} seconds...')
     start_time = time.time()
-    while (time.time() - start_time) < 5.0:
+    while (time.time() - start_time) < parsed_args.wait_time:
         rclpy.spin_once(node, timeout_sec=0.1)
 
     node.get_logger().info('Generating graph in frames.pdf file...')
