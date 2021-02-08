@@ -21,7 +21,18 @@ install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION include/${PROJECT_NAME})
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_cppcheck REQUIRED)
+  find_package(ament_cmake_cpplint REQUIRED)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  find_package(ament_cmake_uncrustify REQUIRED)
+
+  ament_cppcheck(LANGUAGE "c++")
+  ament_cpplint()
+  ament_lint_cmake()
+  ament_uncrustify(LANGUAGE "c++")
+
   find_package(ament_cmake_gtest REQUIRED)
+
   ament_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
   if(TARGET tf2_eigen-test)
     target_include_directories(tf2_eigen-test PUBLIC

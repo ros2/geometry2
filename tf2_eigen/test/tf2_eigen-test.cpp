@@ -34,23 +34,21 @@
 #endif
 #endif
 
-#include <math.h>
-
-
 #include <gtest/gtest.h>
+#include <rclcpp/clock.hpp>
 #include <tf2/convert.h>
 #include <tf2_eigen/tf2_eigen.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 
-
+#include <cmath>
 #include <memory>
-#include <rclcpp/clock.hpp>
 
 // TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
 // TEST(TfEigen, ConvertVector3dStamped)
 // {
-//   const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3), tf2::TimePoint(std::chrono::seconds(5)), "test");
+//   const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3),
+//     tf2::TimePoint(std::chrono::seconds(5)), "test");
 
 //   tf2::Stamped<Eigen::Vector3d> v1;
 //   geometry_msgs::msg::PointStamped p1;
@@ -74,8 +72,10 @@
 
 // TEST(TfEigen, ConvertAffine3dStamped)
 // {
-//   const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
-//   const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(std::chrono::seconds(42)), "test_frame");
+//   const Eigen::Affine3d v_nonstamped(
+//     Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+//   const tf2::Stamped<Eigen::Affine3d> v(
+//     v_nonstamped, tf2::TimePoint(std::chrono::seconds(42)), "test_frame");
 
 //   tf2::Stamped<Eigen::Affine3d> v1;
 //   geometry_msgs::msg::PoseStamped p1;
@@ -90,7 +90,8 @@
 
 // TEST(TfEigen, ConvertAffine3d)
 // {
-//   const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+//   const Eigen::Affine3d v(
+//     Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
 
 //   Eigen::Affine3d v1;
 //   geometry_msgs::msg::Pose p1;
@@ -105,14 +106,16 @@ TEST(TfEigen, ConvertTransform)
 {
   Eigen::Matrix4d tm;
 
-  double alpha = M_PI/4.0;
-  double theta = M_PI/6.0;
-  double gamma = M_PI/12.0;
+  double alpha = M_PI / 4.0;
+  double theta = M_PI / 6.0;
+  double gamma = M_PI / 12.0;
 
-  tm << cos(theta)*cos(gamma),-cos(theta)*sin(gamma),sin(theta), 1, //
-  cos(alpha)*sin(gamma)+sin(alpha)*sin(theta)*cos(gamma),cos(alpha)*cos(gamma)-sin(alpha)*sin(theta)*sin(gamma),-sin(alpha)*cos(theta), 2, //
-  sin(alpha)*sin(gamma)-cos(alpha)*sin(theta)*cos(gamma),cos(alpha)*sin(theta)*sin(gamma)+sin(alpha)*cos(gamma),cos(alpha)*cos(theta), 3, //
-  0, 0, 0, 1;
+  tm << cos(theta) * cos(gamma), -cos(theta) * sin(gamma), sin(theta), 1,
+    cos(alpha) * sin(gamma) + sin(alpha) * sin(theta) * cos(gamma),
+    cos(alpha) * cos(gamma) - sin(alpha) * sin(theta) * sin(gamma), -sin(alpha) * cos(theta), 2,
+    sin(alpha) * sin(gamma) - cos(alpha) * sin(theta) * cos(gamma),
+    cos(alpha) * sin(theta) * sin(gamma) + sin(alpha) * cos(gamma), cos(alpha) * cos(theta), 3,
+    0, 0, 0, 1;
 
   Eigen::Affine3d T(tm);
 
