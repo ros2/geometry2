@@ -26,7 +26,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Wim Meeussen */
+/** \author Wim Meeussen, Bjarne von Horn */
 
 #ifndef TF2_BULLET__TF2_BULLET_H_
 #define TF2_BULLET__TF2_BULLET_H_
@@ -88,38 +88,42 @@ namespace tf2
       tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
   }
 
-/** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
- * This function is a specialization of the toMsg template defined in tf2/convert.h
- * \param in The timestamped Bullet btVector3 to convert.
- * \return The vector converted to a PointStamped message.
- */
-  inline
-  geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped < btVector3 > & in)
+namespace impl
+{
+template <>
+struct defaultMessage<btVector3>
+{
+  using type = geometry_msgs::msg::Point;
+};
+
+template <>
+struct ImplDetails<btVector3, geometry_msgs::msg::Point>
+{
+  /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
+   * This function is a specialization of the toMsg template defined in tf2/convert.h
+   * \param in The timestamped Bullet btVector3 to convert.
+   * \return The vector converted to a PointStamped message.
+   */
+  static void toMsg(const btVector3 & in, geometry_msgs::msg::Point & msg)
   {
-    geometry_msgs::msg::PointStamped msg;
-    msg.header.stamp = tf2_ros::toMsg(in.stamp_);
-    msg.header.frame_id = in.frame_id_;
-    msg.point.x = in[0];
-    msg.point.y = in[1];
-    msg.point.z = in[2];
-    return msg;
+    msg.x = in[0];
+    msg.y = in[1];
+    msg.z = in[2];
   }
 
-/** \brief Convert a PointStamped message type to a stamped Bullet-specific Vector3 type.
- * This function is a specialization of the fromMsg template defined in tf2/convert.h
- * \param msg The PointStamped message to convert.
- * \param out The point converted to a timestamped Bullet Vector3.
- */
-  inline
-  void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped < btVector3 > & out)
+  /** \brief Convert a PointStamped message type to a stamped Bullet-specific Vector3 type.
+   * This function is a specialization of the fromMsg template defined in tf2/convert.h
+   * \param msg The PointStamped message to convert.
+   * \param out The point converted to a timestamped Bullet Vector3.
+   */
+  static void fromMsg(const geometry_msgs::msg::Point & msg, btVector3 & out)
   {
-    out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
-    out.frame_id_ = msg.header.frame_id;
-    out[0] = static_cast < float > (msg.point.x);
-    out[1] = static_cast < float > (msg.point.y);
-    out[2] = static_cast < float > (msg.point.z);
+    out[0] = msg.x;
+    out[1] = msg.y;
+    out[2] = msg.z;
   }
-
+};
+}  // namespace impl
 
 /** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Transform data type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h
