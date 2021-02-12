@@ -55,6 +55,12 @@ struct defaultMessage
   // using type = ...;
 };
 
+template <class Datatype, class>
+struct DefaultTransformType
+{
+  // using type = ...;
+};
+
 /**
  * \brief Conversion details between a Message and a non-Message datatype.
  * \tparam Datatype Non-Message datatype like \c Vector3d

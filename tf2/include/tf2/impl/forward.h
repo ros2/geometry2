@@ -37,7 +37,9 @@ namespace impl
 {
 template <class Datatype, class = void>
 struct defaultMessage;
-}
+template <class Datatype, class = void>
+struct DefaultTransformType;
+}  // namespace impl
 
 template <typename T>
 class Stamped;

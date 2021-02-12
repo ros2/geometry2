@@ -124,29 +124,6 @@ struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Transform>
 {
 };
 
-}  // namespace impl
-
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h,
- * although it can not be used in tf2_ros::BufferInterface::transform because this
- * functions rely on the existence of a time stamp and a frame id in the type which should
- * get transformed.
- * \param t_in The vector to transform, as a Eigen Vector3d data type.
- * \param t_out The transformed vector, as a Eigen Vector3d data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline
-void doTransform(
-  const Eigen::Vector3d & t_in,
-  Eigen::Vector3d & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = Eigen::Vector3d(transformToEigen(transform) * t_in);
-}
-
-namespace impl
-{
 template <>
 struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Point>
 : DefaultVectorImpl<Eigen::Vector3d, geometry_msgs::msg::Point>
@@ -159,61 +136,19 @@ struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Vector3>
 {
 };
 
+
+template<>
+struct DefaultTransformType<Eigen::Vector3d>
+{
+  using type = Eigen::Isometry3d;
+};
+
 template <>
 struct defaultMessage<Eigen::Vector3d>
 {
   using type = geometry_msgs::msg::Point;
 };
-}  // namespace impl
 
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The vector to transform, as a timestamped Eigen Vector3d data type.
- * \param t_out The transformed vector, as a timestamped Eigen Vector3d data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline void doTransform(
-  const tf2::Stamped<Eigen::Vector3d> & t_in, tf2::Stamped<Eigen::Vector3d> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<Eigen::Vector3d>(
-    transformToEigen(transform) * t_in,
-    transform.header.stamp,
-    transform.header.frame_id);
-}
-
-/** \brief Apply a geometry_msgs Transform to an Eigen Affine3d transform.
- * This function is a specialization of the doTransform template defined in tf2/convert.h,
- * although it can not be used in tf2_ros::BufferInterface::transform because this
- * function relies on the existence of a time stamp and a frame id in the type which should
- * get transformed.
- * \param t_in The frame to transform, as a Eigen Affine3d transform.
- * \param t_out The transformed frame, as a Eigen Affine3d transform.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline
-void doTransform(
-  const Eigen::Affine3d & t_in,
-  Eigen::Affine3d & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = Eigen::Affine3d(transformToEigen(transform) * t_in);
-}
-
-template<>
-inline
-void doTransform(
-  const Eigen::Isometry3d & t_in,
-  Eigen::Isometry3d & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = Eigen::Isometry3d(transformToEigen(transform) * t_in);
-}
-
-namespace impl
-{
 /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param in The Eigen Quaterniond to convert.
@@ -414,6 +349,19 @@ struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Wrench>
   }
 };
 
+template<>
+struct DefaultTransformType<Eigen::Affine3d>
+{
+  using type = Eigen::Isometry3d;
+};
+
+
+template<>
+struct DefaultTransformType<Eigen::Isometry3d>
+{
+  using type = Eigen::Isometry3d;
+};
+
 }  // namespace impl
 
 /** \brief Convert a Eigen::Vector3d type to a geometry_msgs::msg::Vector3.
@@ -432,47 +380,6 @@ geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
   msg.z = in(2);
   return msg;
 }
-
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen Affine3d transform.
- * This function is a specialization of the doTransform template defined in tf2/convert.h,
- * although it can not be used in tf2_ros::BufferInterface::transform because this
- * function relies on the existence of a time stamp and a frame id in the type which should
- * get transformed.
- * \param t_in The frame to transform, as a timestamped Eigen Affine3d transform.
- * \param t_out The transformed frame, as a timestamped Eigen Affine3d transform.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline void doTransform(
-  const tf2::Stamped<Eigen::Affine3d> & t_in,
-  tf2::Stamped<Eigen::Affine3d> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<Eigen::Affine3d>(
-    transformToEigen(transform) * t_in,
-      transform.header.stamp,transform.header.frame_id);
-}
-
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen Isometry transform.
- * This function is a specialization of the doTransform template defined in tf2/convert.h,
- * although it can not be used in tf2_ros::BufferInterface::transform because this
- * function relies on the existence of a time stamp and a frame id in the type which should
- * get transformed.
- * \param t_in The frame to transform, as a timestamped Eigen Isometry transform.
- * \param t_out The transformed frame, as a timestamped Eigen Isometry transform.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline void doTransform(
-  const tf2::Stamped<Eigen::Isometry3d> & t_in,
-  tf2::Stamped<Eigen::Isometry3d> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<Eigen::Isometry3d>(
-    transformToEigen(transform) * t_in, transform.header.stamp,
-      transform.header.frame_id);
-}
-
 }  // namespace tf2
 
 #endif  // TF2_EIGEN_H

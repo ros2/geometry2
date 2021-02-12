@@ -73,24 +73,6 @@ inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
   return ans;
 }
 
-// ---------------------
-// Vector
-// ---------------------
-/** \brief Apply a geometry_msgs TransformStamped to an KDL-specific Vector type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The vector to transform, as a timestamped KDL Vector data type.
- * \param t_out The transformed vector, as a timestamped KDL Vector data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template <>
-inline void doTransform(
-  const tf2::Stamped<KDL::Vector> & t_in, tf2::Stamped<KDL::Vector> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<KDL::Vector>(
-    transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
-
 namespace impl
 {
 template <>
@@ -130,27 +112,16 @@ struct defaultMessage<KDL::Vector>
   using type = geometry_msgs::msg::Point;
 };
 
-}  // namespace impl
+template <>
+struct DefaultTransformType<KDL::Vector>
+{
+  using type = KDL::Frame;
+};
 
 // ---------------------
 // Twist
 // ---------------------
-/** \brief Apply a geometry_msgs TransformStamped to an KDL-specific Twist type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The twist to transform, as a timestamped KDL Twist data type.
- * \param t_out The transformed Twist, as a timestamped KDL Frame data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template <>
-inline void doTransform(
-  const tf2::Stamped<KDL::Twist> & t_in, tf2::Stamped<KDL::Twist> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<KDL::Twist>(
-    transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
-namespace impl
-{
+
 template <>
 struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
 {
@@ -178,32 +149,21 @@ struct ImplDetails<KDL::Twist, geometry_msgs::msg::Twist>
 };
 
 template <>
+struct DefaultTransformType<KDL::Twist>
+{
+  using type = KDL::Frame;
+};
+
+template <>
 struct defaultMessage<KDL::Twist>
 {
   using type = geometry_msgs::msg::Twist;
 };
-}  // namespace impl
 
 // ---------------------
 // Wrench
 // ---------------------
-/** \brief Apply a geometry_msgs TransformStamped to an KDL-specific Wrench type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The wrench to transform, as a timestamped KDL Wrench data type.
- * \param t_out The transformed Wrench, as a timestamped KDL Frame data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template <>
-inline void doTransform(
-  const tf2::Stamped<KDL::Wrench> & t_in, tf2::Stamped<KDL::Wrench> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<KDL::Wrench>(
-    transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
 
-namespace impl
-{
 template <>
 struct ImplDetails<KDL::Wrench, geometry_msgs::msg::Wrench>
 {
@@ -235,6 +195,12 @@ struct defaultMessage<KDL::Wrench>
 {
   using type = geometry_msgs::msg::Wrench;
 };
+
+template <>
+struct DefaultTransformType<KDL::Wrench>
+{
+  using type = KDL::Frame;
+};
 }  // namespace impl
 
 template <int options, int rows, int cols>
@@ -248,21 +214,6 @@ void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::W
 // ---------------------
 // Frame
 // ---------------------
-/** \brief Apply a geometry_msgs TransformStamped to a KDL-specific Frame data type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The frame to transform, as a timestamped KDL Frame.
- * \param t_out The transformed frame, as a timestamped KDL Frame.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template <>
-inline void doTransform(
-  const tf2::Stamped<KDL::Frame> & t_in, tf2::Stamped<KDL::Frame> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<KDL::Frame>(
-    transformToKDL(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
-
 namespace impl
 {
 template <>
@@ -295,6 +246,12 @@ template <>
 struct defaultMessage<KDL::Frame>
 {
   using type = geometry_msgs::msg::Pose;
+};
+
+template <>
+struct DefaultTransformType<KDL::Frame>
+{
+  using type = KDL::Frame;
 };
 
 template <>

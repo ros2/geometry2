@@ -42,11 +42,11 @@
 #include "impl/stamped_traits.h"
 #include "impl/time_convert.h"
 #include "time.h"
+#include "transform_datatypes.h"
 #include "visibility_control.h"
 
 namespace tf2
 {
-
 /**\brief The templated function expected to be able to do a transform
  *
  * This is the method which tf2 will use to try to apply a transform for any given datatype.
@@ -56,10 +56,25 @@ namespace tf2
  *
  * This method needs to be implemented by client library developers
  */
-template<class T>
+template <class T>
 void doTransform(
-  const T & data_in, T & data_out,
-  const geometry_msgs::msg::TransformStamped & transform);
+  const T & data_in, T & data_out, const geometry_msgs::msg::TransformStamped & transform)
+{
+  using TransformType = typename impl::DefaultTransformType<T>::type;
+  TransformType t;
+  tf2::fromMsg<>(transform.transform, t);
+  data_out = t * data_in;
+}
+
+template <class T>
+void doTransform(
+  tf2::Stamped<T> const & data_in, tf2::Stamped<T> & data_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  T tmp;
+  doTransform(static_cast<const T &>(data_in), tmp, transform);
+  data_out = tf2::Stamped<T>{tmp, transform.header.stamp, transform.header.frame_id};
+}
 
 /**\brief Get the timestamp from data
  * \param[in] t The data input.

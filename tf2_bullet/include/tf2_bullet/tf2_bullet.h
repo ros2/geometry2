@@ -84,7 +84,7 @@ struct ImplDetails<btVector3, geometry_msgs::msg::Vector3>
 
 template<>
 struct ImplDetails<btQuaternion, geometry_msgs::msg::Quaternion>
-: DefaultQuaternionImpl<btQuaternion> {};
+  : DefaultQuaternionImpl<btQuaternion> {};
 
 template<>
 struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
@@ -104,6 +104,24 @@ struct ImplDetails<btTransform, geometry_msgs::msg::Transform>
     tf2::toMsg<>(in.getOrigin(), out.translation);
   }
 };
+
+template<>
+struct DefaultTransformType<btTransform>
+{
+  using type = btTransform;
+};
+
+template<>
+struct DefaultTransformType<btVector3>
+{
+  using type = btTransform;
+};
+
+template<>
+struct DefaultTransformType<btQuaternion>
+{
+  using type = btTransform;
+};
 }  // namespace impl
 
 /** \brief Convert a timestamped transform to the equivalent Bullet data type.
@@ -116,37 +134,6 @@ inline btTransform transformToBullet(const geometry_msgs::msg::TransformStamped 
   fromMsg<>(t.transform, ans);
   return ans;
 }
-
-/** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Vector3 type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h
- * \param t_in The vector to transform, as a timestamped Bullet btVector3 data type.
- * \param t_out The transformed vector, as a timestamped Bullet btVector3 data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline void doTransform(
-  const tf2::Stamped<btVector3> & t_in, tf2::Stamped<btVector3> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<btVector3>(
-    transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
-
-/** \brief Apply a geometry_msgs TransformStamped to a Bullet-specific Transform data type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h
- * \param t_in The frame to transform, as a timestamped Bullet btTransform.
- * \param t_out The transformed frame, as a timestamped Bullet btTransform.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline void doTransform(
-  const tf2::Stamped<btTransform> & t_in, tf2::Stamped<btTransform> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out = tf2::Stamped<btTransform>(
-    transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
-}
-
 }  // namespace tf2
 
 #endif  // TF2_BULLET__TF2_BULLET_H_
