@@ -151,7 +151,6 @@ struct ImplDetails<Eigen::Vector3d, geometry_msgs::msg::Vector3>
 {
 };
 
-
 /// \brief Default Type for automatic tf2::doTransform() implementation for Eigen::Vector3d.
 template<>
 struct DefaultTransformType<Eigen::Vector3d>
@@ -161,7 +160,7 @@ struct DefaultTransformType<Eigen::Vector3d>
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
-template <>
+template<>
 struct defaultMessage<Eigen::Vector3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
@@ -172,7 +171,6 @@ struct defaultMessage<Eigen::Vector3d>
 template<>
 struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
 {
-
   /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
    * \param[in] in The Eigen Quaterniond to convert.
    * \param[out] msg The quaternion converted to a Quaterion message.
@@ -196,7 +194,7 @@ struct ImplDetails<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
-template <>
+template<>
 struct defaultMessage<Eigen::Quaterniond>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
@@ -251,7 +249,7 @@ namespace impl
 /** \brief Pose conversion template for Eigen types.
  * \tparam T Eigen transform type.
  */
-template <typename T>
+template<typename T>
 struct EigenPoseImpl
 {
   /** \brief Convert a Eigen transform type to a Pose message.
@@ -262,7 +260,7 @@ struct EigenPoseImpl
   {
     tf2::toMsg<>(Eigen::Vector3d(in.translation()), msg.position);
     Eigen::Quaterniond q(in.linear());
-    if (q.w() < 0) q.coeffs() *= -1;
+    if (q.w() < 0) {q.coeffs() *= -1;}
     tf2::toMsg<>(q, msg.orientation);
   }
 
@@ -281,21 +279,21 @@ struct EigenPoseImpl
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and Eigen::Affine3d.
-template <>
+template<>
 struct ImplDetails<Eigen::Affine3d, geometry_msgs::msg::Pose>
-: public EigenPoseImpl<Eigen::Affine3d>
+  : public EigenPoseImpl<Eigen::Affine3d>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and Eigen::Isometry3d.
-template <>
+template<>
 struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Pose>
-: public EigenPoseImpl<Eigen::Isometry3d>
+  : public EigenPoseImpl<Eigen::Isometry3d>
 {
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
-template <>
+template<>
 struct defaultMessage<Eigen::Affine3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
@@ -303,7 +301,7 @@ struct defaultMessage<Eigen::Affine3d>
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
-template <>
+template<>
 struct defaultMessage<Eigen::Isometry3d>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Affine3d.
@@ -311,7 +309,7 @@ struct defaultMessage<Eigen::Isometry3d>
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Twist and Eigen::Matrix<double, 6, 1>.
-template <>
+template<>
 struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
 {
   /** \brief Convert a Eigen 6x1 Matrix type to a Twist message.
@@ -344,7 +342,7 @@ struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
 };
 
 /// \brief Default return type of tf2::toMsg() for Eigen::Matrix<double, 6, 1>.
-template <>
+template<>
 struct defaultMessage<Eigen::Matrix<double, 6, 1>>
 {
   /// \brief Default return type of tf2::toMsg() for Eigen::Matrix<double, 6, 1>.
@@ -352,13 +350,13 @@ struct defaultMessage<Eigen::Matrix<double, 6, 1>>
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Wrench and Eigen::Matrix<double, 6, 1>.
-template <>
+template<>
 struct ImplDetails<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Wrench>
 {
-   /** \brief Convert a Eigen 6x1 Matrix type to a Wrench message.
-   * \param[in] in The 6x1 Eigen Matrix to convert.
-   * \param[out] msg The Eigen Matrix converted to a Wrench message.
-   */
+  /** \brief Convert a Eigen 6x1 Matrix type to a Wrench message.
+  * \param[in] in The 6x1 Eigen Matrix to convert.
+  * \param[out] msg The Eigen Matrix converted to a Wrench message.
+  */
   static void toMsg(const Eigen::Matrix<double, 6, 1> & in, geometry_msgs::msg::Wrench & msg)
   {
     msg.force.x = in[0];
@@ -414,11 +412,11 @@ inline
 geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
 {
   geometry_msgs::msg::Vector3 msg;
-  msg.x = in(0);
-  msg.y = in(1);
-  msg.z = in(2);
+  msg.x = in[0];
+  msg.y = in[1];
+  msg.z = in[2];
   return msg;
 }
 }  // namespace tf2
 
-#endif  // TF2_EIGEN_H
+#endif  // TF2_EIGEN__TF2_EIGEN_H_

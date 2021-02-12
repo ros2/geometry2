@@ -1,6 +1,5 @@
 /*
- * Copyright (c) Koji Terada
- * All rights reserved.
+ * Copyright (c) Koji Terada. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -44,9 +43,12 @@
 #include <cmath>
 #include <memory>
 
+
 TEST(TfEigen, ConvertVector3dStamped)
 {
-  const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3), tf2::TimePoint(std::chrono::seconds(5)), "test");
+  const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1, 2, 3), tf2::TimePoint(
+      std::chrono::seconds(
+        5)), "test");
 
   tf2::Stamped<Eigen::Vector3d> v1;
   geometry_msgs::msg::PointStamped p1;
@@ -58,7 +60,7 @@ TEST(TfEigen, ConvertVector3dStamped)
 
 TEST(TfEigen, ConvertVector3d)
 {
-  const Eigen::Vector3d v(1,2,3);
+  const Eigen::Vector3d v(1, 2, 3);
 
   Eigen::Vector3d v1;
   geometry_msgs::msg::Point p1;
@@ -70,8 +72,12 @@ TEST(TfEigen, ConvertVector3d)
 
 TEST(TfEigen, ConvertAffine3dStamped)
 {
-  const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
-  const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(std::chrono::seconds(42)), "test_frame");
+  const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
+      1,
+      Eigen::Vector3d::UnitX()));
+  const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(
+      std::chrono::seconds(
+        42)), "test_frame");
 
   tf2::Stamped<Eigen::Affine3d> v1;
   geometry_msgs::msg::PoseStamped p1;
@@ -86,7 +92,9 @@ TEST(TfEigen, ConvertAffine3dStamped)
 
 TEST(TfEigen, ConvertAffine3d)
 {
-  const Eigen::Affine3d v(Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+  const Eigen::Affine3d v(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
+      1,
+      Eigen::Vector3d::UnitX()));
 
   Eigen::Affine3d v1;
   geometry_msgs::msg::Pose p1;
