@@ -198,20 +198,7 @@ inline void convert(const A & a, B & b)
 {
   impl::Converter<
     rosidl_generator_traits::is_message<A>::value,
-    rosidl_generator_traits::is_message<B>::value>::convert(a, b);
-}
-
-/** \brief Overload of tf2::convert() for the same types.
- * \param[in] a1 an object to convert from
- * \param[in,out] a2 the object to convert to
- * \tparam A Type of the object to convert
- */
-template<class A>
-void convert(const A & a1, A & a2)
-{
-  if (&a1 != &a2) {
-    a2 = a1;
-  }
+    rosidl_generator_traits::is_message<B>::value, A, B>::convert(a, b);
 }
 
 /** \brief Function that converts from a row-major representation of a 6x6

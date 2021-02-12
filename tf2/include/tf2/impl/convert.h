@@ -346,20 +346,13 @@ struct ConversionImplementation<tf2::WithCovarianceStamped<Datatype>, Covariance
 /** \brief Helper for tf2::convert().
  * \tparam IS_MESSAGE_A True if first argument is a message type.
  * \tparam IS_MESSAGE_B True if second argument is a message type.
+ * \tparam A Type of first argument.
+ * \tparam B Type of second argument.
  */
-template<bool IS_MESSAGE_A, bool IS_MESSAGE_B>
+template<bool IS_MESSAGE_A, bool IS_MESSAGE_B, typename A, typename B, typename>
 class Converter
 {
 public:
-  /** \brief Implementation of tf2::convert() depending of the argument types.
-   * \param[in] a Source of conversion.
-   * \param[out] b Target of conversion.
-   * \tparam A Type of first argument.
-   * \tparam B Type of second argument.
-   */
-  template<typename A, typename B>
-  static void convert(const A & a, B & b);
-
   // The case where both A and B are messages should not happen: if you have two
   // messages that are interchangeable, well, that's against the ROS purpose:
   // only use one type. Worst comes to worst, specialize the original convert
@@ -368,51 +361,77 @@ public:
   // used.
   //
   static_assert(
-    !(IS_MESSAGE_A && IS_MESSAGE_B),
-    "Conversion between two Message types is not supported!");
+    !(IS_MESSAGE_A && IS_MESSAGE_B), "Conversion between two Message types is not supported!");
 };
 
 /** \brief Implementation of tf2::convert() for message-to-datatype conversion.
- * \param[in] a Message to convert.
- * \param[out] b Datatype to convert to.
  * \tparam A Message type.
  * \tparam B Datatype.
  */
-template<>
 template<typename A, typename B>
-inline void Converter<true, false>::convert(const A & a, B & b)
+struct Converter<true, false, A, B>
 {
-  fromMsg<>(a, b);
-}
+
+  /** \brief Implementation of tf2::convert() for message-to-datatype conversion.
+   * \param[in] a Message to convert.
+   * \param[out] b Datatype to convert to.
+   */
+  static void convert(const A & a, B & b) {fromMsg<>(a, b);}
+};
 
 /** \brief Implementation of tf2::convert() for datatype-to-message converiosn.
- * \param[in] a Datatype to convert.
- * \param[out] b Message to convert to.
  * \tparam A Datatype.
  * \tparam B Message.
  */
-template<>
 template<typename A, typename B>
-inline void Converter<false, true>::convert(const A & a, B & b)
+struct Converter<false, true, A, B>
 {
-  b = toMsg<A, B>(a);
-}
+  /** \brief Implementation of tf2::convert() for datatype-to-message converiosn.
+   * \param[in] a Datatype to convert.
+   * \param[out] b Message to convert to.
+   */
+  static void convert(const A & a, B & b) {b = toMsg<A, B>(a);}
+};
 
 /** \brief Implementation of tf2::convert() for datatypes.
  * Converts the first argument to a message
  * (usually \c impl::DefaultMessageForDatatype<A>::type )
  * and then converts the message to the second argument.
- * \param[in] a Source of conversion.
- * \param[out] b Target of conversion.
  * \tparam A Datatype of first argument.
  * \tparam B Datatype of second argument.
  */
-template<>
 template<typename A, typename B>
-inline void Converter<false, false>::convert(const A & a, B & b)
+struct Converter<false, false, A, B, typename std::enable_if<!std::is_same<A, B>::value>::type>
 {
-  fromMsg<>(toMsg<>(a), b);
-}
+  /** \brief Implementation of tf2::convert() for datatypes.
+   * Converts the first argument to a message
+   * (usually \c impl::DefaultMessageForDatatype<A>::type )
+   * and then converts the message to the second argument.
+   * \param[in] a Source of conversion.
+   * \param[out] b Target of conversion.
+   */
+  static void convert(const A & a, B & b) {fromMsg<>(toMsg<>(a), b);}
+};
+
+/** \brief Implementation of tf2::convert() for identical types.
+ * \tparam b Type is a Message
+ * \tparam A Type of the arguments
+ */
+
+template<bool b, typename A>
+struct Converter<b, b, A, A>
+{
+  /** \brief Overload of tf2::convert() for the same types.
+ * \param[in] a1 an object to convert from
+ * \param[in,out] a2 the object to convert to
+ */
+  static void convert(const A & a1, A & a2)
+  {
+    if (&a1 != &a2) {
+      a2 = a1;
+    }
+  }
+};
 
 /**
  * \brief Default implementation for extracting timestamps and frame IDs.

@@ -77,7 +77,7 @@ struct UnstampedMessageTraits;
 template <typename T, int = 0>
 struct StampedAttributesHelper;
 
-template <bool IS_MESSAGE_A, bool IS_MESSAGE_B>
+template<bool IS_MESSAGE_A, bool IS_MESSAGE_B, typename A, typename B, typename = void>
 class Converter;
 
 }  // namespace impl

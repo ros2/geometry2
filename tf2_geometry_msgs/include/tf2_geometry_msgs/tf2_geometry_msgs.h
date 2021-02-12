@@ -275,26 +275,32 @@ inline void doTransformWithTf(
   tf2::doTransform(in_tf, out_tf, transform);
   tf2::convert(out_tf, out);
 }
-}  // namespace impl
 
-/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and std::array<tf2::Vector3, 2>.
- *
- * This specialization of the template defined in tf2/convert.h
- * is for a Wrench represented in an Eigen matrix.
- * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
- * \param[in] in Wrench, as Eigen matrix
- * \param[out] out The Wrench as tf2 type
- * \tparam options Eigen::Matrix template parameter
- * \tparam row Eigen::Matrix template parameter
- * \tparam cols Eigen::Matrix template parameter
+/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1>
+ * and std::array<tf2::Vector3, 2>
  */
-template<int options, int row, int cols>
-void convert(
-  const Eigen::Matrix<double, 6, 1, options, row, cols> & in, std::array<tf2::Vector3, 2> & out)
+template<>
+struct Converter<false, false, Eigen::Matrix<double, 6, 1, 0, 6, 1>,
+  std::array<tf2::Vector3, 2>>
 {
-  out[0] = tf2::Vector3{in[0], in[1], in[2]};
-  out[1] = tf2::Vector3{in[3], in[4], in[5]};
-}
+  /** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and std::array<tf2::Vector3, 2>.
+   *
+   * This specialization of the template defined in tf2/convert.h
+   * is for a Wrench represented in an Eigen matrix.
+   * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
+   * \param[in] in Wrench, as Eigen matrix
+   * \param[out] out The Wrench as tf2 type
+   * \tparam options Eigen::Matrix template parameter, used for indirection
+   */
+  template<int options>
+  static void convert(
+    const Eigen::Matrix<double, 6, 1, options, 6, 1> & in, std::array<tf2::Vector3, 2> & out)
+  {
+    out[0] = tf2::Vector3{in[0], in[1], in[2]};
+    out[1] = tf2::Vector3{in[3], in[4], in[5]};
+  }
+};
+}  // namespace impl
 
 
 /*************/

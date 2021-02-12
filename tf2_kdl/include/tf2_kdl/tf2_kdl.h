@@ -315,6 +315,29 @@ struct DefaultMessageForDatatype<KDL::Rotation>
   using type = geometry_msgs::msg::Quaternion;
 };
 
+/// \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
+template<>
+struct Converter<false, false, Eigen::Matrix<double, 6, 1, 0, 6, 1>, KDL::Wrench>
+{
+  /** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
+   *
+   * This specialization of the template defined in tf2/convert.h
+   * is for a Wrench represented in an Eigen matrix.
+   * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
+   * \param[in] in Wrench, as Eigen matrix
+   * \param[out] out The Wrench as KDL::Wrench type
+   * \tparam options Eigen::Matrix template parameter, used for indirection
+   */
+  template<int options>
+  static void convert(
+    Eigen::Matrix<double, 6, 1, options, 6, 1> const & in,
+    KDL::Wrench & out)
+  {
+    const auto msg =
+      toMsg<Eigen::Matrix<double, 6, 1, options, 6, 1>, geometry_msgs::msg::Wrench>(in);
+    fromMsg<>(msg, out);
+  }
+};
 }  // namespace impl
 
 /**
@@ -335,24 +358,6 @@ void doTransform(
   out = t * in;
 }
 
-/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
- *
- * This specialization of the template defined in tf2/convert.h
- * is for a Wrench represented in an Eigen matrix.
- * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
- * \param[in] in Wrench, as Eigen matrix
- * \param[out] out The Wrench as KDL::Wrench type
- * \tparam options Eigen::Matrix template parameter
- * \tparam row Eigen::Matrix template parameter
- * \tparam cols Eigen::Matrix template parameter
- */
-template<int options, int rows, int cols>
-void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::Wrench & out)
-{
-  const auto msg =
-    toMsg<Eigen::Matrix<double, 6, 1, options, rows, cols>, geometry_msgs::msg::Wrench>(in);
-  fromMsg<>(msg, out);
-}
 }  // namespace tf2
 
 #endif  // TF2_KDL__TF2_KDL_H_
