@@ -30,6 +30,17 @@ ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
+
+  find_package(ament_cmake_cppcheck REQUIRED)
+  find_package(ament_cmake_cpplint REQUIRED)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  find_package(ament_cmake_uncrustify REQUIRED)
+
+  ament_cppcheck(LANGUAGE "c++")
+  ament_cpplint()
+  ament_lint_cmake()
+  ament_uncrustify(LANGUAGE "c++")
+
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)

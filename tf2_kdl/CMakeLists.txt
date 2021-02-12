@@ -18,10 +18,10 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME}
-     PACKAGE_DIR src/${PROJECT_NAME})
+  PACKAGE_DIR src/${PROJECT_NAME})
 
 install(DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION include/${PROJECT_NAME}
+  DESTINATION include/${PROJECT_NAME}
 )
 
 # TODO(ahcorde): Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
@@ -33,6 +33,14 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(tf2_msgs REQUIRED)
+
+  find_package(ament_cmake_cppcheck REQUIRED)
+  find_package(ament_cmake_cpplint REQUIRED)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  find_package(ament_cmake_uncrustify REQUIRED)
+
+  ament_cppcheck(LANGUAGE "c++")
+  ament_uncrustify(LANGUAGE "c++")
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_include_directories(test_kdl PUBLIC
