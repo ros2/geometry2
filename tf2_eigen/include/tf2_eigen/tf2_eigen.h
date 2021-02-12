@@ -30,16 +30,15 @@
 #define TF2_EIGEN__TF2_EIGEN_H_
 
 #include <tf2/convert.h>
-#include <tf2_ros/buffer_interface.h>
+#include <tf2/transform_datatypes.h>
+
 #include <Eigen/Geometry>
+#include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <geometry_msgs/msg/point.hpp>
-#include <geometry_msgs/msg/quaternion.hpp>
-#include <tf2_ros/buffer.h>
-
 
 namespace tf2
 {
@@ -183,15 +182,13 @@ struct defaultMessage<Eigen::Vector3d>
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
 template<>
-inline
-void doTransform(
-  const tf2::Stamped<Eigen::Vector3d> & t_in,
-  tf2::Stamped<Eigen::Vector3d> & t_out,
+inline void doTransform(
+  const tf2::Stamped<Eigen::Vector3d> & t_in, tf2::Stamped<Eigen::Vector3d> & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out = tf2::Stamped<Eigen::Vector3d>(
     transformToEigen(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp),
+    transform.header.stamp,
     transform.header.frame_id);
 }
 
@@ -295,7 +292,7 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out.frame_id_ = transform.header.frame_id;
-  t_out.stamp_ = tf2_ros::fromMsg(transform.header.stamp);
+  tf2::fromMsg(transform.header.stamp, t_out.stamp_);
   doTransform(
     static_cast<const Eigen::Quaterniond &>(t_in),
     static_cast<Eigen::Quaterniond &>(t_out), transform);
@@ -436,15 +433,14 @@ geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
 template<>
-inline
-void doTransform(
+inline void doTransform(
   const tf2::Stamped<Eigen::Affine3d> & t_in,
   tf2::Stamped<Eigen::Affine3d> & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out = tf2::Stamped<Eigen::Affine3d>(
-    transformToEigen(transform) * t_in, tf2_ros::fromMsg(
-      transform.header.stamp), transform.header.frame_id);
+    transformToEigen(transform) * t_in,
+      transform.header.stamp,transform.header.frame_id);
 }
 
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen Isometry transform.
@@ -457,15 +453,14 @@ void doTransform(
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
 template<>
-inline
-void doTransform(
+inline void doTransform(
   const tf2::Stamped<Eigen::Isometry3d> & t_in,
   tf2::Stamped<Eigen::Isometry3d> & t_out,
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out = tf2::Stamped<Eigen::Isometry3d>(
-    transformToEigen(transform) * t_in, tf2_ros::fromMsg(
-      transform.header.stamp), transform.header.frame_id);
+    transformToEigen(transform) * t_in, transform.header.stamp,
+      transform.header.frame_id);
 }
 
 }  // namespace tf2

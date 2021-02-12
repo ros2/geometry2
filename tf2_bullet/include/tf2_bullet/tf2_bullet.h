@@ -31,13 +31,12 @@
 #ifndef TF2_BULLET__TF2_BULLET_H_
 #define TF2_BULLET__TF2_BULLET_H_
 
-#include <tf2/convert.h>
 #include <LinearMath/btScalar.h>
 #include <LinearMath/btTransform.h>
-#include <geometry_msgs/msg/point_stamped.hpp>
-#include <tf2_ros/buffer_interface.h>
+#include <tf2/convert.h>
+#include <tf2/transform_datatypes.h>
 
-#include <iostream>
+#include <geometry_msgs/msg/point_stamped.hpp>
 
 #if (BT_BULLET_VERSION <= 282)
 // Suppress compilation warning on older versions of Bullet.
@@ -76,17 +75,14 @@ namespace tf2
  * \param t_out The transformed vector, as a timestamped Bullet btVector3 data type.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-  template < >
-  inline
-  void doTransform(
-    const tf2::Stamped < btVector3 > & t_in, tf2::Stamped < btVector3 > & t_out,
-    const geometry_msgs::msg::TransformStamped & transform)
-  {
-    t_out =
-      tf2::Stamped < btVector3 > (
-      transformToBullet(transform) * t_in,
-      tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-  }
+template <>
+inline void doTransform(
+  const tf2::Stamped<btVector3> & t_in, tf2::Stamped<btVector3> & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  t_out = tf2::Stamped<btVector3>(
+    transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+}
 
 namespace impl
 {
@@ -131,18 +127,14 @@ struct ImplDetails<btVector3, geometry_msgs::msg::Point>
  * \param t_out The transformed frame, as a timestamped Bullet btTransform.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
-  template < >
-  inline
-  void doTransform(
-    const tf2::Stamped < btTransform > & t_in, tf2::Stamped < btTransform > & t_out,
-    const geometry_msgs::msg::TransformStamped & transform)
-  {
-    t_out =
-      tf2::Stamped < btTransform > (
-      transformToBullet(transform) * t_in,
-      tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
-  }
-
+template <>
+inline void doTransform(
+  const tf2::Stamped<btTransform> & t_in, tf2::Stamped<btTransform> & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  t_out = tf2::Stamped<btTransform>(
+    transformToBullet(transform) * t_in, transform.header.stamp, transform.header.frame_id);
+}
 
 }  // namespace tf2
 

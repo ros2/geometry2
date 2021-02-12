@@ -40,6 +40,7 @@
 #include "exceptions.h"
 #include "impl/convert.h"
 #include "impl/stamped_traits.h"
+#include "impl/time_convert.h"
 #include "time.h"
 #include "visibility_control.h"
 

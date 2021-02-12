@@ -31,7 +31,9 @@
 #ifndef TF2__IMPL__TIME_CONVERT_H_
 #define TF2__IMPL__TIME_CONVERT_H_
 
+#include <builtin_interfaces/msg/duration.hpp>
 #include <builtin_interfaces/msg/time.hpp>
+#include <chrono>
 
 #include "../time.h"
 #include "forward.h"
@@ -40,7 +42,6 @@ namespace tf2
 {
 namespace impl
 {
-
 template <>
 struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
 {
@@ -61,13 +62,52 @@ struct ImplDetails<tf2::TimePoint, builtin_interfaces::msg::Time>
     t = tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
   }
 };
+
+template <>
+struct ImplDetails<tf2::Duration, builtin_interfaces::msg::Duration>
+{
+  static void toMsg(const tf2::Duration & t, builtin_interfaces::msg::Duration & duration_msg)
+  {
+    std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t);
+    std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(t);
+    duration_msg.sec = static_cast<int32_t>(s.count());
+    duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  }
+
+  static void fromMsg(
+    const builtin_interfaces::msg::Duration & duration_msg, tf2::Duration & duration)
+  {
+    int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
+    std::chrono::nanoseconds ns(d);
+    duration = tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
+  }
+};
+
+template <>
+struct defaultMessage<tf2::TimePoint>
+{
+  using type = builtin_interfaces::msg::Time;
+};
+
+template <>
+struct defaultMessage<tf2::Duration>
+{
+  using type = builtin_interfaces::msg::Duration;
+};
 }  // namespace impl
 
 inline tf2::TimePoint TimePointFromMsg(const builtin_interfaces::msg::Time & time_msg)
 {
   TimePoint tp;
-  impl::ImplDetails<TimePoint, builtin_interfaces::msg::Time, void>::fromMsg(time_msg, tp);
+  tf2::fromMsg<>(time_msg, tp);
   return tp;
+}
+
+inline tf2::Duration DurationFromMsg(const builtin_interfaces::msg::Duration & duration_msg)
+{
+  Duration d;
+  tf2::fromMsg<>(duration_msg, d);
+  return d;
 }
 }  // namespace tf2
 

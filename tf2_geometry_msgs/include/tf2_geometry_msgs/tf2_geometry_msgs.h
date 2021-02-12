@@ -35,9 +35,9 @@
 #include <array>
 
 #include <tf2/convert.h>
+#include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Transform.h>
-#include <tf2_ros/buffer_interface.h>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
@@ -231,7 +231,7 @@ inline
 geometry_msgs::msg::PoseWithCovarianceStamped toMsg(const tf2::WithCovarianceStamped<tf2::Transform>& in)
 {
   geometry_msgs::msg::PoseWithCovarianceStamped out;
-  out.header.stamp = tf2_ros::toMsg(in.stamp_);
+  tf2::toMsg<>(in.stamp_, out.header.stamp);
   out.header.frame_id = in.frame_id_;
   out.pose.covariance = covarianceNestedToRowMajor(in.cov_mat_);
   out.pose.pose.orientation.x = in.getRotation().getX();
@@ -253,7 +253,7 @@ template<>
 inline
 void fromMsg(const geometry_msgs::msg::PoseWithCovarianceStamped& in, tf2::WithCovarianceStamped<tf2::Transform>& out)
 {
-  out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
+  tf2::fromMsg<>(in.header.stamp, out.stamp_);
   out.frame_id_ = in.header.frame_id;
   out.cov_mat_ = covarianceRowMajorToNested(in.pose.covariance);
   tf2::Transform tmp;

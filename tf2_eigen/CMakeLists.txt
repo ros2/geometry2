@@ -49,5 +49,6 @@ ament_export_include_directories(include)
 ament_export_dependencies(
   eigen3_cmake_module
   Eigen3
+  tf2
   tf2_ros)
 ament_package()
