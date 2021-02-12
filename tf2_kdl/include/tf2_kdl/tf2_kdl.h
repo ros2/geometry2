@@ -76,33 +76,10 @@ inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
 
 namespace impl
 {
-/// \brief Conversion implementation for geometry_msgs::msg::Transform and KDL::Frame.
-template<>
-struct ConversionImplementation<KDL::Frame, geometry_msgs::msg::Transform>
-{
-  /** \brief Convert a Transform message type to a KDL Frame.
-   * \param[in] in The Transform message to convert.
-   * \param[out] out The transform converted to a KDL Frame.
-   */
-  static void fromMsg(geometry_msgs::msg::Transform const & in, KDL::Frame & out)
-  {
-    KDL::Rotation r;
-    KDL::Vector v;
-    tf2::fromMsg<>(in.translation, v);
-    tf2::fromMsg<>(in.rotation, r);
-    out = KDL::Frame(r, v);
-  }
+// ---------------------
+// Vector
+// ---------------------
 
-  /** \brief Convert a KDL Frame type to a Transform message.
-   * \param[in] in The KDL Frame to convert.
-   * \param[out] out The KDL Frame converted to a Transform message.
-   */
-  static void toMsg(KDL::Frame const & in, geometry_msgs::msg::Transform & out)
-  {
-    tf2::toMsg<>(in.p, out.translation);
-    tf2::toMsg<>(in.M, out.rotation);
-  }
-};
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3 and KDL::Vector.
 template<>
@@ -132,6 +109,7 @@ struct DefaultTransformType<KDL::Vector>
 {
   using type = KDL::Frame;
 };
+
 
 // ---------------------
 // Twist
@@ -178,6 +156,7 @@ struct DefaultMessageForDatatype<KDL::Twist>
   using type = geometry_msgs::msg::Twist;
 };
 
+
 // ---------------------
 // Wrench
 // ---------------------
@@ -222,32 +201,40 @@ struct DefaultTransformType<KDL::Wrench>
   /// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Wrench.
   using type = KDL::Frame;
 };
-}  // namespace impl
 
-/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
- *
- * This specialization of the template defined in tf2/convert.h
- * is for a Wrench represented in an Eigen matrix.
- * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
- * \param[in] in Wrench, as Eigen matrix
- * \param[out] out The Wrench as KDL::Wrench type
- * \tparam options Eigen::Matrix template parameter
- * \tparam row Eigen::Matrix template parameter
- * \tparam cols Eigen::Matrix template parameter
- */
-template<int options, int rows, int cols>
-void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::Wrench & out)
-{
-  const auto msg =
-    toMsg<Eigen::Matrix<double, 6, 1, options, rows, cols>, geometry_msgs::msg::Wrench>(in);
-  fromMsg<>(msg, out);
-}
 
 // ---------------------
 // Frame
 // ---------------------
-namespace impl
+
+/// \brief Conversion implementation for geometry_msgs::msg::Transform and KDL::Frame.
+template<>
+struct ConversionImplementation<KDL::Frame, geometry_msgs::msg::Transform>
 {
+  /** \brief Convert a Transform message type to a KDL Frame.
+   * \param[in] in The Transform message to convert.
+   * \param[out] out The transform converted to a KDL Frame.
+   */
+  static void fromMsg(geometry_msgs::msg::Transform const & in, KDL::Frame & out)
+  {
+    KDL::Rotation r;
+    KDL::Vector v;
+    tf2::fromMsg<>(in.translation, v);
+    tf2::fromMsg<>(in.rotation, r);
+    out = KDL::Frame(r, v);
+  }
+
+  /** \brief Convert a KDL Frame type to a Transform message.
+   * \param[in] in The KDL Frame to convert.
+   * \param[out] out The KDL Frame converted to a Transform message.
+   */
+  static void toMsg(KDL::Frame const & in, geometry_msgs::msg::Transform & out)
+  {
+    tf2::toMsg<>(in.p, out.translation);
+    tf2::toMsg<>(in.M, out.rotation);
+  }
+};
+
 /// \brief Conversion implementation for geometry_msgs::msg::Pose and KDL::Frame.
 template<>
 struct ConversionImplementation<KDL::Frame, geometry_msgs::msg::Pose>
@@ -288,6 +275,11 @@ struct DefaultTransformType<KDL::Frame>
   /// \brief Default Type for automatic tf2::doTransform() implementation for KDL::Frame.
   using type = KDL::Frame;
 };
+
+
+// ---------------------
+// Rotation
+// ---------------------
 
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and KDL::Rotation.
 template<>
@@ -340,6 +332,24 @@ void doTransform(
   out = t * in;
 }
 
+/** \brief Specialization of tf2::convert for Eigen::Matrix<double, 6, 1> and KDL::Wrench.
+ *
+ * This specialization of the template defined in tf2/convert.h
+ * is for a Wrench represented in an Eigen matrix.
+ * To avoid a dependency on Eigen, the Eigen::Matrix template is forward declared.
+ * \param[in] in Wrench, as Eigen matrix
+ * \param[out] out The Wrench as KDL::Wrench type
+ * \tparam options Eigen::Matrix template parameter
+ * \tparam row Eigen::Matrix template parameter
+ * \tparam cols Eigen::Matrix template parameter
+ */
+template<int options, int rows, int cols>
+void convert(Eigen::Matrix<double, 6, 1, options, rows, cols> const & in, KDL::Wrench & out)
+{
+  const auto msg =
+    toMsg<Eigen::Matrix<double, 6, 1, options, rows, cols>, geometry_msgs::msg::Wrench>(in);
+  fromMsg<>(msg, out);
+}
 }  // namespace tf2
 
 #endif  // TF2_KDL__TF2_KDL_H_

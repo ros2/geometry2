@@ -91,6 +91,84 @@ geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Isometry3d & 
 
 namespace impl
 {
+// ---------------------
+// Vector
+// ---------------------
+
+/// \brief Conversion implementation for geometry_msgs::msg::Point and Eigen::Vector3d.
+template<>
+struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
+{
+};
+
+/// \brief Conversion implementation for geometry_msgs::msg::Vector3d and Eigen::Vector3d.
+template<>
+struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
+{
+};
+
+/// \brief Default Type for automatic tf2::doTransform() implementation for Eigen::Vector3d.
+template<>
+struct DefaultTransformType<Eigen::Vector3d>
+{
+  /// \brief Default Type for automatic tf2::doTransform() implementation for Eigen::Vector3d.
+  using type = Eigen::Isometry3d;
+};
+
+/// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
+template<>
+struct DefaultMessageForDatatype<Eigen::Vector3d>
+{
+  /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
+  using type = geometry_msgs::msg::Point;
+};
+
+
+// ---------------------
+// Quaternion
+// ---------------------
+
+/// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
+template<>
+struct ConversionImplementation<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
+{
+  /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
+   * \param[in] in The Eigen Quaterniond to convert.
+   * \param[out] msg The quaternion converted to a Quaterion message.
+   */
+  static void toMsg(const Eigen::Quaterniond & in, geometry_msgs::msg::Quaternion & msg)
+  {
+    msg.w = in.w();
+    msg.x = in.x();
+    msg.y = in.y();
+    msg.z = in.z();
+  }
+
+  /** \brief Convert a Quaternion message type to a Eigen-specific Quaterniond type.
+   * \param[in] msg The Quaternion message to convert.
+   * \param[out] out The quaternion converted to a Eigen Quaterniond.
+   */
+  static void fromMsg(const geometry_msgs::msg::Quaternion & msg, Eigen::Quaterniond & out)
+  {
+    out = Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
+  }
+};
+
+/// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
+template<>
+struct DefaultMessageForDatatype<Eigen::Quaterniond>
+{
+  /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
+  using type = geometry_msgs::msg::Quaternion;
+};
+
+
+// ---------------------
+// Transform
+// ---------------------
+
 /** \brief Template for Eigen::Isometry3d and Eigen::Affine3d conversion.
  * \tparam mode Mode argument for Eigen::Transform template
  */
@@ -136,115 +214,6 @@ struct ConversionImplementation<Eigen::Isometry3d, geometry_msgs::msg::Transform
   : EigenTransformImpl<Eigen::Isometry>
 {
 };
-
-/// \brief Conversion implementation for geometry_msgs::msg::Point and Eigen::Vector3d.
-template<>
-struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
-  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Point>
-{
-};
-
-/// \brief Conversion implementation for geometry_msgs::msg::Vector3d and Eigen::Vector3d.
-template<>
-struct ConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
-  : DefaultVectorConversionImplementation<Eigen::Vector3d, geometry_msgs::msg::Vector3>
-{
-};
-
-/// \brief Default Type for automatic tf2::doTransform() implementation for Eigen::Vector3d.
-template<>
-struct DefaultTransformType<Eigen::Vector3d>
-{
-  /// \brief Default Type for automatic tf2::doTransform() implementation for Eigen::Vector3d.
-  using type = Eigen::Isometry3d;
-};
-
-/// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
-template<>
-struct DefaultMessageForDatatype<Eigen::Vector3d>
-{
-  /// \brief Default return type of tf2::toMsg() for Eigen::Vector3d.
-  using type = geometry_msgs::msg::Point;
-};
-
-/// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
-template<>
-struct ConversionImplementation<Eigen::Quaterniond, geometry_msgs::msg::Quaternion>
-{
-  /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
-   * \param[in] in The Eigen Quaterniond to convert.
-   * \param[out] msg The quaternion converted to a Quaterion message.
-   */
-  static void toMsg(const Eigen::Quaterniond & in, geometry_msgs::msg::Quaternion & msg)
-  {
-    msg.w = in.w();
-    msg.x = in.x();
-    msg.y = in.y();
-    msg.z = in.z();
-  }
-
-  /** \brief Convert a Quaternion message type to a Eigen-specific Quaterniond type.
-   * \param[in] msg The Quaternion message to convert.
-   * \param[out] out The quaternion converted to a Eigen Quaterniond.
-   */
-  static void fromMsg(const geometry_msgs::msg::Quaternion & msg, Eigen::Quaterniond & out)
-  {
-    out = Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
-  }
-};
-
-/// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
-template<>
-struct DefaultMessageForDatatype<Eigen::Quaterniond>
-{
-  /// \brief Default return type of tf2::toMsg() for Eigen::Quaterniond.
-  using type = geometry_msgs::msg::Quaternion;
-};
-}  // namespace impl
-
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Quaterniond type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h,
- * although it can not be used in tf2_ros::BufferInterface::transform because this
- * functions rely on the existence of a time stamp and a frame id in the type which should
- * get transformed.
- * \param t_in The vector to transform, as a Eigen Quaterniond data type.
- * \param t_out The transformed vector, as a Eigen Quaterniond data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline
-void doTransform(
-  const Eigen::Quaterniond & t_in,
-  Eigen::Quaterniond & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  Eigen::Quaterniond t;
-  fromMsg(transform.transform.rotation, t);
-  t_out = t * t_in;
-}
-
-/** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Quaterniond type.
- * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The vector to transform, as a timestamped Eigen Quaterniond data type.
- * \param t_out The transformed vector, as a timestamped Eigen Quaterniond data type.
- * \param transform The timestamped transform to apply, as a TransformStamped message.
- */
-template<>
-inline
-void doTransform(
-  const tf2::Stamped<Eigen::Quaterniond> & t_in,
-  tf2::Stamped<Eigen::Quaterniond> & t_out,
-  const geometry_msgs::msg::TransformStamped & transform)
-{
-  t_out.frame_id_ = transform.header.frame_id;
-  tf2::fromMsg(transform.header.stamp, t_out.stamp_);
-  doTransform(
-    static_cast<const Eigen::Quaterniond &>(t_in),
-    static_cast<Eigen::Quaterniond &>(t_out), transform);
-}
-
-namespace impl
-{
 
 /** \brief Pose conversion template for Eigen types.
  * \tparam T Eigen transform type.
@@ -308,6 +277,11 @@ struct DefaultMessageForDatatype<Eigen::Isometry3d>
   using type = geometry_msgs::msg::Pose;
 };
 
+
+// ---------------------
+// Twist
+// ---------------------
+
 /// \brief Conversion implementation for geometry_msgs::msg::Twist and Eigen::Matrix<double, 6, 1>.
 template<>
 struct ConversionImplementation<Eigen::Matrix<double, 6, 1>, geometry_msgs::msg::Twist>
@@ -348,6 +322,11 @@ struct DefaultMessageForDatatype<Eigen::Matrix<double, 6, 1>>
   /// \brief Default return type of tf2::toMsg() for Eigen::Matrix<double, 6, 1>.
   using type = geometry_msgs::msg::Twist;
 };
+
+
+// ---------------------
+// Wrench
+// ---------------------
 
 /// \brief Conversion implementation for geometry_msgs::msg::Wrench and Eigen::Matrix<double, 6, 1>.
 template<>
@@ -416,6 +395,27 @@ geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
   msg.y = in[1];
   msg.z = in[2];
   return msg;
+}
+
+/** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Quaterniond type.
+ * This function is a specialization of the doTransform template defined in tf2/convert.h,
+ * although it can not be used in tf2_ros::BufferInterface::transform because this
+ * functions rely on the existence of a time stamp and a frame id in the type which should
+ * get transformed.
+ * \param[in] t_in The vector to transform, as a Eigen Quaterniond data type.
+ * \param[in,out] t_out The transformed vector, as a Eigen Quaterniond data type.
+ * \param[in] transform The timestamped transform to apply, as a TransformStamped message.
+ */
+template<>
+inline
+void doTransform(
+  const Eigen::Quaterniond & t_in,
+  Eigen::Quaterniond & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  Eigen::Quaterniond t;
+  tf2::fromMsg<>(transform.transform.rotation, t);
+  t_out = Eigen::Quaterniond(t.toRotationMatrix() * t_in.toRotationMatrix());
 }
 }  // namespace tf2
 

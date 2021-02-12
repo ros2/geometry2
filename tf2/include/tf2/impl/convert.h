@@ -63,7 +63,7 @@ struct MessageHasStdHeader : std::false_type {};
  * \tparam Message The message to check
  */
 template<typename Message>
-class MessageHasStdHeader<Message, decltype(&Message::header, 0)>
+class MessageHasStdHeader<Message, decltype(static_cast<void>(Message::header), 0)>
 {
   template<typename Alloc>
   static std::true_type headerIsStdHeader(std_msgs::msg::Header_<Alloc>);
