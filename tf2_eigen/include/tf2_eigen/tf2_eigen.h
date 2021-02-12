@@ -43,7 +43,6 @@
 
 namespace tf2
 {
-
 /** \brief Convert a timestamped transform to the equivalent Eigen data type.
  * \param t The transform to convert, as a geometry_msgs Transform message.
  * \return The transform message converted to an Eigen Isometry3d transform.
@@ -51,9 +50,9 @@ namespace tf2
 inline
 Eigen::Isometry3d transformToEigen(const geometry_msgs::msg::Transform & t)
 {
-  return Eigen::Isometry3d(
-    Eigen::Translation3d(t.translation.x, t.translation.y, t.translation.z) *
-    Eigen::Quaterniond(t.rotation.w, t.rotation.x, t.rotation.y, t.rotation.z));
+  Eigen::Isometry3d res;
+  tf2::fromMsg<>(t, res);
+  return res;
 }
 
 /** \brief Convert a timestamped transform to the equivalent Eigen data type.
@@ -74,16 +73,7 @@ inline
 geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Affine3d & T)
 {
   geometry_msgs::msg::TransformStamped t;
-  t.transform.translation.x = T.translation().x();
-  t.transform.translation.y = T.translation().y();
-  t.transform.translation.z = T.translation().z();
-
-  Eigen::Quaterniond q(T.linear());  // assuming that upper 3x3 matrix is orthonormal
-  t.transform.rotation.x = q.x();
-  t.transform.rotation.y = q.y();
-  t.transform.rotation.z = q.z();
-  t.transform.rotation.w = q.w();
-
+  tf2::toMsg<>(T, t.transform);
   return t;
 }
 
@@ -95,18 +85,46 @@ inline
 geometry_msgs::msg::TransformStamped eigenToTransform(const Eigen::Isometry3d & T)
 {
   geometry_msgs::msg::TransformStamped t;
-  t.transform.translation.x = T.translation().x();
-  t.transform.translation.y = T.translation().y();
-  t.transform.translation.z = T.translation().z();
-
-  Eigen::Quaterniond q(T.rotation());
-  t.transform.rotation.x = q.x();
-  t.transform.rotation.y = q.y();
-  t.transform.rotation.z = q.z();
-  t.transform.rotation.w = q.w();
-
+  tf2::toMsg<>(T, t.transform);
   return t;
 }
+
+namespace impl
+{
+template <int mode>
+struct EigenTransformImpl
+{
+  static void fromMsg(
+    const geometry_msgs::msg::Transform & msg, Eigen::Transform<double, 3, mode> & out)
+  {
+    Eigen::Quaterniond q;
+    Eigen::Vector3d v;
+    tf2::fromMsg<>(msg.rotation, q);
+    tf2::fromMsg<>(msg.translation, v);
+    out = Eigen::Translation3d(v) * q;
+  }
+
+  static void toMsg(
+    const Eigen::Transform<double, 3, mode> & in, geometry_msgs::msg::Transform & msg)
+  {
+    tf2::toMsg<>(Eigen::Quaterniond(in.linear()), msg.rotation);
+    tf2::toMsg<>(Eigen::Vector3d(in.translation()), msg.translation);
+  }
+};
+
+template <>
+struct ImplDetails<Eigen::Affine3d, geometry_msgs::msg::Transform>
+: EigenTransformImpl<Eigen::Affine>
+{
+};
+
+template <>
+struct ImplDetails<Eigen::Isometry3d, geometry_msgs::msg::Transform>
+: EigenTransformImpl<Eigen::Isometry>
+{
+};
+
+}  // namespace impl
 
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h,
@@ -283,21 +301,10 @@ struct PoseImplDetails
    */
   static void toMsg(const T & in, geometry_msgs::msg::Pose & msg)
   {
-    msg.position.x = in.translation().x();
-    msg.position.y = in.translation().y();
-    msg.position.z = in.translation().z();
-    const Eigen::Quaterniond q(in.linear());
-    msg.orientation.x = q.x();
-    msg.orientation.y = q.y();
-    msg.orientation.z = q.z();
-    msg.orientation.w = q.w();
-    if (msg.orientation.w < 0)
-    {
-      msg.orientation.x *= -1;
-      msg.orientation.y *= -1;
-      msg.orientation.z *= -1;
-      msg.orientation.w *= -1;
-    }
+    tf2::toMsg<>(Eigen::Vector3d(in.translation()), msg.position);
+    Eigen::Quaterniond q(in.linear());
+    if (q.w() < 0) q.coeffs() *= -1;
+    tf2::toMsg<>(q, msg.orientation);
   }
 
   /** \brief Convert a Pose message transform type to a Eigen Affine3d.
@@ -307,10 +314,11 @@ struct PoseImplDetails
    */
   static void fromMsg(const geometry_msgs::msg::Pose & msg, T & out)
   {
-    out =
-      T(Eigen::Translation3d(msg.position.x, msg.position.y, msg.position.z) *
-        Eigen::Quaterniond(
-          msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z));
+    Eigen::Quaterniond q;
+    Eigen::Vector3d v;
+    tf2::fromMsg<>(msg.orientation, q);
+    tf2::fromMsg<>(msg.position, v);
+    out = Eigen::Translation3d(v) * q;
   }
 };
 

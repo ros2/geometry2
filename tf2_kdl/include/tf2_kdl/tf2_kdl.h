@@ -55,27 +55,22 @@ namespace tf2
  * \param t The transform to convert, as a geometry_msgs TransformedStamped message.
  * \return The transform message converted to an KDL Frame.
  */
-inline
-KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped& t)
-  {
-    return KDL::Frame(KDL::Rotation::Quaternion(t.transform.rotation.x, t.transform.rotation.y,
-						t.transform.rotation.z, t.transform.rotation.w),
-		      KDL::Vector(t.transform.translation.x, t.transform.translation.y, t.transform.translation.z));
-  }
+inline KDL::Frame transformToKDL(const geometry_msgs::msg::TransformStamped & t)
+{
+  KDL::Frame ans;
+  tf2::fromMsg<>(t.transform, ans);
+  return ans;
+}
 
 /** \brief Convert an KDL Frame to the equivalent geometry_msgs message type.
  * \param k The transform to convert, as an KDL Frame.
  * \return The transform converted to a TransformStamped message.
  */
-inline
-geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame& k)
+inline geometry_msgs::msg::TransformStamped kdlToTransform(const KDL::Frame & k)
 {
-  geometry_msgs::msg::TransformStamped t;
-  t.transform.translation.x = k.p.x();
-  t.transform.translation.y = k.p.y();
-  t.transform.translation.z = k.p.z();
-  k.M.GetQuaternion(t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w);
-  return t;
+  geometry_msgs::msg::TransformStamped ans;
+  tf2::toMsg<>(k, ans.transform);
+  return ans;
 }
 
 // ---------------------
@@ -98,6 +93,25 @@ inline void doTransform(
 
 namespace impl
 {
+template <>
+struct ImplDetails<KDL::Frame, geometry_msgs::msg::Transform>
+{
+  static void fromMsg(geometry_msgs::msg::Transform const & in, KDL::Frame & out)
+  {
+    KDL::Rotation r;
+    KDL::Vector v;
+    tf2::fromMsg<>(in.translation, v);
+    tf2::fromMsg<>(in.rotation, r);
+    out = KDL::Frame(r, v);
+  }
+
+  static void toMsg(KDL::Frame const & in, geometry_msgs::msg::Transform & out)
+  {
+    tf2::toMsg<>(in.p, out.translation);
+    tf2::toMsg<>(in.M, out.rotation);
+  }
+};
+
 template <>
 struct ImplDetails<KDL::Vector, geometry_msgs::msg::Vector3>
 : DefaultVectorImpl<KDL::Vector, geometry_msgs::msg::Vector3>

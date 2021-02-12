@@ -114,7 +114,8 @@ TEST(TfEigen, ConvertTransform)
 
   Eigen::Affine3d T(tm);
 
-  geometry_msgs::msg::TransformStamped msg = tf2::eigenToTransform(T);
+  geometry_msgs::msg::Transform msg;
+  tf2::toMsg(T, msg);
   Eigen::Affine3d Tback = tf2::transformToEigen(msg);
 
   EXPECT_TRUE(T.isApprox(Tback));
@@ -123,7 +124,7 @@ TEST(TfEigen, ConvertTransform)
   // same for Isometry
   Eigen::Isometry3d I(tm);
 
-  msg = tf2::eigenToTransform(T);
+  tf2::toMsg(T, msg);
   Eigen::Isometry3d Iback = tf2::transformToEigen(msg);
 
   EXPECT_TRUE(I.isApprox(Iback));
