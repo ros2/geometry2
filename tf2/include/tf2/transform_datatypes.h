@@ -64,7 +64,9 @@ public:
   }
 
   /** Full constructor */
-  Stamped(const T & input, const builtin_interfaces::msg::Time & timestamp, const std::string & frame_id)
+  Stamped(
+    const T & input, const builtin_interfaces::msg::Time & timestamp,
+    const std::string & frame_id)
   : T(input), stamp_(TimePointFromMsg(timestamp)), frame_id_(frame_id)
   {
   }

@@ -37,25 +37,25 @@ namespace tf2
 {
 namespace impl
 {
-template <class Datatype, class = void>
+template<class Datatype, class = void>
 struct DefaultMessageForDatatype;
-template <class Datatype, class = void>
+template<class Datatype, class = void>
 struct DefaultTransformType;
 }  // namespace impl
 
-template <typename T>
+template<typename T>
 class Stamped;
 
-template <typename T>
+template<typename T>
 class WithCovarianceStamped;
 
-template <typename A, typename B>
+template<typename A, typename B>
 B & toMsg(const A & a, B & b);
 
-template <typename A, typename B = typename impl::DefaultMessageForDatatype<A>::type>
+template<typename A, typename B = typename impl::DefaultMessageForDatatype<A>::type>
 B toMsg(const A & a);
 
-template <typename A, typename B>
+template<typename A, typename B>
 void fromMsg(const A & a, B & b);
 
 std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
@@ -65,16 +65,16 @@ std::array<double, 36> covarianceNestedToRowMajor(
 
 namespace impl
 {
-template <class Datatype, class Message, class = void>
+template<class Datatype, class Message, class = void>
 struct ConversionImplementation;
 
-template <class StampedMessage>
+template<class StampedMessage>
 struct StampedMessageTraits;
 
-template <class UnstampedMessage>
+template<class UnstampedMessage>
 struct UnstampedMessageTraits;
 
-template <typename T, int = 0>
+template<typename T, int = 0>
 struct StampedAttributesHelper;
 
 template<bool IS_MESSAGE_A, bool IS_MESSAGE_B, typename A, typename B, typename = void>

@@ -33,18 +33,15 @@
 
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <std_msgs/msg/header.hpp>
+#include <type_traits>
 
 #include "../time.h"
 #include "forward.h"
-
-#include <type_traits>
-
 
 namespace tf2
 {
 namespace impl
 {
-
 /// Helper to always trigger \c static_assert s
 template<typename T>
 constexpr bool alwaysFalse = false;
@@ -55,7 +52,9 @@ constexpr bool alwaysFalse = false;
  * \tparam Message The message to check
  */
 template<typename Message, typename = int>
-struct MessageHasStdHeader : std::false_type {};
+struct MessageHasStdHeader : std::false_type
+{
+};
 
 /** \brief Check whether a message is stamped and has a std_msgs::msg::Header member.
  *
@@ -88,7 +87,8 @@ template<class Datatype, class>
 struct DefaultMessageForDatatype
 {
   static_assert(
-    alwaysFalse<Datatype>, "No default message type defined, "
+    alwaysFalse<Datatype>,
+    "No default message type defined, "
     "please check your header file includes!");
   // using type = ...;
 };
@@ -112,7 +112,8 @@ template<class Datatype, class>
 struct DefaultTransformType
 {
   static_assert(
-    alwaysFalse<Datatype>, "No default transform type defined, "
+    alwaysFalse<Datatype>,
+    "No default transform type defined, "
     "please check your header file includes!");
   // using type = ...;
 };
@@ -142,7 +143,8 @@ template<class Datatype, class Message, class>
 struct ConversionImplementation
 {
   static_assert(
-    alwaysFalse<Datatype>, "No Conversion Implementation available, "
+    alwaysFalse<Datatype>,
+    "No Conversion Implementation available, "
     "please check your header file includes!");
   // void toMsg(const Datatype&, Message&);
   // void fromMsg(const Message&, Datatype&);
@@ -185,7 +187,8 @@ template<class StampedMessage>
 struct StampedMessageTraits
 {
   static_assert(
-    alwaysFalse<StampedMessage>, "No traits for this stamped message type available, "
+    alwaysFalse<StampedMessage>,
+    "No traits for this stamped message type available, "
     "please check your header file includes!");
   // using UntampedType = ...;
   // static UntampedType& accessMessage(StampedMsg &);
@@ -220,7 +223,8 @@ template<class UnstampedMessage>
 struct UnstampedMessageTraits
 {
   static_assert(
-    alwaysFalse<UnstampedMessage>, "No traits for this message type available, "
+    alwaysFalse<UnstampedMessage>,
+    "No traits for this message type available, "
     "please check your header file includes!");
   // using StampedType = ...;
   // using StampedTypeWithCovariance = ...;
@@ -250,9 +254,8 @@ struct DefaultMessageForDatatype<tf2::Stamped<T>>
 template<class T>
 struct DefaultMessageForDatatype<tf2::WithCovarianceStamped<T>>
 {
-  using type =
-    typename UnstampedMessageTraits<typename DefaultMessageForDatatype<T>::type>::
-    StampedTypeWithCovariance;
+  using type = typename UnstampedMessageTraits<
+    typename DefaultMessageForDatatype<T>::type>::StampedTypeWithCovariance;
 };
 
 /**
@@ -462,10 +465,7 @@ struct StampedAttributesHelper
    * \param[in] t The data input.
    * \return The frame_id associated with the data.
    */
-  static std::string getFrameId(const T & t)
-  {
-    return t.header.frame_id;
-  }
+  static std::string getFrameId(const T & t) {return t.header.frame_id;}
 };
 
 /**
