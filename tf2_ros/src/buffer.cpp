@@ -40,13 +40,6 @@
 #include <string>
 #include <thread>
 
-// TODO(tfoote): replace these terrible macros
-#define ROS_ERROR printf
-#define ROS_FATAL printf
-#define ROS_INFO printf
-#define ROS_WARN printf
-
-
 namespace tf2_ros
 {
 
@@ -107,10 +100,10 @@ void Buffer::onTimeJump(const struct rcl_time_jump_t & time_jump)
   if (RCL_ROS_TIME_ACTIVATED == time_jump.clock_change ||
     RCL_ROS_TIME_DEACTIVATED == time_jump.clock_change)
   {
-    ROS_WARN("Detected time source change. Clearing TF buffer.");
+    RCLCPP_WARN(node_->get_logger(), "Detected time source change. Clearing TF buffer.");
     clear();
   } else if (time_jump.delta.nanoseconds < 0) {
-    ROS_WARN("Detected jump back in time. Clearing TF buffer.");
+    RCLCPP_WARN(node_->get_logger(), "Detected jump back in time. Clearing TF buffer.");
     clear();
   }
 }
@@ -321,7 +314,7 @@ bool Buffer::checkAndErrorDedicatedThreadPresent(std::string * error_str) const
     *error_str = tf2_ros::threading_error;
   }
 
-  ROS_ERROR("%s", tf2_ros::threading_error);
+  RCLCPP_ERROR(node_->get_logger(), "%s", tf2_ros::threading_error);
   return false;
 }
 

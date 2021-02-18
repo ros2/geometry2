@@ -68,7 +68,7 @@ public:
     const rclcpp::QoS & static_qos = StaticListenerQoS(),
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
     rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
-  : buffer_(buffer)
+  : buffer_(buffer), logger_(rclcpp::get_logger("transform_broadcaster_temp"))
   {
     init(node, spin_thread, qos, static_qos, options);
   }
@@ -86,6 +86,8 @@ private:
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
     rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
   {
+    logger_ = node->get_logger();
+
     using callback_t = std::function<void (tf2_msgs::msg::TFMessage::SharedPtr)>;
     callback_t cb = std::bind(
       &TransformListener::subscription_callback, this, std::placeholders::_1, false);
@@ -127,6 +129,7 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
   tf2::TimePoint last_update_;
+  rclcpp::Logger logger_;
 };
 }  // namespace tf2_ros
 

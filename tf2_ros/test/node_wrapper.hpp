@@ -49,6 +49,9 @@ public:
   rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr
   get_node_topics_interface() {return this->node->get_node_topics_interface();}
 
+  rclcpp::Logger
+  get_logger() {return this->get_logger();}
+
 private:
   rclcpp::Node::SharedPtr node;
 };
