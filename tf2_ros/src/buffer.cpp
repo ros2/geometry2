@@ -314,7 +314,8 @@ bool Buffer::checkAndErrorDedicatedThreadPresent(std::string * error_str) const
     *error_str = tf2_ros::threading_error;
   }
 
-  RCLCPP_ERROR(node_->get_logger(), "%s", tf2_ros::threading_error);
+  rclcpp::Logger logger = node_ ? node_->get_logger() : rclcpp::get_logger("tf2_buffer");
+  RCLCPP_ERROR(logger, "%s", tf2_ros::threading_error);
   return false;
 }
 
