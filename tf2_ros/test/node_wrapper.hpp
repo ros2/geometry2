@@ -50,7 +50,7 @@ public:
   get_node_topics_interface() {return this->node->get_node_topics_interface();}
 
   rclcpp::Logger
-  get_logger() {return this->get_logger();}
+  get_logger() {return this->node->get_logger();}
 
 private:
   rclcpp::Node::SharedPtr node;
