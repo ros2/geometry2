@@ -41,7 +41,7 @@ namespace tf2_ros
 {
 
 TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
-: buffer_(buffer), logger_(rclcpp::get_logger("transform_broadcaster_temp"))
+: buffer_(buffer)
 {
   // create a unique name for the node
   std::stringstream sstream;
@@ -101,7 +101,7 @@ void TransformListener::subscription_callback(
       // /\todo Use error reporting
       std::string temp = ex.what();
       RCLCPP_ERROR(
-        logger_,
+        node_logging_interface_->get_logger(),
         "Failure to set received transform from %s to %s with error: %s\n",
         msg_in.transforms[i].child_frame_id.c_str(),
         msg_in.transforms[i].header.frame_id.c_str(), temp.c_str());
