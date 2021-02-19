@@ -71,6 +71,7 @@ public:
   : buffer_(buffer)
   {
     init(node, spin_thread, qos, static_qos, options);
+    node_logging_interface_ = node->get_node_logging_interface();
   }
 
   TF2_ROS_PUBLIC
@@ -86,6 +87,8 @@ private:
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
     rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
   {
+    node_logging_interface_ = node->get_node_logging_interface();
+
     using callback_t = std::function<void (tf2_msgs::msg::TFMessage::SharedPtr)>;
     callback_t cb = std::bind(
       &TransformListener::subscription_callback, this, std::placeholders::_1, false);
@@ -111,7 +114,8 @@ private:
   }
 
   TF2_ROS_PUBLIC
-  void initThread(rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
+  void initThread(
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface);
 
   /// Callback function for ros message subscriptoin
   TF2_ROS_PUBLIC
@@ -127,6 +131,7 @@ private:
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
   tf2::BufferCore & buffer_;
   tf2::TimePoint last_update_;
+  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
 };
 }  // namespace tf2_ros
 
