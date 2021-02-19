@@ -84,8 +84,14 @@ private:
     bool spin_thread,
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
-    rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options = []() {
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
+      options.qos_overriding_options = rclcpp::QosOverridingOptions{
+        rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::History,
+        rclcpp::QosPolicyKind::Reliability};
+      return options;
+    } ())
   {
     node_logging_interface_ = node->get_node_logging_interface();
 
