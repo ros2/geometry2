@@ -88,6 +88,15 @@ private:
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
       options.qos_overriding_options = rclcpp::QosOverridingOptions{
         rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::Durability,
+        rclcpp::QosPolicyKind::History,
+        rclcpp::QosPolicyKind::Reliability};
+      return options;
+    } (),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options = []() {
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
+      options.qos_overriding_options = rclcpp::QosOverridingOptions{
+        rclcpp::QosPolicyKind::Depth,
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
       return options;
@@ -112,7 +121,7 @@ private:
       "/tf_static",
       static_qos,
       std::move(static_cb),
-      options);
+      static_options);
 
     if (spin_thread) {
       initThread(node->get_node_base_interface());
