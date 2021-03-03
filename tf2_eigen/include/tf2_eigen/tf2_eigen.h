@@ -405,9 +405,9 @@ inline
 geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
 {
   geometry_msgs::msg::Vector3 msg;
-  msg.x = in (0);
-  msg.y = in (1);
-  msg.z = in (2);
+  msg.x = in(0);
+  msg.y = in(1);
+  msg.z = in(2);
   return msg;
 }
 
