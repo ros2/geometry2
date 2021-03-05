@@ -482,16 +482,16 @@ private:
   {
     namespace mt = message_filters::message_traits;
 
-    // find the message this request is associated with
-    typename L_MessageInfo::iterator msg_it = messages_.begin();
-    typename L_MessageInfo::iterator msg_end = messages_.end();
-
     MEvent saved_event;
     bool event_found = false;
 
     {
       // We will be accessing and mutating messages now, require unique lock
       std::unique_lock<std::mutex> lock(messages_mutex_);
+
+      // find the message this request is associated with
+      typename L_MessageInfo::iterator msg_it = messages_.begin();
+      typename L_MessageInfo::iterator msg_end = messages_.end();
 
       for (; msg_it != msg_end; ++msg_it) {
         MessageInfo & info = *msg_it;
