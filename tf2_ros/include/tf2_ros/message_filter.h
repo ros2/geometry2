@@ -686,7 +686,7 @@ private:
 
   static std::string stripSlash(const std::string & in)
   {
-    if (!in.empty() && (in [0] == '/')) {
+    if (!in.empty() && (in[0] == '/')) {
       std::string out = in;
       out.erase(0, 1);
       return out;
