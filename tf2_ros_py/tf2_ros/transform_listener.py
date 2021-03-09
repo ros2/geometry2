@@ -83,9 +83,9 @@ class TransformListener:
         # from another callback in the same group.
         self.group = ReentrantCallbackGroup()
         self.tf_sub = node.create_subscription(
-            TFMessage, 'tf', self.callback, qos, callback_group=self.group)
+            TFMessage, '/tf', self.callback, qos, callback_group=self.group)
         self.tf_static_sub = node.create_subscription(
-            TFMessage, 'tf_static', self.static_callback, static_qos, callback_group=self.group)
+            TFMessage, '/tf_static', self.static_callback, static_qos, callback_group=self.group)
 
         if spin_thread:
             self.executor = SingleThreadedExecutor()
