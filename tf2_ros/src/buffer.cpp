@@ -95,14 +95,14 @@ Buffer::lookupTransform(
   return lookupTransform(target_frame, source_frame, lookup_time);
 }
 
-void Buffer::onTimeJump(const struct rcl_time_jump_t & time_jump)
+void Buffer::onTimeJump(const rcl_time_jump_t & jump)
 {
-  if (RCL_ROS_TIME_ACTIVATED == time_jump.clock_change ||
-    RCL_ROS_TIME_DEACTIVATED == time_jump.clock_change)
+  if (RCL_ROS_TIME_ACTIVATED == jump.clock_change ||
+    RCL_ROS_TIME_DEACTIVATED == jump.clock_change)
   {
     RCLCPP_WARN(node_->get_logger(), "Detected time source change. Clearing TF buffer.");
     clear();
-  } else if (time_jump.delta.nanoseconds < 0) {
+  } else if (jump.delta.nanoseconds < 0) {
     RCLCPP_WARN(node_->get_logger(), "Detected jump back in time. Clearing TF buffer.");
     clear();
   }
