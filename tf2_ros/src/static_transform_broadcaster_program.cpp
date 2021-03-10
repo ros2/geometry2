@@ -35,60 +35,160 @@
 #include <cstdio>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
+
+std::unordered_map<std::string, std::string> _make_arg_map(std::vector<std::string> && args)
+{
+  std::unordered_map<std::string, std::string> ret;
+  /* collect from [exe] --option1 value --option2 value ... --optionN value */
+  for (size_t x = 1; x < args.size(); x += 2) {
+    ret.emplace(std::move(args[x]), std::move(args[x + 1]));
+  }
+  return ret;
+}
+
+void _print_usage()
+{
+  const char * usage =
+    "usage: static_transform_publisher [--x X] [--y Y] [--z Z] [--qx QX] [--qy QY]"
+    "[--qz QZ] [--qw QW] [--roll ROLL] [--pitch PITCH] [--yaw YAW] --frame-id FRAME_ID"
+    "--child-frame-id CHILD_FRAME_ID\n\n"
+    "A command line utility for manually sending a static transform.\n\nIf no translation or"
+    " orientation is provided, the identity transform will be published.\n\nThe translation offsets"
+    " are in meters.\n\nThe rotation may be provided as with roll, pitch, yaw euler angles"
+    " (radians), or as a quaternion.\n\n"
+    "required arguments:\n"
+    "  --frame-id FRAME_ID parent frame\n"
+    "  --child-frame-id CHILD_FRAME_ID child frame id\n\n"
+    "optional arguments:\n"
+    "  --x X                 x component of a vector represention the translation\n"
+    "  --y Y                 y component of a vector represention of the translation\n"
+    "  --z Z                 z component of a vector represention of the translation\n"
+    "  --qx QX               x component of a quaternion represention of the rotation\n"
+    "  --qy QY               y component of a quaternion representation of the rotation\n"
+    "  --qz QZ               z component of a quaternion representation of the rotation\n"
+    "  --qw QW               w component of a quaternion representation of the rotation\n"
+    "  --roll ROLL           roll component of an Euler representation of the rotation (RPY)\n"
+    "  --pitch PITCH         pitch component of an Euler representation of the rotation (RPY)\n"
+    "  --yaw YAW             yaw component of an Euler representation of the rotation (RPY)";
+  printf("%s\n", usage);
+}
+
+tf2::Quaternion _get_rotation(const std::unordered_map<std::string, std::string> & args)
+{
+  tf2::Quaternion quat;
+  bool found_quaternion = false;
+  bool found_rpy = false;
+  auto iter = args.find("--qx");
+  if (iter != args.end()) {
+    quat.setX(std::stod(iter->second));
+    found_quaternion = true;
+  }
+  iter = args.find("--qy");
+  if (iter != args.end()) {
+    quat.setY(std::stod(iter->second));
+    found_quaternion = true;
+  }
+  iter = args.find("--qz");
+  if (iter != args.end()) {
+    quat.setZ(std::stod(iter->second));
+    found_quaternion = true;
+  }
+  iter = args.find("--qw");
+  if (iter != args.end()) {
+    quat.setW(std::stod(iter->second));
+    found_quaternion = true;
+  }
+  /* otherwise, look for roll, pitch, yaw */
+  double roll = 0.0;
+  double pitch = 0.0;
+  double yaw = 0.0;
+  iter = args.find("--roll");
+  if (iter != args.end()) {
+    roll = std::stod(iter->second);
+    found_rpy = true;
+  }
+  iter = args.find("--pitch");
+  if (iter != args.end()) {
+    pitch = std::stod(iter->second);
+    found_rpy = true;
+  }
+  iter = args.find("--yaw");
+  if (iter != args.end()) {
+    yaw = std::stod(iter->second);
+    found_rpy = true;
+  }
+  if (found_quaternion && found_rpy) {
+    RCUTILS_LOG_ERROR("cannot mix euler and quaternion arguments");
+    _print_usage();
+    exit(1);
+  } else if (!found_quaternion) {
+    quat.setRPY(roll, pitch, yaw);
+  }
+  return quat;
+}
+
+tf2::Vector3 _get_translation(const std::unordered_map<std::string, std::string> & args)
+{
+  tf2::Vector3 trans;
+  auto iter = args.find("--x");
+  if (iter != args.end()) {
+    trans.setX(std::stod(iter->second));
+  }
+  iter = args.find("--y");
+  if (iter != args.end()) {
+    trans.setY(std::stod(iter->second));
+  }
+  iter = args.find("--z");
+  if (iter != args.end()) {
+    trans.setZ(std::stod(iter->second));
+  }
+  return trans;
+}
 
 int main(int argc, char ** argv)
 {
   // Initialize ROS
   std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
+  std::unordered_map<std::string, std::string> arg_map = _make_arg_map(std::move(args));
   rclcpp::NodeOptions options;
   std::shared_ptr<tf2_ros::StaticTransformBroadcasterNode> node;
-
-  if (args.size() != 9 && args.size() != 10) {
-    printf("A command line utility for manually sending a transform.\n");
-    printf("Usage: static_transform_publisher x y z qx qy qz qw frame_id child_frame_id \n");
-    printf("OR \n");
-    printf("Usage: static_transform_publisher x y z yaw pitch roll frame_id child_frame_id \n");
-    RCUTILS_LOG_ERROR(
-      "static_transform_publisher exited due to not having the right number of arguments");
-    return 2;
+  tf2::Quaternion rotation;
+  tf2::Vector3 translation;
+  try {
+    rotation = _get_rotation(arg_map);
+    translation = _get_translation(arg_map);
+  } catch (std::invalid_argument & e) {
+    RCUTILS_LOG_ERROR("error parsing command line arguments");
+    _print_usage();
+    return 1;
   }
-  double x = std::stod(args[1]);
-  double y = std::stod(args[2]);
-  double z = std::stod(args[3]);
-  double rx, ry, rz, rw;
   std::string frame_id, child_id;
-
-  if (args.size() == 9) {
-    // grab parameters from yaw, pitch, roll
-    tf2::Quaternion quat;
-    quat.setRPY(std::stod(args[6]), std::stod(args[5]), std::stod(args[4]));
-    rx = quat.x();
-    ry = quat.y();
-    rz = quat.z();
-    rw = quat.w();
-    frame_id = args[7];
-    child_id = args[8];
-  } else {
-    // quaternion supplied directly
-    rx = std::stod(args[4]);
-    ry = std::stod(args[5]);
-    rz = std::stod(args[6]);
-    rw = std::stod(args[7]);
-    frame_id = args[8];
-    child_id = args[9];
+  auto iter = arg_map.find("--frame-id");
+  if (iter == arg_map.end()) {
+    _print_usage();
+    return 1;
   }
+  frame_id = iter->second;
+  iter = arg_map.find("--child-frame-id");
+  if (iter == arg_map.end()) {
+    _print_usage();
+    return 1;
+  }
+  child_id = iter->second;
 
   // override default parameters with the desired transform
   options.parameter_overrides(
   {
-    {"translation.x", x},
-    {"translation.y", y},
-    {"translation.z", z},
-    {"rotation.x", rx},
-    {"rotation.y", ry},
-    {"rotation.z", rz},
-    {"rotation.w", rw},
+    {"translation.x", translation.x()},
+    {"translation.y", translation.y()},
+    {"translation.z", translation.z()},
+    {"rotation.x", rotation.x()},
+    {"rotation.y", rotation.y()},
+    {"rotation.z", rotation.z()},
+    {"rotation.w", rotation.w()},
     {"frame_id", frame_id},
     {"child_frame_id", child_id},
   });
@@ -96,7 +196,11 @@ int main(int argc, char ** argv)
   node = std::make_shared<tf2_ros::StaticTransformBroadcasterNode>(options);
 
   RCLCPP_INFO(
-    node->get_logger(), "Spinning until killed publishing transform from '%s' to '%s'",
+    node->get_logger(),
+    "Spinning until killed publishing transform\ntranslation: ('%lf', '%lf', '%lf')\n"
+    "rotation: ('%lf', '%lf', '%lf', '%lf')\nfrom '%s' to '%s'",
+    translation.x(), translation.y(), translation.z(),
+    rotation.x(), rotation.y(), rotation.z(), rotation.w(),
     frame_id.c_str(), child_id.c_str());
   rclcpp::spin(node);
   return 0;
