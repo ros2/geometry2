@@ -52,7 +52,7 @@ namespace tf2_ros
 
 namespace detail
 {
-template<class AllocatorT>
+template<class AllocatorT = std::allocator<void>>
 rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>
 get_default_transform_listener_sub_options()
 {
@@ -65,7 +65,7 @@ get_default_transform_listener_sub_options()
   return options;
 }
 
-template<class AllocatorT>
+template<class AllocatorT = std::allocator<void>>
 rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>
 get_default_transform_listener_static_sub_options()
 {
@@ -114,10 +114,8 @@ private:
     bool spin_thread,
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
-    detail::get_default_transform_listener_sub_options<AllocatorT>(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options,
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options)
   {
     node_logging_interface_ = node->get_node_logging_interface();
 
