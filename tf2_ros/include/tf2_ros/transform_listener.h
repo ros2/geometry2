@@ -50,6 +50,34 @@
 namespace tf2_ros
 {
 
+namespace detail
+{
+template<class AllocatorT>
+rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>
+get_default_transform_listener_sub_options()
+{
+  rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
+  options.qos_overriding_options = rclcpp::QosOverridingOptions{
+    rclcpp::QosPolicyKind::Depth,
+    rclcpp::QosPolicyKind::Durability,
+    rclcpp::QosPolicyKind::History,
+    rclcpp::QosPolicyKind::Reliability};
+  return options;
+}
+
+template<class AllocatorT>
+rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>
+get_default_transform_listener_static_sub_options()
+{
+  rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
+  options.qos_overriding_options = rclcpp::QosOverridingOptions{
+    rclcpp::QosPolicyKind::Depth,
+    rclcpp::QosPolicyKind::History,
+    rclcpp::QosPolicyKind::Reliability};
+  return options;
+}
+}  //namespace detail
+
 /** \brief This class provides an easy way to request and receive coordinate frame transform information.
  */
 class TransformListener
@@ -67,10 +95,12 @@ public:
     const rclcpp::QoS & qos = DynamicListenerQoS(),
     const rclcpp::QoS & static_qos = StaticListenerQoS(),
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
-    rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>())
+    detail::get_default_transform_listener_sub_options<AllocatorT>(),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
+    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
   : buffer_(buffer)
   {
-    init(node, spin_thread, qos, static_qos, options);
+    init(node, spin_thread, qos, static_qos, options, static_options);
     node_logging_interface_ = node->get_node_logging_interface();
   }
 
@@ -84,23 +114,10 @@ private:
     bool spin_thread,
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options = []() {
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::Durability,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } (),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options = []() {
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } ())
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
+    detail::get_default_transform_listener_sub_options<AllocatorT>(),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
+    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
   {
     node_logging_interface_ = node->get_node_logging_interface();
 
