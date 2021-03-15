@@ -63,6 +63,7 @@ public:
       rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
       options.qos_overriding_options = rclcpp::QosOverridingOptions{
         rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::Durability,
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
       return options;
