@@ -275,6 +275,9 @@ private:
   // conditionally error if dedicated_thread unset.
   bool checkAndErrorDedicatedThreadPresent(std::string * errstr) const;
 
+  /// Get the logger to use for calls to RCLCPP log macros.
+  rclcpp::Logger getLogger() const;
+
   // framegraph service
   rclcpp::Service<tf2_msgs::srv::FrameGraph>::SharedPtr frames_server_;
 

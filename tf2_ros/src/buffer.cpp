@@ -100,10 +100,10 @@ void Buffer::onTimeJump(const rcl_time_jump_t & jump)
   if (RCL_ROS_TIME_ACTIVATED == jump.clock_change ||
     RCL_ROS_TIME_DEACTIVATED == jump.clock_change)
   {
-    RCLCPP_WARN(node_->get_logger(), "Detected time source change. Clearing TF buffer.");
+    RCLCPP_WARN(getLogger(), "Detected time source change. Clearing TF buffer.");
     clear();
   } else if (jump.delta.nanoseconds < 0) {
-    RCLCPP_WARN(node_->get_logger(), "Detected jump back in time. Clearing TF buffer.");
+    RCLCPP_WARN(getLogger(), "Detected jump back in time. Clearing TF buffer.");
     clear();
   }
 }
@@ -314,9 +314,13 @@ bool Buffer::checkAndErrorDedicatedThreadPresent(std::string * error_str) const
     *error_str = tf2_ros::threading_error;
   }
 
-  rclcpp::Logger logger = node_ ? node_->get_logger() : rclcpp::get_logger("tf2_buffer");
-  RCLCPP_ERROR(logger, "%s", tf2_ros::threading_error);
+  RCLCPP_ERROR(getLogger(), "%s", tf2_ros::threading_error);
   return false;
+}
+
+rclcpp::Logger Buffer::getLogger() const
+{
+  return node_ ? node_->get_logger() : rclcpp::get_logger("tf2_buffer");
 }
 
 }  // namespace tf2_ros
