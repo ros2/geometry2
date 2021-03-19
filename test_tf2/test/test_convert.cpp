@@ -298,7 +298,6 @@ TEST(TfEigenKdl, TestTwistMatrix)
   EXPECT_EQ(kdl_v, kdl_v1);
 }
 
-
 TEST(TfEigenKdl, TestMatrixWrench)
 {
   Vector6d eigen_v;
@@ -315,7 +314,6 @@ TEST(TfEigenKdl, TestMatrixWrench)
   tf2::convert(tf2_v1, eigen_v2);
   EXPECT_EQ(eigen_v, eigen_v2);
 }
-
 
 TEST(TfEigenKdl, TestVectorVector3d)
 {
