@@ -98,73 +98,73 @@ TF2_EIGEN_KDL_PUBLIC
 void wrenchEigenToKDL(const Eigen::Matrix<double, 6, 1> & e, KDL::Wrench & k);
 
 template<>
-void tf2::convert(const KDL::Rotation & a, Eigen::Quaterniond & b)
+void convert(const KDL::Rotation & a, Eigen::Quaterniond & b)
 {
   quaternionKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Quaterniond & a, KDL::Rotation & b)
+void convert(const Eigen::Quaterniond & a, KDL::Rotation & b)
 {
   quaternionEigenToKDL(a, b);
 }
 
 template<>
-void tf2::convert(const KDL::Frame & a, Eigen::Affine3d & b)
+void convert(const KDL::Frame & a, Eigen::Affine3d & b)
 {
   transformKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const KDL::Frame & a, Eigen::Isometry3d & b)
+void convert(const KDL::Frame & a, Eigen::Isometry3d & b)
 {
   transformKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Affine3d & a, KDL::Frame & b)
+void convert(const Eigen::Affine3d & a, KDL::Frame & b)
 {
   transformEigenToKDL(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Isometry3d & a, KDL::Frame & b)
+void convert(const Eigen::Isometry3d & a, KDL::Frame & b)
 {
   transformEigenToKDL(a, b);
 }
 
 template<>
-void tf2::convert(const KDL::Twist & a, Eigen::Matrix<double, 6, 1> & b)
+void convert(const KDL::Twist & a, Eigen::Matrix<double, 6, 1> & b)
 {
   twistKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Matrix<double, 6, 1> & a, KDL::Twist & b)
+void convert(const Eigen::Matrix<double, 6, 1> & a, KDL::Twist & b)
 {
   twistEigenToKDL(a, b);
 }
 
 template<>
-void tf2::convert(const KDL::Vector & a, Eigen::Matrix<double, 3, 1> & b)
+void convert(const KDL::Vector & a, Eigen::Matrix<double, 3, 1> & b)
 {
   vectorKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Matrix<double, 3, 1> & a, KDL::Vector & b)
+void convert(const Eigen::Matrix<double, 3, 1> & a, KDL::Vector & b)
 {
   vectorEigenToKDL(a, b);
 }
 
 template<>
-void tf2::convert(const KDL::Wrench & a, Eigen::Matrix<double, 6, 1> & b)
+void convert(const KDL::Wrench & a, Eigen::Matrix<double, 6, 1> & b)
 {
   wrenchKDLToEigen(a, b);
 }
 
 template<>
-void tf2::convert(const Eigen::Matrix<double, 6, 1> & a, KDL::Wrench & b)
+void convert(const Eigen::Matrix<double, 6, 1> & a, KDL::Wrench & b)
 {
   wrenchEigenToKDL(a, b);
 }
