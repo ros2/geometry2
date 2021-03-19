@@ -35,8 +35,8 @@ if(BUILD_TESTING)
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
   if(TARGET test_tf2_sensor_msgs_cpp)
     target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
-    target_link_libraries(test_tf2_sensor_msgs_cpp Eigen3::Eigen)
     ament_target_dependencies(test_tf2_sensor_msgs_cpp
+      "Eigen3"
       "rclcpp"
       "sensor_msgs"
       "tf2"
