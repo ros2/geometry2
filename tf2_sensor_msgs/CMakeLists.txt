@@ -38,6 +38,7 @@ if(BUILD_TESTING)
     target_link_libraries(test_tf2_sensor_msgs_cpp Eigen3::Eigen)
     ament_target_dependencies(test_tf2_sensor_msgs_cpp
       "rclcpp"
+      "sensor_msgs"
       "tf2"
       "tf2_ros"
     )
