@@ -32,9 +32,11 @@ find_package(tf2_ros REQUIRED)
 
 ament_find_gtest()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(bullet REQUIRED bullet)
-include_directories(include ${bullet_INCLUDE_DIRS})
+if(WIN32)
+  set(BULLET_ROOT $ENV{ChocolateyInstall}/lib/bullet)
+endif()
+find_package(Bullet REQUIRED)
+include_directories(include ${BULLET_INCLUDE_DIRS})
 
 ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
 if(TARGET buffer_core_test)
