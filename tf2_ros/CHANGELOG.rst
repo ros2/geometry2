@@ -2,6 +2,17 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Guard against access to null node pointer (`#393 <https://github.com/ros2/geometry2/issues/393>`_)
+* Allow to reconfigure durability for /tf topic broadcaster/listener (`#383 <https://github.com/ros2/geometry2/issues/383>`_)
+* Fix the rcl type used in the time jump. (`#391 <https://github.com/ros2/geometry2/issues/391>`_)
+* Fix linter errors (`#385 <https://github.com/ros2/geometry2/issues/385>`_)
+* fix accessing freed resources (`#386 <https://github.com/ros2/geometry2/issues/386>`_)
+* Allow reconfiguring qos of tf and tf_static topics through parameters (`#381 <https://github.com/ros2/geometry2/issues/381>`_)
+* Replace ROS\_* logging macros and use RCLCPP\_* instead (`#380 <https://github.com/ros2/geometry2/issues/380>`_)
+* Contributors: Audrow Nash, Chris Lalancette, Ivan Santiago Paunovic, Jacob Perron, Kazunari Tanaka
+
 0.16.0 (2021-01-25)
 -------------------
 * Improve message filters error messages (`#364 <https://github.com/ros2/geometry2/issues/364>`_)

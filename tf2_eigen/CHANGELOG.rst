@@ -2,6 +2,13 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix linter errors (`#385 <https://github.com/ros2/geometry2/issues/385>`_)
+* Fix up the style in tf2_eigen. (`#378 <https://github.com/ros2/geometry2/issues/378>`_)
+* Fix doTransform with Eigen Quaternion (`#369 <https://github.com/ros2/geometry2/issues/369>`_)
+* Contributors: Audrow Nash, Bjar Ne, Chris Lalancette
+
 0.16.0 (2021-01-25)
 -------------------
 
