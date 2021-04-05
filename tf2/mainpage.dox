@@ -33,6 +33,6 @@ Some packages that implement this interface:
 
 More documentation for the conversion interface is available on the <A HREF="http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions">ROS Wiki</A>.
 
-Some tutorials are available on <A HREF="https://index.ros.org/doc/ros2/Tutorials/tf2">https://index.ros.org/</A>.
+Some tutorials are available at <A HREF="https://docs.ros.org/en/rolling/Tutorials/tf2.html">https://docs.ros.org/</A>.
 
 */
