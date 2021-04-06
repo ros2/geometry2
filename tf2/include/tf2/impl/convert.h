@@ -508,8 +508,9 @@ struct StampedAttributesHelper<tf2::WithCovarianceStamped<T>>
  *
  * \tparam VectorType Datatype of the Vector.
  * \tparam Message Message type, like geometry_msgs::msg::Vector3.
+ * \tparam VectorMemberType Type of the <tt>x, y</tt> and \c z variables of the vector
  */
-template<class VectorType, class Message>
+template<class VectorType, class Message, typename VectorMemberType = double>
 struct DefaultVectorConversionImplementation
 {
   /** \brief Convert a vector type to a vector-like message.
@@ -529,7 +530,10 @@ struct DefaultVectorConversionImplementation
    */
   static void fromMsg(const Message & msg, VectorType & out)
   {
-    out = VectorType(msg.x, msg.y, msg.z);
+    // cast to suppress narrowing warning
+    out = VectorType(
+      static_cast<VectorMemberType>(msg.x), static_cast<VectorMemberType>(msg.y),
+      static_cast<VectorMemberType>(msg.z));
   }
 };
 
@@ -537,8 +541,9 @@ struct DefaultVectorConversionImplementation
  * a geometry_msgs::msg::Quaternion message.
  *
  * \tparam QuaternionType Datatype of the Vector.
+ * \tparam QuaternionMemberType Type of the <tt>x, y, z</tt> and \c w variables of the quaternion
  */
-template<class QuaternionType>
+template<class QuaternionType, typename QuaternionMemberType = double>
 struct DefaultQuaternionConversionImplementation
 {
   /** \brief Convert a quaternion type to a Quaternion message.
@@ -559,7 +564,10 @@ struct DefaultQuaternionConversionImplementation
    */
   static void fromMsg(const geometry_msgs::msg::Quaternion & msg, QuaternionType & out)
   {
-    out = QuaternionType(msg.x, msg.y, msg.z, msg.w);
+    // cast to suppress narrowing warning
+    out = QuaternionType(
+      static_cast<QuaternionMemberType>(msg.x), static_cast<QuaternionMemberType>(msg.y),
+      static_cast<QuaternionMemberType>(msg.z), static_cast<QuaternionMemberType>(msg.w));
   }
 };
 

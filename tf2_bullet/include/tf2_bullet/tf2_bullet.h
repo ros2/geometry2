@@ -79,21 +79,21 @@ struct DefaultMessageForDatatype<btTransform>
 /// \brief Conversion implementation for geometry_msgs::msg::Point and btVector3.
 template<>
 struct ConversionImplementation<btVector3, geometry_msgs::msg::Point>
-  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Point>
+  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Point, btScalar>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Vector3 and btVector3.
 template<>
 struct ConversionImplementation<btVector3, geometry_msgs::msg::Vector3>
-  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Vector3>
+  : DefaultVectorConversionImplementation<btVector3, geometry_msgs::msg::Vector3, btScalar>
 {
 };
 
 /// \brief Conversion implementation for geometry_msgs::msg::Quaternion and Eigen::Quaterniond.
 template<>
 struct ConversionImplementation<btQuaternion, geometry_msgs::msg::Quaternion>
-  : DefaultQuaternionConversionImplementation<btQuaternion> {};
+  : DefaultQuaternionConversionImplementation<btQuaternion, btScalar> {};
 
 /// \brief Conversion implementation for geometry_msgs::msg::Transform and btTransform.
 template<>
