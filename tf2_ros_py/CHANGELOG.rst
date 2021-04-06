@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.17.0 (2021-03-19)
 -------------------
 * Use global namespace for TransformListener topics (`#390 <https://github.com/ros2/geometry2/issues/390>`_)

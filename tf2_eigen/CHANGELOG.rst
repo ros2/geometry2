@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.17.0 (2021-03-19)
 -------------------
 * Fix linter errors (`#385 <https://github.com/ros2/geometry2/issues/385>`_)

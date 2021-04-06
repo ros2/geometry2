@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.17.0 (2021-03-19)
 -------------------
 * Guard against access to null node pointer (`#393 <https://github.com/ros2/geometry2/issues/393>`_)

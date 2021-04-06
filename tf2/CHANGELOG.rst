@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change index.ros.org -> docs.ros.org. (`#394 <https://github.com/ros2/geometry2/issues/394>`_)
+* Contributors: Chris Lalancette
+
 0.17.0 (2021-03-19)
 -------------------
 
