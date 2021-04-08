@@ -90,6 +90,8 @@ struct DefaultMessageForDatatype
     alwaysFalse<Datatype>,
     "No default message type defined, "
     "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
   // using type = ...;
 };
 
@@ -115,6 +117,8 @@ struct DefaultTransformType
     alwaysFalse<Datatype>,
     "No default transform type defined, "
     "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
   // using type = ...;
 };
 
@@ -146,6 +150,8 @@ struct ConversionImplementation
     alwaysFalse<Datatype>,
     "No Conversion Implementation available, "
     "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
   // void toMsg(const Datatype&, Message&);
   // void fromMsg(const Message&, Datatype&);
 };
@@ -190,6 +196,8 @@ struct StampedMessageTraits
     alwaysFalse<StampedMessage>,
     "No traits for this stamped message type available, "
     "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
   // using UntampedType = ...;
   // static UntampedType& accessMessage(StampedMsg &);
   // static UntampedType getMessage(StampedMsg const&);
@@ -226,6 +234,8 @@ struct UnstampedMessageTraits
     alwaysFalse<UnstampedMessage>,
     "No traits for this message type available, "
     "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
   // using StampedType = ...;
   // using StampedTypeWithCovariance = ...;
 };

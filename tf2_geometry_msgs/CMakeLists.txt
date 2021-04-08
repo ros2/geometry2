@@ -31,6 +31,8 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
 
+  # TODO(ros2/geometry2#259) Switch to ament_lint_auto once headers
+  # are renamed to .hpp
   find_package(ament_cmake_cppcheck REQUIRED)
   find_package(ament_cmake_cpplint REQUIRED)
   find_package(ament_cmake_lint_cmake REQUIRED)

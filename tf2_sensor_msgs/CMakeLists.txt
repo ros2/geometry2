@@ -30,6 +30,7 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_cmake_pytest REQUIRED)
 
+  # TODO(ros2/orocos_kinematics_dynamics): reenable when PyKDL is ready to use
   #ament_add_pytest_test(test_tf2_sensor_msgs_py test/test_tf2_sensor_msgs.py)
 
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
