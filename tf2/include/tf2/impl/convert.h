@@ -302,7 +302,7 @@ struct ConversionImplementation<tf2::Stamped<Datatype>, StampedMessage>
  * \brief Partial specialization of impl::ConversionImplementation for stamped types with covariance.
  *
  * This partial specialization provides the conversion implementation ( \c toMsg() and \c fromMsg() )
- * between stamped types with covariance ( non-message types of tf2::WithCovarianceStamped\<T\>
+ * between stamped types with covariance (non-message types of tf2::WithCovarianceStamped\<T\>
  * and ROS message datatypes with a \c header member).
  * The covariance, the timestamp and the frame ID are preserved during the conversion.
  * The implementation of tf2::toMsg() and tf2::fromMsg() for the unstamped types without covariance
@@ -398,7 +398,7 @@ struct Converter<false, true, A, B>
 
 /** \brief Implementation of tf2::convert() for datatypes.
  * Converts the first argument to a message
- * (usually \c impl::DefaultMessageForDatatype<A>::type )
+ * (usually \c impl::DefaultMessageForDatatype<A>::type)
  * and then converts the message to the second argument.
  * \tparam A Datatype of first argument.
  * \tparam B Datatype of second argument.
@@ -425,9 +425,9 @@ template<bool b, typename A>
 struct Converter<b, b, A, A>
 {
   /** \brief Overload of tf2::convert() for the same types.
- * \param[in] a1 an object to convert from
- * \param[in,out] a2 the object to convert to
- */
+  * \param[in] a1 an object to convert from
+  * \param[in,out] a2 the object to convert to
+  */
   static void convert(const A & a1, A & a2)
   {
     if (&a1 != &a2) {
@@ -461,6 +461,7 @@ struct StampedAttributesHelper
     tf2::fromMsg<>(t.header.stamp, timestamp);
     return timestamp;
   }
+
   /**\brief Get the frame_id from data
    * \param[in] t The data input.
    * \return The frame_id associated with the data.
@@ -479,6 +480,7 @@ struct StampedAttributesHelper<tf2::Stamped<T>>
    * \return The timestamp associated with the data.
    */
   static tf2::TimePoint getTimestamp(const tf2::Stamped<T> & t) {return t.stamp_;}
+
   /** \brief Get the frame_id from data
    * \param t The data input.
    * \return The frame_id associated with the data.
@@ -497,6 +499,7 @@ struct StampedAttributesHelper<tf2::WithCovarianceStamped<T>>
    * \return The timestamp associated with the data.
    */
   static tf2::TimePoint getTimestamp(const tf2::WithCovarianceStamped<T> & t) {return t.stamp_;}
+
   /** \brief Get the frame_id from data
    * \param t The data input.
    * \return The frame_id associated with the data.
