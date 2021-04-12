@@ -33,14 +33,14 @@ from geometry_msgs.msg import PointStamped
 
 
 def transform_to_kdl(t):
-    """Convert a geometry_msgs Transform message to a PyKDL Frame.
+    """
+    Convert a geometry_msgs Transform message to a PyKDL Frame.
 
     :param t: The Transform message to convert.
     :type t: geometry_msgs.msg.TransformStamped
     :return: The converted PyKDL frame.
     :rtype: PyKDL.Frame
     """
-
     return PyKDL.Frame(PyKDL.Rotation.Quaternion(t.transform.rotation.x,
                                                  t.transform.rotation.y,
                                                  t.transform.rotation.z,
@@ -51,7 +51,8 @@ def transform_to_kdl(t):
 
 
 def do_transform_vector(vector, transform):
-    """Apply a transform in the form of a geometry_msgs message to a PyKDL vector.
+    """
+    Apply a transform in the form of a geometry_msgs message to a PyKDL vector.
 
     :param vector: The PyKDL vector to transform.
     :type vector: PyKDL.Vector
@@ -69,7 +70,8 @@ tf2_ros.TransformRegistration().add(PyKDL.Vector, do_transform_vector)
 
 
 def to_msg_vector(vector):
-    """Convert a PyKDL Vector to a geometry_msgs PointStamped message.
+    """
+    Convert a PyKDL Vector to a geometry_msgs PointStamped message.
 
     :param vector: The vector to convert.
     :type vector: PyKDL.Vector
@@ -88,7 +90,8 @@ tf2_ros.ConvertRegistration().add_to_msg(PyKDL.Vector, to_msg_vector)
 
 
 def from_msg_vector(msg):
-    """Convert a PointStamped message to a stamped PyKDL Vector.
+    """
+    Convert a PointStamped message to a stamped PyKDL Vector.
 
     :param msg: The PointStamped message to convert.
     :type msg: geometry_msgs.msg.PointStamped
@@ -103,7 +106,8 @@ tf2_ros.ConvertRegistration().add_from_msg(PyKDL.Vector, from_msg_vector)
 
 
 def convert_vector(vector):
-    """Convert a generic stamped triplet message to a stamped PyKDL Vector.
+    """
+    Convert a generic stamped triplet message to a stamped PyKDL Vector.
 
     :param vector: The message to convert.
     :return: The timestamped converted PyKDL vector.
@@ -119,7 +123,8 @@ tf2_ros.ConvertRegistration().add_convert((PyKDL.Vector, PyKDL.Vector),
 
 
 def do_transform_frame(frame, transform):
-    """Apply a transform in the form of a geometry_msgs message to a PyKDL Frame.
+    """
+    Apply a transform in the form of a geometry_msgs message to a PyKDL Frame.
 
     :param frame: The PyKDL frame to transform.
     :type frame: PyKDL.Frame
@@ -137,7 +142,8 @@ tf2_ros.TransformRegistration().add(PyKDL.Frame, do_transform_frame)
 
 
 def do_transform_twist(twist, transform):
-    """Apply a transform in the form of a geometry_msgs message to a PyKDL Twist.
+    """
+    Apply a transform in the form of a geometry_msgs message to a PyKDL Twist.
 
     :param twist: The PyKDL twist to transform.
     :type twist: PyKDL.Twist
@@ -156,7 +162,8 @@ tf2_ros.TransformRegistration().add(PyKDL.Twist, do_transform_twist)
 
 # Wrench
 def do_transform_wrench(wrench, transform):
-    """Apply a transform in the form of a geometry_msgs message to a PyKDL Wrench.
+    """
+    Apply a transform in the form of a geometry_msgs message to a PyKDL Wrench.
 
     :param wrench: The PyKDL wrench to transform.
     :type wrench: PyKDL.Wrench
