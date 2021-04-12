@@ -2,10 +2,12 @@
 
 import unittest
 import rclpy
-import PyKDL
 import tf2_ros
 import tf2_geometry_msgs
-from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped, PoseWithCovarianceStamped, Quaternion
+from geometry_msgs.msg import (TransformStamped, PointStamped,
+                               Vector3Stamped, PoseStamped,
+                               PoseWithCovarianceStamped, Quaternion)
+
 
 class GeometryMsgs(unittest.TestCase):
     def test_transform(self):
@@ -17,7 +19,9 @@ class GeometryMsgs(unittest.TestCase):
         t.header.frame_id = 'a'
         t.child_frame_id = 'b'
         b.set_transform(t, 'eitan_rocks')
-        out = b.lookup_transform('a','b', rclpy.time.Time(seconds=2.0).to_msg(), rclpy.time.Duration(seconds=2))
+        out = b.lookup_transform('a', 'b',
+                                 rclpy.time.Time(seconds=2.0).to_msg(),
+                                 rclpy.time.Duration(seconds=2))
         self.assertEqual(out.transform.translation.x, 1)
         self.assertEqual(out.transform.rotation.x, 1)
         self.assertEqual(out.header.frame_id, 'a')
@@ -30,7 +34,7 @@ class GeometryMsgs(unittest.TestCase):
         v.point.y = 2.0
         v.point.z = 3.0
         # b.registration.add(PointStamped)
-        out = b.transform(v, 'b', new_type = PointStamped)
+        out = b.transform(v, 'b', new_type=PointStamped)
         self.assertEqual(out.point.x, 0)
         self.assertEqual(out.point.y, -2)
         self.assertEqual(out.point.z, -3)
@@ -99,6 +103,7 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.vector.x, -1)
         self.assertEqual(out.vector.y, 0)
         self.assertEqual(out.vector.z, 0)
+
 
 if __name__ == '__main__':
     rclpy.init(args=None)
