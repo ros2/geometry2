@@ -31,18 +31,15 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_lint_auto REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(tf2_msgs REQUIRED)
 
-  # TODO(ros2/geometry2#259) Switch to ament_lint_auto once headers
+  # TODO(ros2/geometry2#259) Remove once headers
   # are renamed to .hpp
-  find_package(ament_cmake_cppcheck REQUIRED)
-  find_package(ament_cmake_cpplint REQUIRED)
-  find_package(ament_cmake_lint_cmake REQUIRED)
-  find_package(ament_cmake_uncrustify REQUIRED)
-
-  ament_cppcheck(LANGUAGE "c++")
-  ament_uncrustify(LANGUAGE "c++")
+  set(ament_cmake_uncrustify_ADDITIONAL_ARGS --language CPP)
+  set(ament_cmake_cppcheck_LANGUAGE c++)
+  ament_lint_auto_find_test_dependencies()
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_include_directories(test_kdl PUBLIC
