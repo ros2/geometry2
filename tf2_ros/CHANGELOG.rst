@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.10 (2021-04-14)
+--------------------
+* Update for python3.8 (`#359 <https://github.com/ros2/geometry2/issues/359>`_)
+* Contributors: Fabrice Larribe
+
 0.13.9 (2020-12-09)
 -------------------
 
