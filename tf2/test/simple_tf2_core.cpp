@@ -28,11 +28,14 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <chrono>
+#include <numeric>
 #include <string>
 #include <vector>
 
 #include "tf2/buffer_core.h"
+#include "tf2/convert.h"
 #include "tf2/LinearMath/Vector3.h"
 #include "tf2/exceptions.h"
 #include "tf2/time.h"
@@ -267,6 +270,30 @@ TEST(tf2_time, To_From_Duration)
 
     EXPECT_TRUE(error_duration < tf2::Duration(std::chrono::nanoseconds(tol_ns)));
   }
+}
+
+TEST(tf2_convert, Covariance_RowMajor_To_Nested)
+{
+  // test verifies the correct conversion of the flat covariance array to a
+  // nested covariance array.
+  // create a dummy input with some values
+  std::array<double, 36> input;
+  std::iota(input.begin(), input.end(), 0);
+
+  // setup the expected output
+  std::array<std::array<double, 6>, 6> expected;
+  double start = 0;
+  for (auto &ee : expected)
+  {
+    std::iota(ee.begin(), ee.end(), start);
+    start += static_cast<double>(ee.size());
+  }
+
+  // call the tested method
+  const auto result = tf2::covarianceRowMajorToNested(input);
+
+  // check the result
+  ASSERT_EQ(expected, result);
 }
 
 int main(int argc, char ** argv)
