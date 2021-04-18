@@ -31,6 +31,7 @@
 #ifndef TF2__CONVERT_H_
 #define TF2__CONVERT_H_
 
+#include <algorithm>
 #include <array>
 #include <string>
 
@@ -167,17 +168,11 @@ void convert(const A & a1, A & a2)
 inline
 std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array<double, 36> & row_major)
 {
-  std::array<std::array<double, 6>, 6> nested_array = {};
-  size_t l1 = 0, l2 = 0;
-  for (const double & val : row_major) {
-    nested_array[l2][l1] = val;
-
-    l1++;
-
-    if (l1 == nested_array[0].size()) {
-      l1 = 0;
-      l2++;
-    }
+  std::array<std::array<double, 6>, 6> nested_array;
+  auto ss = row_major.begin();
+  for (auto& dd : nested_array) {
+    std::copy_n(ss, dd.size(), dd.begin());
+    ss += dd.size();
   }
   return nested_array;
 }
