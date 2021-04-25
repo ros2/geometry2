@@ -6,7 +6,7 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
+  add_compile_options(-Wall -Wextra)
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
@@ -50,6 +50,16 @@ ament_target_dependencies(${PROJECT_NAME} INTERFACE ${required_dependencies})
 install(
   TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
   INCLUDES DESTINATION include
+)
+
+
+
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+# Install Python executables
+install(PROGRAMS
+  scripts/test.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_export_targets(${PROJECT_NAME})
