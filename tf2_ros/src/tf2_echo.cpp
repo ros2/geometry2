@@ -37,6 +37,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <vector>
 
 #define _USE_MATH_DEFINES
 
@@ -61,10 +62,10 @@ public:
 int main(int argc, char ** argv)
 {
   // Initialize ROS
-  rclcpp::init(argc, argv);
+  std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
   // Allow 2 or 3 command line arguments
-  if (argc < 3 || argc > 4) {
+  if (args.size() < 3 || args.size() > 4) {
     printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
     printf("This will echo the transform from the coordinate frame of the source_frame\n");
     printf("to the coordinate frame of the target_frame. \n");
@@ -78,9 +79,9 @@ int main(int argc, char ** argv)
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_echo");
 
   double rate_hz;
-  if (argc == 4) {
+  if (args.size() == 4) {
     // read rate from command line
-    rate_hz = atof(argv[3]);
+    rate_hz = std::stof(args[3]);
   } else {
     rate_hz = 1.0;
     // TODO(tfoote): restore parameter option
@@ -94,8 +95,8 @@ int main(int argc, char ** argv)
   // Instantiate a local listener
   echoListener echoListener(clock);
 
-  std::string source_frameid = std::string(argv[1]);
-  std::string target_frameid = std::string(argv[2]);
+  std::string source_frameid = std::string(args[1]);
+  std::string target_frameid = std::string(args[2]);
 
   // Wait for up to one second for the first transforms to become avaiable.
   std::string warning_msg;
