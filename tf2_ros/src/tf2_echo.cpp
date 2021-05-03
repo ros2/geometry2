@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
     printf("to the coordinate frame of the target_frame. \n");
     printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
     printf("Default echo rate is 1 if echo_rate is not given.\n");
-    return -1;
+    return 1;
   }
   // TODO(tfoote): restore parameter option
   // // read rate parameter
