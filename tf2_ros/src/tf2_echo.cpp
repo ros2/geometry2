@@ -36,6 +36,7 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -69,7 +70,25 @@ int main(int argc, char ** argv)
   if (args.size() == 3) {
     rate_hz = 1.0;
   } else if (args.size() == 4) {
-    rate_hz = std::stof(args[3]);
+    size_t pos;
+    try {
+      rate_hz = std::stof(args[3], &pos);
+    } catch (const std::invalid_argument &) {
+      // If the user provided an argument that wasn't a number (like 'foo'), stof() will throw.
+      fprintf(
+        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+        args[3].c_str());
+      return 2;
+    }
+
+    // If the user provide an floating-point argument with junk on the end (like '1.0foo'), the pos
+    // argument will show it didn't convert the whole argument.
+    if (pos != args[3].length()) {
+      fprintf(
+        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+        args[3].c_str());
+      return 3;
+    }
   } else {
     printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
     printf("This will echo the transform from the coordinate frame of the source_frame\n");
@@ -96,7 +115,7 @@ int main(int argc, char ** argv)
   std::string source_frameid = args[1];
   std::string target_frameid = args[2];
 
-  // Wait for up to one second for the first transforms to become avaiable.
+  // Wait for the first transforms to become avaiable.
   std::string warning_msg;
   while (rclcpp::ok() && !echoListener.buffer_.canTransform(
       source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
