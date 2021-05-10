@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.17.1 (2021-04-06)
 -------------------
 * Change index.ros.org -> docs.ros.org. (`#394 <https://github.com/ros2/geometry2/issues/394>`_)
