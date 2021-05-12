@@ -36,7 +36,7 @@
 *********************************************************************/
 #include <gtest/gtest.h>
 #include <tf2/convert.h>
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 

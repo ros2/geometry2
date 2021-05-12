@@ -38,7 +38,7 @@
 // To get M_PI, especially on Windows.
 #include <math.h>
 
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 #include <kdl/frames_io.hpp>
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
