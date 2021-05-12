@@ -11,9 +11,9 @@ such as Vector, Point, Pose, Transform, Quaternion, etc.
 See the <A HREF="http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions">Conversions overview</A>
 wiki page for more information about datatype conversion in tf2.
 
-\section codeapi Code API 
+\section codeapi Code API
 
-This library consists of one header only, tf2_geometry_msgs/tf2_geometry_msgs.h, which consists mostly of
+This library consists of one header only, tf2_geometry_msgs/tf2_geometry_msgs.hpp, which consists mostly of
 specializations of template functions defined in tf2/convert.h.
 
 */
