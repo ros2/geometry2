@@ -29,7 +29,7 @@
 
 /** \author Wim Meeussen */
 
-#include <tf2_bullet/tf2_bullet.h>
+#include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_ros/buffer.h>
 #include <rclcpp/rclcpp.hpp>
 #include <gtest/gtest.h>
