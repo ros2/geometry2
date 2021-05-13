@@ -169,8 +169,8 @@ inline
 std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array<double, 36> & row_major)
 {
   std::array<std::array<double, 6>, 6> nested_array;
-  auto ss = row_major.begin();
-  for (auto& dd : nested_array) {
+  std::array<double, 36>::const_iterator ss = row_major.begin();
+  for (std::array<double, 6> & dd : nested_array) {
     std::copy_n(ss, dd.size(), dd.begin());
     ss += dd.size();
   }

@@ -283,14 +283,14 @@ TEST(tf2_convert, Covariance_RowMajor_To_Nested)
   // setup the expected output
   std::array<std::array<double, 6>, 6> expected;
   double start = 0;
-  for (auto &ee : expected)
+  for (std::array<double, 6> & ee : expected)
   {
     std::iota(ee.begin(), ee.end(), start);
     start += static_cast<double>(ee.size());
   }
 
   // call the tested method
-  const auto result = tf2::covarianceRowMajorToNested(input);
+  const std::array<std::array<double, 6>, 6> result = tf2::covarianceRowMajorToNested(input);
 
   // check the result
   ASSERT_EQ(expected, result);
