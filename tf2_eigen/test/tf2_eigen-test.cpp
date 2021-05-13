@@ -36,7 +36,7 @@
 #include <gtest/gtest.h>
 #include <rclcpp/clock.hpp>
 #include <tf2/convert.h>
-#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 

@@ -27,8 +27,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_SENSOR_MSGS_H
-#define TF2_SENSOR_MSGS_H
+#ifndef TF2_SENSOR_MSGS_HPP
+#define TF2_SENSOR_MSGS_HPP
 
 #include <tf2/convert.h>
 #include <tf2/time.h>
@@ -85,4 +85,4 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
 
 } // namespace
 
-#endif // TF2_SENSOR_MSGS_H
+#endif // TF2_SENSOR_MSGS_HPP

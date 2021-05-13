@@ -39,7 +39,7 @@
 #include <math.h>
 
 #include <gtest/gtest.h>
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2/convert.h>
 

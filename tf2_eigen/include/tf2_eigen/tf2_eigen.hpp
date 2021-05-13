@@ -26,8 +26,8 @@
 
 /** \author Koji Terada, Bjarne von Horn */
 
-#ifndef TF2_EIGEN__TF2_EIGEN_H_
-#define TF2_EIGEN__TF2_EIGEN_H_
+#ifndef TF2_EIGEN__TF2_EIGEN_HPP_
+#define TF2_EIGEN__TF2_EIGEN_HPP_
 
 #include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
@@ -423,4 +423,4 @@ void doTransform(
 }
 }  // namespace tf2
 
-#endif  // TF2_EIGEN__TF2_EIGEN_H_
+#endif  // TF2_EIGEN__TF2_EIGEN_HPP_

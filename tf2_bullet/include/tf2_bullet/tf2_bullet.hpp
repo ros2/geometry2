@@ -28,8 +28,8 @@
 
 /** \author Wim Meeussen, Bjarne von Horn */
 
-#ifndef TF2_BULLET__TF2_BULLET_H_
-#define TF2_BULLET__TF2_BULLET_H_
+#ifndef TF2_BULLET__TF2_BULLET_HPP_
+#define TF2_BULLET__TF2_BULLET_HPP_
 
 #include <LinearMath/btScalar.h>
 #include <LinearMath/btTransform.h>
@@ -162,4 +162,4 @@ inline btTransform transformToBullet(
 }
 }  // namespace tf2
 
-#endif  // TF2_BULLET__TF2_BULLET_H_
+#endif  // TF2_BULLET__TF2_BULLET_HPP_

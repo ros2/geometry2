@@ -37,9 +37,9 @@
 #include <gtest/gtest.h>
 
 #include <rclcpp/rclcpp.hpp>
-#include <tf2_bullet/tf2_bullet.h>
+#include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2_ros/buffer_client.h>
 
 #include <chrono>

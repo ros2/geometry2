@@ -29,8 +29,8 @@
 
 /** \author Wim Meeussen, Bjarne von Horn */
 
-#ifndef TF2_KDL__TF2_KDL_H_
-#define TF2_KDL__TF2_KDL_H_
+#ifndef TF2_KDL__TF2_KDL_HPP_
+#define TF2_KDL__TF2_KDL_HPP_
 
 #include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
@@ -360,4 +360,4 @@ void doTransform(
 
 }  // namespace tf2
 
-#endif  // TF2_KDL__TF2_KDL_H_
+#endif  // TF2_KDL__TF2_KDL_HPP_
