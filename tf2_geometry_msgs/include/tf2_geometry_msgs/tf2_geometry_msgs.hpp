@@ -912,6 +912,17 @@ geometry_msgs::msg::Transform toMsg(const tf2::Transform & in)
   return out;
 }
 
+/** \brief Convert a tf2 Transform type to its equivalent geometry_msgs representation.
+ * \param in A tf2 Transform object.
+ * \param out The Transform converted to a geometry_msgs message type.
+ */
+inline
+/** This section is about converting */
+void toMsg(const tf2::Transform& in, geometry_msgs::msg::Transform& out)
+{
+  out = toMsg(in);
+}
+
 /** \brief Convert a Transform message to its equivalent tf2 representation.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param in A Transform message type.
