@@ -31,6 +31,9 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "tf2_ros/transform_listener.h"
 #include "rclcpp/rclcpp.hpp"
@@ -61,49 +64,60 @@ private:
 
 int main(int argc, char ** argv)
 {
-  //Initialize ROS
-  rclcpp::init(argc, argv);
+  // Initialize ROS
+  std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
+  double rate_hz;
   // Allow 2 or 3 command line arguments
-  if (argc < 3 || argc > 4)
-  {
+  if (args.size() == 3) {
+    rate_hz = 1.0;
+  } else if (args.size() == 4) {
+    size_t pos;
+    try {
+      rate_hz = std::stof(args[3], &pos);
+    } catch (const std::invalid_argument &) {
+      // If the user provided an argument that wasn't a number (like 'foo'), stof() will throw.
+      fprintf(
+        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+        args[3].c_str());
+      return 2;
+    }
+
+    // If the user provide an floating-point argument with junk on the end (like '1.0foo'), the pos
+    // argument will show it didn't convert the whole argument.
+    if (pos != args[3].length()) {
+      fprintf(
+        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+        args[3].c_str());
+      return 3;
+    }
+  } else {
     printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
     printf("This will echo the transform from the coordinate frame of the source_frame\n");
     printf("to the coordinate frame of the target_frame. \n");
     printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
     printf("Default echo rate is 1 if echo_rate is not given.\n");
-    return -1;
+    return 1;
   }
-  //TODO(tfoote) restore anonymous??
+  // TODO(tfoote): restore parameter option
+  // // read rate parameter
+  // ros::NodeHandle p_nh("~");
+  // p_nh.param("rate", rate_hz, 1.0);
+  rclcpp::Rate rate(rate_hz);
+
+  // TODO(tfoote): restore anonymous??
   // ros::init_options::AnonymousName);
 
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_echo");
-
-  double rate_hz;
-  if (argc == 4)
-  {
-    // read rate from command line
-    rate_hz = atof(argv[3]);
-  }
-  else
-  {
-    rate_hz = 1.0;
-    //TODO(tfoote) restore parameter option
-    // // read rate parameter
-    // ros::NodeHandle p_nh("~");
-    // p_nh.param("rate", rate_hz, 1.0);
-  }
-  rclcpp::Rate rate(rate_hz);
 
   rclcpp::Clock::SharedPtr clock = nh->get_clock();
   //Instantiate a local listener
   echoListener echoListener(clock);
 
+  std::string source_frameid = args[1];
+  std::string target_frameid = args[2];
 
-  std::string source_frameid = std::string(argv[1]);
-  std::string target_frameid = std::string(argv[2]);
-
-  // Wait for up to one second for the first transforms to become avaiable.
+  // Wait for the first transforms to become avaiable.
   std::string warning_msg;
   while (rclcpp::ok() && !echoListener.buffer_.canTransform(
     source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
