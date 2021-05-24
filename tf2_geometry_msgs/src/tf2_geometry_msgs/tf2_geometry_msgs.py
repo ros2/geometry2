@@ -29,8 +29,7 @@
 
 # author: Wim Meeussen
 
-from geometry_msgs.msg import (PointStamped, PoseStamped,
-                               PoseWithCovarianceStamped, Vector3Stamped)
+from geometry_msgs.msg import PointStamped, PoseStamped, PoseWithCovarianceStamped, Vector3Stamped
 import PyKDL
 import tf2_ros
 
@@ -100,21 +99,16 @@ tf2_ros.TransformRegistration().add(Vector3Stamped, do_transform_vector3)
 
 # PoseStamped
 def do_transform_pose(pose, transform):
-    f = transform_to_kdl(transform) * PyKDL.Frame(
-        PyKDL.Rotation.Quaternion(
-            pose.pose.orientation.x, pose.pose.orientation.y,
-            pose.pose.orientation.z, pose.pose.orientation.w),
-        PyKDL.Vector(pose.pose.position.x,
-                     pose.pose.position.y,
-                     pose.pose.position.z))
+    q = PyKDL.Rotation.Quaternion(pose.pose.orientation.x, pose.pose.orientation.y,
+                                  pose.pose.orientation.z, pose.pose.orientation.w)
+    vector = PyKDL.Vector(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z)
+    f = transform_to_kdl(transform) * PyKDL.Frame(q, vector)
     res = PoseStamped()
     res.pose.position.x = f.p[0]
     res.pose.position.y = f.p[1]
     res.pose.position.z = f.p[2]
-    (res.pose.orientation.x,
-     res.pose.orientation.y,
-     res.pose.orientation.z,
-     res.pose.orientation.w) = f.M.GetQuaternion()
+    (res.pose.orientation.x, res.pose.orientation.y,
+     res.pose.orientation.z, res.pose.orientation.w) = f.M.GetQuaternion()
     res.header = transform.header
     return res
 
@@ -124,22 +118,18 @@ tf2_ros.TransformRegistration().add(PoseStamped, do_transform_pose)
 
 # PoseWithCovarianceStamped
 def do_transform_pose_with_covariance_stamped(pose, transform):
-    f = transform_to_kdl(transform) * PyKDL.Frame(
-        PyKDL.Rotation.Quaternion(pose.pose.pose.orientation.x,
-                                  pose.pose.pose.orientation.y,
-                                  pose.pose.pose.orientation.z,
-                                  pose.pose.pose.orientation.w),
-        PyKDL.Vector(pose.pose.pose.position.x,
-                     pose.pose.pose.position.y,
-                     pose.pose.pose.position.z))
+    q = PyKDL.Rotation.Quaternion(pose.pose.pose.orientation.x, pose.pose.pose.orientation.y,
+                                  pose.pose.pose.orientation.z, pose.pose.pose.orientation.w)
+    vector = PyKDL.Vector(pose.pose.pose.position.x,
+                          pose.pose.pose.position.y,
+                          pose.pose.pose.position.z)
+    f = transform_to_kdl(transform) * PyKDL.Frame(q, vector)
     res = PoseWithCovarianceStamped()
     res.pose.pose.position.x = f.p[0]
     res.pose.pose.position.y = f.p[1]
     res.pose.pose.position.z = f.p[2]
-    (res.pose.pose.orientation.x,
-     res.pose.pose.orientation.y,
-     res.pose.pose.orientation.z,
-     res.pose.pose.orientation.w) = f.M.GetQuaternion()
+    (res.pose.pose.orientation.x, res.pose.pose.orientation.y,
+     res.pose.pose.orientation.z, res.pose.pose.orientation.w) = f.M.GetQuaternion()
     res.pose.covariance = pose.pose.covariance
     res.header = transform.header
     return res
