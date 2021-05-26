@@ -38,19 +38,27 @@
 // To get M_PI, especially on Windows.
 #include <math.h>
 
-#include <tf2_kdl/tf2_kdl.hpp>
-#include <kdl/frames_io.hpp>
 #include <gtest/gtest.h>
-#include <rclcpp/rclcpp.hpp>
-#include "tf2_ros/buffer.h"
+#include <tf2_kdl/tf2_kdl.hpp>
+#include <tf2_ros/buffer.h>
 #include <tf2/convert.h>
+
+#include <kdl/frames_io.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include <memory>
 
 std::unique_ptr<tf2_ros::Buffer> tf_buffer;
 static const double EPS = 1e-3;
 
 TEST(TfKDL, Frame)
 {
-  tf2::Stamped<KDL::Frame> v1(KDL::Frame(KDL::Rotation::RPY(M_PI, 0, 0), KDL::Vector(1,2,3)), tf2::TimePoint(tf2::durationFromSec(2.0)), "A");
+  tf2::Stamped<KDL::Frame> v1(KDL::Frame(
+      KDL::Rotation::RPY(M_PI, 0, 0), KDL::Vector(
+        1, 2,
+        3)), tf2::TimePoint(
+      tf2::durationFromSec(
+        2.0)), "A");
 
   // simple api
   KDL::Frame v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
@@ -65,8 +73,9 @@ TEST(TfKDL, Frame)
 
 
   // advanced api
-  KDL::Frame v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
-                "A", tf2::Duration(std::chrono::seconds(3)));
+  KDL::Frame v_advanced = tf_buffer->transform(
+    v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "A", tf2::Duration(std::chrono::seconds(3)));
   EXPECT_NEAR(v_advanced.p[0], -9, EPS);
   EXPECT_NEAR(v_advanced.p[1], 18, EPS);
   EXPECT_NEAR(v_advanced.p[2], 27, EPS);
@@ -74,12 +83,12 @@ TEST(TfKDL, Frame)
   EXPECT_NEAR(r, 0.0, EPS);
   EXPECT_NEAR(p, 0.0, EPS);
   EXPECT_NEAR(y, 0.0, EPS);
-
 }
 
 TEST(TfKDL, Vector)
 {
-  tf2::Stamped<KDL::Vector> v1(KDL::Vector(1,2,3),  tf2::TimePoint(tf2::durationFromSec(2.0)), "A");
+  tf2::Stamped<KDL::Vector> v1(KDL::Vector(1, 2, 3), tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "A");
 
 
   // simple api
@@ -89,19 +98,46 @@ TEST(TfKDL, Vector)
   EXPECT_NEAR(v_simple[2], 27, EPS);
 
   // advanced api
-  KDL::Vector v_advanced = tf_buffer->transform(v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
-                "A", tf2::Duration(std::chrono::seconds(3)));
+  KDL::Vector v_advanced = tf_buffer->transform(
+    v1, "B", tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "A", tf2::Duration(std::chrono::seconds(3)));
   EXPECT_NEAR(v_advanced[0], -9, EPS);
   EXPECT_NEAR(v_advanced[1], 18, EPS);
   EXPECT_NEAR(v_advanced[2], 27, EPS);
 }
 
+TEST(TfKDL, Quaternion)
+{
+  const tf2::Stamped<KDL::Rotation> q1{KDL::Rotation::Rot({0, 1, 0}, -0.5 * M_PI), tf2::timeFromSec(
+      2.0), "A"};
+
+  // simple api
+  const tf2::Stamped<KDL::Rotation> q_simple =
+    tf_buffer->transform(q1, "B", tf2::durationFromSec(2.0));
+  double x, y, z, w;
+  q_simple.GetQuaternion(x, y, z, w);
+  EXPECT_NEAR(x, 0.707107, EPS);
+  EXPECT_NEAR(y, 0, EPS);
+  EXPECT_NEAR(z, -0.707107, EPS);
+  EXPECT_NEAR(w, 0, EPS);
+
+  // advanced api
+  const tf2::Stamped<KDL::Rotation> q_advanced = tf_buffer->transform(
+    q1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
+  q_advanced.GetQuaternion(x, y, z, w);
+  EXPECT_NEAR(x, 0.707107, EPS);
+  EXPECT_NEAR(y, 0, EPS);
+  EXPECT_NEAR(z, -0.707107, EPS);
+  EXPECT_NEAR(w, 0, EPS);
+}
+
 TEST(TfKDL, ConvertVector)
 {
   tf2::Stamped<KDL::Vector> v(
-      KDL::Vector(1,2,3),
-      tf2::TimePoint(tf2::durationFromSec(1.0)),
-      "my_frame"
+    KDL::Vector(1, 2, 3),
+    tf2::TimePoint(tf2::durationFromSec(1.0)),
+    "my_frame"
   );
   tf2::Stamped<KDL::Vector> v1 = v;
 
@@ -111,9 +147,9 @@ TEST(TfKDL, ConvertVector)
 
   // Convert on same type
   tf2::Stamped<KDL::Vector> v2(
-      KDL::Vector(3,4,5),
-      tf2::TimePoint(tf2::durationFromSec(2.0)),
-      "my_frame2"
+    KDL::Vector(3, 4, 5),
+    tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "my_frame2"
   );
   tf2::convert(v1, v2);
   EXPECT_EQ(v, v2);
@@ -130,9 +166,9 @@ TEST(TfKDL, ConvertVector)
 TEST(TfKDL, ConvertTwist)
 {
   tf2::Stamped<KDL::Twist> t(
-      KDL::Twist(KDL::Vector(1,2,3), KDL::Vector(4,5,6)),
-      tf2::TimePoint(tf2::durationFromSec(1.0)),
-      "my_frame");
+    KDL::Twist(KDL::Vector(1, 2, 3), KDL::Vector(4, 5, 6)),
+    tf2::TimePoint(tf2::durationFromSec(1.0)),
+    "my_frame");
   tf2::Stamped<KDL::Twist> t1 = t;
 
   // Test convert with duplicate arguments
@@ -141,9 +177,9 @@ TEST(TfKDL, ConvertTwist)
 
   // Convert on same type
   tf2::Stamped<KDL::Twist> t2(
-      KDL::Twist(KDL::Vector(3,4,5), KDL::Vector(6,7,8)),
-      tf2::TimePoint(tf2::durationFromSec(2.0)),
-      "my_frame2");
+    KDL::Twist(KDL::Vector(3, 4, 5), KDL::Vector(6, 7, 8)),
+    tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "my_frame2");
   tf2::convert(t1, t2);
   EXPECT_EQ(t, t2);
   EXPECT_EQ(t1, t2);
@@ -159,9 +195,9 @@ TEST(TfKDL, ConvertTwist)
 TEST(TfKDL, ConvertWrench)
 {
   tf2::Stamped<KDL::Wrench> w(
-      KDL::Wrench(KDL::Vector(1,2,3), KDL::Vector(4,5,6)),
-      tf2::TimePoint(tf2::durationFromSec(1.0)),
-      "my_frame");
+    KDL::Wrench(KDL::Vector(1, 2, 3), KDL::Vector(4, 5, 6)),
+    tf2::TimePoint(tf2::durationFromSec(1.0)),
+    "my_frame");
   tf2::Stamped<KDL::Wrench> w1 = w;
 
   // Test convert with duplicate arguments
@@ -170,9 +206,9 @@ TEST(TfKDL, ConvertWrench)
 
   // Convert on same type
   tf2::Stamped<KDL::Wrench> w2(
-      KDL::Wrench(KDL::Vector(3,4,5), KDL::Vector(6,7,8)),
-      tf2::TimePoint(tf2::durationFromSec(2.0)),
-      "my_frame2");
+    KDL::Wrench(KDL::Vector(3, 4, 5), KDL::Vector(6, 7, 8)),
+    tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "my_frame2");
   tf2::convert(w1, w2);
   EXPECT_EQ(w, w2);
   EXPECT_EQ(w1, w2);
@@ -188,9 +224,9 @@ TEST(TfKDL, ConvertWrench)
 TEST(TfKDL, ConvertFrame)
 {
   tf2::Stamped<KDL::Frame> f(
-      KDL::Frame(KDL::Rotation::RPY(M_PI, 0, 0), KDL::Vector(1,2,3)),
-      tf2::TimePoint(tf2::durationFromSec(1.0)),
-      "my_frame");
+    KDL::Frame(KDL::Rotation::RPY(M_PI, 0, 0), KDL::Vector(1, 2, 3)),
+    tf2::TimePoint(tf2::durationFromSec(1.0)),
+    "my_frame");
   tf2::Stamped<KDL::Frame> f1 = f;
 
   // Test convert with duplicate arguments
@@ -199,9 +235,9 @@ TEST(TfKDL, ConvertFrame)
 
   // Convert on same type
   tf2::Stamped<KDL::Frame> f2(
-      KDL::Frame(KDL::Rotation::RPY(0, M_PI, 0), KDL::Vector(4,5,6)),
-      tf2::TimePoint(tf2::durationFromSec(2.0)),
-      "my_frame2");
+    KDL::Frame(KDL::Rotation::RPY(0, M_PI, 0), KDL::Vector(4, 5, 6)),
+    tf2::TimePoint(tf2::durationFromSec(2.0)),
+    "my_frame2");
   tf2::convert(f1, f2);
   EXPECT_EQ(f, f2);
   EXPECT_EQ(f1, f2);
@@ -214,11 +250,13 @@ TEST(TfKDL, ConvertFrame)
   EXPECT_EQ(f, f3);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+  tf_buffer->setUsingDedicatedThread(true);
 
   // populate buffer
   geometry_msgs::msg::TransformStamped t;
