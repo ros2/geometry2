@@ -29,11 +29,11 @@
 
 /** \author Wim Meeussen */
 
-#ifndef TF2_KDL_H
-#define TF2_KDL_H
+#ifndef TF2_KDL__TF2_KDL_H_
+#define TF2_KDL__TF2_KDL_H_
 
 #warning This header is obsolete, please include tf2_kdl/tf2_kdl.hpp instead
 
 #include <tf2_kdl/tf2_kdl.hpp>
 
-#endif // TF2_KDL_H
+#endif  // TF2_KDL__TF2_KDL_H_
