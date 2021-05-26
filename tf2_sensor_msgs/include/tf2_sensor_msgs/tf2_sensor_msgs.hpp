@@ -26,8 +26,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef TF2_SENSOR_MSGS_HPP
-#define TF2_SENSOR_MSGS_HPP
+#ifndef TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
+#define TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
 
 #include <tf2/convert.h>
 #include <tf2/time.h>
@@ -37,6 +37,8 @@
 #include <Eigen/Geometry>
 #include <tf2_ros/buffer_interface.h>
 
+#include <string>
+
 namespace tf2
 {
 
@@ -45,19 +47,24 @@ namespace tf2
 /********************/
 
 // method to extract timestamp from object
-template <>
+template<>
 inline
-tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2& p) {return tf2_ros::fromMsg(p.header.stamp);}
+tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2 & p)
+{
+  return tf2_ros::fromMsg(p.header.stamp);
+}
 
 // method to extract frame id from object
-template <>
+template<>
 inline
-std::string getFrameId(const sensor_msgs::msg::PointCloud2 &p) {return p.header.frame_id;}
+std::string getFrameId(const sensor_msgs::msg::PointCloud2 & p) {return p.header.frame_id;}
 
 // this method needs to be implemented by client library developers
-template <>
+template<>
 inline
-void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::PointCloud2 &p_out, const geometry_msgs::msg::TransformStamped& t_in)
+void doTransform(
+  const sensor_msgs::msg::PointCloud2 & p_in, sensor_msgs::msg::PointCloud2 & p_out,
+  const geometry_msgs::msg::TransformStamped & t_in)
 {
   p_out = p_in;
   p_out.header = t_in.header;
@@ -75,7 +82,7 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
     static_cast<float>(t_in.transform.rotation.y),
     static_cast<float>(t_in.transform.rotation.z));
 
-  Eigen::Transform<float,3,Eigen::Affine> t = translation * quaternion;
+  Eigen::Transform<float, 3, Eigen::Affine> t = translation * quaternion;
 
   sensor_msgs::PointCloud2ConstIterator<float> x_in(p_in, std::string("x"));
   sensor_msgs::PointCloud2ConstIterator<float> y_in(p_in, std::string("y"));
@@ -86,7 +93,7 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
   sensor_msgs::PointCloud2Iterator<float> z_out(p_out, std::string("z"));
 
   Eigen::Vector3f point;
-  for(; x_in != x_in.end(); ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out) {
+  for (; x_in != x_in.end(); ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out) {
     point = t * Eigen::Vector3f(*x_in, *y_in, *z_in);
     *x_out = point.x();
     *y_out = point.y();
@@ -94,16 +101,16 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
   }
 }
 inline
-sensor_msgs::msg::PointCloud2 toMsg(const sensor_msgs::msg::PointCloud2 &in)
+sensor_msgs::msg::PointCloud2 toMsg(const sensor_msgs::msg::PointCloud2 & in)
 {
   return in;
 }
 inline
-void fromMsg(const sensor_msgs::msg::PointCloud2 &msg, sensor_msgs::msg::PointCloud2 &out)
+void fromMsg(const sensor_msgs::msg::PointCloud2 & msg, sensor_msgs::msg::PointCloud2 & out)
 {
   out = msg;
 }
 
-} // namespace
+}  // namespace tf2
 
-#endif // TF2_SENSOR_MSGS_HPP
+#endif  // TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_

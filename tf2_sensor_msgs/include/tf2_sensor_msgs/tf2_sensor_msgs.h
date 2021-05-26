@@ -26,11 +26,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef TF2_SENSOR_MSGS_H
-#define TF2_SENSOR_MSGS_H
+#ifndef TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_H_
+#define TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_H_
 
 #warning This header is obsolete, please include tf2_sensor_msgs/tf2_sensor_msgs.hpp instead
 
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 
-#endif // TF2_SENSOR_MSGS_H
+#endif  // TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_H_
