@@ -26,7 +26,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Tully Foote */
+/** \author Tully Foote, Bjarne von Horn */
 
 #ifndef TF2__CONVERT_H_
 #define TF2__CONVERT_H_
@@ -35,79 +35,98 @@
 #include <array>
 #include <string>
 
-#include "builtin_interfaces/msg/time.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rosidl_runtime_cpp/traits.hpp"
-#include "tf2/exceptions.h"
-#include "tf2/impl/convert.h"
-#include "tf2/transform_datatypes.h"
-#include "tf2/visibility_control.h"
+#include <builtin_interfaces/msg/time.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <rosidl_runtime_cpp/traits.hpp>
+
+
+#include "exceptions.h"
+#include "impl/convert.h"
+#include "impl/stamped_traits.hpp"
+#include "time.h"
+#include "transform_datatypes.h"
+#include "visibility_control.h"
 
 namespace tf2
 {
-
-/**\brief The templated function expected to be able to do a transform
+/** \brief The templated function expected to be able to do a transform.
  *
  * This is the method which tf2 will use to try to apply a transform for any given datatype.
- * \param data_in[in] The data to be transformed.
- * \param data_out[inout] A reference to the output data. Note this can point to data in and the method should be mutation safe.
- * \param transform[in] The transform to apply to data_in to fill data_out.
+ * \param[in] data_in The data to be transformed.
+ * \param[in,out] data_out A reference to the output data.
+ * Note this can point to data in and the method should be mutation safe.
+ * \param[in] transform The transform to apply to data_in to fill data_out.
+ * \tparam T The type of the data to be transformed.
  *
  * This method needs to be implemented by client library developers
  */
 template<class T>
 void doTransform(
-  const T & data_in, T & data_out,
-  const geometry_msgs::msg::TransformStamped & transform);
+  const T & data_in, T & data_out, const geometry_msgs::msg::TransformStamped & transform)
+{
+  using TransformType = typename impl::DefaultTransformType<T>::type;
+  TransformType t;
+  tf2::fromMsg<>(transform.transform, t);
+  data_out = t * data_in;
+}
 
-/**\brief Get the timestamp from data
+/** \brief The templated function expected to be able to do a transform.
+ *
+ * This is the method which tf2 will use to try to apply a transform for any given datatype.
+ * Overload for tf2::Stamped\<T\> types,
+ * uses doTransform(const T&, T&, const geometry_msgs::msg::TransformStamped&).
+ * \param[in] data_in The data to be transformed.
+ * \param[in,out] data_out A reference to the output data.
+ * Note this can point to data in and the method should be mutation safe.
+ * \param[in] transform The transform to apply to data_in to fill data_out.
+ * \tparam T The type of the data to be transformed.
+ */
+template<class T>
+void doTransform(
+  tf2::Stamped<T> const & data_in, tf2::Stamped<T> & data_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  T tmp;
+  doTransform(static_cast<const T &>(data_in), tmp, transform);
+  data_out = tf2::Stamped<T>{tmp, transform.header.stamp, transform.header.frame_id};
+}
+
+/**
+ * \brief Get the timestamp from data
  * \param[in] t The data input.
  * \return The timestamp associated with the data.
  */
 template<class T>
-tf2::TimePoint getTimestamp(const T & t);
+inline tf2::TimePoint getTimestamp(const T & t)
+{
+  return impl::StampedAttributesHelper<T>::getTimestamp(t);
+}
 
-/**\brief Get the frame_id from data
+/**
+ * \brief Get the frame_id from data
  * \param[in] t The data input.
  * \return The frame_id associated with the data.
  */
 template<class T>
-std::string getFrameId(const T & t);
+inline std::string getFrameId(const T & t)
+{
+  return impl::StampedAttributesHelper<T>::getFrameId(t);
+}
 
-/**\brief Get the covariance matrix from data
+/**
+ * \brief Get the covariance matrix from data
  * \param[in] t The data input.
  * \return The covariance matrix associated with the data.
  */
 template<class T>
-std::array<std::array<double, 6>, 6> getCovarianceMatrix(const T & t);
-
-/**\brief Get the frame_id from data
- *
- * An implementation for Stamped<P> datatypes.
- *
- * \param[in] t The data input.
- * \return The frame_id associated with the data.
- */
-template<class P>
-tf2::TimePoint getTimestamp(const tf2::Stamped<P> & t)
+std::array<std::array<double, 6>, 6> getCovarianceMatrix(const T & t)
 {
-  return t.stamp_;
+  using traits = impl::StampedMessageTraits<T>;
+  return covarianceRowMajorToNested(traits::getCovariance(t));
 }
 
-/**\brief Get the frame_id from data
- *
- * An implementation for Stamped<P> datatypes.
- *
- * \param[in] t The data input.
- * \return The frame_id associated with the data.
- */
-template<class P>
-std::string getFrameId(const tf2::Stamped<P> & t)
-{
-  return t.frame_id_;
-}
-
-/**\brief Get the covariance matrix from data
+/**
+ * \brief Get the covariance matrix from data
  *
  * An implementation for WithCovarianceStamped<P> datatypes.
  *
@@ -120,53 +139,87 @@ std::array<std::array<double, 6>, 6> getCovarianceMatrix(const tf2::WithCovarian
   return t.cov_mat_;
 }
 
-/**\brief Function that converts from one type to a ROS message type. It has to be
- * implemented by each data type in tf2_* (except ROS messages) as it is
- * used in the "convert" function.
- * \param a an object of whatever type
+/**
+ * \brief Function that converts from one type to a ROS message type.
+ *
+ * The implementation of this function should be done in the tf2_* packages
+ * for each datatypes. Preferably in a specialization of the impl::ConversionImplementation struct.
+ * \param[in] a an object of whatever type
+ * \tparam A Non-message Datatype
+ * \tparam B ROS message Datatype.
+ * The default value will be taken from impl::DefaultMessageForDatatype\<A\>::type.
  * \return the conversion as a ROS message
  */
 template<typename A, typename B>
-B toMsg(const A & a);
+inline B toMsg(const A & a)
+{
+  B b;
+  impl::ConversionImplementation<A, B>::toMsg(a, b);
+  return b;
+}
 
-/**\brief Function that converts from a ROS message type to another type. It has to be
- * implemented by each data type in tf2_* (except ROS messages) as it is used
- * in the "convert" function.
- * \param a a ROS message to convert from
- * \param b the object to convert to
+/**
+ * \brief Function that converts from one type to a ROS message type.
+ *
+ * The implementation of this function should be done in the tf2_* packages
+ * for each datatypes. Preferably in a specialization of the impl::ConversionImplementation struct.
+ * \param[in] a an object of whatever type
+ * \param[out] b ROS message
+ * \tparam A Non-message Datatype
+ * \tparam B Type of the ROS Message
+ * \return Reference to the parameter b
  */
 template<typename A, typename B>
-void fromMsg(const A &, B & b);
+inline B & toMsg(const A & a, B & b)
+{
+  impl::ConversionImplementation<A, B>::toMsg(a, b);
+  return b;
+}
 
-/**\brief Function that converts any type to any type (messages or not).
+/**
+ * \brief Function that converts from a ROS message type to another type.
+ *
+ * The implementation of this function should be done in the tf2_* packages
+ * for each datatypes. Preferably in a specialization of the impl::ConversionImplementation struct.
+ * \param[in] a a ROS message to convert from
+ * \param[out] b the object to convert to
+ * \tparam A ROS message type
+ * \tparam B Arbitrary type
+ */
+template<typename A, typename B>
+inline void fromMsg(const A & a, B & b)
+{
+  impl::ConversionImplementation<B, A>::fromMsg(a, b);
+}
+
+/**
+ * \brief Function that converts any type to any type (messages or not).
+ *
  * Matching toMsg and from Msg conversion functions need to exist.
  * If they don't exist or do not apply (for example, if your two
  * classes are ROS messages), just write a specialization of the function.
- * \param a an object to convert from
- * \param b the object to convert to
+ * \param[in] a an object to convert from
+ * \param[in,out] b the object to convert to
+ * \tparam A Type of the object to convert from
+ * \tparam B Type of the object to convert to
  */
 template<class A, class B>
-void convert(const A & a, B & b)
+inline void convert(const A & a, B & b)
 {
-  impl::Converter<rosidl_generator_traits::is_message<A>::value,
-    rosidl_generator_traits::is_message<B>::value>::convert(a, b);
+  impl::Converter<
+    rosidl_generator_traits::is_message<A>::value,
+    rosidl_generator_traits::is_message<B>::value, A, B>::convert(a, b);
 }
 
-template<class A>
-void convert(const A & a1, A & a2)
-{
-  if (&a1 != &a2) {
-    a2 = a1;
-  }
-}
-
-/**\brief Function that converts from a row-major representation of a 6x6
+/** \brief Function that converts from a row-major representation of a 6x6
  * covariance matrix to a nested array representation.
- * \param row_major A row-major array of 36 covariance values.
+ * \param[in] row_major A row-major array of 36 covariance values.
  * \return A nested array representation of 6x6 covariance values.
  */
 inline
-std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array<double, 36> & row_major)
+std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
+  const std::array<double,
+  36> & row_major)
 {
   std::array<std::array<double, 6>, 6> nested_array;
   std::array<double, 36>::const_iterator ss = row_major.begin();
@@ -177,13 +230,16 @@ std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array
   return nested_array;
 }
 
-/**\brief Function that converts from a nested array representation of a 6x6
+/**
+ * \brief Function that converts from a nested array representation of a 6x6
  * covariance matrix to a row-major representation.
- * \param nested_array A nested array representation of 6x6 covariance values.
+ * \param[in] nested_array A nested array representation of 6x6 covariance values.
  * \return A row-major array of 36 covariance values.
  */
 inline
-std::array<double, 36> covarianceNestedToRowMajor(const std::array<std::array<double, 6>, 6> & nested_array)
+std::array<double, 36> covarianceNestedToRowMajor(
+  const std::array<std::array<double, 6>,
+  6> & nested_array)
 {
   std::array<double, 36> row_major = {};
   size_t counter = 0;

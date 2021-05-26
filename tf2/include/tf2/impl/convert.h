@@ -26,54 +26,594 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+/** \author Vincent Rabaud, Bjarne von Horn */
+
 #ifndef TF2__IMPL__CONVERT_H_
 #define TF2__IMPL__CONVERT_H_
+
+#include <type_traits>
+
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <std_msgs/msg/header.hpp>
+
+#include "../time.h"
+#include "forward.hpp"
 
 namespace tf2
 {
 namespace impl
 {
+/// Helper to always trigger \c static_assert s
+template<typename T>
+constexpr bool alwaysFalse = false;
 
-template<bool IS_MESSAGE_A, bool IS_MESSAGE_B>
+/**
+ * \brief Check whether a message is stamped and has a std_msgs::msg::Header member.
+ *
+ * It will be indicated with the static member valiable \c value .
+ * \tparam Message The message to check
+ */
+template<typename Message, typename = int>
+struct MessageHasStdHeader : std::false_type
+{
+};
+
+/**
+ * \brief Check whether a message is stamped and has a std_msgs::msg::Header member.
+ *
+ * It will be indicated with the static member valiable \c value .
+ * \tparam Message The message to check
+ */
+template<typename Message>
+class MessageHasStdHeader<Message, decltype(static_cast<void>(Message::header), 0)>
+{
+  template<typename Alloc>
+  static std::true_type headerIsStdHeader(std_msgs::msg::Header_<Alloc>);
+  template<typename = void>
+  static std::false_type headerIsStdHeader(...);
+
+public:
+  /// true if Message has a member \c header of type std_msgs::msg::Header.
+  static constexpr bool value = decltype(headerIsStdHeader(std::declval<Message>().header))::value;
+};
+
+/**
+ * \brief Mapping between Datatypes (like \c Vector3d ) and their default ROS Message types.
+ *
+ * This struct should be specialized for each non-Message datatypes,
+ * and it should contain an alias of the Message class with the name \c type .
+ * This alias will be used to deduce the return value of tf2::toMsg().
+ *
+ * \tparam Datatype Non-Message datatype like \c Vector3d .
+ */
+template<class Datatype, class>
+struct DefaultMessageForDatatype
+{
+  static_assert(
+    alwaysFalse<Datatype>,
+    "No default message type defined, "
+    "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
+  // using type = ...;
+};
+
+/**
+ * \brief Transform type for the default implementation of tf2::doTransform().
+ *
+ * The default implementation of tf2::doTransform() needs to convert the
+ * TransformStamped parameter into a type to perform the transform operation
+ * \code
+ * tf2::convert(transform, converted_transform);
+ * out = converted_transform * in;
+ * \endcode
+ * So, this struct needs to be specialized for each type which is passed
+ * to the default implementation of tf2::doTransform().
+ * It needs to contain an alias of the transform datatype named \c type .
+ *
+ * \tparam Datatype Datatype to be transformed.
+ */
+template<class Datatype, class>
+struct DefaultTransformType
+{
+  static_assert(
+    alwaysFalse<Datatype>,
+    "No default transform type defined, "
+    "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
+  // using type = ...;
+};
+
+/**
+ * \brief Conversion details between a Message and a non-Message datatype.
+ * \tparam Datatype Non-Message datatype like \c Vector3d
+ * \tparam Message  The ROS Message class
+ *
+ * The specializations of this struct should contain two static methods,
+ * which convert a ROS Message into the requested datatype and vice versa.
+ * They should have the following signature:
+ * \code
+ * template<>
+ * struct defautMessage<Datatype, Message>
+ * {
+ *   static void toMsg(const Datatype&, Message&);
+ *   static void fromMsg(const Message&, Datatype&);
+ * }:
+ * \endcode
+ * Note that the conversion between ( tf2::Stamped\<Datatype\> and
+ * geometry_msgs::...Stamped ) and
+ * ( tf2::WithCovarianceStamped\<Datatype\> and geometry_msgs::...WithCovarianceStamped )
+ * is done automatically.
+ */
+template<class Datatype, class Message, class>
+struct ConversionImplementation
+{
+  static_assert(
+    alwaysFalse<Datatype>,
+    "No Conversion Implementation available, "
+    "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
+  // void toMsg(const Datatype&, Message&);
+  // void fromMsg(const Message&, Datatype&);
+};
+
+
+/**
+ * \brief Mapping of unstamped Messages for stamped Messages
+ *
+ * This struct contains utility methods to access the data member of a stamped ROS message
+ * and an alias (named \c UntampedType ) of the unstamped message type.
+ * It is needed for the conversion of stamped datatypes,
+ * so that only the conversions of unstamped datatypes has do be implemented.
+ * For example, a \c geometry_msgs::Vector3Stamped has two members,
+ * the \c header (which contains a timestamp and a frame ID) and the \c vector itself.
+ * For this class, the specialization should look like
+ * \code
+ * template<>
+ * struct StampedMessageTraits<geometry_msgs::Vector3Stamped>
+ * {
+ *  using UntampedType = geometry_msgs::Vector3;
+ *  static geometry_msgs::Vector3& accessMessage(geometry_msgs::Vector3Stamped& vs)
+ *  {
+ *     return vs.vector;
+ *  }
+ *  static geometry_msgs::Vector3 getMessage(const geometry_msgs::Vector3Stamped& vs)
+ *  {
+ *     return vs.vector;
+ *  }
+ * };
+ * \endcode
+ * The both almost identical methods are required to keep const-correctness.
+ *
+ * If the message is a stamped message with a covariance member,
+ * accessMessage() should return the underlying message (e.g. Pose)
+ * and accessCovariance() should return the covariance accordingly.
+ *
+ * \tparam StampedMessage The datatype of the ros message
+ */
+template<class StampedMessage>
+struct StampedMessageTraits
+{
+  static_assert(
+    alwaysFalse<StampedMessage>,
+    "No traits for this stamped message type available, "
+    "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
+  // using UntampedType = ...;
+  // static UntampedType& accessMessage(StampedMsg &);
+  // static UntampedType getMessage(StampedMsg const&);
+  // static CovarianceType & accessCovariance(MsgWithCovarianceStamped &);
+  // static CovarianceType getCovariance(MsgWithCovarianceStamped const&);
+};
+
+/**
+ * \brief Mapping of stamped Messages for unstamped Messages
+ *
+ * This struct is needed for the deduction of the return type of
+ * tf2::convert() for tf2::Stamped\<\> datatypes.
+ * Its specializations should contain an alias (named \c StampedType )
+ * of the stamped type.
+ * Example:
+ * \code
+ * template<>
+ * struct UnstampedMessageTraits<geometry_msgs::Vector3>
+ * {
+ *    using StampedType = geometry_msgs::Vector3Stamped;
+ * };
+ * \endcode
+ *
+ * If messages with covariance are also available,
+ * an alias with the name \c StampedTypeWithCovariance
+ * to the accoring message type should be declared.
+ *
+ * \tparam UnstampedMessage Type of the ROS message which is not stamped
+ */
+template<class UnstampedMessage>
+struct UnstampedMessageTraits
+{
+  static_assert(
+    alwaysFalse<UnstampedMessage>,
+    "No traits for this message type available, "
+    "please check your header file includes!");
+
+  // implement the following in the specializations for your own types
+  // using StampedType = ...;
+  // using StampedTypeWithCovariance = ...;
+};
+
+/**
+ * \brief Partial specialization of impl::DefaultMessageForDatatype for stamped types.
+ *
+ * The deduction of the default ROS message type of a tf2::Stamped\<T\> type is
+ * based on the default ROS message type of \c T .
+ * \tparam T The unstamped datatype (not a ROS message)
+ */
+template<class T>
+struct DefaultMessageForDatatype<tf2::Stamped<T>>
+{
+  using type =
+    typename UnstampedMessageTraits<typename DefaultMessageForDatatype<T>::type>::StampedType;
+};
+
+/**
+ * \brief Partial specialization of impl::DefaultMessageForDatatype
+ * for stamped types with covariance.
+ *
+ * The deduction of the default ROS message type of a tf2::WithCovarianceStamped\<T\> type is
+ * based on the default ROS message type of \c T .
+ * \tparam T The unstamped datatype (not a ROS message)
+ */
+template<class T>
+struct DefaultMessageForDatatype<tf2::WithCovarianceStamped<T>>
+{
+  using type = typename UnstampedMessageTraits<
+    typename DefaultMessageForDatatype<T>::type>::StampedTypeWithCovariance;
+};
+
+/**
+ * \brief Partial specialization of impl::ConversionImplementation for stamped types.
+ *
+ * This partial specialization provides the conversion implementation
+ * ( \c toMsg() and \c fromMsg() )
+ * between stamped types ( non-message types of tf2::Stamped\<T\> and
+ * ROS message datatypes with a \c header member).
+ * The timestamp and the frame ID are preserved during the conversion.
+ * The implementation of tf2::toMsg() and tf2::fromMsg() for the unstamped types are required,
+ * as well as a specialization of StampedMessageTraits.
+ * \tparam Datatype Unstamped non-message type
+ * \tparam StampedMessage Stamped ROS message type
+ */
+template<class Datatype, class StampedMessage>
+struct ConversionImplementation<tf2::Stamped<Datatype>, StampedMessage>
+{
+  /// Typedefs and utility functions for the given message
+  using traits = StampedMessageTraits<StampedMessage>;
+
+  /** \brief Convert a stamped datatype to a stamped message.
+   * \param[in] s Stamped datatype to covert.
+   * \param[out] msg The stamped datatype, as a stamped message.
+   */
+  static void toMsg(const tf2::Stamped<Datatype> & s, StampedMessage & msg)
+  {
+    tf2::toMsg<>(static_cast<const Datatype &>(s), traits::accessMessage(msg));
+    tf2::toMsg<>(s.stamp_, msg.header.stamp);
+    msg.header.frame_id = s.frame_id_;
+  }
+
+  /** \brief Convert a stamped message to a stamped datatype.
+   * \param[in] msg Stamped message to covert
+   * \param[out] s The stamped message, as a stamped datatype.
+   */
+  static void fromMsg(const StampedMessage & msg, tf2::Stamped<Datatype> & s)
+  {
+    tf2::fromMsg<>(traits::getMessage(msg), static_cast<Datatype &>(s));
+    tf2::fromMsg<>(msg.header.stamp, s.stamp_);
+    s.frame_id_ = msg.header.frame_id;
+  }
+};
+
+/**
+ * \brief Partial specialization of impl::ConversionImplementation for
+ * stamped types with covariance.
+ *
+ * This partial specialization provides the conversion implementation
+ * ( \c toMsg() and \c fromMsg() )
+ * between stamped types with covariance (non-message types of tf2::WithCovarianceStamped\<T\>
+ * and ROS message datatypes with a \c header member).
+ * The covariance, the timestamp and the frame ID are preserved during the conversion.
+ * The implementation of tf2::toMsg() and tf2::fromMsg() for the unstamped types without covariance
+ * are required, as well as a specialization of StampedMessageTraits.
+ * \tparam Datatype Unstamped non-message type
+ * \tparam CovarianceStampedMessage Stamped ROS message type with covariance
+ */
+template<class Datatype, class CovarianceStampedMessage>
+struct ConversionImplementation<tf2::WithCovarianceStamped<Datatype>, CovarianceStampedMessage>
+{
+  /// Typedefs and utility functions for the given message
+  using traits = StampedMessageTraits<CovarianceStampedMessage>;
+
+  /** \brief Convert a stamped datatype to a stamped message.
+  * \param[in] in Stamped datatype to covert.
+  * \param[out] out The stamped datatype, as a stamped message.
+  */
+  static void toMsg(tf2::WithCovarianceStamped<Datatype> const & in, CovarianceStampedMessage & out)
+  {
+    CovarianceStampedMessage tmp;
+    tf2::toMsg<>(in.stamp_, tmp.header.stamp);
+    tmp.header.frame_id = in.frame_id_;
+    traits::accessCovariance(tmp) = tf2::covarianceNestedToRowMajor(in.cov_mat_);
+    tf2::toMsg<>(static_cast<Datatype const &>(in), traits::accessMessage(tmp));
+    out = std::move(tmp);
+  }
+
+  /**
+   * \brief Convert a stamped message to a stamped datatype.
+   * \param[in] in Stamped message to covert
+   * \param[out] out The stamped message, as a stamped datatype.
+   */
+  static void fromMsg(
+    CovarianceStampedMessage const & in, tf2::WithCovarianceStamped<Datatype> & out)
+  {
+    tf2::WithCovarianceStamped<Datatype> tmp;
+    tf2::fromMsg<>(in.header.stamp, tmp.stamp_);
+    tf2::fromMsg<>(traits::getMessage(in), static_cast<Datatype &>(tmp));
+    tmp.frame_id_ = in.header.frame_id;
+    tmp.cov_mat_ = tf2::covarianceRowMajorToNested(traits::getCovariance(in));
+    out = std::move(tmp);
+  }
+};
+
+/**
+ * \brief Helper for tf2::convert().
+ * \tparam IS_MESSAGE_A True if first argument is a message type.
+ * \tparam IS_MESSAGE_B True if second argument is a message type.
+ * \tparam A Type of first argument.
+ * \tparam B Type of second argument.
+ */
+template<bool IS_MESSAGE_A, bool IS_MESSAGE_B, typename A, typename B, typename>
 class Converter
 {
 public:
-  template<typename A, typename B>
-  static void convert(const A & a, B & b);
+  // The case where both A and B are messages should not happen: if you have two
+  // messages that are interchangeable, well, that's against the ROS purpose:
+  // only use one type. Worst comes to worst, specialize the original convert
+  // function for your types.
+  // if B == A, the templated version of convert with only one argument will be
+  // used.
+  //
+  static_assert(
+    !(IS_MESSAGE_A && IS_MESSAGE_B), "Conversion between two Message types is not supported!");
 };
 
-// The case where both A and B are messages should not happen: if you have two
-// messages that are interchangeable, well, that's against the ROS purpose:
-// only use one type. Worst comes to worst, specialize the original convert
-// function for your types.
-// if B == A, the templated version of convert with only one argument will be
-// used.
-//
-template< >
+/**
+ * \brief Implementation of tf2::convert() for message-to-datatype conversion.
+ * \tparam A Message type.
+ * \tparam B Datatype.
+ */
 template<typename A, typename B>
-inline void Converter<true, true>::convert(const A & a, B & b);
-
-template< >
-template<typename A, typename B>
-inline void Converter<true, false>::convert(const A & a, B & b)
+struct Converter<true, false, A, B>
 {
-  fromMsg(a, b);
-}
 
-template< >
+  /**
+   * \brief Implementation of tf2::convert() for message-to-datatype conversion.
+   * \param[in] a Message to convert.
+   * \param[out] b Datatype to convert to.
+   */
+  static void convert(const A & a, B & b) {fromMsg<>(a, b);}
+};
+
+/**
+ * \brief Implementation of tf2::convert() for datatype-to-message converiosn.
+ * \tparam A Datatype.
+ * \tparam B Message.
+ */
 template<typename A, typename B>
-inline void Converter<false, true>::convert(const A & a, B & b)
+struct Converter<false, true, A, B>
 {
-  b = toMsg(a);
-}
+  /**
+   * \brief Implementation of tf2::convert() for datatype-to-message converiosn.
+   * \param[in] a Datatype to convert.
+   * \param[out] b Message to convert to.
+   */
+  static void convert(const A & a, B & b) {b = toMsg<A, B>(a);}
+};
 
-template< >
+/**
+ * \brief Implementation of tf2::convert() for datatypes.
+ * Converts the first argument to a message
+ * (usually \c impl::DefaultMessageForDatatype<A>::type)
+ * and then converts the message to the second argument.
+ * \tparam A Datatype of first argument.
+ * \tparam B Datatype of second argument.
+ */
 template<typename A, typename B>
-inline void Converter<false, false>::convert(const A & a, B & b)
+struct Converter<false, false, A, B, typename std::enable_if<!std::is_same<A, B>::value>::type>
 {
-  fromMsg(toMsg(a), b);
-}
+  /**
+   * \brief Implementation of tf2::convert() for datatypes.
+   * Converts the first argument to a message
+   * (usually \c impl::DefaultMessageForDatatype<A>::type )
+   * and then converts the message to the second argument.
+   * \param[in] a Source of conversion.
+   * \param[out] b Target of conversion.
+   */
+  static void convert(const A & a, B & b) {fromMsg<>(toMsg<>(a), b);}
+};
 
+/**
+ * \brief Implementation of tf2::convert() for identical types.
+ * \tparam b Type is a Message
+ * \tparam A Type of the arguments
+ */
+
+template<bool b, typename A>
+struct Converter<b, b, A, A>
+{
+  /**
+   * \brief Overload of tf2::convert() for the same types.
+   * \param[in] a1 an object to convert from
+   * \param[in,out] a2 the object to convert to
+   */
+  static void convert(const A & a1, A & a2)
+  {
+    if (&a1 != &a2) {
+      a2 = a1;
+    }
+  }
+};
+
+/**
+ * \brief Default implementation for extracting timestamps and frame IDs.
+ *
+ * Both static member functions are for stamped ROS messages.
+ *
+ * \tparam T Arbitrary datatype
+ */
+template<typename T, int>
+struct StampedAttributesHelper
+{
+  static_assert(
+    MessageHasStdHeader<T>::value,
+    "Trying to use default implementation for stamped message, "
+    "but the datatype does not have a Header member.");
+
+  /**
+   * \brief Get the timestamp from data
+   * \param[in] t The data input.
+   * \return The timestamp associated with the data.
+   */
+  static tf2::TimePoint getTimestamp(const T & t)
+  {
+    tf2::TimePoint timestamp;
+    tf2::fromMsg<>(t.header.stamp, timestamp);
+    return timestamp;
+  }
+
+  /**
+   * \brief Get the frame_id from data
+   * \param[in] t The data input.
+   * \return The frame_id associated with the data.
+   */
+  static std::string getFrameId(const T & t) {return t.header.frame_id;}
+};
+
+/**
+ * \brief Partial specialization of StampedAttributesHelper for tf2::Stamped\<\> types
+ */
+template<typename T>
+struct StampedAttributesHelper<tf2::Stamped<T>>
+{
+  /**
+   * \brief Get the timestamp from data
+   * \param t The data input.
+   * \return The timestamp associated with the data.
+   */
+  static tf2::TimePoint getTimestamp(const tf2::Stamped<T> & t) {return t.stamp_;}
+
+  /**
+   * \brief Get the frame_id from data
+   * \param t The data input.
+   * \return The frame_id associated with the data.
+   */
+  static std::string getFrameId(const tf2::Stamped<T> & t) {return t.frame_id_;}
+};
+
+/**
+ * \brief Partial specialization of StampedAttributesHelper for tf2::WithCovarianceStamped\<\> types
+ */
+template<typename T>
+struct StampedAttributesHelper<tf2::WithCovarianceStamped<T>>
+{
+  /**
+   * \brief Get the timestamp from data
+   * \param t The data input.
+   * \return The timestamp associated with the data.
+   */
+  static tf2::TimePoint getTimestamp(const tf2::WithCovarianceStamped<T> & t) {return t.stamp_;}
+
+  /**
+   * \brief Get the frame_id from data
+   * \param t The data input.
+   * \return The frame_id associated with the data.
+   */
+  static std::string getFrameId(const tf2::WithCovarianceStamped<T> & t) {return t.frame_id_;}
+};
+
+/**
+ * \brief Generic conversion of a vector and a vector-like message.
+ *
+ * \tparam VectorType Datatype of the Vector.
+ * \tparam Message Message type, like geometry_msgs::msg::Vector3.
+ * \tparam VectorMemberType Type of the <tt>x, y</tt> and \c z variables of the vector
+ */
+template<class VectorType, class Message, typename VectorMemberType = double>
+struct DefaultVectorConversionImplementation
+{
+  /**
+   * \brief Convert a vector type to a vector-like message.
+   * \param[in] in The vector to convert.
+   * \param[out] msg The converted vector, as a message.
+   */
+  static void toMsg(const VectorType & in, Message & msg)
+  {
+    msg.x = in[0];
+    msg.y = in[1];
+    msg.z = in[2];
+  }
+
+  /**
+   * \brief Convert a vector-like message type to a vector type.
+   * \param[in] msg The message to convert.
+   * \param[out] out The message converted to a vector type.
+   */
+  static void fromMsg(const Message & msg, VectorType & out)
+  {
+    // cast to suppress narrowing warning
+    out = VectorType(
+      static_cast<VectorMemberType>(msg.x), static_cast<VectorMemberType>(msg.y),
+      static_cast<VectorMemberType>(msg.z));
+  }
+};
+
+/**
+ * \brief Generic conversion of a quaternion and
+ * a geometry_msgs::msg::Quaternion message.
+ *
+ * \tparam QuaternionType Datatype of the Vector.
+ * \tparam QuaternionMemberType Type of the <tt>x, y, z</tt> and \c w variables of the quaternion
+ */
+template<class QuaternionType, typename QuaternionMemberType = double>
+struct DefaultQuaternionConversionImplementation
+{
+  /**
+   * \brief Convert a quaternion type to a Quaternion message.
+   * \param[in] in The quaternion convert.
+   * \param[out] msg The quaternion converted to a Quaternion message.
+   */
+  static void toMsg(const QuaternionType & in, geometry_msgs::msg::Quaternion & msg)
+  {
+    msg.x = in[0];
+    msg.y = in[1];
+    msg.z = in[2];
+    msg.w = in[3];
+  }
+
+  /**
+   * \brief Convert a Quaternion message type to a quaternion type.
+   * \param[in] msg The Quaternion message to convert.
+   * \param[out] out The Quaternion message converted to a quaternion type.
+   */
+  static void fromMsg(const geometry_msgs::msg::Quaternion & msg, QuaternionType & out)
+  {
+    // cast to suppress narrowing warning
+    out = QuaternionType(
+      static_cast<QuaternionMemberType>(msg.x), static_cast<QuaternionMemberType>(msg.y),
+      static_cast<QuaternionMemberType>(msg.z), static_cast<QuaternionMemberType>(msg.w));
+  }
+};
 }  // namespace impl
 }  // namespace tf2
 
