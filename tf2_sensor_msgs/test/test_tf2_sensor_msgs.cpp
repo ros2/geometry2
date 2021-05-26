@@ -27,16 +27,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <memory>
+#include <gtest/gtest.h>
+
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include <builtin_interfaces/msg/time.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-#include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/transform_listener.h>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
+
+#include <memory>
 
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
@@ -57,14 +59,12 @@ TEST(Tf2Sensor, PointCloud2)
   *iter_y = 2;
   *iter_z = 3;
 
-  cloud.header.stamp.sec = 2;
-  cloud.header.stamp.nanosec = 0;
+  cloud.header.stamp = rclcpp::Time(2, 0);
   cloud.header.frame_id = "A";
 
   // simple api
   sensor_msgs::msg::PointCloud2 cloud_simple = tf_buffer->transform(
-    cloud, "B", tf2::durationFromSec(
-      2.0));
+    cloud, "B", tf2::durationFromSec(2.0));
   sensor_msgs::PointCloud2Iterator<float> iter_x_after(cloud_simple, "x");
   sensor_msgs::PointCloud2Iterator<float> iter_y_after(cloud_simple, "y");
   sensor_msgs::PointCloud2Iterator<float> iter_z_after(cloud_simple, "z");
@@ -74,8 +74,7 @@ TEST(Tf2Sensor, PointCloud2)
 
   // advanced api
   sensor_msgs::msg::PointCloud2 cloud_advanced = tf_buffer->transform(
-    cloud, "B", tf2::timeFromSec(2.0),
-    "A", tf2::durationFromSec(3.0));
+    cloud, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
   sensor_msgs::PointCloud2Iterator<float> iter_x_advanced(cloud_advanced, "x");
   sensor_msgs::PointCloud2Iterator<float> iter_y_advanced(cloud_advanced, "y");
   sensor_msgs::PointCloud2Iterator<float> iter_z_advanced(cloud_advanced, "z");
@@ -100,8 +99,7 @@ int main(int argc, char ** argv)
   t.transform.rotation.y = 0;
   t.transform.rotation.z = 0;
   t.transform.rotation.w = 0;
-  t.header.stamp.sec = 2;
-  t.header.stamp.nanosec = 0;
+  t.header.stamp = rclcpp::Time(2, 0);
   t.header.frame_id = "A";
   t.child_frame_id = "B";
   tf_buffer->setTransform(t, "test");
