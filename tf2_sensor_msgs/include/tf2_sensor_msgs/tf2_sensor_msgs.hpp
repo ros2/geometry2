@@ -62,10 +62,21 @@ void doTransform(const sensor_msgs::msg::PointCloud2 &p_in, sensor_msgs::msg::Po
 {
   p_out = p_in;
   p_out.header = t_in.header;
-  Eigen::Transform<float,3,Eigen::Affine> t = Eigen::Translation3f(t_in.transform.translation.x, t_in.transform.translation.y,
-                                                                   t_in.transform.translation.z) * Eigen::Quaternion<float>(
-                                                                     t_in.transform.rotation.w, t_in.transform.rotation.x,
-                                                                     t_in.transform.rotation.y, t_in.transform.rotation.z);
+  // FIXME(clalancette): The static casts to float aren't ideal; the incoming
+  // transform uses double, and hence may have values that are too large to represent
+  // in a float.  But since this method implicitly returns a float PointCloud2, we don't
+  // have much choice here without subtly changing the API.
+  auto translation = Eigen::Translation3f(
+    static_cast<float>(t_in.transform.translation.x),
+    static_cast<float>(t_in.transform.translation.y),
+    static_cast<float>(t_in.transform.translation.z));
+  auto quaternion = Eigen::Quaternion<float>(
+    static_cast<float>(t_in.transform.rotation.w),
+    static_cast<float>(t_in.transform.rotation.x),
+    static_cast<float>(t_in.transform.rotation.y),
+    static_cast<float>(t_in.transform.rotation.z));
+
+  Eigen::Transform<float,3,Eigen::Affine> t = translation * quaternion;
 
   sensor_msgs::PointCloud2ConstIterator<float> x_in(p_in, std::string("x"));
   sensor_msgs::PointCloud2ConstIterator<float> y_in(p_in, std::string("y"));
