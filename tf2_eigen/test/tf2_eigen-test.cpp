@@ -1,6 +1,5 @@
 /*
- * Copyright (c) Koji Terada
- * All rights reserved.
+ * Copyright (c) Koji Terada. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -128,8 +127,10 @@ TEST(TfEigen, ConvertTransform)
 
   Eigen::Affine3d T(tm);
 
-  geometry_msgs::msg::TransformStamped msg = tf2::eigenToTransform(T);
-  Eigen::Affine3d Tback = tf2::transformToEigen(msg);
+  geometry_msgs::msg::Transform msg;
+  tf2::toMsg(T, msg);
+  Eigen::Affine3d Tback;
+  tf2::fromMsg(msg, Tback);
 
   EXPECT_TRUE(T.isApprox(Tback));
   EXPECT_TRUE(tm.isApprox(Tback.matrix()));
@@ -137,8 +138,9 @@ TEST(TfEigen, ConvertTransform)
   // same for Isometry
   Eigen::Isometry3d I(tm);
 
-  msg = tf2::eigenToTransform(T);
-  Eigen::Isometry3d Iback = tf2::transformToEigen(msg);
+  tf2::toMsg(T, msg);
+  Eigen::Isometry3d Iback;
+  tf2::fromMsg(msg, Iback);
 
   EXPECT_TRUE(I.isApprox(Iback));
   EXPECT_TRUE(tm.isApprox(Iback.matrix()));
