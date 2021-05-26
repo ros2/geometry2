@@ -25,12 +25,13 @@ find_package(Eigen3 REQUIRED)
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)
 ament_export_dependencies(tf2)
+ament_export_dependencies(tf2_ros)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-  find_package(ament_cmake_pytest REQUIRED)
 
   # TODO(ros2/orocos_kinematics_dynamics): reenable when PyKDL is ready to use
+  #find_package(ament_cmake_pytest REQUIRED)
   #ament_add_pytest_test(test_tf2_sensor_msgs_py test/test_tf2_sensor_msgs.py)
 
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)

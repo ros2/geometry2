@@ -27,10 +27,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <memory>
 
 #include <builtin_interfaces/msg/time.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <gtest/gtest.h>
+#include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
