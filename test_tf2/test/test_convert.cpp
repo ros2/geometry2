@@ -34,16 +34,73 @@
 *
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
+
 #include <gtest/gtest.h>
-#include <geometry_msgs/msg/point_stamped.hpp>
+
 #include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
+#include <geometry_msgs/msg/vector3_stamped.hpp>
+
 #include <tf2/convert.h>
 #include <tf2/LinearMath/Quaternion.h>
-#include <tf2_kdl/tf2_kdl.hpp>
+
 #include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_kdl/tf2_kdl.hpp>
+
+
+// test of tf2 type traits
+static_assert(
+  !tf2::impl::MessageHasStdHeader<geometry_msgs::msg::Vector3>::value,
+  "MessageHasStdHeader traits error");
+static_assert(
+  tf2::impl::MessageHasStdHeader<geometry_msgs::msg::Vector3Stamped>::value,
+  "MessageHasStdHeader traits error");
+
+namespace
+{
+struct MyPODMessage
+{
+  int header;
+};
+
+template<typename Alloc>
+struct MyAllocMessage
+{
+  int header;
+};
+
+static_assert(
+  !tf2::impl::MessageHasStdHeader<MyPODMessage>::value,
+  "MessageHasStdHeader traits error");
+
+template<typename T>
+struct MyAllocator
+{
+  using value_type = T;
+  using size_type = unsigned int;
+  T * allocate(size_type);
+  void deallocate(T *, size_type);
+  template<class U>
+  struct rebind { typedef MyAllocator<U> other; };
+};
+using MyVec = geometry_msgs::msg::Vector3_<MyAllocator<void>>;
+using MyVecStamped = geometry_msgs::msg::Vector3Stamped_<MyAllocator<void>>;
+using MyMessage = MyAllocMessage<MyAllocator<void>>;
+
+static_assert(!tf2::impl::MessageHasStdHeader<MyVec>::value, "MessageHasStdHeader traits error");
+static_assert(
+  tf2::impl::MessageHasStdHeader<MyVecStamped>::value,
+  "MessageHasStdHeader traits error");
+
+static_assert(
+  !tf2::impl::MessageHasStdHeader<MyMessage>::value,
+  "MessageHasStdHeader traits error");
+}  // namespace
+
+using Vector6d = Eigen::Matrix<double, 6, 1>;
 
 #include <Eigen/Geometry>
 
@@ -108,8 +165,7 @@ TEST(tf2Convert, ConvertTf2Quaternion)
 {
   const tf2::Quaternion tq(1, 2, 3, 4);
   Eigen::Quaterniond eq;
-  // TODO(gleichdick): switch to tf2::convert() when it's working
-  tf2::fromMsg(tf2::toMsg(tq), eq);
+  tf2::convert(tq, eq);
 
   EXPECT_EQ(tq.w(), eq.w());
   EXPECT_EQ(tq.x(), eq.x());
@@ -186,6 +242,106 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
     EXPECT_EQ(msg.y, 4.0);
     EXPECT_EQ(msg.z, 5.0);
   }
+}
+
+TEST(TfEigenKdl, TestRotationQuaternion)
+{
+  const auto kdl_v = KDL::Rotation::RPY(1.5, 0.2, 0.3);
+  Eigen::Quaterniond eigen_v = Eigen::Quaterniond::Identity();
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Rotation kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestQuaternionRotation)
+{
+  const Eigen::Quaterniond eigen_v = Eigen::Quaterniond(1, 2, 1.5, 3).normalized();
+  KDL::Rotation kdl_v;
+  tf2::convert(eigen_v, kdl_v);
+  Eigen::Quaterniond eigen_v1;
+  tf2::convert(kdl_v, eigen_v1);
+  EXPECT_TRUE(eigen_v.isApprox(eigen_v1));
+}
+
+TEST(TfEigenKdl, TestFrameIsometry3d)
+{
+  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1, 2, 3));
+  Eigen::Isometry3d eigen_v = Eigen::Isometry3d::Identity();
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Frame kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestIsometry3dFrame)
+{
+  const Eigen::Isometry3d eigen_v(
+    Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxisd(1, Eigen::Vector3d::UnitX()));
+  KDL::Frame kdl_v;
+  tf2::convert(eigen_v, kdl_v);
+  Eigen::Isometry3d eigen_v1;
+  tf2::convert(kdl_v, eigen_v1);
+  EXPECT_EQ(eigen_v.translation(), eigen_v1.translation());
+  EXPECT_EQ(eigen_v.rotation(), eigen_v1.rotation());
+}
+
+TEST(TfEigenKdl, TestFrameAffine3d)
+{
+  const auto kdl_v = KDL::Frame(KDL::Rotation::RPY(1.2, 0.2, 0), KDL::Vector(1, 2, 3));
+  Eigen::Affine3d eigen_v = Eigen::Affine3d::Identity();
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Frame kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestTwistMatrix)
+{
+  const auto kdl_v = KDL::Twist(KDL::Vector(1, 2, 3), KDL::Vector(4, 5, 6));
+  Vector6d eigen_v;
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Twist kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestMatrixWrench)
+{
+  Vector6d eigen_v;
+  eigen_v << 1, 2, 3, 3, 2, 1;
+  KDL::Wrench kdl_v;
+  tf2::convert(eigen_v, kdl_v);
+  std::array<tf2::Vector3, 2> tf2_v;
+  tf2::convert(kdl_v, tf2_v);
+  Vector6d eigen_v1;
+  tf2::convert(tf2_v, eigen_v1);
+  std::array<tf2::Vector3, 2> tf2_v1;
+  tf2::convert(eigen_v1, tf2_v1);
+  Vector6d eigen_v2;
+  tf2::convert(tf2_v1, eigen_v2);
+  EXPECT_EQ(eigen_v, eigen_v2);
+}
+
+TEST(TfEigenKdl, TestVectorVector3d)
+{
+  const auto kdl_v = KDL::Vector(1, 2, 3);
+  Eigen::Vector3d eigen_v;
+  tf2::convert(kdl_v, eigen_v);
+  KDL::Vector kdl_v1;
+  tf2::convert(eigen_v, kdl_v1);
+  EXPECT_EQ(kdl_v, kdl_v1);
+}
+
+TEST(TfEigenKdl, TestVector3dVector)
+{
+  Eigen::Vector3d eigen_v;
+  eigen_v << 1, 2, 3;
+  KDL::Vector kdl_v;
+  tf2::convert(eigen_v, kdl_v);
+  Eigen::Vector3d eigen_v1;
+  tf2::convert(kdl_v, eigen_v1);
+  EXPECT_EQ(eigen_v, eigen_v1);
 }
 
 int main(int argc, char ** argv)
