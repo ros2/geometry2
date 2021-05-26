@@ -51,6 +51,24 @@ TEST(TfBullet, ConvertVector)
   EXPECT_EQ(v1, v2);
 }
 
+TEST(TfBullet, ConvertTransform)
+{
+  geometry_msgs::msg::Transform transform;
+  transform.rotation.x = 1.0;
+  transform.rotation.w = 0.0;
+  transform.translation.z = 2.0;
+
+  btTransform transform_bt;
+  tf2::convert(transform, transform_bt);
+  EXPECT_EQ(transform_bt.getRotation(), btQuaternion(1, 0, 0, 0));
+  // vector has 4 entries, set last one to 0 to make comparsion more stable
+  transform_bt.getOrigin().setW(0);
+  EXPECT_EQ(transform_bt.getOrigin(), btVector3(0, 0, 2));
+
+  geometry_msgs::msg::Transform transform2;
+  tf2::convert(transform_bt, transform2);
+  EXPECT_EQ(transform2, transform);
+}
 
 int main(int argc, char ** argv)
 {
