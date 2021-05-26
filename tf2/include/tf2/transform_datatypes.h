@@ -36,6 +36,8 @@
 #include <string>
 
 #include "tf2/time.h"
+#include "impl/time_convert.hpp"
+#include <builtin_interfaces/msg/time.hpp>
 
 namespace tf2
 {
@@ -58,6 +60,14 @@ public:
   /** Full constructor */
   Stamped(const T & input, const TimePoint & timestamp, const std::string & frame_id)
   : T(input), stamp_(timestamp), frame_id_(frame_id)
+  {
+  }
+
+  /** Full constructor */
+  Stamped(
+    const T & input, const builtin_interfaces::msg::Time & timestamp,
+    const std::string & frame_id)
+  : T(input), stamp_(TimePointFromMsg(timestamp)), frame_id_(frame_id)
   {
   }
 

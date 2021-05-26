@@ -43,6 +43,7 @@
 #include "exceptions.h"
 #include "impl/convert.h"
 #include "impl/stamped_traits.hpp"
+#include "impl/time_convert.hpp"
 #include "time.h"
 #include "transform_datatypes.h"
 #include "visibility_control.h"
