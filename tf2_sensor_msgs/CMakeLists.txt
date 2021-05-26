@@ -29,6 +29,13 @@ ament_export_dependencies(tf2_ros)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_lint_auto REQUIRED)
+
+  # TODO(ros2/geometry2#259) Remove once headers
+  # are renamed to .hpp
+  set(ament_cmake_uncrustify_ADDITIONAL_ARGS --language CPP)
+  set(ament_cmake_cppcheck_LANGUAGE c++)
+  ament_lint_auto_find_test_dependencies()
 
   # TODO(ros2/orocos_kinematics_dynamics): reenable when PyKDL is ready to use
   #find_package(ament_cmake_pytest REQUIRED)
