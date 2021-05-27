@@ -30,15 +30,17 @@
 
 
 import unittest
+
+from geometry_msgs.msg import (PointStamped, PoseStamped,
+                               PoseWithCovarianceStamped, Quaternion,
+                               TransformStamped, Vector3Stamped)
 import rclpy
-import tf2_ros
 import tf2_geometry_msgs
-from geometry_msgs.msg import (TransformStamped, PointStamped,
-                               Vector3Stamped, PoseStamped,
-                               PoseWithCovarianceStamped, Quaternion)
+import tf2_ros
 
 
 class GeometryMsgs(unittest.TestCase):
+
     def test_transform(self):
         b = tf2_ros.Buffer()
         t = TransformStamped()

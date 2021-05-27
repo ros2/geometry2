@@ -29,8 +29,8 @@
 
 # author: Wim Meeussen
 
-from geometry_msgs.msg import (PoseStamped, Vector3Stamped, PointStamped,
-                               PoseWithCovarianceStamped)
+from geometry_msgs.msg import (PointStamped, PoseStamped,
+                               PoseWithCovarianceStamped, Vector3Stamped)
 import PyKDL
 import tf2_ros
 
