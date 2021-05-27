@@ -29,9 +29,9 @@
 
 # author: Wim Meeussen
 
+from geometry_msgs.msg import PointStamped
 import PyKDL
 import tf2_ros
-from geometry_msgs.msg import PointStamped
 
 
 def transform_to_kdl(t):

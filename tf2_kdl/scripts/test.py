@@ -30,15 +30,17 @@
 
 
 import unittest
-import rclpy
+
+import builtin_interfaces
+from geometry_msgs.msg import Quaternion, TransformStamped
 import PyKDL
+import rclpy
 import tf2_ros
 import tf2_kdl  # noqa(F401)
-from geometry_msgs.msg import TransformStamped, Quaternion
-import builtin_interfaces
 
 
 class KDLConversions(unittest.TestCase):
+
     def test_transform(self):
         b = tf2_ros.Buffer()
         t = TransformStamped()

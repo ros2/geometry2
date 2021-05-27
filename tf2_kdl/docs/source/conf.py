@@ -69,7 +69,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'tf2_kdl'
-copyright = u'2016, Open Source Robotics Foundation'
+copyright = u'2016, Open Source Robotics Foundation'  # noqa(A001)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
