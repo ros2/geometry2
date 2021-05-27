@@ -20,6 +20,8 @@ endif()
 
 find_package(ament_cmake_gtest REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -58,6 +60,8 @@ endif()
 ament_add_gtest(test_convert test/test_convert.cpp)
 if(TARGET test_convert)
   ament_target_dependencies(test_convert
+    Eigen3
+    eigen3_cmake_module
     tf2
     tf2_bullet
     tf2_eigen
