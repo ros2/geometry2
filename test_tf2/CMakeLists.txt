@@ -116,15 +116,14 @@ if(TARGET test_static_publisher)
   add_launch_test(test/static_publisher.launch.py)
 endif()
 
-# TODO (ahcorde): activate when tf2_bullet is merged
-# ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
-# if(TARGET test_tf2_bullet)
-#   ament_target_dependencies(test_tf2_bullet
-#       rclcpp
-#       tf2_bullet
-#       tf2_ros
-#   )
-# endif()
+ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
+if(TARGET test_tf2_bullet)
+  ament_target_dependencies(test_tf2_bullet
+      rclcpp
+      tf2_bullet
+      tf2_ros
+  )
+endif()
 #
 # add_launch_test(test/test_buffer_client.launch.py)
 # add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_tf2_bullet.launch)
