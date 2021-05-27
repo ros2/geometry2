@@ -26,9 +26,9 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from sensor_msgs.msg import PointCloud2
-from sensor_msgs.point_cloud2 import read_points, create_cloud
 import PyKDL
+from sensor_msgs.msg import PointCloud2
+from sensor_msgs.point_cloud2 import create_cloud, read_points
 import rospy  # noqa(E401)
 import tf2_ros
 

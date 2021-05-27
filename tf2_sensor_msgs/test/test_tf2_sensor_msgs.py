@@ -28,17 +28,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import unittest
+import copy
 import struct
-import tf2_sensor_msgs
+import unittest
+
 from sensor_msgs import point_cloud2
 from sensor_msgs.msg import PointField
 from tf2_ros import TransformStamped
-import copy
+import tf2_sensor_msgs
 
 
 # A sample python unit test
 class PointCloudConversions(unittest.TestCase):
+
     def setUp(self):
         self.point_cloud_in = point_cloud2.PointCloud2()
         self.point_cloud_in.fields = [
@@ -75,7 +77,7 @@ class PointCloudConversions(unittest.TestCase):
         k = 300
         expected_coordinates = [(1+k, 2+k, 0+k), (10+k, 20+k, 30+k)]
         new_points = list(point_cloud2.read_points(point_cloud_transformed))
-        print("new_points are %s" % new_points)
+        print('new_points are %s' % new_points)
         assert(expected_coordinates == new_points)
         # checking no modification in input cloud
         assert(old_data == self.point_cloud_in.data)
@@ -83,5 +85,5 @@ class PointCloudConversions(unittest.TestCase):
 
 if __name__ == '__main__':
     import rosunit
-    rosunit.unitrun("test_tf2_sensor_msgs", "test_point_cloud_conversion",
+    rosunit.unitrun('test_tf2_sensor_msgs', 'test_point_cloud_conversion',
                     PointCloudConversions)
