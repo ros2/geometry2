@@ -80,28 +80,27 @@ if(TARGET test_utils)
   )
 endif()
 
-# TODO (ahcorde): activate when tf2_bullet is merged
-# add_executable(test_buffer_server test/test_buffer_server.cpp)
-# if(TARGET test_buffer_server)
-#   ament_target_dependencies(test_buffer_server
-#     rclcpp
-#     tf2_bullet
-#     tf2_ros
-#   )
-# endif()
+add_executable(test_buffer_server test/test_buffer_server.cpp)
+if(TARGET test_buffer_server)
+  ament_target_dependencies(test_buffer_server
+    rclcpp
+    tf2_bullet
+    tf2_ros
+  )
+endif()
 
-# TODO (ahcorde): activate when tf2_bullet is merged
-# add_executable(test_buffer_client test/test_buffer_client.cpp)
-# if(TARGET test_buffer_client)
-#   ament_target_dependencies(test_buffer_client
-#     rclcpp
-#     tf2_bullet
-#     tf2_kdl
-#     tf2_ros
-#   )
-#   target_link_libraries(test_buffer_client ${GTEST_LIBRARIES})
-#   add_launch_test(test/buffer_client_tester.launch.py)
-# endif()
+add_executable(test_buffer_client test/test_buffer_client.cpp)
+if(TARGET test_buffer_client)
+  ament_target_dependencies(test_buffer_client
+    rclcpp
+    tf2_bullet
+    tf2_geometry_msgs
+    tf2_kdl
+    tf2_ros
+  )
+  target_link_libraries(test_buffer_client ${GTEST_LIBRARIES})
+  add_launch_test(test/buffer_client_tester.launch.py)
+endif()
 
 add_executable(test_static_publisher test/test_static_publisher.cpp)
 if(TARGET test_static_publisher)
@@ -124,14 +123,14 @@ if(TARGET test_tf2_bullet)
       tf2_ros
   )
 endif()
-#
+
+# TODO(ahcorde): enable once python part of tf2_geometry_msgs is working
 # add_launch_test(test/test_buffer_client.launch.py)
-# add_rostest(${CMAKE_CURRENT_SOURCE_DIR}/test/test_tf2_bullet.launch)
 
 # install executables
 install(TARGETS
-  # test_buffer_client
-  # test_buffer_server
+  test_buffer_client
+  test_buffer_server
   test_static_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
