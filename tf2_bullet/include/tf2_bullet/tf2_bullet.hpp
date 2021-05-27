@@ -32,6 +32,7 @@
 #define TF2_BULLET__TF2_BULLET_HPP_
 
 #include <tf2/convert.h>
+#include <LinearMath/btQuaternion.h>
 #include <LinearMath/btScalar.h>
 #include <LinearMath/btTransform.h>
 #include <geometry_msgs/msg/point_stamped.hpp>
