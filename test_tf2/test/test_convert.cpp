@@ -35,16 +35,23 @@
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
 #include <gtest/gtest.h>
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 #include <tf2/convert.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2_bullet/tf2_bullet.hpp>
+#include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
+#include <Eigen/Geometry>
 
 TEST(tf2Convert, kdlToBullet)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame");
+  tf2::Stamped<btVector3> b(btVector3(1, 2, 3), tf2::timeFromSec(0), "my_frame");
 
   tf2::Stamped<btVector3> b1 = b;
   tf2::Stamped<KDL::Vector> k1;
@@ -71,11 +78,12 @@ TEST(tf2Convert, kdlBulletROSConversions)
 {
   double epsilon = 1e-9;
 
-  tf2::Stamped<btVector3> b1(btVector3(1,2,3), tf2::timeFromSec(0), "my_frame"), b2, b3, b4;
+  tf2::Stamped<btVector3> b1(btVector3(1, 2, 3), tf2::timeFromSec(0), "my_frame"), b2, b3, b4;
   geometry_msgs::msg::PointStamped r1, r2, r3;
   tf2::Stamped<KDL::Vector> k1, k2, k3;
 
-  // Do bullet -> self -> bullet -> KDL -> self -> KDL -> ROS -> self -> ROS -> KDL -> bullet -> ROS -> bullet
+  // Do bullet -> self -> bullet -> KDL -> self -> KDL -> ROS -> self
+  //   -> ROS -> KDL -> bullet -> ROS -> bullet
   tf2::convert(b1, b1);
   tf2::convert(b1, b2);
   tf2::convert(b2, k1);
@@ -96,7 +104,91 @@ TEST(tf2Convert, kdlBulletROSConversions)
   EXPECT_NEAR(b1.z(), b4.z(), epsilon);
 }
 
-int main(int argc, char** argv)
+TEST(tf2Convert, ConvertTf2Quaternion)
+{
+  const tf2::Quaternion tq(1, 2, 3, 4);
+  Eigen::Quaterniond eq;
+  // TODO(gleichdick): switch to tf2::convert() when it's working
+  tf2::fromMsg(tf2::toMsg(tq), eq);
+
+  EXPECT_EQ(tq.w(), eq.w());
+  EXPECT_EQ(tq.x(), eq.x());
+  EXPECT_EQ(tq.y(), eq.y());
+  EXPECT_EQ(tq.z(), eq.z());
+}
+
+TEST(tf2Convert, PointVectorDefaultMessagetype)
+{
+  // Verify the return type of `toMsg()`
+  // as it can return a Vector3 or a Point for certain datatypes
+  {
+    // Bullet
+    const tf2::Stamped<btVector3> b1{btVector3{1.0, 3.0, 4.0}, tf2::TimePoint(), "my_frame"};
+    const geometry_msgs::msg::PointStamped msg = tf2::toMsg(b1);
+
+    EXPECT_EQ(msg.point.x, 1.0);
+    EXPECT_EQ(msg.point.y, 3.0);
+    EXPECT_EQ(msg.point.z, 4.0);
+    EXPECT_EQ(msg.header.frame_id, b1.frame_id_);
+  }
+  {
+    // Eigen
+    const Eigen::Vector3d e1{2.0, 4.0, 5.0};
+    const geometry_msgs::msg::Point msg = tf2::toMsg(e1);
+
+    EXPECT_EQ(msg.x, 2.0);
+    EXPECT_EQ(msg.y, 4.0);
+    EXPECT_EQ(msg.z, 5.0);
+  }
+  {
+    // tf2
+    const tf2::Vector3 t1{2.0, 4.0, 5.0};
+    const geometry_msgs::msg::Vector3 msg = tf2::toMsg(t1);
+
+    EXPECT_EQ(msg.x, 2.0);
+    EXPECT_EQ(msg.y, 4.0);
+    EXPECT_EQ(msg.z, 5.0);
+  }
+  {
+    // KDL
+    const tf2::Stamped<KDL::Vector> k1{KDL::Vector{1.0, 3.0, 4.0}, tf2::TimePoint(), "my_frame"};
+    const geometry_msgs::msg::PointStamped msg = tf2::toMsg(k1);
+
+    EXPECT_EQ(msg.point.x, 1.0);
+    EXPECT_EQ(msg.point.y, 3.0);
+    EXPECT_EQ(msg.point.z, 4.0);
+    EXPECT_EQ(msg.header.frame_id, k1.frame_id_);
+  }
+}
+
+TEST(tf2Convert, PointVectorOtherMessagetype)
+{
+  {
+    const tf2::Vector3 t1{2.0, 4.0, 5.0};
+    geometry_msgs::msg::Point msg;
+    const geometry_msgs::msg::Point & msg2 = tf2::toMsg(t1, msg);
+
+    // returned reference is second argument
+    EXPECT_EQ(&msg2, &msg);
+    EXPECT_EQ(msg.x, 2.0);
+    EXPECT_EQ(msg.y, 4.0);
+    EXPECT_EQ(msg.z, 5.0);
+  }
+  {
+    // Eigen
+    const Eigen::Vector3d e1{2.0, 4.0, 5.0};
+    geometry_msgs::msg::Vector3 msg;
+    const geometry_msgs::msg::Vector3 & msg2 = tf2::toMsg(e1, msg);
+
+    // returned reference is second argument
+    EXPECT_EQ(&msg2, &msg);
+    EXPECT_EQ(msg.x, 2.0);
+    EXPECT_EQ(msg.y, 4.0);
+    EXPECT_EQ(msg.z, 5.0);
+  }
+}
+
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
