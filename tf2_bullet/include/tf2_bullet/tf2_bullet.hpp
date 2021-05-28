@@ -1,4 +1,4 @@
-// Copyright (c) 2008, Willow Garage, Inc. All rights reserved.
+// Copyright 2008 Willow Garage, Inc.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -10,7 +10,7 @@
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
 //
-//    * Neither the name of the Willo Garage, Inc nor the names of its
+//    * Neither the name of the Willow Garage, Inc. nor the names of its
 //      contributors may be used to endorse or promote products derived from
 //      this software without specific prior written permission.
 //
@@ -32,6 +32,7 @@
 #define TF2_BULLET__TF2_BULLET_HPP_
 
 #include <tf2/convert.h>
+#include <LinearMath/btQuaternion.h>
 #include <LinearMath/btScalar.h>
 #include <LinearMath/btTransform.h>
 #include <geometry_msgs/msg/point_stamped.hpp>
