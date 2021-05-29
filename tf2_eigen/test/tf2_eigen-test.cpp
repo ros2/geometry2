@@ -64,18 +64,17 @@ TEST(TfEigen, ConvertVector3dStamped)
   EXPECT_EQ(v, v1);
 }
 
-// TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
-// TEST(TfEigen, ConvertVector3d)
-// {
-//   const Eigen::Vector3d v(1,2,3);
+TEST(TfEigen, ConvertVector3d)
+{
+  const Eigen::Vector3d v(1, 2, 3);
 
-//   Eigen::Vector3d v1;
-//   geometry_msgs::msg::Point p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
+  Eigen::Vector3d v1;
+  geometry_msgs::msg::Point p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
-//   EXPECT_EQ(v, v1);
-// }
+  EXPECT_EQ(v, v1);
+}
 
 TEST(TfEigen, ConvertAffine3dStamped)
 {
@@ -95,20 +94,20 @@ TEST(TfEigen, ConvertAffine3dStamped)
   EXPECT_EQ(v.stamp_, v1.stamp_);
 }
 
-// TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
-// TEST(TfEigen, ConvertAffine3d)
-// {
-//   const Eigen::Affine3d v(
-//     Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+TEST(TfEigen, ConvertAffine3d)
+{
+  const Eigen::Affine3d v(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
+      1,
+      Eigen::Vector3d::UnitX()));
 
-//   Eigen::Affine3d v1;
-//   geometry_msgs::msg::Pose p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
+  Eigen::Affine3d v1;
+  geometry_msgs::msg::Pose p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
-//   EXPECT_EQ(v.translation(), v1.translation());
-//   EXPECT_EQ(v.rotation(), v1.rotation());
-// }
+  EXPECT_EQ(v.translation(), v1.translation());
+  EXPECT_EQ(v.rotation(), v1.rotation());
+}
 
 TEST(TfEigen, ConvertTransform)
 {
