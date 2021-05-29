@@ -35,29 +35,38 @@
 #endif
 
 #include <gtest/gtest.h>
+#include <geometry_msgs/msg/point.hpp>
+#include <geometry_msgs/msg/point_stamped.hpp>
+#include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <rclcpp/clock.hpp>
 #include <tf2/convert.h>
+#include <tf2/transform_datatypes.h>
 #include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 
+#include <Eigen/Geometry>
+
 #include <cmath>
 #include <memory>
 
+TEST(TfEigen, ConvertVector3dStamped)
+{
+  const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1, 2, 3), tf2::TimePoint(
+      std::chrono::seconds(
+        5)), "test");
+
+  tf2::Stamped<Eigen::Vector3d> v1;
+  geometry_msgs::msg::PointStamped p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
+
+  EXPECT_EQ(v, v1);
+}
+
 // TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
-// TEST(TfEigen, ConvertVector3dStamped)
-// {
-//   const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1,2,3),
-//     tf2::TimePoint(std::chrono::seconds(5)), "test");
-
-//   tf2::Stamped<Eigen::Vector3d> v1;
-//   geometry_msgs::msg::PointStamped p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
-
-//   EXPECT_EQ(v, v1);
-// }
-
 // TEST(TfEigen, ConvertVector3d)
 // {
 //   const Eigen::Vector3d v(1,2,3);
@@ -70,24 +79,27 @@
 //   EXPECT_EQ(v, v1);
 // }
 
-// TEST(TfEigen, ConvertAffine3dStamped)
-// {
-//   const Eigen::Affine3d v_nonstamped(
-//     Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
-//   const tf2::Stamped<Eigen::Affine3d> v(
-//     v_nonstamped, tf2::TimePoint(std::chrono::seconds(42)), "test_frame");
+TEST(TfEigen, ConvertAffine3dStamped)
+{
+  const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
+      1,
+      Eigen::Vector3d::UnitX()));
+  const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(
+      std::chrono::seconds(
+        42)), "test_frame");
 
-//   tf2::Stamped<Eigen::Affine3d> v1;
-//   geometry_msgs::msg::PoseStamped p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
+  tf2::Stamped<Eigen::Affine3d> v1;
+  geometry_msgs::msg::PoseStamped p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
-//   EXPECT_EQ(v.translation(), v1.translation());
-//   EXPECT_EQ(v.rotation(), v1.rotation());
-//   EXPECT_EQ(v.frame_id_, v1.frame_id_);
-//   EXPECT_EQ(v.stamp_, v1.stamp_);
-// }
+  EXPECT_EQ(v.translation(), v1.translation());
+  EXPECT_EQ(v.rotation(), v1.rotation());
+  EXPECT_EQ(v.frame_id_, v1.frame_id_);
+  EXPECT_EQ(v.stamp_, v1.stamp_);
+}
 
+// TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
 // TEST(TfEigen, ConvertAffine3d)
 // {
 //   const Eigen::Affine3d v(
