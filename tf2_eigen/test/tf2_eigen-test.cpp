@@ -81,11 +81,9 @@ TEST(TfEigen, ConvertVector3dStamped)
 TEST(TfEigen, ConvertAffine3dStamped)
 {
   const Eigen::Affine3d v_nonstamped(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
-      1,
-      Eigen::Vector3d::UnitX()));
+      1, Eigen::Vector3d::UnitX()));
   const tf2::Stamped<Eigen::Affine3d> v(v_nonstamped, tf2::TimePoint(
-      std::chrono::seconds(
-        42)), "test_frame");
+      std::chrono::seconds(42)), "test_frame");
 
   tf2::Stamped<Eigen::Affine3d> v1;
   geometry_msgs::msg::PoseStamped p1;
