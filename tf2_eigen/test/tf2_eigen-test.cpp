@@ -55,8 +55,7 @@
 TEST(TfEigen, ConvertVector3dStamped)
 {
   const tf2::Stamped<Eigen::Vector3d> v(Eigen::Vector3d(1, 2, 3), tf2::TimePoint(
-      std::chrono::seconds(
-        5)), "test");
+      std::chrono::seconds(5)), "test");
 
   tf2::Stamped<Eigen::Vector3d> v1;
   geometry_msgs::msg::PointStamped p1;
