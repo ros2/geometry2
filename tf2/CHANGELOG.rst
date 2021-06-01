@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.18.0 (2021-06-01)
+-------------------
 * Deprecate tf2_geometry_msgs.h (`#418 <https://github.com/ros2/geometry2/issues/418>`_)
 * Speedup covariance unwrapping (`#399 <https://github.com/ros2/geometry2/issues/399>`_)
 * Contributors: Chris Lalancette, Dima Dorezyuk

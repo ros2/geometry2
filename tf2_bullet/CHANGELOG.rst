@@ -2,8 +2,8 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.18.0 (2021-06-01)
+-------------------
 * Fix tf2_bullet dependency export (`#428 <https://github.com/ros2/geometry2/issues/428>`_)
 * Deprecate tf2_bullet.h (`#412 <https://github.com/ros2/geometry2/issues/412>`_)
 * Contributors: Bjar Ne, Chris Lalancette
