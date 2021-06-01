@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Use underscores instead of dashes in setup.cfg. (`#403 <https://github.com/ros2/geometry2/issues/403>`_)
+* Contributors: Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

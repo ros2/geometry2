@@ -2,6 +2,14 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Conversion tests for toMsg() (`#423 <https://github.com/ros2/geometry2/issues/423>`_)
+* Deprecate tf2_geometry_msgs.h (`#418 <https://github.com/ros2/geometry2/issues/418>`_)
+* Deprecate tf2_kdl.h (`#414 <https://github.com/ros2/geometry2/issues/414>`_)
+* Deprecate tf2_bullet.h (`#412 <https://github.com/ros2/geometry2/issues/412>`_)
+* Contributors: Bjar Ne, Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

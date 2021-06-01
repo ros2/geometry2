@@ -2,6 +2,12 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* KDL python formatting and licenses (`#425 <https://github.com/ros2/geometry2/issues/425>`_)
+* Deprecate tf2_kdl.h (`#414 <https://github.com/ros2/geometry2/issues/414>`_)
+* Contributors: Bjar Ne, Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

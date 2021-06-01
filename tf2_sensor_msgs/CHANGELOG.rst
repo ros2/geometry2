@@ -2,6 +2,12 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Reenable sensor_msgs test (`#422 <https://github.com/ros2/geometry2/issues/422>`_)
+* Deprecate tf2_sensor_msgs.h (`#416 <https://github.com/ros2/geometry2/issues/416>`_)
+* Contributors: Bjar Ne, Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

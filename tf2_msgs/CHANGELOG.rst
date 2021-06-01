@@ -2,6 +2,11 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove dead file from tf2_msgs (`#415 <https://github.com/ros2/geometry2/issues/415>`_)
+* Contributors: Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

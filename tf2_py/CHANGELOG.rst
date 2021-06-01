@@ -2,6 +2,11 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove python_compat.h (`#417 <https://github.com/ros2/geometry2/issues/417>`_)
+* Contributors: Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 

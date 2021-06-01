@@ -2,6 +2,13 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Geometry nitpicks (`#426 <https://github.com/ros2/geometry2/issues/426>`_)
+* Conversion tests for toMsg() (`#423 <https://github.com/ros2/geometry2/issues/423>`_)
+* Deprecate tf2_geometry_msgs.h (`#418 <https://github.com/ros2/geometry2/issues/418>`_)
+* Contributors: Bjar Ne, Chris Lalancette
+
 0.17.1 (2021-04-06)
 -------------------
 
