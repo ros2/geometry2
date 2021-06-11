@@ -157,6 +157,15 @@ TEST(TfGeometry, FrameWithCovariance)
     1.0, 2.0, 3.0, 4.0, 5.0, 6.0
   };
 
+  geometry_msgs::msg::PoseWithCovariance::_covariance_type v1_expected_covariance = {
+    1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
+    -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+    -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+    1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
+    -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+    -1.0, 2.0, 3.0, -4.0, 5.0, 6.0
+  };
+
   // simple api
   geometry_msgs::msg::PoseWithCovarianceStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
   EXPECT_NEAR(v_simple.pose.pose.position.x, -9, EPS);
@@ -166,7 +175,7 @@ TEST(TfGeometry, FrameWithCovariance)
   EXPECT_NEAR(v_simple.pose.pose.orientation.y, 0.0, EPS);
   EXPECT_NEAR(v_simple.pose.pose.orientation.z, 0.0, EPS);
   EXPECT_NEAR(v_simple.pose.pose.orientation.w, 1.0, EPS);
-  EXPECT_EQ(v_simple.pose.covariance, v1.pose.covariance);
+  EXPECT_EQ(v_simple.pose.covariance, v1_expected_covariance);
 
 
   // advanced api
@@ -179,7 +188,7 @@ TEST(TfGeometry, FrameWithCovariance)
   EXPECT_NEAR(v_advanced.pose.pose.orientation.y, 0.0, EPS);
   EXPECT_NEAR(v_advanced.pose.pose.orientation.z, 0.0, EPS);
   EXPECT_NEAR(v_advanced.pose.pose.orientation.w, 1.0, EPS);
-  EXPECT_EQ(v_advanced.pose.covariance, v1.pose.covariance);
+  EXPECT_EQ(v_advanced.pose.covariance, v1_expected_covariance);
 }
 
 
