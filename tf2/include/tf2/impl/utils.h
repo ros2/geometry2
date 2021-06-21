@@ -15,9 +15,16 @@
 #ifndef TF2__IMPL__UTILS_H_
 #define TF2__IMPL__UTILS_H_
 
+<<<<<<< HEAD
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+=======
+#include <tf2/convert.h>
+>>>>>>> c36999b1 (Fixed errors due to missing header link. (#432))
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <geometry_msgs/msg/quaternion_stamped.hpp>
+
 
 namespace tf2
 {
