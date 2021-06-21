@@ -15,8 +15,12 @@
 #ifndef TF2__IMPL__UTILS_H_
 #define TF2__IMPL__UTILS_H_
 
+#include <tf2/convert.h>
 #include <tf2/transform_datatypes.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/msg/quaternion.hpp>
+#include <geometry_msgs/msg/quaternion_stamped.hpp>
+
 
 namespace tf2
 {
