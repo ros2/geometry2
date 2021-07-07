@@ -226,7 +226,7 @@ class BufferClient(tf2_ros.BufferInterface):
             clock = Clock()
             start_time = clock.now()
             timeout = Duration.from_msg(goal.timeout)
-            timeout_padding = Duration(seconds=self.timeout_padding)
+            timeout_padding = self.timeout_padding
             while not send_goal_future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
