@@ -239,6 +239,34 @@ TEST_F(EigenBufferTransform, Vector)
   EXPECT_NEAR(v_advanced.z(), 27, EPS);
 }
 
+// Test transformation of a 6-long wrench or twist
+TEST_F(EigenBufferTransform, WrenchTransform)
+{
+  // Transform the wrench (due to gravity) of a point mass to a different frame
+
+  double mass = 1.0;
+  double gravity = -9.81;
+  // Negative y force, no moment
+  Eigen::VectorXd wrench_in(6);
+  wrench_in << 0., mass * gravity, 0., 0., 0., 0.;
+
+  // The new frame is not rotated at all but it is offset along x-axis
+  double x_offset = -0.1;
+  geometry_msgs::msg::TransformStamped tf_to_new_frame;
+  tf_to_new_frame.transform.translation.x = x_offset;
+  tf_to_new_frame.transform.rotation.w = 1.0;
+
+  Eigen::VectorXd wrench_out(6);
+  tf2::doTransform(wrench_in, wrench_out, tf_to_new_frame);
+
+  EXPECT_NEAR(wrench_out(0), 0., EPS);
+  EXPECT_NEAR(wrench_out(1), mass * gravity, EPS);
+  EXPECT_NEAR(wrench_out(2), 0., EPS);
+  EXPECT_NEAR(wrench_out(3), 0., EPS);
+  EXPECT_NEAR(wrench_out(4), 0., EPS);
+  EXPECT_NEAR(wrench_out(5), mass * gravity * x_offset, EPS);
+}
+
 // helper method for Quaternion tests
 ::testing::AssertionResult EigenBufferTransform::doTestEigenQuaternion(
   const Eigen::Quaterniond & parameter, const Eigen::Quaterniond & expected)
