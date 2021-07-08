@@ -11,6 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake)
+find_package(builtin_interfaces REQUIRED)
 find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
 find_package(console_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -25,6 +26,7 @@ target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/bt>"
   "$<INSTALL_INTERFACE:include>")
 ament_target_dependencies(tf2
+  "builtin_interfaces"
   "console_bridge"
   "geometry_msgs"
   "rcutils"
@@ -89,7 +91,7 @@ if(BUILD_TESTING)
 
 endif()
 
-ament_export_dependencies(console_bridge geometry_msgs rcutils)
+ament_export_dependencies(builtin_interfaces console_bridge geometry_msgs rcutils)
 ament_export_include_directories(include)
 ament_export_libraries(tf2)
 ament_export_targets(tf2)

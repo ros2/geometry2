@@ -1,6 +1,5 @@
 /*
- * Copyright (c) Koji Terada
- * All rights reserved.
+ * Copyright (c) Koji Terada. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -65,18 +64,17 @@ TEST(TfEigen, ConvertVector3dStamped)
   EXPECT_EQ(v, v1);
 }
 
-// TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
-// TEST(TfEigen, ConvertVector3d)
-// {
-//   const Eigen::Vector3d v(1,2,3);
+TEST(TfEigen, ConvertVector3d)
+{
+  const Eigen::Vector3d v(1, 2, 3);
 
-//   Eigen::Vector3d v1;
-//   geometry_msgs::msg::Point p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
+  Eigen::Vector3d v1;
+  geometry_msgs::msg::Point p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
-//   EXPECT_EQ(v, v1);
-// }
+  EXPECT_EQ(v, v1);
+}
 
 TEST(TfEigen, ConvertAffine3dStamped)
 {
@@ -96,20 +94,20 @@ TEST(TfEigen, ConvertAffine3dStamped)
   EXPECT_EQ(v.stamp_, v1.stamp_);
 }
 
-// TODO(clalancette) Re-enable these tests once we have tf2/convert.h:convert(A, B) implemented
-// TEST(TfEigen, ConvertAffine3d)
-// {
-//   const Eigen::Affine3d v(
-//     Eigen::Translation3d(1,2,3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+TEST(TfEigen, ConvertAffine3d)
+{
+  const Eigen::Affine3d v(Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(
+      1,
+      Eigen::Vector3d::UnitX()));
 
-//   Eigen::Affine3d v1;
-//   geometry_msgs::msg::Pose p1;
-//   tf2::convert(v, p1);
-//   tf2::convert(p1, v1);
+  Eigen::Affine3d v1;
+  geometry_msgs::msg::Pose p1;
+  tf2::convert(v, p1);
+  tf2::convert(p1, v1);
 
-//   EXPECT_EQ(v.translation(), v1.translation());
-//   EXPECT_EQ(v.rotation(), v1.rotation());
-// }
+  EXPECT_EQ(v.translation(), v1.translation());
+  EXPECT_EQ(v.rotation(), v1.rotation());
+}
 
 TEST(TfEigen, ConvertTransform)
 {
@@ -128,8 +126,10 @@ TEST(TfEigen, ConvertTransform)
 
   Eigen::Affine3d T(tm);
 
-  geometry_msgs::msg::TransformStamped msg = tf2::eigenToTransform(T);
-  Eigen::Affine3d Tback = tf2::transformToEigen(msg);
+  geometry_msgs::msg::Transform msg;
+  tf2::toMsg(T, msg);
+  Eigen::Affine3d Tback;
+  tf2::fromMsg(msg, Tback);
 
   EXPECT_TRUE(T.isApprox(Tback));
   EXPECT_TRUE(tm.isApprox(Tback.matrix()));
@@ -137,8 +137,9 @@ TEST(TfEigen, ConvertTransform)
   // same for Isometry
   Eigen::Isometry3d I(tm);
 
-  msg = tf2::eigenToTransform(T);
-  Eigen::Isometry3d Iback = tf2::transformToEigen(msg);
+  tf2::toMsg(T, msg);
+  Eigen::Isometry3d Iback;
+  tf2::fromMsg(msg, Iback);
 
   EXPECT_TRUE(I.isApprox(Iback));
   EXPECT_TRUE(tm.isApprox(Iback.matrix()));

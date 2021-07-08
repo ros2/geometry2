@@ -54,40 +54,22 @@ using TransformReadyCallback = std::function<void (const TransformStampedFuture 
 
 inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
 {
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
-  builtin_interfaces::msg::Time time_msg;
-  time_msg.sec = static_cast<int32_t>(s.count());
-  time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return time_msg;
+  return tf2::toMsg<tf2::TimePoint, builtin_interfaces::msg::Time>(t);
 }
 
 inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
 {
-  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
+  return tf2::TimePointFromMsg(time_msg);
 }
 
 inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
 {
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t);
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t);
-  builtin_interfaces::msg::Duration duration_msg;
-  duration_msg.sec = static_cast<int32_t>(s.count());
-  duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return duration_msg;
+  return tf2::toMsg<tf2::Duration, builtin_interfaces::msg::Duration>(t);
 }
 
 inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
 {
-  int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
+  return tf2::DurationFromMsg(duration_msg);
 }
 
 inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)

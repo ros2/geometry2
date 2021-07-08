@@ -44,6 +44,9 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+#include <memory>
+#include <string>
+
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
@@ -105,6 +108,52 @@ TEST(TfGeometry, Conversions)
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_stamped_msg.transform.translation.z, EPS);
     EXPECT_EQ(tf_from_msg.frame_id_, tf_stamped_msg.header.frame_id);
   }
+  {
+    geometry_msgs::msg::PoseWithCovarianceStamped v1;
+    v1.pose.pose.position.x = 1;
+    v1.pose.pose.position.y = 2;
+    v1.pose.pose.position.z = 3;
+    v1.pose.pose.orientation.w = 0;
+    v1.pose.pose.orientation.x = 1;
+    v1.pose.pose.orientation.y = 0;
+    v1.pose.pose.orientation.z = 0;
+    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.frame_id = "A";
+    v1.pose.covariance = {
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+      1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+    };
+    const std::array<std::array<double, 6>, 6> cov{
+      std::array<double, 6>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+      std::array<double, 6> {1.0, 2.0, 3.0, 4.0, 5.0, 6.0},
+    };
+
+    EXPECT_EQ(tf2::getCovarianceMatrix(v1), cov);
+
+    tf2::WithCovarianceStamped<tf2::Transform> tf_from_msg;
+    tf2::convert(v1, tf_from_msg);
+    EXPECT_EQ(tf_from_msg.getOrigin(), tf2::Vector3(1.0, 2.0, 3.0));
+    EXPECT_EQ(tf_from_msg.getRotation(), tf2::Quaternion(1.0, 0.0, 0.0, 0.0));
+    EXPECT_EQ(tf_from_msg.cov_mat_, cov);
+    EXPECT_EQ(tf_from_msg.frame_id_, "A");
+    EXPECT_EQ(tf_from_msg.stamp_, tf2::timeFromSec(2));
+
+    tf_from_msg.setRotation({0.0, 0.0, 0.0, 1.0});
+    v1.pose.pose.orientation.w = 1;
+    v1.pose.pose.orientation.x = 0;
+
+    geometry_msgs::msg::PoseWithCovarianceStamped v2;
+    tf2::convert(tf_from_msg, v2);
+    EXPECT_EQ(v1, v2);
+  }
 }
 
 TEST(TfGeometry, Frame)
@@ -121,7 +170,8 @@ TEST(TfGeometry, Frame)
   v1.header.frame_id = "A";
 
   // simple api
-  geometry_msgs::msg::PoseStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+  geometry_msgs::msg::PoseStamped v_simple =
+    tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
   EXPECT_NEAR(v_simple.pose.position.x, -9, EPS);
   EXPECT_NEAR(v_simple.pose.position.y, 18, EPS);
   EXPECT_NEAR(v_simple.pose.position.z, 27, EPS);
@@ -132,8 +182,9 @@ TEST(TfGeometry, Frame)
 
 
   // advanced api
-  geometry_msgs::msg::PoseStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-							      "A", tf2::durationFromSec(3.0));
+  geometry_msgs::msg::PoseStamped v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.pose.position.x, -9, EPS);
   EXPECT_NEAR(v_advanced.pose.position.y, 18, EPS);
   EXPECT_NEAR(v_advanced.pose.position.z, 27, EPS);
@@ -175,7 +226,9 @@ TEST(TfGeometry, FrameWithCovariance)
   };
 
   // simple api
-  geometry_msgs::msg::PoseWithCovarianceStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+  geometry_msgs::msg::PoseWithCovarianceStamped v_simple = tf_buffer->transform(
+    v1, "B", tf2::durationFromSec(
+      2.0));
   EXPECT_NEAR(v_simple.pose.pose.position.x, -9, EPS);
   EXPECT_NEAR(v_simple.pose.pose.position.y, 18, EPS);
   EXPECT_NEAR(v_simple.pose.pose.position.z, 27, EPS);
@@ -187,8 +240,9 @@ TEST(TfGeometry, FrameWithCovariance)
 
 
   // advanced api
-  geometry_msgs::msg::PoseWithCovarianceStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-							      "A", tf2::durationFromSec(3.0));
+  geometry_msgs::msg::PoseWithCovarianceStamped v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.pose.pose.position.x, -9, EPS);
   EXPECT_NEAR(v_advanced.pose.pose.position.y, 18, EPS);
   EXPECT_NEAR(v_advanced.pose.pose.position.z, 27, EPS);
@@ -210,14 +264,16 @@ TEST(TfGeometry, Vector)
   v1.header.frame_id = "A";
 
   // simple api
-  geometry_msgs::msg::Vector3Stamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+  geometry_msgs::msg::Vector3Stamped v_simple =
+    tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
   EXPECT_NEAR(v_simple.vector.x, 1, EPS);
   EXPECT_NEAR(v_simple.vector.y, -2, EPS);
   EXPECT_NEAR(v_simple.vector.z, -3, EPS);
 
   // advanced api
-  geometry_msgs::msg::Vector3Stamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-								 "A", tf2::durationFromSec(3.0));
+  geometry_msgs::msg::Vector3Stamped v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.vector.x, 1, EPS);
   EXPECT_NEAR(v_advanced.vector.y, -2, EPS);
   EXPECT_NEAR(v_advanced.vector.z, -3, EPS);
@@ -234,14 +290,17 @@ TEST(TfGeometry, Point)
   v1.header.frame_id = "A";
 
   // simple api
-  geometry_msgs::msg::PointStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+  geometry_msgs::msg::PointStamped v_simple = tf_buffer->transform(
+    v1, "B", tf2::durationFromSec(
+      2.0));
   EXPECT_NEAR(v_simple.point.x, -9, EPS);
   EXPECT_NEAR(v_simple.point.y, 18, EPS);
   EXPECT_NEAR(v_simple.point.z, 27, EPS);
 
   // advanced api
-  geometry_msgs::msg::PointStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-								 "A", tf2::durationFromSec(3.0));
+  geometry_msgs::msg::PointStamped v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "A", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.point.x, -9, EPS);
   EXPECT_NEAR(v_advanced.point.y, 18, EPS);
   EXPECT_NEAR(v_advanced.point.z, 27, EPS);
@@ -281,7 +340,8 @@ TEST(TfGeometry, Quaternion)
 }
 
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);

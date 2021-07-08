@@ -29,7 +29,15 @@ ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_lint_auto REQUIRED)
   find_package(rclcpp REQUIRED)
+
+  # TODO(ros2/geometry2#259) Remove once headers
+  # are renamed to .hpp
+  set(ament_cmake_uncrustify_ADDITIONAL_ARGS --language CPP)
+  set(ament_cmake_cppcheck_LANGUAGE c++)
+  ament_lint_auto_find_test_dependencies()
+
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)

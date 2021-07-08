@@ -1,4 +1,4 @@
-// Copyright 2008 Willow Garage, Inc.
+// Copyright 2021, Bjarne von Horn. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -10,7 +10,7 @@
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
 //
-//    * Neither the name of the Willow Garage, Inc. nor the names of its
+//    * Neither the name of the Open Source Robotics Foundation nor the names of its
 //      contributors may be used to endorse or promote products derived from
 //      this software without specific prior written permission.
 //
@@ -26,54 +26,61 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Wim Meeussen */
+/** \author Bjarne von Horn */
 
+#ifndef TF2__IMPL__FORWARD_HPP_
+#define TF2__IMPL__FORWARD_HPP_
 
-#include <tf2_bullet/tf2_bullet.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <gtest/gtest.h>
-#include <tf2/convert.h>
+#include <array>
 
-
-TEST(TfBullet, ConvertVector)
+namespace tf2
 {
-  btVector3 v(1, 2, 3);
-
-  btVector3 v1 = v;
-  tf2::convert(v1, v1);
-
-  EXPECT_EQ(v, v1);
-
-  btVector3 v2(3, 4, 5);
-  tf2::convert(v1, v2);
-
-  EXPECT_EQ(v, v2);
-  EXPECT_EQ(v1, v2);
-}
-
-TEST(TfBullet, ConvertTransform)
+namespace impl
 {
-  geometry_msgs::msg::Transform transform;
-  transform.rotation.x = 1.0;
-  transform.rotation.w = 0.0;
-  transform.translation.z = 2.0;
+template<class Datatype, class = void>
+struct DefaultMessageForDatatype;
+template<class Datatype, class = void>
+struct DefaultTransformType;
+}  // namespace impl
 
-  btTransform transform_bt;
-  tf2::convert(transform, transform_bt);
-  EXPECT_EQ(transform_bt.getRotation(), btQuaternion(1, 0, 0, 0));
-  // vector has 4 entries, set last one to 0 to make comparsion more stable
-  transform_bt.getOrigin().setW(0);
-  EXPECT_EQ(transform_bt.getOrigin(), btVector3(0, 0, 2));
+template<typename T>
+class Stamped;
 
-  geometry_msgs::msg::Transform transform2;
-  tf2::convert(transform_bt, transform2);
-  EXPECT_EQ(transform2, transform);
-}
+template<typename T>
+class WithCovarianceStamped;
 
-int main(int argc, char ** argv)
+template<typename A, typename B>
+B & toMsg(const A & a, B & b);
+
+template<typename A, typename B = typename impl::DefaultMessageForDatatype<A>::type>
+B toMsg(const A & a);
+
+template<typename A, typename B>
+void fromMsg(const A & a, B & b);
+
+std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
+  const std::array<double, 36> & row_major);
+std::array<double, 36> covarianceNestedToRowMajor(
+  const std::array<std::array<double, 6>, 6> & nested_array);
+
+namespace impl
 {
-  testing::InitGoogleTest(&argc, argv);
+template<class Datatype, class Message, class = void>
+struct ConversionImplementation;
 
-  int ret = RUN_ALL_TESTS();
-  return ret;
-}
+template<class StampedMessage>
+struct StampedMessageTraits;
+
+template<class UnstampedMessage>
+struct UnstampedMessageTraits;
+
+template<typename T, int = 0>
+struct StampedAttributesHelper;
+
+template<bool IS_MESSAGE_A, bool IS_MESSAGE_B, typename A, typename B, typename = void>
+class Converter;
+
+}  // namespace impl
+}  // namespace tf2
+
+#endif  // TF2__IMPL__FORWARD_H_

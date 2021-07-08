@@ -51,7 +51,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2 & p)
 {
-  return tf2_ros::fromMsg(p.header.stamp);
+  return tf2::TimePointFromMsg(p.header.stamp);
 }
 
 // method to extract frame id from object
@@ -100,17 +100,6 @@ void doTransform(
     *z_out = point.z();
   }
 }
-inline
-sensor_msgs::msg::PointCloud2 toMsg(const sensor_msgs::msg::PointCloud2 & in)
-{
-  return in;
-}
-inline
-void fromMsg(const sensor_msgs::msg::PointCloud2 & msg, sensor_msgs::msg::PointCloud2 & out)
-{
-  out = msg;
-}
-
 }  // namespace tf2
 
 #endif  // TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
