@@ -70,14 +70,12 @@ class BufferClient(tf2_ros.BufferInterface):
         timeout_padding: Duration = Duration(seconds=2.0)
     ) -> None:
         """
-        .. function:: __init__(ns, check_frequency = 10.0, timeout_padding = rospy.Duration.from_sec(2.0))
+        Constructor.
 
-            Constructor.
-
-            :param node: The ROS2 node.
-            :param ns: The namespace in which to look for a BufferServer.
-            :param check_frequency: How frequently to check for updates to known transforms.
-            :param timeout_padding: A constant timeout to add to blocking calls.
+        :param node: The ROS2 node.
+        :param ns: The namespace in which to look for a BufferServer.
+        :param check_frequency: How frequently to check for updates to known transforms.
+        :param timeout_padding: A constant timeout to add to blocking calls.
         """
         tf2_ros.BufferInterface.__init__(self)
         self.node = node
@@ -243,7 +241,7 @@ class BufferClient(tf2_ros.BufferInterface):
 
         event.wait()
 
-        #This shouldn't happen, but could in rare cases where the server hangs
+        # This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
             raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
 
