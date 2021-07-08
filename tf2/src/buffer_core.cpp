@@ -153,7 +153,7 @@ void fillOrWarnMessageForInvalidFrame(
   if (error_msg != nullptr) {
     *error_msg = s;
   } else {
-    CONSOLE_BRIDGE_logWarn("%s", s.c_str());
+    CONSOLE_BRIDGE_logDebug("%s", s.c_str());
   }
 }
 
