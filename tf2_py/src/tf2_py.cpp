@@ -505,7 +505,7 @@ static PyObject * getLatestCommonTime(PyObject * self, PyObject * args)
   WRAP(source_id = bc->_validateFrameId("get_latest_common_time", source_frame));
   const tf2::TF2Error r = bc->_getLatestCommonTime(target_id, source_id, tf2_time, &error_string);
 
-  if (r != tf2::TF2Error::NO_ERROR) {
+  if (r != tf2::TF2Error::TF2_NO_ERROR) {
     PyErr_SetString(tf2_exception, error_string.c_str());
     return nullptr;
   }
