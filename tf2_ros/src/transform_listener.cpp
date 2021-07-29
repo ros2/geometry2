@@ -52,7 +52,6 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
   options.start_parameter_event_publisher(false);
   options.start_parameter_services(false);
   optional_default_node_ = rclcpp::Node::make_shared("_", options);
-
   init(
     optional_default_node_, spin_thread, DynamicListenerQoS(), StaticListenerQoS(),
     detail::get_default_transform_listener_sub_options(),
