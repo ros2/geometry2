@@ -131,14 +131,16 @@ private:
       callback_group_ = node_base_interface_->create_callback_group(
         rclcpp::CallbackGroupType::MutuallyExclusive, false);
       // Duplicate to modify option of subscription
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> options2 = options;
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> static_options2 = static_options;
-      options2.callback_group = callback_group_;
-      static_options2.callback_group = callback_group_;
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_static_options = static_options;
+      tf_options.callback_group = callback_group_;
+      tf_static_options.callback_group = callback_group_;
+
       message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node, "/tf", qos, std::move(cb), options2);
+        node, "/tf", qos, std::move(cb), tf_options);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node, "/tf_static", static_qos, std::move(static_cb), static_options2);
+        node, "/tf_static", static_qos, std::move(static_cb), tf_static_options);
+
       // Create executor with dedicated thread to spin.
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
       executor_->add_callback_group(callback_group_, node_base_interface_);
