@@ -43,8 +43,10 @@ namespace tf2_ros
 
 CreateTimerROS::CreateTimerROS(
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
-  rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers)
-: node_base_(node_base), node_timers_(node_timers), next_timer_handle_index_(0)
+  rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers,
+  rclcpp::CallbackGroup::SharedPtr callback_group)
+: node_base_(node_base), node_timers_(node_timers), next_timer_handle_index_(0),
+  callback_group_(callback_group)
 {
 }
 
@@ -61,7 +63,8 @@ CreateTimerROS::createTimer(
     node_timers_,
     clock,
     period,
-    std::bind(&CreateTimerROS::timerCallback, this, timer_handle_index, callback));
+    std::bind(&CreateTimerROS::timerCallback, this, timer_handle_index, callback),
+    callback_group_);
   timers_map_[timer_handle_index] = timer;
   return timer_handle_index;
 }
