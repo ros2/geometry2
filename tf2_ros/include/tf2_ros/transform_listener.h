@@ -119,7 +119,7 @@ private:
   {
     node_logging_interface_ = node->get_node_logging_interface();
 
-    using callback_t = std::function<void (tf2_msgs::msg::TFMessage::SharedPtr)>;
+    using callback_t = std::function<void (tf2_msgs::msg::TFMessage::ConstSharedPtr)>;
     callback_t cb = std::bind(
       &TransformListener::subscription_callback, this, std::placeholders::_1, false);
     callback_t static_cb = std::bind(
@@ -149,7 +149,7 @@ private:
 
   /// Callback function for ros message subscriptoin
   TF2_ROS_PUBLIC
-  void subscription_callback(tf2_msgs::msg::TFMessage::SharedPtr msg, bool is_static);
+  void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
   using thread_ptr =

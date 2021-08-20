@@ -91,7 +91,7 @@ void TransformListener::initThread(
 }
 
 void TransformListener::subscription_callback(
-  const tf2_msgs::msg::TFMessage::SharedPtr msg,
+  const tf2_msgs::msg::TFMessage::ConstSharedPtr msg,
   bool is_static)
 {
   const tf2_msgs::msg::TFMessage & msg_in = *msg;
