@@ -65,7 +65,7 @@ public:
   tf2_msgs::msg::TFMessage message_;
   std::mutex map_mutex_;
 
-  void callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
+  void callback(const tf2_msgs::msg::TFMessage::ConstSharedPtr msg)
   {
     const tf2_msgs::msg::TFMessage & message = *(msg);
     // TODO(tfoote): recover authority info
