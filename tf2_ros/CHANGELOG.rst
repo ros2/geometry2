@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.11 (2021-08-31)
+--------------------
+* Fix tf2_echo does not work with ros-args (`#407 <https://github.com/ros2/geometry2/issues/407>`_) (`#408 <https://github.com/ros2/geometry2/issues/408>`_) (`#411 <https://github.com/ros2/geometry2/issues/411>`_)
+* Avoid using invalid std::list iterators (`#293 <https://github.com/ros2/geometry2/issues/293>`_) (`#419 <https://github.com/ros2/geometry2/issues/419>`_)
+* Fix accessing free'd resources (`#386 <https://github.com/ros2/geometry2/issues/386>`_) (`#419 <https://github.com/ros2/geometry2/issues/419>`_)
+* Contributors: Chris Lalancette, Kazunari Tanaka, Michael Carroll, PGotzmann, simutisernestas
+
 0.13.10 (2021-04-14)
 --------------------
 * Update for python3.8 (`#359 <https://github.com/ros2/geometry2/issues/359>`_)
