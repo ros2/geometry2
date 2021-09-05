@@ -135,6 +135,42 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.vector.y, 0)
         self.assertEqual(out.vector.z, 0)
 
+        # Testing for pose and covariance transform
+        t = TransformStamped()
+        t.transform.translation.x = 1.0
+        t.transform.translation.y = 2.0
+        t.transform.translation.z = 3.0
+        t.transform.rotation = Quaternion(w=0.0, x=1.0, y=0.0, z=0.0)
+
+        v = PoseWithCovarianceStamped()
+        v.header.stamp = rclpy.time.Time(seconds=2.0).to_msg()
+        v.header.frame_id = 'a'
+        v.pose.covariance = (
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+          1.0, 2.0, 3.0, 4.0, 5.0, 6.0
+        )
+        v.pose.pose.position.x = 1.0
+        v.pose.pose.position.y = 2.0
+        v.pose.pose.position.z = 3.0
+        v.pose.pose.orientation = Quaternion(w=0.0, x=1.0, y=0.0, z=0.0)
+
+        out = tf2_geometry_msgs.do_transform_pose_with_covariance_stamped(v, t)
+        expected_covariance = (
+          1.0, 0.0, 0.0, 4.0, 0.0, 0.0,
+          0.0, 2.0, 0.0, 0.0, 5.0, 0.0,
+          0.0, 0.0, 3.0, 0.0, 0.0, 6.0,
+          1.0, 0.0, 0.0, 4.0, 0.0, 0.0,
+          0.0, 2.0, 0.0, 0.0, 5.0, 0.0,
+          0.0, 0.0, 3.0, 0.0, 0.0, 6.0
+        )
+        self.assertEqual(out.pose.pose.position.x, 2)
+        self.assertEqual(out.pose.pose.position.y, 0)
+        self.assertEqual(out.pose.pose.position.z, 0)
+        self.assertEqual(out.pose.covariance, expected_covariance)
 
 if __name__ == '__main__':
     rclpy.init(args=None)
