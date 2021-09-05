@@ -187,7 +187,7 @@ TEST(TfGeometry, Frame)
     geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
 
     tf2::doTransform(v1, res, t);
-    EXPECT_NEAR(res.position.x, -9, EPS);
+    EXPECT_NEAR(res.position.x, 11, EPS);
     EXPECT_NEAR(res.position.y, 18, EPS);
     EXPECT_NEAR(res.position.z, 27, EPS);
     EXPECT_NEAR(res.orientation.x, 0.0, EPS);
@@ -267,7 +267,7 @@ TEST(TfGeometry, FrameWithCovariance)
     geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
 
     tf2::doTransform(v1, res, t);
-    EXPECT_NEAR(res.pose.position.x, -9, EPS);
+    EXPECT_NEAR(res.pose.position.x, 11, EPS);
     EXPECT_NEAR(res.pose.position.y, 18, EPS);
     EXPECT_NEAR(res.pose.position.z, 27, EPS);
     EXPECT_NEAR(res.pose.orientation.x, 0.0, EPS);
@@ -387,7 +387,7 @@ TEST(TfGeometry, Point)
     geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
 
     tf2::doTransform(v1, res, t);
-    EXPECT_NEAR(res.x, -9, EPS);
+    EXPECT_NEAR(res.x, 11, EPS);
     EXPECT_NEAR(res.y, 18, EPS);
     EXPECT_NEAR(res.z, 27, EPS);
   }
@@ -486,7 +486,7 @@ TEST(TfGeometry, Transform)
     geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
 
     tf2::doTransform(v1, res, t);
-    EXPECT_NEAR(res.translation.x, -9, EPS);
+    EXPECT_NEAR(res.translation.x, 11, EPS);
     EXPECT_NEAR(res.translation.y, 18, EPS);
     EXPECT_NEAR(res.translation.z, 27, EPS);
     EXPECT_NEAR(res.rotation.x, 0.0, EPS);
