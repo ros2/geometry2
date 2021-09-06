@@ -98,10 +98,10 @@ def transformCovariance(cov_in, transform):
     cov_22 = np.array([cov_in[21:24], cov_in[27:30], cov_in[33:]])
 
     # And we perform the transform
-    result_11 = R * cov_11 * R_transpose
-    result_12 = R * cov_12 * R_transpose
-    result_21 = R * cov_21 * R_transpose
-    result_22 = R * cov_22 * R_transpose
+    result_11 = R @ cov_11 @ R_transpose
+    result_12 = R @ cov_12 @ R_transpose
+    result_21 = R @ cov_21 @ R_transpose
+    result_22 = R @ cov_22 @ R_transpose
 
     cov_out = PoseWithCovarianceStamped()
 
