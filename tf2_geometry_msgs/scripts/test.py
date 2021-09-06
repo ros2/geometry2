@@ -160,12 +160,12 @@ class GeometryMsgs(unittest.TestCase):
 
         out = tf2_geometry_msgs.do_transform_pose_with_covariance_stamped(v, t)
         expected_covariance = (
-          1.0, 0.0, 0.0, 4.0, 0.0, 0.0,
-          0.0, 2.0, 0.0, 0.0, 5.0, 0.0,
-          0.0, 0.0, 3.0, 0.0, 0.0, 6.0,
-          1.0, 0.0, 0.0, 4.0, 0.0, 0.0,
-          0.0, 2.0, 0.0, 0.0, 5.0, 0.0,
-          0.0, 0.0, 3.0, 0.0, 0.0, 6.0
+          1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
+          -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+          -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+          1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
+          -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
+          -1.0, 2.0, 3.0, -4.0, 5.0, 6.0
         )
         self.assertEqual(out.pose.pose.position.x, 2)
         self.assertEqual(out.pose.pose.position.y, 0)
