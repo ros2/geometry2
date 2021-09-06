@@ -37,7 +37,7 @@ from geometry_msgs.msg import (PointStamped, PoseStamped,
 import rclpy
 import tf2_geometry_msgs
 import tf2_ros
-
+import numpy as np
 
 class GeometryMsgs(unittest.TestCase):
 
@@ -159,18 +159,22 @@ class GeometryMsgs(unittest.TestCase):
         v.pose.pose.orientation = Quaternion(w=0.0, x=1.0, y=0.0, z=0.0)
 
         out = tf2_geometry_msgs.do_transform_pose_with_covariance_stamped(v, t)
-        expected_covariance = (
+        expected_covariance = np.array([
           1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
           -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
           -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
           1.0, -2.0, -3.0, 4.0, -5.0, -6.0,
           -1.0, 2.0, 3.0, -4.0, 5.0, 6.0,
           -1.0, 2.0, 3.0, -4.0, 5.0, 6.0
-        )
+        ])
         self.assertEqual(out.pose.pose.position.x, 2)
         self.assertEqual(out.pose.pose.position.y, 0)
         self.assertEqual(out.pose.pose.position.z, 0)
-        self.assertEqual(out.pose.covariance, expected_covariance)
+        self.assertEqual(out.pose.orientation.x, 0)
+        self.assertEqual(out.pose.orientation.y, 0)
+        self.assertEqual(out.pose.orientation.z, 0)
+        self.assertEqual(out.pose.orientation.w, 1)
+        self.assertTrue(np.array_equiv(out.pose.covariance, expected_covariance))
 
 if __name__ == '__main__':
     rclpy.init(args=None)

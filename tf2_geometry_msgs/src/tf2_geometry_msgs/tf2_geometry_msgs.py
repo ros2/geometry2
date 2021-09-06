@@ -70,26 +70,32 @@ def transformCovariance(cov_in, transform):
     q1 = transform.transform.rotation.x
     q2 = transform.transform.rotation.y
     q3 = transform.transform.rotation.z
-     
+
     # First row of the rotation matrix
     r00 = 2 * (q0 * q0 + q1 * q1) - 1
     r01 = 2 * (q1 * q2 - q0 * q3)
     r02 = 2 * (q1 * q3 + q0 * q2)
-     
+
     # Second row of the rotation matrix
     r10 = 2 * (q1 * q2 + q0 * q3)
     r11 = 2 * (q0 * q0 + q2 * q2) - 1
     r12 = 2 * (q2 * q3 - q0 * q1)
-     
+
     # Third row of the rotation matrix
     r20 = 2 * (q1 * q3 - q0 * q2)
     r21 = 2 * (q2 * q3 + q0 * q1)
     r22 = 2 * (q0 * q0 + q3 * q3) - 1
 
+    # Code reference: https://github.com/ros2/geometry2/pull/430
+    # Mathematical Reference:
+    # A. L. Garcia, “Linear Transformations of Random Vectors,” in Probability,
+    # Statistics, and Random Processes For Electrical Engineering, 3rd ed.,
+    # Pearson Prentice Hall, 2008, pp. 320–322.
+
     R =  np.array([[r00, r01, r02],
                    [r10, r11, r12],
                    [r20, r21, r22]])
-    
+
     R_transpose = np.transpose(R)
 
     cov_11 = np.array([cov_in[:3], cov_in[6:9], cov_in[12:15]])
