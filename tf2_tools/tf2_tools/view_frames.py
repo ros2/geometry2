@@ -87,18 +87,18 @@ def main():
             'Result:'+ str(result) )
         data = yaml.safe_load(result.frame_yaml)
         
-        frames_gv = "frames.gv"
-        frames_pdf = "frames.pdf"
+        frames_gv = 'frames.gv'
+        frames_pdf = 'frames.pdf'
 
         if parsed_args.datetime:
-            datetime = time.strftime("%Y-%m-%d_%H.%M")
-            frames_gv = "frames_{:s}.gv".format(datetime)
-            frames_pdf = "frames_{:s}.pdf".format(datetime)
+            datetime = time.strftime('%Y-%m-%d_%H.%M')
+            frames_gv = 'frames_{:s}.gv'.format(datetime)
+            frames_pdf = 'frames_{:s}.pdf'.format(datetime)
         
         with open(frames_gv, 'w') as f:
             f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
         
-        cmd = ["dot", "-Tpdf", frames_gv, "-o", frames_pdf]
+        cmd = ['dot', '-Tpdf', frames_gv, '-o', frames_pdf]
         subprocess.Popen(cmd).communicate()
     finally:
         cli.destroy()
