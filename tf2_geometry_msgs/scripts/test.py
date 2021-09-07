@@ -174,7 +174,7 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.orientation.y, 0)
         self.assertEqual(out.pose.orientation.z, 0)
         self.assertEqual(out.pose.orientation.w, 1)
-        self.assertTrue(np.array_equiv(out.pose.covariance, expected_covariance))
+        self.assertTrue(np.array_equal(out.pose.covariance, expected_covariance))
 
 if __name__ == '__main__':
     rclpy.init(args=None)
