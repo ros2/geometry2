@@ -481,7 +481,6 @@ inline
     t_out.pose.position.z = v_out.p[2];
     v_out.M.GetQuaternion(t_out.pose.orientation.x, t_out.pose.orientation.y, t_out.pose.orientation.z, t_out.pose.orientation.w);
 
-
     tf2::Transform tf_transform;
     fromMsg(transform.transform, tf_transform);
     t_out.covariance = transformCovariance(t_in.covariance, tf_transform);
@@ -680,6 +679,7 @@ void fromMsg(const geometry_msgs::msg::Quaternion& in, tf2::Quaternion& out)
   // w at the end in the constructor
   out = tf2::Quaternion(in.x, in.y, in.z, in.w);
 }
+
 
 /***********************/
 /** QuaternionStamped **/
