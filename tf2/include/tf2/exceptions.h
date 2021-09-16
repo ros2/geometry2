@@ -40,16 +40,50 @@
 namespace tf2
 {
 
+// TODO(clalancette): We can remove these workarounds when we remove the
+// deprecated TF2Error enums.
+#if defined(_WIN32)
+#pragma push_macro("NO_ERROR")
+#undef NO_ERROR
+#endif
+#if defined(__APPLE__)
+// The clang compiler on Apple claims that [[deprecated]] on an enumerator value
+// is a C++17 feature, when it was really introduced in C++14.  Ignore that
+// warning when defining the structure; this whole thing will go away when we
+// remove the deprecated values.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++17-extensions"
+#endif
+
 enum class TF2Error : std::uint8_t
 {
-  NO_ERROR = 0,
-  LOOKUP_ERROR = 1,
-  CONNECTIVITY_ERROR = 2,
-  EXTRAPOLATION_ERROR = 3,
-  INVALID_ARGUMENT_ERROR = 4,
-  TIMEOUT_ERROR = 5,
-  TRANSFORM_ERROR = 6
+  // While the TF2_ prefix here is a bit redundant, it also prevents us from
+  // colliding with Windows defines (specifically, NO_ERROR).
+  TF2_NO_ERROR = 0,
+  TF2_LOOKUP_ERROR = 1,
+  TF2_CONNECTIVITY_ERROR = 2,
+  TF2_EXTRAPOLATION_ERROR = 3,
+  TF2_INVALID_ARGUMENT_ERROR = 4,
+  TF2_TIMEOUT_ERROR = 5,
+  TF2_TRANSFORM_ERROR = 6,
+
+  NO_ERROR [[deprecated("Use TF2_NO_ERROR instead")]] = 0,
+  LOOKUP_ERROR [[deprecated("Use TF2_LOOKUP_ERROR instead")]] = 1,
+  CONNECTIVITY_ERROR [[deprecated("Use TF2_CONNECTIVITY_ERROR instead")]] = 2,
+  EXTRAPOLATION_ERROR [[deprecated("Use TF2_EXTRAPOLATION_ERROR instead")]] = 3,
+  INVALID_ARGUMENT_ERROR [[deprecated("Use TF2_INVALID_ARGUMENT_ERROR instead")]] = 4,
+  TIMEOUT_ERROR [[deprecated("Use TF2_TIMEOUT_ERROR instead")]] = 5,
+  TRANSFORM_ERROR [[deprecated("Use TF2_TRANSFORM_ERROR instead")]] = 6
 };
+
+// TODO(clalancette): We can remove these workarounds when we remove the
+// deprecated TF2Error enums.
+#if defined(__APPLE__)
+#pragma clang diagnostic pop
+#endif
+#if defined(_WIN32)
+#pragma pop_macro("NO_ERROR")
+#endif
 
 /** \brief A base class for all tf2 exceptions
  * This inherits from ros::exception

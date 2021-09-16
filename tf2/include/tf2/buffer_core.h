@@ -222,7 +222,7 @@ public:
   void cancelTransformableRequest(TransformableRequestHandle handle);
 
 
-  // Tell the buffer that there are multiple threads serviciing it.
+  // Tell the buffer that there are multiple threads servicing it.
   // This is useful for derived classes to know if they can block or not.
   TF2_PUBLIC
   void setUsingDedicatedThread(bool value) {using_dedicated_thread_ = value;}
