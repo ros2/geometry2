@@ -40,8 +40,13 @@
 namespace tf2
 {
 
-enum class TF2Error : std::uint8_t
-{
+// This workaround prevents a collision with Windows.h
+#if defined(_WIN32)
+#pragma push_macro("NO_ERROR")
+#undef NO_ERROR
+#endif
+
+enum class TF2Error : std::uint8_t {
   NO_ERROR = 0,
   LOOKUP_ERROR = 1,
   CONNECTIVITY_ERROR = 2,
@@ -50,6 +55,10 @@ enum class TF2Error : std::uint8_t
   TIMEOUT_ERROR = 5,
   TRANSFORM_ERROR = 6
 };
+
+#if defined(_WIN32)
+#pragma pop_macro("NO_ERROR")
+#endif
 
 /** \brief A base class for all tf2 exceptions
  * This inherits from ros::exception
