@@ -49,7 +49,7 @@ def main():
     parser.add_argument(
         '--wait-time', '-t', type=float, default=5.0,
         help='Listen to the /tf topic for this many seconds before rendering the frame tree')
-    parser.add_argument('-d','--datetime', action='store_true', help="Add datetime to the end of the filename")
+    parser.add_argument('-o','--output', help='Output filename')
     parsed_args = parser.parse_args(args=args_without_ros[1:])
 
     node = rclpy.create_node('view_frames')
@@ -87,11 +87,12 @@ def main():
             'Result:'+ str(result) )
         data = yaml.safe_load(result.frame_yaml)
         
-        frames_gv = 'frames.gv'
-        frames_pdf = 'frames.pdf'
-
-        if parsed_args.datetime:
-            datetime = time.strftime('%Y-%m-%d_%H.%M')
+        if parsed_args.output is not None:
+            datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
+            frames_gv = '{:s}_{:s}.gv'.format(parsed_args.output, datetime)
+            frames_pdf = '{:s}_{:s}.pdf'.format(parsed_args.output, datetime)
+        else:
+            datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
             frames_gv = 'frames_{:s}.gv'.format(datetime)
             frames_pdf = 'frames_{:s}.pdf'.format(datetime)
         
