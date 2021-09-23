@@ -88,9 +88,8 @@ def main():
         data = yaml.safe_load(result.frame_yaml)
         
         if parsed_args.output is not None:
-            datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
-            frames_gv = '{:s}_{:s}.gv'.format(parsed_args.output, datetime)
-            frames_pdf = '{:s}_{:s}.pdf'.format(parsed_args.output, datetime)
+            frames_gv = '{:s}.gv'.format(parsed_args.output)
+            frames_pdf = '{:s}.pdf'.format(parsed_args.output)
         else:
             datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
             frames_gv = 'frames_{:s}.gv'.format(datetime)
