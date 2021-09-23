@@ -49,6 +49,7 @@ def main():
     parser.add_argument(
         '--wait-time', '-t', type=float, default=5.0,
         help='Listen to the /tf topic for this many seconds before rendering the frame tree')
+    parser.add_argument('-o','--output', help='Output filename')
     parsed_args = parser.parse_args(args=args_without_ros[1:])
 
     node = rclpy.create_node('view_frames')
@@ -85,9 +86,20 @@ def main():
         node.get_logger().info(
             'Result:'+ str(result) )
         data = yaml.safe_load(result.frame_yaml)
-        with open('frames.gv', 'w') as f:
-           f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
-        subprocess.Popen('dot -Tpdf frames.gv -o frames.pdf'.split(' ')).communicate()
+        
+        if parsed_args.output is not None:
+            frames_gv = '{:s}.gv'.format(parsed_args.output)
+            frames_pdf = '{:s}.pdf'.format(parsed_args.output)
+        else:
+            datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
+            frames_gv = 'frames_{:s}.gv'.format(datetime)
+            frames_pdf = 'frames_{:s}.pdf'.format(datetime)
+        
+        with open(frames_gv, 'w') as f:
+            f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
+        
+        cmd = ['dot', '-Tpdf', frames_gv, '-o', frames_pdf]
+        subprocess.Popen(cmd).communicate()
     finally:
         cli.destroy()
         node.destroy_node()
