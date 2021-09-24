@@ -37,7 +37,8 @@
 
 #include "tf2_ros/transform_listener.h"
 #include "rclcpp/rclcpp.hpp"
-
+#include <tf2/LinearMath/Matrix3x3.h>
+#include <iomanip>
 #define _USE_MATH_DEFINES
 class echoListener
 {
@@ -144,6 +145,7 @@ int main(int argc, char ** argv)
         //tf::Quaternion q = echo_transform.getRotation();
         //tf::Vector3 v = echo_transform.getOrigin();
         auto translation = echo_transform.transform.translation;
+        double translation_xyz[] = {translation.x,translation.y,translation.z};
         auto rotation = echo_transform.transform.rotation;
         std::cout << "- Translation: [" << translation.x << ", " << translation.y << ", " << translation.z << "]" << std::endl;
         std::cout << "- Rotation: in Quaternion [" << rotation.x << ", " << rotation.y << ", " 
@@ -153,6 +155,28 @@ int main(int argc, char ** argv)
                   // << "            in RPY (degree) [" <<  roll*180.0/M_PI << ", " << pitch*180.0/M_PI << ", " << yaw*180.0/M_PI << "]" << std::endl;
 
         //print transform
+        
+        tf2::Matrix3x3 mat(tf2::Quaternion{rotation.x,rotation.y,rotation.z,rotation.w});
+
+        tf2Scalar yaw,pitch,roll;
+        mat.getEulerYPR(yaw,pitch,roll);
+
+        std::cout << "- Rotation: in RPY (radian) [" <<  roll << ", " << pitch << ", " << yaw << "]" << std::endl;
+        std::cout << "- Rotation: in RPY (degree) [" <<  roll*180.0/M_PI << ", " << pitch*180.0/M_PI << ", " << yaw*180.0/M_PI << "]" << std::endl;
+
+
+        std::cout<<"- Matrix:\n";
+        for(int i=0;i<3;i++){
+      	  for(int j=0;j<3;j++)
+      		  std::cout<<" "<<std::setw(6)<<std::setprecision(3)<<mat[i][j];
+      	
+      	std::cout<<" "<<std::setw(6)<<std::setprecision(3)<<translation_xyz[i];
+      	std::cout<<std::endl;
+      	}
+        for(int j=0;j<3;j++)
+      		std::cout<<" "<<std::setw(6)<<std::setprecision(3)<<0.0;
+
+        std::cout<<" "<<std::setw(6)<<std::setprecision(3)<<1.0<<std::endl;
       }
       catch(tf2::TransformException& ex)
       {
