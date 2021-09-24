@@ -63,7 +63,7 @@ def transform_to_kdl(t):
                                     t.transform.translation.y,
                                     t.transform.translation.z))
 
-def transformCovariance(cov_in, transform):
+def transform_covariance(cov_in, transform):
     # Converting the Quaternion to a Rotation Matrix first
     # Taken from: https://automaticaddison.com/how-to-convert-a-quaternion-to-a-rotation-matrix/
     q0 = transform.transform.rotation.w
@@ -230,7 +230,7 @@ def do_transform_pose_with_covariance_stamped(pose, transform):
      res.pose.pose.orientation.y,
      res.pose.pose.orientation.z,
      res.pose.pose.orientation.w) = f.M.GetQuaternion()
-    res.pose.covariance = transformCovariance(pose.pose.covariance, transform)
+    res.pose.covariance = transform_covariance(pose.pose.covariance, transform)
     res.header = transform.header
     return res
 
