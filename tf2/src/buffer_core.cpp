@@ -373,6 +373,7 @@ bool BufferCore::setTransformImpl(
   return true;
 }
 
+// This method expects that the caller is holding frame_mutex_
 TimeCacheInterfacePtr BufferCore::allocateFrame(CompactFrameID cfid, bool is_static)
 {
   if (is_static) {
