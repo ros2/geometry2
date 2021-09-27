@@ -98,7 +98,7 @@ public:
    * \param source_frame The frame from which to transform.
    * \param time The time at which to transform.
    * \param error_msg A pointer to a string which will be filled with why the transform failed.
-   *   Ignored if NULL.
+   *   Ignored if nullptr.
    * \return true if the transform is possible, false otherwise.
    */
   TF2_PUBLIC
@@ -117,7 +117,7 @@ public:
    * \param source_time The time from which to transform.
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param error_msg A pointer to a string which will be filled with why the transform failed.
-   *   Ignored if NULL.
+   *   Ignored if nullptr.
    * \return true if the transform is possible, false otherwise.
    */
   TF2_PUBLIC

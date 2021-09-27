@@ -339,7 +339,7 @@ bool BufferCore::setTransformImpl(
     std::unique_lock<std::mutex> lock(frame_mutex_);
     CompactFrameID frame_number = lookupOrInsertFrameNumber(stripped_child_frame_id);
     TimeCacheInterfacePtr frame = getFrame(frame_number);
-    if (frame == NULL) {
+    if (frame == nullptr) {
       frame = allocateFrame(frame_number, is_static);
     } else {
       // Overwrite TimeCacheInterface type with a current input
@@ -944,7 +944,7 @@ std::string BufferCore::allFramesAsStringNoLock() const
   // regular transforms
   for (size_t counter = 1; counter < frames_.size(); counter++) {
     TimeCacheInterfacePtr frame_ptr = getFrame(static_cast<CompactFrameID>(counter));
-    if (frame_ptr == NULL) {
+    if (frame_ptr == nullptr) {
       continue;
     }
     CompactFrameID frame_id_num;
@@ -1308,7 +1308,7 @@ bool BufferCore::_getParent(
     return false;
   }
 
-  CompactFrameID parent_id = frame->getParent(time, NULL);
+  CompactFrameID parent_id = frame->getParent(time, nullptr);
   if (parent_id == 0) {
     return false;
   }
