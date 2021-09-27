@@ -84,7 +84,7 @@ std::string tf2::displayTimePoint(const tf2::TimePoint & stamp)
 
   // Determine how many bytes to allocate for the string. If successful, buff_size does not count
   // null terminating character. http://www.cplusplus.com/reference/cstdio/snprintf/
-  int buff_size = rcutils_snprintf(NULL, 0, format_str, current_time);
+  int buff_size = rcutils_snprintf(nullptr, 0, format_str, current_time);
   if (buff_size < 0) {
     char errmsg[200];
     rcutils_strerror(errmsg, sizeof(errmsg));

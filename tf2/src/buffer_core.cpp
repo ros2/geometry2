@@ -340,7 +340,7 @@ bool BufferCore::setTransformImpl(
     std::unique_lock<std::mutex> lock(frame_mutex_);
     CompactFrameID frame_number = lookupOrInsertFrameNumber(stripped_child_frame_id);
     TimeCacheInterfacePtr frame = getFrame(frame_number);
-    if (frame == NULL) {
+    if (frame == nullptr) {
       frame = allocateFrame(frame_number, is_static);
     } else {
       // Overwrite TimeCacheInterface type with a current input
@@ -728,7 +728,7 @@ void BufferCore::lookupTransformImpl(
 
   std::string error_string;
   TransformAccum accum;
-  tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string, NULL);
+  tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string, nullptr);
   if (retval != tf2::TF2Error::TF2_NO_ERROR) {
     switch (retval) {
       case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
@@ -806,7 +806,7 @@ bool BufferCore::canTransformInternal(
   }
 
   CanTransformAccum accum;
-  if (walkToTopParent(accum, time, target_id, source_id, error_msg, NULL) == tf2::TF2Error::TF2_NO_ERROR) {
+  if (walkToTopParent(accum, time, target_id, source_id, error_msg, nullptr) == tf2::TF2Error::TF2_NO_ERROR) {
     return true;
   }
 
@@ -945,7 +945,7 @@ std::string BufferCore::allFramesAsStringNoLock() const
   // regular transforms
   for (size_t counter = 1; counter < frames_.size(); counter++) {
     TimeCacheInterfacePtr frame_ptr = getFrame(static_cast<CompactFrameID>(counter));
-    if (frame_ptr == NULL) {
+    if (frame_ptr == nullptr) {
       continue;
     }
     CompactFrameID frame_id_num;
@@ -1309,7 +1309,7 @@ bool BufferCore::_getParent(
     return false;
   }
 
-  CompactFrameID parent_id = frame->getParent(time, NULL);
+  CompactFrameID parent_id = frame->getParent(time, nullptr);
   if (parent_id == 0) {
     return false;
   }
