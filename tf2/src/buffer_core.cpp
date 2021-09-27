@@ -376,11 +376,10 @@ bool BufferCore::setTransformImpl(
 
 TimeCacheInterfacePtr BufferCore::allocateFrame(CompactFrameID cfid, bool is_static)
 {
-  TimeCacheInterfacePtr frame_ptr = frames_[cfid];
   if (is_static) {
-    frames_[cfid] = TimeCacheInterfacePtr(new StaticCache());
+    frames_[cfid] = std::make_shared<StaticCache>();
   } else {
-    frames_[cfid] = TimeCacheInterfacePtr(new TimeCache(cache_time_));
+    frames_[cfid] = std::make_shared<TimeCache>(cache_time_);
   }
 
   return frames_[cfid];
