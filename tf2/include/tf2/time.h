@@ -44,46 +44,20 @@ using IDuration = std::chrono::duration<int, std::nano>;
 // This is the zero time in ROS
 static const TimePoint TimePointZero = TimePoint(IDuration::zero());
 
-inline TimePoint get_now()
-{
-  return std::chrono::system_clock::now();
-}
+TF2_PUBLIC
+TimePoint get_now();
 
-inline Duration durationFromSec(double t_sec)
-{
-  int32_t sec, nsec;
-  sec = static_cast<int32_t>(floor(t_sec));
-  nsec = static_cast<int32_t>(std::round((t_sec - sec) * 1e9));
-  // avoid rounding errors
-  sec += (nsec / 1000000000l);
-  nsec %= 1000000000l;
-  return std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
-}
+TF2_PUBLIC
+Duration durationFromSec(double t_sec);
 
-inline TimePoint timeFromSec(double t_sec)
-{
-  return tf2::TimePoint(durationFromSec(t_sec));
-}
+TF2_PUBLIC
+TimePoint timeFromSec(double t_sec);
 
-inline double durationToSec(const tf2::Duration & input)
-{
-  int64_t count = input.count();
+TF2_PUBLIC
+double durationToSec(const tf2::Duration & input);
 
-  // scale the nanoseconds separately for improved accuracy
-  int32_t sec, nsec;
-  nsec = static_cast<int32_t>(count % 1000000000l);
-  sec = static_cast<int32_t>((count - nsec) / 1000000000l);
-
-  double sec_double, nsec_double;
-  nsec_double = 1e-9 * static_cast<double>(nsec);
-  sec_double = static_cast<double>(sec);
-  return sec_double + nsec_double;
-}
-
-inline double timeToSec(const TimePoint & timepoint)
-{
-  return durationToSec(Duration(timepoint.time_since_epoch()));
-}
+TF2_PUBLIC
+double timeToSec(const TimePoint & timepoint);
 
 TF2_PUBLIC
 std::string displayTimePoint(const TimePoint & stamp);
