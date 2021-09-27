@@ -26,45 +26,42 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Tully Foote */
-
-#ifndef TF2__TRANSFORM_STORAGE_H_
-#define TF2__TRANSFORM_STORAGE_H_
+#include "tf2/transform_storage.h"
 
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/LinearMath/Vector3.h"
-#include "tf2/time.h"
-#include "tf2/visibility_control.h"
 
 namespace tf2
 {
-typedef uint32_t CompactFrameID;
 
-/** \brief Storage for transforms and their parent */
-class TransformStorage
+TransformStorage::TransformStorage()
 {
-public:
-  TF2_PUBLIC
-  TransformStorage();
+}
 
-  TF2_PUBLIC
-  TransformStorage(
-    const TimePoint & stamp, const Quaternion & q, const Vector3 & t, CompactFrameID frame_id,
-    CompactFrameID child_frame_id);
+TransformStorage::TransformStorage(
+  const TimePoint & stamp, const Quaternion & q, const Vector3 & t,
+  CompactFrameID frame_id, CompactFrameID child_frame_id)
+: rotation_(q),
+  translation_(t),
+  stamp_(stamp),
+  frame_id_(frame_id),
+  child_frame_id_(child_frame_id)
+{
+}
 
-  TF2_PUBLIC
-  TransformStorage(const TransformStorage & rhs);
+TransformStorage::TransformStorage(const TransformStorage & rhs)
+{
+  *this = rhs;
+}
 
-  TF2_PUBLIC
-  TransformStorage & operator=(const TransformStorage & rhs);
-
-  tf2::Quaternion rotation_;
-  tf2::Vector3 translation_;
-  TimePoint stamp_;
-  CompactFrameID frame_id_;
-  CompactFrameID child_frame_id_;
-};
+TransformStorage & TransformStorage::operator=(const TransformStorage & rhs)
+{
+  rotation_ = rhs.rotation_;
+  translation_ = rhs.translation_;
+  stamp_ = rhs.stamp_;
+  frame_id_ = rhs.frame_id_;
+  child_frame_id_ = rhs.child_frame_id_;
+  return *this;
+}
 
 }  // namespace tf2
-
-#endif  // TF2__TRANSFORM_STORAGE_H_
