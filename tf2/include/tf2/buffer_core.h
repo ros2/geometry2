@@ -425,11 +425,6 @@ private:
     CompactFrameID target_frame, CompactFrameID source_frame,
     TimePoint & time, std::string * error_string) const;
 
-  template<typename F>
-  tf2::TF2Error walkToTopParent(
-    F & f, TimePoint time, CompactFrameID target_id,
-    CompactFrameID source_id, std::string * error_string) const;
-
   /**@brief Traverse the transform tree. If frame_chain is not NULL, store the traversed frame tree in vector frame_chain.
    * */
   template<typename F>

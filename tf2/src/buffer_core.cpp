@@ -385,16 +385,6 @@ enum WalkEnding
   FullPath,
 };
 
-// TODO(anyone): for Jade: Merge walkToTopParent functions; this is now a stub to preserve ABI
-template<typename F>
-tf2::TF2Error BufferCore::walkToTopParent(
-  F & f, TimePoint time, CompactFrameID target_id,
-  CompactFrameID source_id,
-  std::string * error_string) const
-{
-  return walkToTopParent(f, time, target_id, source_id, error_string, NULL);
-}
-
 template<typename F>
 tf2::TF2Error BufferCore::walkToTopParent(
   F & f, TimePoint time, CompactFrameID target_id,
@@ -729,7 +719,7 @@ void BufferCore::lookupTransformImpl(
 
   std::string error_string;
   TransformAccum accum;
-  tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string);
+  tf2::TF2Error retval = walkToTopParent(accum, time, target_id, source_id, &error_string, nullptr);
   if (retval != tf2::TF2Error::TF2_NO_ERROR) {
     switch (retval) {
       case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
@@ -806,7 +796,7 @@ bool BufferCore::canTransformNoLock(
   }
 
   CanTransformAccum accum;
-  if (walkToTopParent(accum, time, target_id, source_id, error_msg) == tf2::TF2Error::TF2_NO_ERROR) {
+  if (walkToTopParent(accum, time, target_id, source_id, error_msg, nullptr) == tf2::TF2Error::TF2_NO_ERROR) {
     return true;
   }
 
