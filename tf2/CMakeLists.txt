@@ -52,8 +52,8 @@ if(BUILD_TESTING)
   if(TARGET test_cache_unittest)
     target_link_libraries(test_cache_unittest tf2)
     ament_target_dependencies(test_cache_unittest
-      "geometry_msgs"
       "console_bridge"
+      "geometry_msgs"
     )
   endif()
 
@@ -61,17 +61,17 @@ if(BUILD_TESTING)
   if(TARGET test_static_cache_unittest)
     target_link_libraries(test_static_cache_unittest tf2)
     ament_target_dependencies(test_static_cache_unittest
-      "geometry_msgs"
       "console_bridge"
+      "geometry_msgs"
     )
   endif()
 
-  ament_add_gtest(test_simple test/simple_tf2_core.cpp)
-  if(TARGET test_simple)
-    target_link_libraries(test_simple tf2)
-    ament_target_dependencies(test_simple
-      "geometry_msgs"
+  ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
+  if(TARGET test_simple_tf2_core)
+    target_link_libraries(test_simple_tf2_core tf2)
+    ament_target_dependencies(test_simple_tf2_core
       "console_bridge"
+      "geometry_msgs"
     )
   endif()
 
