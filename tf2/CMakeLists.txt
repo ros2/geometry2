@@ -63,10 +63,10 @@ if(BUILD_TESTING)
     )
   endif()
 
-  ament_add_gtest(test_static_cache_unittest test/static_cache_test.cpp)
-  if(TARGET test_static_cache_unittest)
-    target_link_libraries(test_static_cache_unittest tf2)
-    ament_target_dependencies(test_static_cache_unittest
+  ament_add_gtest(test_static_cache test/test_static_cache.cpp)
+  if(TARGET test_static_cache)
+    target_link_libraries(test_static_cache tf2)
+    ament_target_dependencies(test_static_cache
       "console_bridge"
       "geometry_msgs"
     )

@@ -39,6 +39,7 @@
 #include <vector>
 
 #include "tf2/buffer_core.h"
+#include "tf2/static_cache.h"
 #include "tf2/time_cache.h"
 #include "tf2/exceptions.h"
 

@@ -31,8 +31,11 @@
 #include <string>
 #include <utility>
 
-#include "tf2/time_cache.h"
 #include "tf2/exceptions.h"
+#include "tf2/static_cache.h"
+#include "tf2/time.h"
+#include "tf2/transform_storage.h"
+#include "tf2/visibility_control.h"
 
 #include "tf2/LinearMath/Transform.h"
 
