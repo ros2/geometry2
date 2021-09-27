@@ -370,11 +370,8 @@ private:
     const std::string & source_frame, const TimePoint & source_time,
     const std::string & fixed_frame, tf2::Transform & transform, TimePoint & time_out) const;
 
-  /** \brief An accessor to get a frame, which will throw an exception if the frame is no there.
+  /** \brief An accessor to get a frame.
    * \param frame_number The frameID of the desired Reference Frame
-   *
-   * This is an internal function which will get the pointer to the frame associated with the frame id
-   * Possible Exception: tf::LookupException
    */
   TimeCacheInterfacePtr getFrame(CompactFrameID c_frame_id) const;
 
