@@ -65,7 +65,6 @@ if(BUILD_TESTING)
       "geometry_msgs"
       "console_bridge"
     )
-    target_link_libraries(test_static_cache_unittest tf2 ${geometry_msgs_LIBRARIES} ${console_bridge_LIBRARIES})
   endif()
 
   ament_add_gtest(test_simple test/simple_tf2_core.cpp)
