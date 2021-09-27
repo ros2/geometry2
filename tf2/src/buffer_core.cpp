@@ -30,7 +30,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <utility>
@@ -41,7 +43,13 @@
 #include "tf2/exceptions.h"
 
 #include "console_bridge/console.h"
+#include "tf2/LinearMath/Quaternion.h"
 #include "tf2/LinearMath/Transform.h"
+#include "tf2/LinearMath/Vector3.h"
+
+#include "builtin_interfaces/msg/time.hpp"
+#include "geometry_msgs/msg/transform.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 namespace tf2
 {
