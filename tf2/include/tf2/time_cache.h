@@ -62,6 +62,7 @@ public:
   /// Maximum length of linked list, to make sure not to be able to use unlimited memory.
   TF2_PUBLIC
   static const unsigned int MAX_LENGTH_LINKED_LIST = 1000000;
+
   TF2_PUBLIC
   explicit TimeCache(tf2::Duration max_storage_time = TIMECACHE_DEFAULT_MAX_STORAGE_TIME);
 
@@ -71,20 +72,26 @@ public:
   virtual bool getData(
     tf2::TimePoint time, tf2::TransformStorage & data_out,
     std::string * error_str = 0);
+
   TF2_PUBLIC
   virtual bool insertData(const tf2::TransformStorage & new_data);
+
   TF2_PUBLIC
   virtual void clearList();
+
   TF2_PUBLIC
   virtual tf2::CompactFrameID getParent(tf2::TimePoint time, std::string * error_str);
+
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
   /// Debugging information methods
   TF2_PUBLIC
   virtual unsigned int getListLength();
+
   TF2_PUBLIC
   virtual TimePoint getLatestTimestamp();
+
   TF2_PUBLIC
   virtual TimePoint getOldestTimestamp();
 

@@ -80,11 +80,11 @@ TEST(TimeCache, Repeatability)
     stor.frame_id_ = tf2::CompactFrameID(i);
     stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(i));
 
-    cache.insertData(stor);
+    EXPECT_TRUE(cache.insertData(stor));
   }
 
   for (uint64_t i = 1; i < runs; i++) {
-    cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor);
+    EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor));
     EXPECT_EQ(stor.frame_id_, i);
     EXPECT_EQ(stor.stamp_, tf2::TimePoint(std::chrono::nanoseconds(i)));
   }
@@ -103,10 +103,10 @@ TEST(TimeCache, RepeatabilityReverseInsertOrder)
     stor.frame_id_ = i;
     stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(i));
 
-    cache.insertData(stor);
+    EXPECT_TRUE(cache.insertData(stor));
   }
   for (uint64_t i = 1; i < runs; i++) {
-    cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor);
+    EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor));
     EXPECT_EQ(stor.frame_id_, i);
     EXPECT_EQ(stor.stamp_, tf2::TimePoint(std::chrono::nanoseconds(i)));
   }
@@ -125,29 +125,29 @@ TEST(TimeCache, ZeroAtFront)
     stor.frame_id_ = tf2::CompactFrameID(i);
     stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(i));
 
-    cache.insertData(stor);
+    EXPECT_TRUE(cache.insertData(stor));
   }
 
   stor.frame_id_ = tf2::CompactFrameID(runs);
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(runs));
-  cache.insertData(stor);
+  EXPECT_TRUE(cache.insertData(stor));
 
   for (uint64_t i = 1; i < runs; i++) {
-    cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor);
+    EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor));
     EXPECT_EQ(stor.frame_id_, i);
     EXPECT_EQ(stor.stamp_, tf2::TimePoint(std::chrono::nanoseconds(i)));
   }
 
-  cache.getData(tf2::TimePoint(), stor);
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(), stor));
   EXPECT_EQ(stor.frame_id_, runs);
   EXPECT_EQ(stor.stamp_, tf2::TimePoint(std::chrono::nanoseconds(runs)));
 
   stor.frame_id_ = tf2::CompactFrameID(runs);
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(runs + 1));
-  cache.insertData(stor);
+  EXPECT_TRUE(cache.insertData(stor));
 
-  // Make sure we get a different value now that a new values is added at the front
-  cache.getData(tf2::TimePoint(), stor);
+  // Make sure we get a different value now that a new value is added at the front
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(), stor));
   EXPECT_EQ(stor.frame_id_, runs);
   EXPECT_EQ(stor.stamp_, tf2::TimePoint(std::chrono::nanoseconds(runs + 1)));
 }
@@ -177,18 +177,14 @@ TEST(TimeCache, CartesianInterpolation)
       stor.translation_.setValue(xvalues[step], yvalues[step], zvalues[step]);
       stor.frame_id_ = 2;
       stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(step * 100 + offset));
-      cache.insertData(stor);
+      EXPECT_TRUE(cache.insertData(stor));
     }
 
     for (int pos = 0; pos < 100; pos++) {
-      cache.getData(tf2::TimePoint(std::chrono::nanoseconds(offset + pos)), stor);
+      EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(offset + pos)), stor));
       double x_out = stor.translation_.x();
       double y_out = stor.translation_.y();
       double z_out = stor.translation_.z();
-      //      printf("pose %d, %f %f %f, expected %f %f %f\n", pos, x_out, y_out, z_out,
-      //       xvalues[0] + (xvalues[1] - xvalues[0]) * (double)pos/100.,
-      //       yvalues[0] + (yvalues[1] - yvalues[0]) * (double)pos/100.0,
-      //       zvalues[0] + (xvalues[1] - zvalues[0]) * (double)pos/100.0);
       EXPECT_NEAR(xvalues[0] + (xvalues[1] - xvalues[0]) * (double)pos / 100.0, x_out, epsilon);
       EXPECT_NEAR(yvalues[0] + (yvalues[1] - yvalues[0]) * (double)pos / 100.0, y_out, epsilon);
       EXPECT_NEAR(zvalues[0] + (zvalues[1] - zvalues[0]) * (double)pos / 100.0, z_out, epsilon);
@@ -221,7 +217,7 @@ TEST(TimeCache, ReparentingInterpolationProtection)
     stor.translation_.setValue(xvalues[step], yvalues[step], zvalues[step]);
     stor.frame_id_ = tf2::CompactFrameID(step + 4);
     stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(step * 100 + offset));
-    cache.insertData(stor);
+    EXPECT_TRUE(cache.insertData(stor));
   }
 
   for (int pos = 0; pos < 100; pos++) {
@@ -281,7 +277,7 @@ TEST(TimeCache, AngularInterpolation)
       stor.frame_id_ = 3;
       // step = 0 or 1
       stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(offset + (step * 100)));
-      cache.insertData(stor);
+      EXPECT_TRUE(cache.insertData(stor));
     }
 
     for (int pos = 0; pos < 100; pos++) {
@@ -308,11 +304,11 @@ TEST(TimeCache, DuplicateEntries)
   stor.frame_id_ = 3;
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(1));
 
-  cache.insertData(stor);
+  EXPECT_TRUE(cache.insertData(stor));
 
-  cache.insertData(stor);
+  EXPECT_TRUE(cache.insertData(stor));
 
-  cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor);
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor));
 
   EXPECT_TRUE(!std::isnan(stor.translation_.x()));
   EXPECT_TRUE(!std::isnan(stor.translation_.y()));
@@ -321,6 +317,219 @@ TEST(TimeCache, DuplicateEntries)
   EXPECT_TRUE(!std::isnan(stor.rotation_.y()));
   EXPECT_TRUE(!std::isnan(stor.rotation_.z()));
   EXPECT_TRUE(!std::isnan(stor.rotation_.w()));
+}
+
+TEST(TimeCache, GetDataNotPresent)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor;
+
+  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor));
+}
+
+TEST(TimeCache, GetDataSingleEntry)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor;
+  setIdentity(stor);
+  stor.frame_id_ = 3;
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(1));
+
+  EXPECT_TRUE(cache.insertData(stor));
+
+  tf2::TransformStorage fetch;
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), fetch));
+}
+
+TEST(TimeCache, GetDataSingleEntryNotExist)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor;
+  setIdentity(stor);
+  stor.frame_id_ = 3;
+  stor.stamp_ = tf2::TimePoint(std::chrono::milliseconds(1));
+
+  EXPECT_TRUE(cache.insertData(stor));
+
+  tf2::TransformStorage fetch;
+  std::string error;
+  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::milliseconds(2)), fetch, &error));
+  EXPECT_EQ(error, "Lookup would require extrapolation at time 0.002000, but only time 0.001000 is in the buffer");
+}
+
+TEST(TimeCache, GetDataExtrapolationToFuture)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::milliseconds(1));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  tf2::TransformStorage stor2;
+  setIdentity(stor2);
+  stor2.frame_id_ = 3;
+  stor2.stamp_ = tf2::TimePoint(std::chrono::milliseconds(2));
+  EXPECT_TRUE(cache.insertData(stor2));
+
+  tf2::TransformStorage fetch;
+  std::string error;
+  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::milliseconds(3)), fetch, &error));
+  EXPECT_EQ(error, "Lookup would require extrapolation into the future.  Requested time 0.003000 but the latest data is at time 0.002000");
+}
+
+TEST(TimeCache, GetDataExtrapolationToPast)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::milliseconds(4));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  tf2::TransformStorage stor2;
+  setIdentity(stor2);
+  stor2.frame_id_ = 3;
+  stor2.stamp_ = tf2::TimePoint(std::chrono::milliseconds(5));
+  EXPECT_TRUE(cache.insertData(stor2));
+
+  tf2::TransformStorage fetch;
+  std::string error;
+  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::milliseconds(2)), fetch, &error));
+  EXPECT_EQ(error, "Lookup would require extrapolation into the past.  Requested time 0.002000 but the earliest data is at time 0.004000");
+}
+
+TEST(TimeCache, GetParentNotExist)
+{
+  tf2::TimeCache cache;
+
+  std::string error;
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::milliseconds(1)), &error), 0u);
+  EXPECT_EQ(error, "");
+}
+
+TEST(TimeCache, GetParent)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::milliseconds(4));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  std::string error;
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::milliseconds(4)), &error), 3u);
+  EXPECT_EQ(error, "");
+}
+
+TEST(TimeCache, InsertDataTooOld)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::seconds(12));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  tf2::TransformStorage stor2;
+  setIdentity(stor2);
+  stor2.frame_id_ = 4;
+  stor2.stamp_ = tf2::TimePoint(std::chrono::seconds(1));
+  EXPECT_FALSE(cache.insertData(stor2));
+}
+
+TEST(TimeCache, ClearList)
+{
+  tf2::TimeCache cache;
+
+  EXPECT_EQ(cache.getListLength(), 0u);
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::seconds(12));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  EXPECT_EQ(cache.getListLength(), 1u);
+
+  cache.clearList();
+
+  EXPECT_EQ(cache.getListLength(), 0u);
+}
+
+TEST(TimeCache, GetLatestTimeAndParentEmpty)
+{
+  tf2::TimeCache cache;
+
+  std::pair<tf2::TimePoint, tf2::CompactFrameID> tp = cache.getLatestTimeAndParent();
+  EXPECT_EQ(tp.first, tf2::TimePointZero);
+  EXPECT_EQ(tp.second, 0u);
+}
+
+TEST(TimeCache, GetLatestTimeAndParent)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::seconds(12));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  std::pair<tf2::TimePoint, tf2::CompactFrameID> tp = cache.getLatestTimeAndParent();
+  EXPECT_EQ(tp.first, tf2::TimePoint(std::chrono::seconds(12)));
+  EXPECT_EQ(tp.second, 3u);
+}
+
+TEST(TimeCache, GetLatestTimestampEmpty)
+{
+  tf2::TimeCache cache;
+
+  tf2::TimePoint time = cache.getLatestTimestamp();
+  EXPECT_EQ(time, tf2::TimePointZero);
+}
+
+TEST(TimeCache, GetLatestTimestamp)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::seconds(12));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  tf2::TimePoint time = cache.getLatestTimestamp();
+  EXPECT_EQ(time, tf2::TimePoint(std::chrono::seconds(12)));
+}
+
+TEST(TimeCache, GetOldestTimestampEmpty)
+{
+  tf2::TimeCache cache;
+
+  tf2::TimePoint time = cache.getOldestTimestamp();
+  EXPECT_EQ(time, tf2::TimePointZero);
+}
+
+TEST(TimeCache, GetOldestTimestamp)
+{
+  tf2::TimeCache cache;
+
+  tf2::TransformStorage stor1;
+  setIdentity(stor1);
+  stor1.frame_id_ = 3;
+  stor1.stamp_ = tf2::TimePoint(std::chrono::seconds(12));
+  EXPECT_TRUE(cache.insertData(stor1));
+
+  tf2::TimePoint time = cache.getOldestTimestamp();
+  EXPECT_EQ(time, tf2::TimePoint(std::chrono::seconds(12)));
 }
 
 int main(int argc, char ** argv)
