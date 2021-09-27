@@ -434,12 +434,9 @@ private:
     std::vector<CompactFrameID> * frame_chain) const;
 
   void testTransformableRequests();
-  // Thread safe transform check, acquire lock and call canTransformNoLock.
-  bool canTransformInternal(
-    CompactFrameID target_id, CompactFrameID source_id,
-    const TimePoint & time, std::string * error_msg) const;
+
   // Actual implementation to walk the transform tree and find out if a transform exists.
-  bool canTransformNoLock(
+  bool canTransformInternal(
     CompactFrameID target_id, CompactFrameID source_id,
     const TimePoint & time, std::string * error_msg) const;
 

@@ -780,10 +780,11 @@ struct CanTransformAccum
   TransformStorage st;
 };
 
-bool BufferCore::canTransformNoLock(
+bool BufferCore::canTransformInternal(
   CompactFrameID target_id, CompactFrameID source_id,
   const TimePoint & time, std::string * error_msg) const
 {
+  std::unique_lock<std::mutex> lock(frame_mutex_);
   if (target_id == 0 || source_id == 0) {
     if (error_msg) {
       *error_msg = "Source or target frame is not yet defined";
@@ -801,14 +802,6 @@ bool BufferCore::canTransformNoLock(
   }
 
   return false;
-}
-
-bool BufferCore::canTransformInternal(
-  CompactFrameID target_id, CompactFrameID source_id,
-  const TimePoint & time, std::string * error_msg) const
-{
-  std::unique_lock<std::mutex> lock(frame_mutex_);
-  return canTransformNoLock(target_id, source_id, time, error_msg);
 }
 
 bool BufferCore::canTransform(
