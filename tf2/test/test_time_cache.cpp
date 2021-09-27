@@ -231,25 +231,6 @@ TEST(TimeCache, ReparentingInterpolationProtection)
   }
 }
 
-TEST(Bullet, Slerp)
-{
-  uint64_t runs = 100;
-  seed_rand();
-
-  tf2::Quaternion q1, q2;
-  q1.setEuler(0, 0, 0);
-
-  for (uint64_t i = 0; i < runs; i++) {
-    q2.setEuler(
-      1.0 * get_rand(),
-      1.0 * get_rand(),
-      1.0 * get_rand());
-    tf2::Quaternion q3 = slerp(q1, q2, 0.5);
-
-    EXPECT_NEAR(q3.angle(q1), q2.angle(q3), 1e-5);
-  }
-}
-
 TEST(TimeCache, AngularInterpolation)
 {
   uint64_t runs = 100;

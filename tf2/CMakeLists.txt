@@ -85,6 +85,11 @@ if(BUILD_TESTING)
   if(TARGET test_time)
     target_link_libraries(test_time tf2)
   endif()
+
+  ament_add_gtest(test_linear_math test/test_linear_math.cpp)
+  if(TARGET test_linear_math)
+    target_link_libraries(test_linear_math tf2)
+  endif()
 endif()
 
 ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
