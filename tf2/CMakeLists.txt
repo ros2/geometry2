@@ -15,6 +15,7 @@ find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on 
 find_package(console_bridge REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(rosidl_runtime_cpp REQUIRED)
 
 # export user definitions
 
@@ -81,7 +82,7 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-ament_export_dependencies(console_bridge geometry_msgs rcutils)
+ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
 ament_export_include_directories(include)
 ament_export_libraries(tf2)
 ament_export_targets(tf2)
