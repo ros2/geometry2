@@ -284,14 +284,14 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
-  if (stripped_child_frame_id == "") {
+  if (stripped_child_frame_id.empty()) {
     CONSOLE_BRIDGE_logError(
       "TF_NO_CHILD_FRAME_ID: Ignoring transform from authority \"%s\" because child_frame_id not"
       " set ", authority.c_str());
     error_exists = true;
   }
 
-  if (stripped_frame_id == "") {
+  if (stripped_frame_id.empty()) {
     CONSOLE_BRIDGE_logError(
       "TF_NO_FRAME_ID: Ignoring transform with child_frame_id \"%s\"  from authority \"%s\" "
       "because frame_id not set", stripped_child_frame_id.c_str(), authority.c_str());
