@@ -25,6 +25,7 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
+
 /** \author Tully Foote */
 
 #ifndef TF2__TIME_CACHE_H_
@@ -38,59 +39,11 @@
 #include <utility>
 
 #include "tf2/visibility_control.h"
+#include "tf2/time_cache_interface.h"
 #include "tf2/transform_storage.h"
 
 namespace tf2
 {
-typedef std::pair<tf2::TimePoint, tf2::CompactFrameID> P_TimeAndFrameID;
-
-class TimeCacheInterface
-{
-public:
-  TF2_PUBLIC
-  virtual ~TimeCacheInterface() = default;
-
-  /** \brief Access data from the cache
-   * returns false if data unavailable (should be thrown as lookup exception)
-   */
-  TF2_PUBLIC
-  virtual bool getData(
-    tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0) = 0;
-
-  /** \brief Insert data into the cache */
-  TF2_PUBLIC
-  virtual bool insertData(const tf2::TransformStorage & new_data) = 0;
-
-  /** @brief Clear the list of stored values */
-  TF2_PUBLIC
-  virtual void clearList() = 0;
-
-  /** \brief Retrieve the parent at a specific time */
-  TF2_PUBLIC
-  virtual CompactFrameID getParent(tf2::TimePoint time, std::string * error_str) = 0;
-
-  /**
-   * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
-   */
-  TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent() = 0;
-
-  /// Debugging information methods
-  /** @brief Get the length of the stored list */
-  TF2_PUBLIC
-  virtual unsigned int getListLength() = 0;
-
-  /** @brief Get the latest timestamp cached */
-  TF2_PUBLIC
-  virtual tf2::TimePoint getLatestTimestamp() = 0;
-
-  /** @brief Get the oldest timestamp cached */
-  TF2_PUBLIC
-  virtual tf2::TimePoint getOldestTimestamp() = 0;
-};
-
-using TimeCacheInterfacePtr = std::shared_ptr<TimeCacheInterface>;
 
 /// default value of 10 seconds storage
 constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::seconds(10);
