@@ -72,10 +72,10 @@ if(BUILD_TESTING)
     )
   endif()
 
-  ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
-  if(TARGET test_simple_tf2_core)
-    target_link_libraries(test_simple_tf2_core tf2)
-    ament_target_dependencies(test_simple_tf2_core
+  ament_add_gtest(test_buffer_core test/test_buffer_core.cpp)
+  if(TARGET test_buffer_core)
+    target_link_libraries(test_buffer_core tf2)
+    ament_target_dependencies(test_buffer_core
       "console_bridge"
       "geometry_msgs"
     )
