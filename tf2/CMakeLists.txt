@@ -22,7 +22,6 @@ find_package(rcutils REQUIRED)
 add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
 target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/bt>"
   "$<INSTALL_INTERFACE:include>")
 ament_target_dependencies(tf2
   "console_bridge"
