@@ -31,6 +31,7 @@
 
 from geometry_msgs.msg import (PointStamped, PoseStamped,
                                PoseWithCovarianceStamped, Vector3Stamped)
+import numpy as np
 import PyKDL
 import tf2_ros
 
@@ -62,6 +63,95 @@ def transform_to_kdl(t):
                                     t.transform.translation.y,
                                     t.transform.translation.z))
 
+def transform_covariance(cov_in, transform):
+    # Converting the Quaternion to a Rotation Matrix first
+    # Taken from: https://automaticaddison.com/how-to-convert-a-quaternion-to-a-rotation-matrix/
+    q0 = transform.transform.rotation.w
+    q1 = transform.transform.rotation.x
+    q2 = transform.transform.rotation.y
+    q3 = transform.transform.rotation.z
+
+    # First row of the rotation matrix
+    r00 = 2 * (q0 * q0 + q1 * q1) - 1
+    r01 = 2 * (q1 * q2 - q0 * q3)
+    r02 = 2 * (q1 * q3 + q0 * q2)
+
+    # Second row of the rotation matrix
+    r10 = 2 * (q1 * q2 + q0 * q3)
+    r11 = 2 * (q0 * q0 + q2 * q2) - 1
+    r12 = 2 * (q2 * q3 - q0 * q1)
+
+    # Third row of the rotation matrix
+    r20 = 2 * (q1 * q3 - q0 * q2)
+    r21 = 2 * (q2 * q3 + q0 * q1)
+    r22 = 2 * (q0 * q0 + q3 * q3) - 1
+
+    # Code reference: https://github.com/ros2/geometry2/pull/430
+    # Mathematical Reference:
+    # A. L. Garcia, “Linear Transformations of Random Vectors,” in Probability,
+    # Statistics, and Random Processes For Electrical Engineering, 3rd ed.,
+    # Pearson Prentice Hall, 2008, pp. 320–322.
+
+    R =  np.array([[r00, r01, r02],
+                   [r10, r11, r12],
+                   [r20, r21, r22]])
+
+    R_transpose = np.transpose(R)
+
+    cov_11 = np.array([cov_in[:3], cov_in[6:9], cov_in[12:15]])
+    cov_12 = np.array([cov_in[3:6], cov_in[9:12], cov_in[15:18]])
+    cov_21 = np.array([cov_in[18:21], cov_in[24:27], cov_in[30:33]])
+    cov_22 = np.array([cov_in[21:24], cov_in[27:30], cov_in[33:]])
+
+    # And we perform the transform
+    result_11 = R @ cov_11 @ R_transpose
+    result_12 = R @ cov_12 @ R_transpose
+    result_21 = R @ cov_21 @ R_transpose
+    result_22 = R @ cov_22 @ R_transpose
+
+    cov_out = PoseWithCovarianceStamped()
+
+    cov_out.pose.covariance[0] = result_11[0][0]
+    cov_out.pose.covariance[1] = result_11[0][1]
+    cov_out.pose.covariance[2] = result_11[0][2]
+    cov_out.pose.covariance[6] = result_11[1][0]
+    cov_out.pose.covariance[7] = result_11[1][1]
+    cov_out.pose.covariance[8] = result_11[1][2]
+    cov_out.pose.covariance[12] = result_11[2][0]
+    cov_out.pose.covariance[13] = result_11[2][1]
+    cov_out.pose.covariance[14] = result_11[2][2]
+
+    cov_out.pose.covariance[3] = result_12[0][0]
+    cov_out.pose.covariance[4] = result_12[0][1]
+    cov_out.pose.covariance[5] = result_12[0][2]
+    cov_out.pose.covariance[9] = result_12[1][0]
+    cov_out.pose.covariance[10] = result_12[1][1]
+    cov_out.pose.covariance[11] = result_12[1][2]
+    cov_out.pose.covariance[15] = result_12[2][0]
+    cov_out.pose.covariance[16] = result_12[2][1]
+    cov_out.pose.covariance[17] = result_12[2][2]
+
+    cov_out.pose.covariance[18] = result_21[0][0]
+    cov_out.pose.covariance[19] = result_21[0][1]
+    cov_out.pose.covariance[20] = result_21[0][2]
+    cov_out.pose.covariance[24] = result_21[1][0]
+    cov_out.pose.covariance[25] = result_21[1][1]
+    cov_out.pose.covariance[26] = result_21[1][2]
+    cov_out.pose.covariance[30] = result_21[2][0]
+    cov_out.pose.covariance[31] = result_21[2][1]
+    cov_out.pose.covariance[32] = result_21[2][2]
+
+    cov_out.pose.covariance[21] = result_22[0][0]
+    cov_out.pose.covariance[22] = result_22[0][1]
+    cov_out.pose.covariance[23] = result_22[0][2]
+    cov_out.pose.covariance[27] = result_22[1][0]
+    cov_out.pose.covariance[28] = result_22[1][1]
+    cov_out.pose.covariance[29] = result_22[1][2]
+    cov_out.pose.covariance[33] = result_22[2][0]
+    cov_out.pose.covariance[34] = result_22[2][1]
+    cov_out.pose.covariance[35] = result_22[2][2]
+
+    return cov_out.pose.covariance
 
 # PointStamped
 def do_transform_point(point, transform):
@@ -140,7 +230,7 @@ def do_transform_pose_with_covariance_stamped(pose, transform):
      res.pose.pose.orientation.y,
      res.pose.pose.orientation.z,
      res.pose.pose.orientation.w) = f.M.GetQuaternion()
-    res.pose.covariance = pose.pose.covariance
+    res.pose.covariance = transform_covariance(pose.pose.covariance, transform)
     res.header = transform.header
     return res
 
