@@ -28,12 +28,54 @@
 
 /** \author Tully Foote */
 
+#include <chrono>
 #include <stdexcept>
 #include <string>
 
 #include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
 #include "tf2/time.h"
+
+tf2::TimePoint tf2::get_now()
+{
+  return std::chrono::system_clock::now();
+}
+
+tf2::Duration tf2::durationFromSec(double t_sec)
+{
+  int32_t sec, nsec;
+  sec = static_cast<int32_t>(floor(t_sec));
+  nsec = static_cast<int32_t>(std::round((t_sec - sec) * 1e9));
+  // avoid rounding errors
+  sec += (nsec / 1000000000l);
+  nsec %= 1000000000l;
+  return std::chrono::seconds(sec) + std::chrono::nanoseconds(nsec);
+}
+
+tf2::TimePoint tf2::timeFromSec(double t_sec)
+{
+  return tf2::TimePoint(durationFromSec(t_sec));
+}
+
+double tf2::durationToSec(const tf2::Duration & input)
+{
+  int64_t count = input.count();
+
+  // scale the nanoseconds separately for improved accuracy
+  int32_t sec, nsec;
+  nsec = static_cast<int32_t>(count % 1000000000l);
+  sec = static_cast<int32_t>((count - nsec) / 1000000000l);
+
+  double sec_double, nsec_double;
+  nsec_double = 1e-9 * static_cast<double>(nsec);
+  sec_double = static_cast<double>(sec);
+  return sec_double + nsec_double;
+}
+
+double tf2::timeToSec(const tf2::TimePoint & timepoint)
+{
+  return durationToSec(tf2::Duration(timepoint.time_since_epoch()));
+}
 
 std::string tf2::displayTimePoint(const tf2::TimePoint & stamp)
 {
