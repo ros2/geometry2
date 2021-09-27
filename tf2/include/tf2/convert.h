@@ -35,7 +35,6 @@
 #include <array>
 #include <string>
 
-#include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 #include "tf2/exceptions.h"
