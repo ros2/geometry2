@@ -213,9 +213,9 @@ TEST(tf2_clear, LookUp_Static_Transfrom_Fail)
 
 TEST(tf2_time, Display_Time_Point)
 {
-  tf2::TimePoint t = tf2::get_now();
-  // Check ability to stringify
+  tf2::TimePoint t(std::chrono::milliseconds(4));
   std::string s = tf2::displayTimePoint(t);
+  EXPECT_EQ(s, "0.004000");
 }
 
 TEST(tf2_time, To_From_Sec)
@@ -287,8 +287,7 @@ TEST(tf2_convert, Covariance_RowMajor_To_Nested)
   // setup the expected output
   std::array<std::array<double, 6>, 6> expected;
   double start = 0;
-  for (std::array<double, 6> & ee : expected)
-  {
+  for (std::array<double, 6> & ee : expected) {
     std::iota(ee.begin(), ee.end(), start);
     start += static_cast<double>(ee.size());
   }
