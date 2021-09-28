@@ -586,8 +586,8 @@ BufferCore::lookupTransform(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
     time_out.time_since_epoch());
-  msg.header.stamp.sec = (int32_t)s.count();
-  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
+  msg.header.stamp.sec = static_cast<int32_t>(s.count());
+  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
   msg.header.frame_id = target_frame;
   msg.child_frame_id = source_frame;
 
@@ -617,8 +617,8 @@ BufferCore::lookupTransform(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
     time_out.time_since_epoch());
-  msg.header.stamp.sec = (int32_t)s.count();
-  msg.header.stamp.nanosec = (uint32_t)(ns.count() % 1000000000ull);
+  msg.header.stamp.sec = static_cast<int32_t>(s.count());
+  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
   msg.header.frame_id = target_frame;
   msg.child_frame_id = source_frame;
 
