@@ -1294,7 +1294,7 @@ void BufferCore::testTransformableRequests()
 {
   std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
   V_TransformableRequest::iterator it = transformable_requests_.begin();
-  for (; it != transformable_requests_.end(); ) {
+  while (it != transformable_requests_.end()) {
     TransformableRequest & req = *it;
 
     // One or both of the frames may not have existed when the request was originally made.
