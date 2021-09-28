@@ -46,7 +46,7 @@ namespace tf2
 #pragma push_macro("NO_ERROR")
 #undef NO_ERROR
 #endif
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__clang__)
 // The clang compiler on Apple claims that [[deprecated]] on an enumerator value
 // is a C++17 feature, when it was really introduced in C++14.  Ignore that
 // warning when defining the structure; this whole thing will go away when we
