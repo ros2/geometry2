@@ -333,7 +333,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
     frame_chain->clear();
   }
 
-  // Short circuit if zero length transform to allow lookups on non existant links
+  // Short circuit if zero length transform to allow lookups on non-existent links
   if (source_id == target_id) {
     f.finalize(Identity, time);
     return tf2::TF2Error::TF2_NO_ERROR;
