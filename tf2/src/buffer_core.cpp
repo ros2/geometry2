@@ -1133,63 +1133,63 @@ std::string BufferCore::allFramesAsYAML(TimePoint current_time) const
   std::stringstream mstream;
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
-  TransformStorage temp;
-
   if (frames_.size() == 1) {
     mstream << "[]";
-  }
+  } else {
+    TransformStorage temp;
 
-  mstream.precision(3);
-  mstream.setf(std::ios::fixed, std::ios::floatfield);
+    mstream.precision(3);
+    mstream.setf(std::ios::fixed, std::ios::floatfield);
 
-  // one referenced for 0 is no frame
-  for (size_t counter = 1; counter < frames_.size(); counter++) {
-    CompactFrameID cfid = static_cast<CompactFrameID>(counter);
-    CompactFrameID frame_id_num;
-    TimeCacheInterfacePtr cache = getFrame(cfid);
-    if (!cache) {
-      continue;
+    // one referenced for 0 is no frame
+    for (size_t counter = 1; counter < frames_.size(); counter++) {
+      CompactFrameID cfid = static_cast<CompactFrameID>(counter);
+      CompactFrameID frame_id_num;
+      TimeCacheInterfacePtr cache = getFrame(cfid);
+      if (!cache) {
+        continue;
+      }
+
+      if (!cache->getData(TimePointZero, temp)) {
+        continue;
+      }
+
+      frame_id_num = temp.frame_id_;
+
+      std::string authority = "no recorded authority";
+      std::map<CompactFrameID, std::string>::const_iterator it = frame_authority_.find(cfid);
+      if (it != frame_authority_.end()) {
+        authority = it->second;
+      }
+
+      tf2::Duration dur1 = cache->getLatestTimestamp() - cache->getOldestTimestamp();
+      tf2::Duration dur2 = tf2::Duration(std::chrono::microseconds(100));
+
+      double rate;
+      if (dur1 > dur2) {
+        rate = (cache->getListLength() * 1e9) / std::chrono::duration_cast<std::chrono::nanoseconds>(
+          dur1).count();
+      } else {
+        rate = (cache->getListLength() * 1e9) / std::chrono::duration_cast<std::chrono::nanoseconds>(
+          dur2).count();
+      }
+
+      mstream << std::fixed;  // fixed point notation
+      mstream.precision(3);  // 3 decimal places
+      mstream << frameIDs_reverse_[cfid] << ": " << std::endl;
+      mstream << "  parent: '" << frameIDs_reverse_[frame_id_num] << "'" << std::endl;
+      mstream << "  broadcaster: '" << authority << "'" << std::endl;
+      mstream << "  rate: " << rate << std::endl;
+      mstream << "  most_recent_transform: " << displayTimePoint(cache->getLatestTimestamp()) <<
+        std::endl;
+      mstream << "  oldest_transform: " << displayTimePoint(cache->getOldestTimestamp()) << std::endl;
+      if (current_time != TimePointZero) {
+        mstream << "  transform_delay: " <<
+          durationToSec(current_time - cache->getLatestTimestamp()) << std::endl;
+      }
+      mstream << "  buffer_length: " << durationToSec(
+        cache->getLatestTimestamp() - cache->getOldestTimestamp()) << std::endl;
     }
-
-    if (!cache->getData(TimePointZero, temp)) {
-      continue;
-    }
-
-    frame_id_num = temp.frame_id_;
-
-    std::string authority = "no recorded authority";
-    std::map<CompactFrameID, std::string>::const_iterator it = frame_authority_.find(cfid);
-    if (it != frame_authority_.end()) {
-      authority = it->second;
-    }
-
-    tf2::Duration dur1 = cache->getLatestTimestamp() - cache->getOldestTimestamp();
-    tf2::Duration dur2 = tf2::Duration(std::chrono::microseconds(100));
-
-    double rate;
-    if (dur1 > dur2) {
-      rate = (cache->getListLength() * 1e9) / std::chrono::duration_cast<std::chrono::nanoseconds>(
-        dur1).count();
-    } else {
-      rate = (cache->getListLength() * 1e9) / std::chrono::duration_cast<std::chrono::nanoseconds>(
-        dur2).count();
-    }
-
-    mstream << std::fixed;  // fixed point notation
-    mstream.precision(3);  // 3 decimal places
-    mstream << frameIDs_reverse_[cfid] << ": " << std::endl;
-    mstream << "  parent: '" << frameIDs_reverse_[frame_id_num] << "'" << std::endl;
-    mstream << "  broadcaster: '" << authority << "'" << std::endl;
-    mstream << "  rate: " << rate << std::endl;
-    mstream << "  most_recent_transform: " << displayTimePoint(cache->getLatestTimestamp()) <<
-      std::endl;
-    mstream << "  oldest_transform: " << displayTimePoint(cache->getOldestTimestamp()) << std::endl;
-    if (current_time != TimePointZero) {
-      mstream << "  transform_delay: " <<
-        durationToSec(current_time - cache->getLatestTimestamp()) << std::endl;
-    }
-    mstream << "  buffer_length: " << durationToSec(
-      cache->getLatestTimestamp() - cache->getOldestTimestamp()) << std::endl;
   }
 
   return mstream.str();
@@ -1427,91 +1427,91 @@ std::string BufferCore::_allFramesAsDot(TimePoint current_time) const
   mstream << "digraph G {" << std::endl;
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
-  TransformStorage temp;
-
   if (frames_.size() == 1) {
     mstream << "\"no tf data recieved\"";
-  }
-  mstream.precision(3);
-  mstream.setf(std::ios::fixed, std::ios::floatfield);
-  // one referenced for 0 is no frame
-  for (size_t counter = 1; counter < frames_.size(); counter++) {
-    CompactFrameID frame_id_num;
-    TimeCacheInterfacePtr counter_frame = getFrame(static_cast<CompactFrameID>(counter));
-    if (!counter_frame) {
-      continue;
-    }
-    if (!counter_frame->getData(TimePointZero, temp)) {
-      continue;
-    } else {
-      frame_id_num = temp.frame_id_;
-    }
-    std::string authority = "no recorded authority";
-    std::map<CompactFrameID, std::string>::const_iterator it = frame_authority_.find(static_cast<CompactFrameID>(counter));
-    if (it != frame_authority_.end()) {
-      authority = it->second;
-    }
+  } else {
+    TransformStorage temp;
+    mstream.precision(3);
+    mstream.setf(std::ios::fixed, std::ios::floatfield);
+    // one referenced for 0 is no frame
+    for (size_t counter = 1; counter < frames_.size(); counter++) {
+      CompactFrameID frame_id_num;
+      TimeCacheInterfacePtr counter_frame = getFrame(static_cast<CompactFrameID>(counter));
+      if (!counter_frame) {
+        continue;
+      }
+      if (!counter_frame->getData(TimePointZero, temp)) {
+        continue;
+      } else {
+        frame_id_num = temp.frame_id_;
+      }
+      std::string authority = "no recorded authority";
+      std::map<CompactFrameID, std::string>::const_iterator it = frame_authority_.find(static_cast<CompactFrameID>(counter));
+      if (it != frame_authority_.end()) {
+        authority = it->second;
+      }
 
-    tf2::Duration dur1 = counter_frame->getLatestTimestamp() - counter_frame->getOldestTimestamp();
-    tf2::Duration dur2 = std::chrono::microseconds(100);
+      tf2::Duration dur1 = counter_frame->getLatestTimestamp() - counter_frame->getOldestTimestamp();
+      tf2::Duration dur2 = std::chrono::microseconds(100);
 
-    double rate;
-    if (dur1 > dur2) {
-      rate = (counter_frame->getListLength() * 1e9) /
-        std::chrono::duration_cast<std::chrono::nanoseconds>(dur1).count();
-    } else {
-      rate = (counter_frame->getListLength() * 1e9) /
-        std::chrono::duration_cast<std::chrono::nanoseconds>(dur2).count();
-    }
+      double rate;
+      if (dur1 > dur2) {
+        rate = (counter_frame->getListLength() * 1e9) /
+          std::chrono::duration_cast<std::chrono::nanoseconds>(dur1).count();
+      } else {
+        rate = (counter_frame->getListLength() * 1e9) /
+          std::chrono::duration_cast<std::chrono::nanoseconds>(dur2).count();
+      }
 
-    mstream << std::fixed;  // fixed point notation
-    mstream.precision(3);  // 3 decimal places
-    mstream << "\"" << frameIDs_reverse_[frame_id_num] << "\"" << " -> " <<
-      "\"" << frameIDs_reverse_[counter] << "\"" << "[label=\"" <<
-      "Broadcaster: " << authority << "\\n" <<
-      "Average rate: " << rate << " Hz\\n" <<
-      "Most recent transform: " << displayTimePoint(counter_frame->getLatestTimestamp()) << " ";
-    if (current_time != TimePointZero) {
-      mstream << "( " << durationToSec(current_time - counter_frame->getLatestTimestamp()) <<
-        " sec old)";
-    }
-    mstream << "\\n" <<
-      "Buffer length: " << durationToSec(
-      counter_frame->getLatestTimestamp() - counter_frame->getOldestTimestamp()) << " sec\\n" <<
-      "\"];" << std::endl;
-  }
-
-  // one referenced for 0 is no frame
-  for (size_t counter = 1; counter < frames_.size(); counter++) {
-    CompactFrameID frame_id_num;
-    TimeCacheInterfacePtr counter_frame = getFrame(static_cast<CompactFrameID>(counter));
-    if (!counter_frame) {
+      mstream << std::fixed;  // fixed point notation
+      mstream.precision(3);  // 3 decimal places
+      mstream << "\"" << frameIDs_reverse_[frame_id_num] << "\"" << " -> " <<
+        "\"" << frameIDs_reverse_[counter] << "\"" << "[label=\"" <<
+        "Broadcaster: " << authority << "\\n" <<
+        "Average rate: " << rate << " Hz\\n" <<
+        "Most recent transform: " << displayTimePoint(counter_frame->getLatestTimestamp()) << " ";
       if (current_time != TimePointZero) {
+        mstream << "( " << durationToSec(current_time - counter_frame->getLatestTimestamp()) <<
+          " sec old)";
+      }
+      mstream << "\\n" <<
+        "Buffer length: " << durationToSec(
+                                           counter_frame->getLatestTimestamp() - counter_frame->getOldestTimestamp()) << " sec\\n" <<
+        "\"];" << std::endl;
+    }
+
+    // one referenced for 0 is no frame
+    for (size_t counter = 1; counter < frames_.size(); counter++) {
+      CompactFrameID frame_id_num;
+      TimeCacheInterfacePtr counter_frame = getFrame(static_cast<CompactFrameID>(counter));
+      if (!counter_frame) {
+        if (current_time != TimePointZero) {
+          mstream << "edge [style=invis];" << std::endl;
+          mstream <<
+            " subgraph cluster_legend { style=bold; color=black; label =\"view_frames Result\";\n"
+                  <<
+            "\"Recorded at time: " << displayTimePoint(current_time) <<
+            "\"[ shape=plaintext ] ;\n " <<
+            "}" << "->" << "\"" << frameIDs_reverse_[counter] << "\";" << std::endl;
+        }
+        continue;
+      }
+      if (counter_frame->getData(TimePointZero, temp)) {
+        frame_id_num = temp.frame_id_;
+      } else {
+        frame_id_num = 0;
+      }
+
+      if (frameIDs_reverse_[frame_id_num] == "NO_PARENT") {
         mstream << "edge [style=invis];" << std::endl;
         mstream <<
-          " subgraph cluster_legend { style=bold; color=black; label =\"view_frames Result\";\n"
-                <<
-          "\"Recorded at time: " << displayTimePoint(current_time) <<
-          "\"[ shape=plaintext ] ;\n " <<
-          "}" << "->" << "\"" << frameIDs_reverse_[counter] << "\";" << std::endl;
-      }
-      continue;
-    }
-    if (counter_frame->getData(TimePointZero, temp)) {
-      frame_id_num = temp.frame_id_;
-    } else {
-      frame_id_num = 0;
-    }
-
-    if (frameIDs_reverse_[frame_id_num] == "NO_PARENT") {
-      mstream << "edge [style=invis];" << std::endl;
-      mstream <<
-        " subgraph cluster_legend { style=bold; color=black; label =\"view_frames Result\";\n";
+" subgraph cluster_legend { style=bold; color=black; label =\"view_frames Result\";\n";
       if (current_time != TimePointZero) {
         mstream << "\"Recorded at time: " << displayTimePoint(current_time) <<
           "\"[ shape=plaintext ] ;\n ";
       }
       mstream << "}" << "->" << "\"" << frameIDs_reverse_[counter] << "\";" << std::endl;
+      }
     }
   }
   mstream << "}";
