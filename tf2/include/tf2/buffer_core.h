@@ -303,12 +303,6 @@ public:
     std::vector<std::string> & output) const;
 
 private:
-  /** \brief A way to see what frames have been cached
-   * Useful for debugging. Use this call internally.
-   */
-  std::string allFramesAsStringNoLock() const;
-
-
   /******************** Internal Storage ****************/
 
   /** \brief The pointers to potential frames that the tree can be made of.
@@ -354,8 +348,14 @@ private:
   std::mutex transformable_requests_mutex_;
   uint64_t transformable_requests_counter_;
 
+  bool using_dedicated_thread_;
 
   /************************* Internal Functions ****************************/
+
+  /** \brief A way to see what frames have been cached
+   * Useful for debugging. Use this call internally.
+   */
+  std::string allFramesAsStringNoLock() const;
 
   bool setTransformImpl(
     const tf2::Transform & transform_in, const std::string frame_id,
@@ -437,10 +437,6 @@ private:
   bool canTransformInternal(
     CompactFrameID target_id, CompactFrameID source_id,
     const TimePoint & time, std::string * error_msg) const;
-
-  // Whether it is safe to use canTransform with a timeout.
-  // (If another thread is not provided it will always timeout.)
-  bool using_dedicated_thread_;
 };
 }  // namespace tf2
 
