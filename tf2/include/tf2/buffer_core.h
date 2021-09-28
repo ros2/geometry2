@@ -218,10 +218,10 @@ public:
     const std::string & target_frame,
     const std::string & source_frame,
     TimePoint time);
+
   /// \brief Internal use only
   TF2_PUBLIC
   void cancelTransformableRequest(TransformableRequestHandle handle);
-
 
   // Tell the buffer that there are multiple threads servicing it.
   // This is useful for derived classes to know if they can block or not.
@@ -230,7 +230,6 @@ public:
   // Get the state of using_dedicated_thread_
   TF2_PUBLIC
   bool isUsingDedicatedThread() const {return using_dedicated_thread_;}
-
 
   /* Backwards compatability section for tf::Transformer you should not use these
    */
@@ -251,48 +250,36 @@ public:
   TF2_PUBLIC
   void _getFrameStrings(std::vector<std::string> & ids) const;
 
+  TF2_PUBLIC
+  CompactFrameID _lookupFrameNumber(const std::string & frameid_str) const;
 
   TF2_PUBLIC
-  CompactFrameID _lookupFrameNumber(const std::string & frameid_str) const
-  {
-    return lookupFrameNumber(frameid_str);
-  }
-  TF2_PUBLIC
-  CompactFrameID _lookupOrInsertFrameNumber(const std::string & frameid_str)
-  {
-    return lookupOrInsertFrameNumber(frameid_str);
-  }
+  CompactFrameID _lookupOrInsertFrameNumber(const std::string & frameid_str);
 
   TF2_PUBLIC
   tf2::TF2Error _getLatestCommonTime(
     CompactFrameID target_frame, CompactFrameID source_frame,
-    TimePoint & time, std::string * error_string) const
-  {
-    std::unique_lock<std::mutex> lock(frame_mutex_);
-    return getLatestCommonTime(target_frame, source_frame, time, error_string);
-  }
+    TimePoint & time, std::string * error_string) const;
 
   TF2_PUBLIC
   CompactFrameID _validateFrameId(
     const char * function_name_arg,
-    const std::string & frame_id) const
-  {
-    return validateFrameId(function_name_arg, frame_id);
-  }
+    const std::string & frame_id) const;
 
   /**@brief Get the duration over which this transformer will cache */
   TF2_PUBLIC
-  tf2::Duration getCacheLength() {return cache_time_;}
+  tf2::Duration getCacheLength() const;
 
-  /** \brief Backwards compatabilityA way to see what frames have been cached
+  /** \brief A backwards compatability method to see what frames have been cached
    * Useful for debugging
    */
   TF2_PUBLIC
   std::string _allFramesAsDot(TimePoint current_time) const;
+
   TF2_PUBLIC
   std::string _allFramesAsDot() const;
 
-  /** \brief Backwards compatabilityA way to see what frames are in a chain
+  /** \brief A backwards compatability method to see what frames are in a chain
    * Useful for debugging
    */
   TF2_PUBLIC
@@ -327,7 +314,6 @@ private:
   /** \brief A map to lookup the most recent authority for a given frame */
   std::map<CompactFrameID, std::string> frame_authority_;
 
-
   /// How long to cache transform history
   tf2::Duration cache_time_;
 
@@ -361,6 +347,7 @@ private:
     const tf2::Transform & transform_in, const std::string frame_id,
     const std::string child_frame_id, const TimePoint stamp,
     const std::string & authority, bool is_static);
+
   void lookupTransformImpl(
     const std::string & target_frame, const std::string & source_frame,
     const TimePoint & time_in, tf2::Transform & transform, TimePoint & time_out) const;

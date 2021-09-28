@@ -980,7 +980,9 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
   TimePoint & time, std::string * error_string) const
 {
   // Error if one of the frames don't exist.
-  if (source_id == 0 || target_id == 0) {return tf2::TF2Error::TF2_LOOKUP_ERROR;}
+  if (source_id == 0 || target_id == 0) {
+    return tf2::TF2Error::TF2_LOOKUP_ERROR;
+  }
 
   if (source_id == target_id) {
     TimeCacheInterfacePtr cache = getFrame(source_id);
@@ -1324,11 +1326,39 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
-  TransformStorage temp;
-
   for (size_t counter = 1; counter < frameIDs_reverse_.size(); counter++) {
     vec.push_back(frameIDs_reverse_[counter]);
   }
+}
+
+CompactFrameID BufferCore::_lookupFrameNumber(const std::string & frameid_str) const
+{
+  return lookupFrameNumber(frameid_str);
+}
+
+CompactFrameID BufferCore::_lookupOrInsertFrameNumber(const std::string & frameid_str)
+{
+  return lookupOrInsertFrameNumber(frameid_str);
+}
+
+tf2::TF2Error BufferCore::_getLatestCommonTime(
+  CompactFrameID target_frame, CompactFrameID source_frame,
+  TimePoint & time, std::string * error_string) const
+{
+  std::unique_lock<std::mutex> lock(frame_mutex_);
+  return getLatestCommonTime(target_frame, source_frame, time, error_string);
+}
+
+CompactFrameID BufferCore::_validateFrameId(
+  const char * function_name_arg,
+  const std::string & frame_id) const
+{
+  return validateFrameId(function_name_arg, frame_id);
+}
+
+tf2::Duration BufferCore::getCacheLength() const
+{
+  return cache_time_;
 }
 
 void BufferCore::testTransformableRequests()
