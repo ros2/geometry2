@@ -1202,7 +1202,7 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     req.source_string = source_frame;
   }
 
-  transformable_requests_.push_back(req);
+  transformable_requests_[req.request_handle] = req;
 
   return req.request_handle;
 }
@@ -1212,13 +1212,9 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
   std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
 
-  V_TransformableRequest::iterator remove_it = std::remove_if(transformable_requests_.begin(), transformable_requests_.end(),
-                                                              [handle](TransformableRequest req) { return handle == req.request_handle; });
-  for (V_TransformableRequest::iterator it = remove_it; it != transformable_requests_.end(); ++it) {
-    transformable_callbacks_.erase(it->cb_handle);
-  }
+  transformable_callbacks_.erase(transformable_requests_[handle].cb_handle);
 
-  transformable_requests_.erase(remove_it, transformable_requests_.end());
+  transformable_requests_.erase(handle);
 }
 
 // backwards compability for tf methods
@@ -1293,9 +1289,9 @@ tf2::Duration BufferCore::getCacheLength() const
 void BufferCore::testTransformableRequests()
 {
   std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-  V_TransformableRequest::iterator it = transformable_requests_.begin();
+  std::unordered_map<TransformableRequestHandle, TransformableRequest>::iterator it = transformable_requests_.begin();
   while (it != transformable_requests_.end()) {
-    TransformableRequest & req = *it;
+    TransformableRequest & req = it->second;
 
     // One or both of the frames may not have existed when the request was originally made.
     if (req.target_id == 0) {
@@ -1323,9 +1319,9 @@ void BufferCore::testTransformableRequests()
     if (do_cb) {
       {
         std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
-        M_TransformableCallback::iterator it = transformable_callbacks_.find(req.cb_handle);
-        if (it != transformable_callbacks_.end()) {
-          const TransformableCallback & cb = it->second;
+        M_TransformableCallback::iterator tcit = transformable_callbacks_.find(req.cb_handle);
+        if (tcit != transformable_callbacks_.end()) {
+          const TransformableCallback & cb = tcit->second;
           cb(
             req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
               req.source_id), req.time, result);
@@ -1333,17 +1329,9 @@ void BufferCore::testTransformableRequests()
         }
       }
 
-      if (transformable_requests_.size() > 1) {
-        transformable_requests_[it -
-          transformable_requests_.begin()] = transformable_requests_.back();
-      }
-
-      transformable_requests_.erase(transformable_requests_.end() - 1);
-
-      // If we've removed the last element, then the iterator is invalid
-      if (0u == transformable_requests_.size()) {
-        it = transformable_requests_.end();
-      }
+      TransformableRequestHandle handle = req.request_handle;
+      ++it;
+      transformable_requests_.erase(handle);
     } else {
       ++it;
     }

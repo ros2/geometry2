@@ -396,8 +396,7 @@ private:
     std::string target_string;
     std::string source_string;
   };
-  typedef std::vector<TransformableRequest> V_TransformableRequest;
-  V_TransformableRequest transformable_requests_;
+  std::unordered_map<TransformableRequestHandle, TransformableRequest> transformable_requests_;
   std::mutex transformable_requests_mutex_;
   uint64_t transformable_requests_counter_;
 
