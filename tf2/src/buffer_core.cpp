@@ -163,7 +163,7 @@ BufferCore::~BufferCore() {}
 
 void BufferCore::clear()
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   if (frames_.size() > 1) {
     for (std::vector<TimeCacheInterfacePtr>::iterator cache_it = frames_.begin() + 1;
       cache_it != frames_.end(); ++cache_it)
@@ -179,6 +179,7 @@ bool BufferCore::setTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   const std::string & authority, bool is_static)
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   tf2::Transform tf2_transform(tf2::Quaternion(
       transform.transform.rotation.x,
       transform.transform.rotation.y,
@@ -265,37 +266,34 @@ bool BufferCore::setTransformImpl(
     return false;
   }
 
-  {
-    std::unique_lock<std::mutex> lock(frame_mutex_);
-    CompactFrameID frame_number = lookupOrInsertFrameNumber(stripped_child_frame_id);
-    TimeCacheInterfacePtr frame = getFrame(frame_number);
-    if (frame == nullptr) {
+  CompactFrameID frame_number = lookupOrInsertFrameNumber(stripped_child_frame_id);
+  TimeCacheInterfacePtr frame = getFrame(frame_number);
+  if (frame == nullptr) {
+    frame = allocateFrame(frame_number, is_static);
+  } else {
+    // Overwrite TimeCacheInterface type with a current input
+    const TimeCache * time_cache_ptr = dynamic_cast<TimeCache *>(frame.get());
+    const StaticCache * static_cache_ptr = dynamic_cast<StaticCache *>(frame.get());
+    if (time_cache_ptr && is_static) {
       frame = allocateFrame(frame_number, is_static);
-    } else {
-      // Overwrite TimeCacheInterface type with a current input
-      const TimeCache * time_cache_ptr = dynamic_cast<TimeCache *>(frame.get());
-      const StaticCache * static_cache_ptr = dynamic_cast<StaticCache *>(frame.get());
-      if (time_cache_ptr && is_static) {
-        frame = allocateFrame(frame_number, is_static);
-      } else if (static_cache_ptr && !is_static) {
-        frame = allocateFrame(frame_number, is_static);
-      }
+    } else if (static_cache_ptr && !is_static) {
+      frame = allocateFrame(frame_number, is_static);
     }
+  }
 
-    if (frame->insertData(
-        TransformStorage(
-          stamp, transform_in.getRotation(),
-          transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
-    {
-      frame_authority_[frame_number] = authority;
-    } else {
-      std::string stamp_str = displayTimePoint(stamp);
-      CONSOLE_BRIDGE_logWarn(
-        "TF_OLD_DATA ignoring data from the past for frame %s at time %s according to authority"
-        " %s\nPossible reasons are listed at http://wiki.ros.org/tf/Errors%%20explained",
-        stripped_child_frame_id.c_str(), stamp_str.c_str(), authority.c_str());
-      return false;
-    }
+  if (frame->insertData(
+      TransformStorage(
+        stamp, transform_in.getRotation(),
+        transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
+  {
+    frame_authority_[frame_number] = authority;
+  } else {
+    std::string stamp_str = displayTimePoint(stamp);
+    CONSOLE_BRIDGE_logWarn(
+      "TF_OLD_DATA ignoring data from the past for frame %s at time %s according to authority"
+      " %s\nPossible reasons are listed at http://wiki.ros.org/tf/Errors%%20explained",
+      stripped_child_frame_id.c_str(), stamp_str.c_str(), authority.c_str());
+    return false;
   }
 
   testTransformableRequests();
@@ -303,7 +301,6 @@ bool BufferCore::setTransformImpl(
   return true;
 }
 
-// This method expects that the caller is holding frame_mutex_
 TimeCacheInterfacePtr BufferCore::allocateFrame(CompactFrameID cfid, bool is_static)
 {
   if (is_static) {
@@ -572,6 +569,7 @@ BufferCore::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   tf2::Transform transform;
   TimePoint time_out;
   lookupTransformImpl(target_frame, source_frame, time, transform, time_out);
@@ -601,6 +599,7 @@ BufferCore::lookupTransform(
   const std::string & source_frame, const TimePoint & source_time,
   const std::string & fixed_frame) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   tf2::Transform transform;
   TimePoint time_out;
   lookupTransformImpl(
@@ -632,8 +631,6 @@ void BufferCore::lookupTransformImpl(
   const TimePoint & time, tf2::Transform & transform,
   TimePoint & time_out) const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
-
   if (target_frame == source_frame) {
     transform.setIdentity();
 
@@ -722,7 +719,6 @@ bool BufferCore::canTransformInternal(
   CompactFrameID target_id, CompactFrameID source_id,
   const TimePoint & time, std::string * error_msg) const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
   if (target_id == 0 || source_id == 0) {
     if (error_msg) {
       *error_msg = "Source or target frame is not yet defined";
@@ -746,6 +742,7 @@ bool BufferCore::canTransform(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time, std::string * error_msg) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   // Short circuit if target_frame == source_frame
   if (target_frame == source_frame) {
     return true;
@@ -770,6 +767,7 @@ bool BufferCore::canTransform(
   const std::string & source_frame, const TimePoint & source_time,
   const std::string & fixed_frame, std::string * error_msg) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   CompactFrameID target_id = validateFrameId(
     "canTransform argument target_frame", target_frame, error_msg);
   if (target_id == 0) {
@@ -854,6 +852,7 @@ void BufferCore::createConnectivityErrorString(
 
 std::vector<std::string> BufferCore::getAllFrameNames() const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   std::vector<std::string> frames;
   _getFrameStrings(frames);
   return frames;
@@ -861,7 +860,7 @@ std::vector<std::string> BufferCore::getAllFrameNames() const
 
 std::string BufferCore::allFramesAsString() const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return this->allFramesAsStringNoLock();
 }
 
@@ -1060,7 +1059,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
 std::string BufferCore::allFramesAsYAML(TimePoint current_time) const
 {
   std::stringstream mstream;
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
 
   if (frames_.size() == 1) {
     mstream << "[]";
@@ -1135,28 +1134,12 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
   const std::string & source_frame,
   TimePoint time)
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
+
   // shortcut if target == source
   if (target_frame == source_frame) {
     return 0;
   }
-
-  // Even though we only modify transformable_requests_ at the end of the
-  // method, we still need to take the lock near the beginning.  This is to
-  // ensure that we don't have a TOCTTOU race between this method and
-  // testTransformableRequests.  If the lock were only at the end of this
-  // method, the race occurs like this:
-  //
-  // T1: addTransformableRequest, determines that needs to add to transformable_requests_
-  // T2: in testTransformableRequests already, holding the lock
-  // T1: blocked getting lock
-  // T2: calls all callbacks for outstanding transforms (doesn't include the current one)
-  // T2: unlocks
-  // T1: gets lock, adds to list
-  //
-  // If nothing ever calls setTransform() again, then the callback for the
-  // current request will never get called.  We fix this by holding the mutex
-  // across most of this method.
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
 
   TransformableRequest req;
   req.target_id = lookupFrameNumber(target_frame);
@@ -1178,15 +1161,12 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     }
   }
 
-  {
-    std::unique_lock<std::mutex> lock(transformable_callbacks_mutex_);
-    TransformableCallbackHandle handle = ++transformable_callbacks_counter_;
-    while (!transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
-      handle = ++transformable_callbacks_counter_;
-    }
+  TransformableCallbackHandle handle = ++transformable_callbacks_counter_;
+  while (!transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
+    handle = ++transformable_callbacks_counter_;
+  }
 
     req.cb_handle = handle;
-  }
 
   req.time = time;
   req.request_handle = ++transformable_requests_counter_;
@@ -1209,8 +1189,7 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
 
 void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
 {
-  std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
-  std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
 
   transformable_callbacks_.erase(transformable_requests_[handle].cb_handle);
 
@@ -1220,7 +1199,7 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
 // backwards compability for tf methods
 bool BufferCore::_frameExists(const std::string & frame_id_str) const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return frameIDs_.count(frame_id_str) != 0;
 }
 
@@ -1228,7 +1207,7 @@ bool BufferCore::_getParent(
   const std::string & frame_id, TimePoint time,
   std::string & parent) const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   CompactFrameID frame_number = lookupFrameNumber(frame_id);
   TimeCacheInterfacePtr frame = getFrame(frame_number);
 
@@ -1249,7 +1228,7 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 {
   vec.clear();
 
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
 
   for (size_t counter = 1; counter < frameIDs_reverse_.size(); counter++) {
     vec.push_back(frameIDs_reverse_[counter]);
@@ -1258,11 +1237,13 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 
 CompactFrameID BufferCore::_lookupFrameNumber(const std::string & frameid_str) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return lookupFrameNumber(frameid_str);
 }
 
 CompactFrameID BufferCore::_lookupOrInsertFrameNumber(const std::string & frameid_str)
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return lookupOrInsertFrameNumber(frameid_str);
 }
 
@@ -1270,7 +1251,7 @@ tf2::TF2Error BufferCore::_getLatestCommonTime(
   CompactFrameID target_frame, CompactFrameID source_frame,
   TimePoint & time, std::string * error_string) const
 {
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return getLatestCommonTime(target_frame, source_frame, time, error_string);
 }
 
@@ -1278,6 +1259,7 @@ CompactFrameID BufferCore::_validateFrameId(
   const char * function_name_arg,
   const std::string & frame_id) const
 {
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
   return validateFrameId(function_name_arg, frame_id);
 }
 
@@ -1288,7 +1270,6 @@ tf2::Duration BufferCore::getCacheLength() const
 
 void BufferCore::testTransformableRequests()
 {
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
   std::unordered_map<TransformableRequestHandle, TransformableRequest>::iterator it = transformable_requests_.begin();
   while (it != transformable_requests_.end()) {
     TransformableRequest & req = it->second;
@@ -1318,7 +1299,6 @@ void BufferCore::testTransformableRequests()
 
     if (do_cb) {
       {
-        std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
         M_TransformableCallback::iterator tcit = transformable_callbacks_.find(req.cb_handle);
         if (tcit != transformable_callbacks_.end()) {
           const TransformableCallback & cb = tcit->second;
@@ -1342,7 +1322,7 @@ std::string BufferCore::_allFramesAsDot(TimePoint current_time) const
 {
   std::stringstream mstream;
   mstream << "digraph G {" << std::endl;
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
 
   if (frames_.size() == 1) {
     mstream << "\"no tf data recieved\"";
@@ -1451,7 +1431,7 @@ void BufferCore::_chainAsVector(
   output.clear();  // empty vector
 
   std::stringstream mstream;
-  std::unique_lock<std::mutex> lock(frame_mutex_);
+  std::lock_guard<std::recursive_mutex> lock(data_mutex_);
 
   TransformAccum accum;
 

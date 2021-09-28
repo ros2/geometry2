@@ -358,14 +358,17 @@ public:
 private:
   /******************** Internal Storage ****************/
 
+  /** \brief A mutex to protect all of the internal data.
+   * Note that it is recursive because we want user callbacks to be able to call
+   * back into this module.
+   */
+  mutable std::recursive_mutex data_mutex_;
+
   /** \brief The pointers to potential frames that the tree can be made of.
    * The frames will be dynamically allocated at run time when set the first time.
    */
   typedef std::vector<TimeCacheInterfacePtr> V_TimeCacheInterface;
   V_TimeCacheInterface frames_;
-
-  /** \brief A mutex to protect testing and allocating new frames on the above vector */
-  mutable std::mutex frame_mutex_;
 
   /** \brief A map from string frame ids to CompactFrameID */
   typedef std::unordered_map<std::string, CompactFrameID> M_StringToCompactFrameID;
@@ -384,7 +387,6 @@ private:
       TransformableCallback> M_TransformableCallback;
   M_TransformableCallback transformable_callbacks_;
   uint32_t transformable_callbacks_counter_;
-  std::mutex transformable_callbacks_mutex_;
 
   struct TransformableRequest
   {
@@ -397,7 +399,6 @@ private:
     std::string source_string;
   };
   std::unordered_map<TransformableRequestHandle, TransformableRequest> transformable_requests_;
-  std::mutex transformable_requests_mutex_;
   uint64_t transformable_requests_counter_;
 
   bool using_dedicated_thread_;
