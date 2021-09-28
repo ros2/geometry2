@@ -60,35 +60,12 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
 
 TransformListener::~TransformListener()
 {
+  if (spin_thread_) {
+    executor_->cancel();
+    dedicated_listener_thread_->join();
+  }
 }
 
-void TransformListener::initThread(
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface)
-{
-  auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-
-  // This lambda is required because `std::thread` cannot infer the correct
-  // rclcpp::spin, since there are more than one versions of it (overloaded).
-  // see: http://stackoverflow.com/a/27389714/671658
-  // I (wjwwood) chose to use the lamda rather than the static cast solution.
-  auto run_func =
-    [executor](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
-      executor->add_node(node_base_interface);
-      executor->spin();
-      executor->remove_node(node_base_interface);
-    };
-  dedicated_listener_thread_ = thread_ptr(
-    new std::thread(run_func, node_base_interface),
-    [executor](std::thread * t) {
-      executor->cancel();
-      t->join();
-      delete t;
-      // TODO(tfoote) reenable callback queue processing
-      // tf_message_callback_queue_.callAvailable(ros::WallDuration(0.01));
-    });
-  // Tell the buffer we have a dedicated thread to enable timeouts
-  buffer_.setUsingDedicatedThread(true);
-}
 
 void TransformListener::subscription_callback(
   const tf2_msgs::msg::TFMessage::ConstSharedPtr msg,
