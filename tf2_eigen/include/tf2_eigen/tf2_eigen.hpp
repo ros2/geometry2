@@ -160,11 +160,11 @@ void doTransform(
   // lower left 3x3 block is tricky. See https://core.ac.uk/download/pdf/154240607.pdf
   Eigen::MatrixXd pos_vector_3x3(3, 3);
   // Disable formatting checks so the matrix remains human-readable
-/* *INDENT-OFF* */
-pos_vector_3x3 << 0, -affine_transform.translation().z(), affine_transform.translation().y(),
-                  affine_transform.translation().z(), 0, -affine_transform.translation().x(),
-                  -affine_transform.translation().y(), affine_transform.translation().x(), 0;
-/* *INDENT-ON* */
+  /* *INDENT-OFF* */
+  pos_vector_3x3 << 0, -affine_transform.translation().z(), affine_transform.translation().y(),
+                    affine_transform.translation().z(), 0, -affine_transform.translation().x(),
+                    -affine_transform.translation().y(), affine_transform.translation().x(), 0;
+  /* *INDENT-ON* */
   twist_transform.block(3, 0, 3, 3) = pos_vector_3x3 * affine_transform.rotation();
   // lower right 3x3 block is the rotation part
   twist_transform.block(3, 3, 3, 3) = affine_transform.rotation();
