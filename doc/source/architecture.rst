@@ -8,9 +8,9 @@ The high level goal is to allow developers and users not to have to worry about 
 Main Interface
 --------------
 
-The main interface is defined through the `tf2::BufferCore <https://docs.ros2.org/galactic/api/tf2/buffer__core_8h.html>`_ interface.
+The main interface is defined through the `tf2::BufferCore <https://docs.ros2.org/latest/api/tf2/buffer__core_8h.html>`_ interface.
 
-It uses the exceptions in `exceptions.h <https://docs.ros2.org/galactic/api/tf2/exceptions_8h.html>`_ and the :class:`tf2::Stamped` datatype in `transform_datatypes.h <https://docs.ros2.org/galactic/api/tf2/transform__datatypes_8h.html>`_.
+It uses the exceptions in `exceptions.h <https://docs.ros2.org/latest/api/tf2/exceptions_8h.html>`_ and the :class:`tf2::Stamped` datatype in `transform_datatypes.h <https://docs.ros2.org/latest/api/tf2/transform__datatypes_8h.html>`_.
 
 Conversion Interface
 --------------------
@@ -18,7 +18,7 @@ Conversion Interface
 `tf2` offers a templated conversion interface for external libraries to specify conversions between `tf2`-specific data types and user-defined data types.
 Various templated functions in `tf2_ros` use the conversion interface to apply transformations from the tf server to these custom datatypes.
 
-The conversion interface is defined in `tf2/convert.h <https://docs.ros2.org/galactic/api/tf2/convert_8h.html>`_.
+The conversion interface is defined in `tf2/convert.h <https://docs.ros2.org/latest/api/tf2/convert_8h.html>`_.
 
 Buffer Core
 -----------
@@ -81,7 +81,7 @@ This allows the core packages to have minimal dependencies and there be packages
 However it's recommended to use a fully supported math datatype which best supports your application.
 `tf2` conversion methods also support converting between and transforming between multiple different datatypes too.
 
-At it's core `tf2` relies on the `stamped data types <https://docs.ros2.org/galactic/api/tf2/classtf2_1_1Stamped.html>`_ which can be conveniently correlated to ROS 2 messages which have a Header.
+At it's core `tf2` relies on the `stamped data types <https://docs.ros2.org/latest/api/tf2/classtf2_1_1Stamped.html>`_ which can be conveniently correlated to ROS 2 messages which have a Header.
 
 
 Data Type Support Packages
@@ -90,19 +90,19 @@ Data Type Support Packages
 These packages provide methods to allow `tf2` to work natively with data types of any external library.
 Most are either C++ or Python specific.
 
-  * `tf2_bullet <https://docs.ros2.org/galactic/api/tf2_bullet/>`_
+  * `tf2_bullet <https://docs.ros2.org/latest/api/tf2_bullet/>`_
 
     - `tf2` methods to work with bullet datatypes natively in C++.
 
-  * `tf2_eigen <https://docs.ros2.org/galactic/api/tf2_eigen/>`_
+  * `tf2_eigen <https://docs.ros2.org/latest/api/tf2_eigen/>`_
 
     - `tf2` methods to work with Eigen datatypes natively in C++.
 
-  * `tf2_geometry_msgs <https://docs.ros2.org/galactic/api/tf2_geometry_msgs/>`_
+  * `tf2_geometry_msgs <https://docs.ros2.org/latest/api/tf2_geometry_msgs/>`_
 
     - `tf2` methods to work with geometry_msgs datatypes natively in C++ or Python.
 
-  * `tf2_kdl <https://docs.ros2.org/galactic/api/tf2_kdl/>`_
+  * `tf2_kdl <https://docs.ros2.org/latest/api/tf2_kdl/>`_
 
     - `tf2` methods to work with kdl datatypes natively in C++ or Python.
 
@@ -128,13 +128,13 @@ Geometry
 
 `tf2` provides basic geometry data types, such as
 
-  - `Vector3 <https://docs.ros2.org/galactic/api/tf2/Vector3_8h.html>`_
+  - `Vector3 <https://docs.ros2.org/latest/api/tf2/Vector3_8h.html>`_
 
-  - `Matrix3x3 <https://docs.ros2.org/galactic/api/tf2/Matrix3x3_8h.html>`_
+  - `Matrix3x3 <https://docs.ros2.org/latest/api/tf2/Matrix3x3_8h.html>`_
 
-  - `Quaternion <https://docs.ros2.org/galactic/api/tf2/Quaternion_8h.html>`_
+  - `Quaternion <https://docs.ros2.org/latest/api/tf2/Quaternion_8h.html>`_
 
-  - `Transform <https://docs.ros2.org/galactic/api/tf2/Transform_8h.html>`_
+  - `Transform <https://docs.ros2.org/latest/api/tf2/Transform_8h.html>`_
 
 These data types support linear algebra operations between each other.
 
