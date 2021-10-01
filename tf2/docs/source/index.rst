@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to tf2's documentation!
-==================================
+===============================
 
 .. toctree::
    :maxdepth: 2
