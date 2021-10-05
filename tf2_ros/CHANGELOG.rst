@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.12 (2021-10-05)
+--------------------
+
 0.13.11 (2021-08-31)
 --------------------
 * Fix tf2_echo does not work with ros-args (`#407 <https://github.com/ros2/geometry2/issues/407>`_) (`#408 <https://github.com/ros2/geometry2/issues/408>`_) (`#411 <https://github.com/ros2/geometry2/issues/411>`_)

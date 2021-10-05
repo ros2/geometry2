@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.12 (2021-10-05)
+--------------------
+
 0.13.11 (2021-08-31)
 --------------------
 * Fix a TOCTTOU race in tf2 (`#307 <https://github.com/ros2/geometry2/issues/307>`_) (`#449 <https://github.com/ros2/geometry2/issues/449>`_)
