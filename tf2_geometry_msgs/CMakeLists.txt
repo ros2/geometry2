@@ -32,12 +32,10 @@ if(BUILD_TESTING)
 
   list(APPEND AMENT_LINT_AUTO_EXCLUDE
     ament_cmake_cppcheck
-    ament_cmake_uncrustify
   )
   ament_lint_auto_find_test_dependencies()
 
   ament_cppcheck(LANGUAGE "c++")
-  ament_uncrustify(LANGUAGE "C++")
 
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
