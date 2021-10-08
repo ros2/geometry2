@@ -35,19 +35,22 @@
 #endif
 #endif
 
-// To get M_PI, especially on Windows.
-#include <math.h>
-
 #include <rclcpp/clock.hpp>
 #include <tf2_ros/transform_listener.h>
 #include <gtest/gtest.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+// To get M_PI, especially on Windows.
+#include <cmath>
+#include <memory>
+#include <string>
+
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
-geometry_msgs::msg::TransformStamped generate_stamped_transform() {
+geometry_msgs::msg::TransformStamped generate_stamped_transform()
+{
   geometry_msgs::msg::TransformStamped t;
   t.transform.translation.x = 10;
   t.transform.translation.y = 20;
@@ -210,7 +213,8 @@ TEST(TfGeometry, Frame)
     v1.header.frame_id = "A";
 
     // simple api
-    geometry_msgs::msg::PoseStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    geometry_msgs::msg::PoseStamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
     EXPECT_NEAR(v_simple.pose.position.x, -9, EPS);
     EXPECT_NEAR(v_simple.pose.position.y, 18, EPS);
     EXPECT_NEAR(v_simple.pose.position.z, 27, EPS);
@@ -221,8 +225,8 @@ TEST(TfGeometry, Frame)
 
 
     // advanced api
-    geometry_msgs::msg::PoseStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-      						      "A", tf2::durationFromSec(3.0));
+    geometry_msgs::msg::PoseStamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
     EXPECT_NEAR(v_advanced.pose.position.x, -9, EPS);
     EXPECT_NEAR(v_advanced.pose.position.y, 18, EPS);
     EXPECT_NEAR(v_advanced.pose.position.z, 27, EPS);
@@ -232,7 +236,6 @@ TEST(TfGeometry, Frame)
     EXPECT_NEAR(v_advanced.pose.orientation.w, 1.0, EPS);
   }
 }
-
 
 TEST(TfGeometry, FrameWithCovariance)
 {
@@ -308,7 +311,8 @@ TEST(TfGeometry, FrameWithCovariance)
     };
 
     // simple api
-    geometry_msgs::msg::PoseWithCovarianceStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    geometry_msgs::msg::PoseWithCovarianceStamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
     EXPECT_NEAR(v_simple.pose.pose.position.x, -9, EPS);
     EXPECT_NEAR(v_simple.pose.pose.position.y, 18, EPS);
     EXPECT_NEAR(v_simple.pose.pose.position.z, 27, EPS);
@@ -320,8 +324,8 @@ TEST(TfGeometry, FrameWithCovariance)
 
 
     // advanced api
-    geometry_msgs::msg::PoseWithCovarianceStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-  							      "A", tf2::durationFromSec(3.0));
+    geometry_msgs::msg::PoseWithCovarianceStamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
     EXPECT_NEAR(v_advanced.pose.pose.position.x, -9, EPS);
     EXPECT_NEAR(v_advanced.pose.pose.position.y, 18, EPS);
     EXPECT_NEAR(v_advanced.pose.pose.position.z, 27, EPS);
@@ -360,14 +364,15 @@ TEST(TfGeometry, Vector)
     v1.header.frame_id = "A";
 
     // simple api
-    geometry_msgs::msg::Vector3Stamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    geometry_msgs::msg::Vector3Stamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
     EXPECT_NEAR(v_simple.vector.x, 1, EPS);
     EXPECT_NEAR(v_simple.vector.y, -2, EPS);
     EXPECT_NEAR(v_simple.vector.z, -3, EPS);
 
     // advanced api
-    geometry_msgs::msg::Vector3Stamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-  								 "A", tf2::durationFromSec(3.0));
+    geometry_msgs::msg::Vector3Stamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
     EXPECT_NEAR(v_advanced.vector.x, 1, EPS);
     EXPECT_NEAR(v_advanced.vector.y, -2, EPS);
     EXPECT_NEAR(v_advanced.vector.z, -3, EPS);
@@ -402,14 +407,15 @@ TEST(TfGeometry, Point)
     v1.header.frame_id = "A";
 
     // simple api
-    geometry_msgs::msg::PointStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    geometry_msgs::msg::PointStamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
     EXPECT_NEAR(v_simple.point.x, -9, EPS);
     EXPECT_NEAR(v_simple.point.y, 18, EPS);
     EXPECT_NEAR(v_simple.point.z, 27, EPS);
 
     // advanced api
-    geometry_msgs::msg::PointStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-  								 "A", tf2::durationFromSec(3.0));
+    geometry_msgs::msg::PointStamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
     EXPECT_NEAR(v_advanced.point.x, -9, EPS);
     EXPECT_NEAR(v_advanced.point.y, 18, EPS);
     EXPECT_NEAR(v_advanced.point.z, 27, EPS);
@@ -509,7 +515,8 @@ TEST(TfGeometry, Transform)
     v1.header.frame_id = "A";
 
     // simple api
-    geometry_msgs::msg::TransformStamped v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    geometry_msgs::msg::TransformStamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
     EXPECT_NEAR(v_simple.transform.translation.x, -9, EPS);
     EXPECT_NEAR(v_simple.transform.translation.y, 18, EPS);
     EXPECT_NEAR(v_simple.transform.translation.z, 27, EPS);
@@ -519,8 +526,8 @@ TEST(TfGeometry, Transform)
     EXPECT_NEAR(v_simple.transform.rotation.w, 1.0, EPS);
 
     // advanced api
-    geometry_msgs::msg::TransformStamped v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-      						      "A", tf2::durationFromSec(3.0));
+    geometry_msgs::msg::TransformStamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
     EXPECT_NEAR(v_advanced.transform.translation.x, -9, EPS);
     EXPECT_NEAR(v_advanced.transform.translation.y, 18, EPS);
     EXPECT_NEAR(v_advanced.transform.translation.z, 27, EPS);
@@ -532,7 +539,8 @@ TEST(TfGeometry, Transform)
 }
 
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);

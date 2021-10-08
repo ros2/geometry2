@@ -31,13 +31,13 @@
 
 import unittest
 
-from geometry_msgs.msg import (PointStamped, PoseStamped,
-                               PoseWithCovarianceStamped, Quaternion,
-                               TransformStamped, Vector3Stamped)
+from geometry_msgs.msg import PointStamped, PoseStamped, PoseWithCovarianceStamped, Quaternion
+from geometry_msgs.msg import TransformStamped, Vector3Stamped
+import numpy as np
 import rclpy
 import tf2_geometry_msgs
 import tf2_ros
-import numpy as np
+
 
 class GeometryMsgs(unittest.TestCase):
 
@@ -50,7 +50,8 @@ class GeometryMsgs(unittest.TestCase):
         t.header.frame_id = 'a'
         t.child_frame_id = 'b'
         b.set_transform(t, 'eitan_rocks')
-        out = b.lookup_transform('a', 'b',
+        out = b.lookup_transform('a',
+                                 'b',
                                  rclpy.time.Time(seconds=2.0).to_msg(),
                                  rclpy.time.Duration(seconds=2))
         self.assertEqual(out.transform.translation.x, 1)
@@ -175,6 +176,7 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.orientation.z, 0)
         self.assertEqual(out.pose.orientation.w, 1)
         self.assertTrue(np.array_equal(out.pose.covariance, expected_covariance))
+
 
 if __name__ == '__main__':
     rclpy.init(args=None)
