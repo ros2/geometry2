@@ -36,7 +36,6 @@ import yaml
 
 import rclpy
 from tf2_msgs.srv import FrameGraph
-import tf2_py as tf2
 import tf2_ros
 
 
