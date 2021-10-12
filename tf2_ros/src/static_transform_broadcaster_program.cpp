@@ -107,23 +107,22 @@ static std::string parse_args(
   std::string & child_frame_id)
 {
   size_t size = args.size();
-  size_t last_index = size - 1;
+
+  help = false;
 
   if (size < 1) {
     return "Not enough arguments to parse";
   }
 
-  help = false;
+  size_t last_index = size - 1;
 
+  bool saw_frame_flag = false;
   bool saw_quat_flag = false;
   bool saw_rpy_flag = false;
+  bool saw_trans_flag = false;
   double roll = 0.0;
   double pitch = 0.0;
   double yaw = 0.0;
-
-  bool saw_trans_flag = false;
-
-  bool saw_frame_flag = false;
 
   auto qx_opt = std::make_shared<DoubleOption>(
     true, [&quat, &saw_quat_flag](double value) {
