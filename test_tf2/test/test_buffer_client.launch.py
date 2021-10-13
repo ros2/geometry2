@@ -21,7 +21,7 @@ def generate_test_description():
         package='tf2_ros',
         executable='static_transform_publisher',
         output='screen',
-        arguments=["5", "6", "7", "0", "0", "0", "1", "a", "b"]
+        arguments=["--x", "5", "--y", "6", "--z", "7", "--qx", "0", "--qy", "0", "--qz", "0", "--qw", "1", "--frame-id", "a", "--child-frame-id", "b"]
     )
 
     node_buffer_server = Node(
