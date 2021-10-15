@@ -2,6 +2,9 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.18.0 (2021-06-01)
 -------------------
 * Reenable sensor_msgs test (`#422 <https://github.com/ros2/geometry2/issues/422>`_)

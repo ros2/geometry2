@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix buffer_client.py using default timeout_padding (`#437 <https://github.com/ros2/geometry2/issues/437>`_)
+* Contributors: Carlos Andrés Álvarez Restrepo
+
 0.18.0 (2021-06-01)
 -------------------
 * Use underscores instead of dashes in setup.cfg. (`#403 <https://github.com/ros2/geometry2/issues/403>`_)

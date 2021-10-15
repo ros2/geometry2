@@ -2,6 +2,11 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change TF2Error names to be a bit more descriptive. (`#349 <https://github.com/ros2/geometry2/issues/349>`_)
+* Contributors: Chris Lalancette
+
 0.18.0 (2021-06-01)
 -------------------
 * Remove python_compat.h (`#417 <https://github.com/ros2/geometry2/issues/417>`_)

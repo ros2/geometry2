@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* More Intuitive CLI for Static Transform Publisher (`#392 <https://github.com/ros2/geometry2/issues/392>`_)
+* Reduce transform listener nodes (`#442 <https://github.com/ros2/geometry2/issues/442>`_)
+* `tf2_ros`: Fix deprecated subscriber callbacks (`#448 <https://github.com/ros2/geometry2/issues/448>`_)
+* Contributors: Abrar Rahman Protyasha, Hunter L. Allen, gezp
+
 0.18.0 (2021-06-01)
 -------------------
 * Fix tf2_echo does not work with ros-args (`#407 <https://github.com/ros2/geometry2/issues/407>`_) (`#408 <https://github.com/ros2/geometry2/issues/408>`_)

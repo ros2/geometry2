@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove some references to the ROS 1 wiki.
+* Contributors: Chris Lalancette
+
 0.18.0 (2021-06-01)
 -------------------
 * Fix tf2_bullet dependency export (`#428 <https://github.com/ros2/geometry2/issues/428>`_)

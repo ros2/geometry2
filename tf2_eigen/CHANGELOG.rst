@@ -2,6 +2,12 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove some references to the ROS 1 wiki.
+* Add doTransform function for twists or wrenches (`#406 <https://github.com/ros2/geometry2/issues/406>`_)
+* Contributors: AndyZe, Chris Lalancette
+
 0.18.0 (2021-06-01)
 -------------------
 * Reenable stamped eigen tests (`#429 <https://github.com/ros2/geometry2/issues/429>`_)

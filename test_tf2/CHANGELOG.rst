@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* More Intuitive CLI for Static Transform Publisher (`#392 <https://github.com/ros2/geometry2/issues/392>`_)
+* Contributors: Hunter L. Allen
+
 0.18.0 (2021-06-01)
 -------------------
 * Conversion tests for toMsg() (`#423 <https://github.com/ros2/geometry2/issues/423>`_)

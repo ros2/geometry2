@@ -2,6 +2,9 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.18.0 (2021-06-01)
 -------------------
 * KDL python formatting and licenses (`#425 <https://github.com/ros2/geometry2/issues/425>`_)

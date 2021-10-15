@@ -2,6 +2,12 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove unused import (`#465 <https://github.com/ros2/geometry2/issues/465>`_)
+* Adding date-time to frames filename (`#454 <https://github.com/ros2/geometry2/issues/454>`_)
+* Contributors: Hannu Henttinen, Nisala Kalupahana
+
 0.18.0 (2021-06-01)
 -------------------
 * Use underscores instead of dashes in setup.cfg. (`#403 <https://github.com/ros2/geometry2/issues/403>`_)

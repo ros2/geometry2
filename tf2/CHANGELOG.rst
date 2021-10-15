@@ -2,6 +2,20 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove unnecessary test dependencies.
+* Remove some references to the ROS 1 wiki.
+* Add rosidl_runtime_cpp as build_depend and build_export_depend.
+* Minor cleanups in CMakeLists.txt.
+* Remove include directory that doesn't exist.
+* Remove completely unnecessary target_link_libraries.
+* Remove unused speed_test from tf2.
+* Suppress clang warnings about enumerator attributes. (`#463 <https://github.com/ros2/geometry2/issues/463>`_)
+* Change TF2Error names to be a bit more descriptive. (`#349 <https://github.com/ros2/geometry2/issues/349>`_)
+* Fixed errors due to missing header link. (`#432 <https://github.com/ros2/geometry2/issues/432>`_)
+* Contributors: Chris Lalancette, Shivam Pandey
+
 0.18.0 (2021-06-01)
 -------------------
 * Deprecate tf2_geometry_msgs.h (`#418 <https://github.com/ros2/geometry2/issues/418>`_)
