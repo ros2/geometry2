@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * More Intuitive CLI for Static Transform Publisher (`#392 <https://github.com/ros2/geometry2/issues/392>`_)
 * Reduce transform listener nodes (`#442 <https://github.com/ros2/geometry2/issues/442>`_)
 * `tf2_ros`: Fix deprecated subscriber callbacks (`#448 <https://github.com/ros2/geometry2/issues/448>`_)

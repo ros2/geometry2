@@ -2,8 +2,8 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Remove some references to the ROS 1 wiki.
 * Contributors: Chris Lalancette
 

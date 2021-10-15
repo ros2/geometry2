@@ -2,8 +2,8 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Remove unused import (`#465 <https://github.com/ros2/geometry2/issues/465>`_)
 * Adding date-time to frames filename (`#454 <https://github.com/ros2/geometry2/issues/454>`_)
 * Contributors: Hannu Henttinen, Nisala Kalupahana

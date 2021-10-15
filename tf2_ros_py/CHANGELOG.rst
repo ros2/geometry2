@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Fix buffer_client.py using default timeout_padding (`#437 <https://github.com/ros2/geometry2/issues/437>`_)
 * Contributors: Carlos Andrés Álvarez Restrepo
 

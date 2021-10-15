@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Remove unnecessary test dependencies.
 * Remove some references to the ROS 1 wiki.
 * Add rosidl_runtime_cpp as build_depend and build_export_depend.

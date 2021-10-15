@@ -2,8 +2,8 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Remove some references to the ROS 1 wiki.
 * Add doTransform function for twists or wrenches (`#406 <https://github.com/ros2/geometry2/issues/406>`_)
 * Contributors: AndyZe, Chris Lalancette

@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.19.0 (2021-10-15)
+-------------------
 * Remove some references to the ROS 1 wiki.
 * Style fixes in tf2_geometry_msgs. (`#464 <https://github.com/ros2/geometry2/issues/464>`_)
 * Fix for issue `#431 <https://github.com/ros2/geometry2/issues/431>`_ - Covariance is not transformed in do_transform_pose_with_covariance_stamped (`#453 <https://github.com/ros2/geometry2/issues/453>`_)
