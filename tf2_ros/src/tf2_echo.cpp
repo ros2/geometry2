@@ -28,8 +28,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef _MSC_VER
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+#endif
+
+#include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <iomanip>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -39,8 +47,6 @@
 #include "tf2_ros/transform_listener.h"
 
 #include "rclcpp/rclcpp.hpp"
-
-#define _USE_MATH_DEFINES
 
 class echoListener
 {
@@ -125,6 +131,7 @@ int main(int argc, char ** argv)
       source_frameid.c_str(), target_frameid.c_str(), warning_msg.c_str());
     rate.sleep();
   }
+  constexpr double rad_to_deg = 180.0 / M_PI;
 
   // Nothing needs to be done except wait for a quit
   // The callbacks within the listener class will take care of everything
@@ -138,21 +145,38 @@ int main(int argc, char ** argv)
       std::cout.setf(std::ios::fixed, std::ios::floatfield);
       std::cout << "At time " << echo_transform.header.stamp.sec << "." <<
         echo_transform.header.stamp.nanosec << std::endl;
-      // double yaw, pitch, roll;
-      // echo_transform.getBasis().getRPY(roll, pitch, yaw);
-      // tf::Quaternion q = echo_transform.getRotation();
-      // tf::Vector3 v = echo_transform.getOrigin();
       auto translation = echo_transform.transform.translation;
+      double translation_xyz[] = {translation.x, translation.y, translation.z};
       auto rotation = echo_transform.transform.rotation;
       std::cout << "- Translation: [" << translation.x << ", " << translation.y << ", " <<
         translation.z << "]" << std::endl;
       std::cout << "- Rotation: in Quaternion [" << rotation.x << ", " << rotation.y << ", " <<
         rotation.z << ", " << rotation.w << "]" << std::endl;
-      // TODO(tfoote): restory rpy
-      // << "            in RPY (radian) [" <<  roll << ", " << pitch << ", " << yaw << "]" <<
-      // std::endl
-      // << "            in RPY (degree) [" <<  roll*180.0/M_PI << ", " << pitch*180.0/M_PI <<
-      // ", " << yaw*180.0/M_PI << "]" << std::endl;
+
+      tf2::Matrix3x3 mat(tf2::Quaternion{rotation.x, rotation.y, rotation.z, rotation.w});
+
+      tf2Scalar yaw, pitch, roll;
+      mat.getEulerYPR(yaw, pitch, roll);
+
+      std::cout << "- Rotation: in RPY (radian) [" << roll << ", " << pitch << ", " << yaw << "]" <<
+        std::endl;
+      std::cout << "- Rotation: in RPY (degree) [" <<
+        roll * rad_to_deg << ", " <<
+        pitch * rad_to_deg << ", " <<
+        yaw * rad_to_deg << "]" << std::endl;
+
+      std::cout << "- Matrix:" << std::endl;
+      for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+          std::cout << " " << std::setw(6) << std::setprecision(3) << mat[i][j];
+        }
+        std::cout << " " << std::setw(6) << std::setprecision(3) << translation_xyz[i];
+        std::cout << std::endl;
+      }
+      for (int j = 0; j < 3; j++) {
+        std::cout << " " << std::setw(6) << std::setprecision(3) << 0.0;
+      }
+      std::cout << " " << std::setw(6) << std::setprecision(3) << 1.0 << std::endl;
     } catch (const tf2::TransformException & ex) {
       std::cout << "Failure at " << clock->now().seconds() << std::endl;
       std::cout << "Exception thrown:" << ex.what() << std::endl;
