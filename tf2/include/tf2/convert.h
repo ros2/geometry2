@@ -165,7 +165,8 @@ void convert(const A & a1, A & a2)
  * \return A nested array representation of 6x6 covariance values.
  */
 inline
-std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array<double, 36> & row_major)
+std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
+  const std::array<double, 36> & row_major)
 {
   std::array<std::array<double, 6>, 6> nested_array;
   std::array<double, 36>::const_iterator ss = row_major.begin();
@@ -182,7 +183,8 @@ std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(const std::array
  * \return A row-major array of 36 covariance values.
  */
 inline
-std::array<double, 36> covarianceNestedToRowMajor(const std::array<std::array<double, 6>, 6> & nested_array)
+std::array<double, 36> covarianceNestedToRowMajor(
+  const std::array<std::array<double, 6>, 6> & nested_array)
 {
   std::array<double, 36> row_major = {};
   size_t counter = 0;
