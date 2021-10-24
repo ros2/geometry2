@@ -178,7 +178,7 @@ CompactFrameID BufferCore::validateFrameId(
   }
 
   CompactFrameID id = lookupFrameNumber(frame_id);
-  if (id == 0 && std::strstr(function_name_arg, "canTransform") == NULL) {
+  if (id == 0 && strstr(function_name_arg, "canTransform") == NULL) {
     fillOrWarnMessageForInvalidFrame(
       function_name_arg, frame_id, error_msg, "frame does not exist");
   }
