@@ -35,6 +35,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <string.h>
 
 #include "tf2/buffer_core.h"
 #include "tf2/time_cache.h"
