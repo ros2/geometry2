@@ -30,12 +30,12 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <map>
 #include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
-#include <string.h>
 
 #include "tf2/buffer_core.h"
 #include "tf2/time_cache.h"
@@ -178,7 +178,7 @@ CompactFrameID BufferCore::validateFrameId(
   }
 
   CompactFrameID id = lookupFrameNumber(frame_id);
-  if (id == 0 && strstr(function_name_arg, "canTransform") == NULL) {
+  if (id == 0 && strstr(function_name_arg, "canTransform") == nullptr) {
     fillOrWarnMessageForInvalidFrame(
       function_name_arg, frame_id, error_msg, "frame does not exist");
   }
