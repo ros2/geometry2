@@ -81,12 +81,12 @@ TEST(tf2, setTransformValidWithCallback)
 
   auto cb =
     [&received_request_handle, &received_target_frame, &received_source_frame, &received_time_point,
-    &transform_available](
-      tf2::TransformableRequestHandle request_handle,
-      const std::string & target_frame,
-      const std::string & source_frame,
-      tf2::TimePoint time,
-      tf2::TransformableResult result)
+      &transform_available](
+    tf2::TransformableRequestHandle request_handle,
+    const std::string & target_frame,
+    const std::string & source_frame,
+    tf2::TimePoint time,
+    tf2::TransformableResult result)
     {
       received_request_handle = request_handle;
       received_target_frame = target_frame;
@@ -287,8 +287,7 @@ TEST(tf2_convert, Covariance_RowMajor_To_Nested)
   // setup the expected output
   std::array<std::array<double, 6>, 6> expected;
   double start = 0;
-  for (std::array<double, 6> & ee : expected)
-  {
+  for (std::array<double, 6> & ee : expected) {
     std::iota(ee.begin(), ee.end(), start);
     start += static_cast<double>(ee.size());
   }
