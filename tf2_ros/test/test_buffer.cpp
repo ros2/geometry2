@@ -39,6 +39,7 @@
 
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_interface.h"
+#include "tf2_ros/create_timer_ros.h"
 #include "tf2_ros/transform_listener.h"
 
 class MockCreateTimer final : public tf2_ros::CreateTimerInterface
@@ -91,6 +92,50 @@ public:
 
   tf2_ros::TimerHandle timer_handle_index_;
   std::unordered_map<tf2_ros::TimerHandle, tf2_ros::TimerCallbackType> timer_to_callback_map_;
+};
+
+class MockCreateTimerROS final : public tf2_ros::CreateTimerROS
+{
+public:
+  MockCreateTimerROS(
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers)
+  : CreateTimerROS(node_base, node_timers), next_timer_handle_index_(0)
+  {
+  }
+
+  tf2_ros::TimerHandle
+  createTimer(
+    rclcpp::Clock::SharedPtr clock,
+    const tf2::Duration & period,
+    tf2_ros::TimerCallbackType callback) override
+  {
+    auto timer_handle_index = next_timer_handle_index_++;
+    auto timer_callback = std::bind(&MockCreateTimerROS::timerCallback, this, timer_handle_index, callback);
+    timer_to_callback_map_[timer_handle_index] = timer_callback;
+    return tf2_ros::CreateTimerROS::createTimer(clock, period, callback);
+  }
+
+  void
+  execute_timers()
+  {
+    for (const auto & elem : timer_to_callback_map_)
+    {
+      elem.second(elem.first);
+    }
+  }
+
+private:
+  tf2_ros::TimerHandle next_timer_handle_index_;
+  std::unordered_map<tf2_ros::TimerHandle, tf2_ros::TimerCallbackType> timer_to_callback_map_;
+
+  void
+  timerCallback(
+    const tf2_ros::TimerHandle & timer_handle,
+    tf2_ros::TimerCallbackType callback)
+  {
+    callback(timer_handle);
+  }
 };
 
 TEST(test_buffer, construct_with_null_clock)
