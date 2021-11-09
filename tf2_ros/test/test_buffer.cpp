@@ -111,7 +111,9 @@ public:
     tf2_ros::TimerCallbackType callback) override
   {
     auto timer_handle_index = next_timer_handle_index_++;
-    auto timer_callback = std::bind(&MockCreateTimerROS::timerCallback, this, timer_handle_index, callback);
+    auto timer_callback = std::bind(
+      &MockCreateTimerROS::timerCallback, this, timer_handle_index,
+      callback);
     timer_to_callback_map_[timer_handle_index] = timer_callback;
     return tf2_ros::CreateTimerROS::createTimer(clock, period, callback);
   }
@@ -119,8 +121,7 @@ public:
   void
   execute_timers()
   {
-    for (const auto & elem : timer_to_callback_map_)
-    {
+    for (const auto & elem : timer_to_callback_map_) {
       elem.second(elem.first);
     }
   }
@@ -387,9 +388,10 @@ TEST(test_buffer, wait_for_transform_race)
 TEST(test_buffer, timer_ros_wait_for_transform_race)
 {
   int argc = 1;
-  char const *const argv[] ={"timer_ros_wait_for_transform_race"};
+  char const * const argv[] = {"timer_ros_wait_for_transform_race"};
   rclcpp::init(argc, argv);
-  std::shared_ptr<rclcpp::Node> rclcpp_node_ = std::make_shared<rclcpp::Node>("timer_ros_wait_for_transform_race");
+  std::shared_ptr<rclcpp::Node> rclcpp_node_ = std::make_shared<rclcpp::Node>(
+    "timer_ros_wait_for_transform_race");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
