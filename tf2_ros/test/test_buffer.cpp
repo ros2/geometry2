@@ -430,7 +430,7 @@ TEST(test_buffer, timer_ros_wait_for_transform_race)
   EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
 
   // Fake a time out (race with setTransform above)
-  mock_create_timer_ros->execute_timers();
+  EXPECT_NO_THROW(mock_create_timer_ros->execute_timers());
 
   EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
   EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
