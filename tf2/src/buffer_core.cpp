@@ -1209,18 +1209,22 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
   std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
 
-  V_TransformableRequest::iterator it = std::find_if(
-    transformable_requests_.begin(), transformable_requests_.end(),
-      [handle](TransformableRequest req) { return handle == req.request_handle; });
-  
-  if (it != transformable_requests_.end()) {
-    transformable_callbacks_.erase(it->cb_handle);
-    if (transformable_requests_.size() > 1) {
-      transformable_requests_[it -
-        transformable_requests_.begin()] = transformable_requests_.back();
-    }
-    transformable_requests_.erase(transformable_requests_.end() - 1);
-  }
+  // push requests with matching handles to the end
+  auto remove_it = std::partition(
+    transformable_requests_.begin(),
+    transformable_requests_.end(),
+    [handle](const auto & req) { return handle != req.request_handle; });
+
+  // remove callbacks from map
+  std::for_each(
+    remove_it,
+    transformable_requests_.end(),
+    [this](const auto & request) {
+      transformable_callbacks_.erase(request.cb_handle);
+    });
+
+  // remove matching requests altogether
+  transformable_requests_.erase(remove_it, transformable_requests_.end());
 }
 
 // backwards compability for tf methods
