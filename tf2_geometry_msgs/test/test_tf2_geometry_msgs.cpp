@@ -552,7 +552,7 @@ TEST(TfGeometry, Wrench)
   trafo.transform.translation.x = -1;
   trafo.transform.translation.y = 2;
   trafo.transform.translation.z = -3;
-  trafo.transform.rotation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0,0,1), -M_PI / 2.0));
+  trafo.transform.rotation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), -M_PI / 2.0));
 
   tf2::doTransform(v1, res, trafo);
   EXPECT_NEAR(res.force.x, 1, EPS);
