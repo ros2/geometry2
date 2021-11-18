@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Eitan Marder-Eppstein',
     author_email='',
-    maintainer='Tully Foote',
-    maintainer_email='tfoote@@osrfoundation.org',
+    maintainer='Alejandro Hernández, Chris Lalancette',
+    maintainer_email='alejandro@openrobotics.org, clalancette@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',

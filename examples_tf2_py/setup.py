@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Shane Loretz',
     author_email='sloretz@openrobotics.org',
-    maintainer='Tully Foote',
-    maintainer_email='tfoote@osrfoundation.org',
+    maintainer='Alejandro Hernández, Chris Lalancette',
+    maintainer_email='alejandro@openrobotics.org, clalancette@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',

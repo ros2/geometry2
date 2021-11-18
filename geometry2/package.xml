@@ -6,10 +6,15 @@
   <description>
     A metapackage to bring in the default packages second generation Transform Library in ros, tf2.
   </description>
+
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernández</maintainer>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
-  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+
   <license>BSD</license>
+
+  <author email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
+  <author>Tully Foote</author>
 
   <url type="website">http://www.ros.org/wiki/geometry2</url>
 

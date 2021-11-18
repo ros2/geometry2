@@ -8,11 +8,15 @@
       - Eigen and KDL
 
   </description>
+
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernández</maintainer>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
-  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+
   <license>BSD</license>
-  <author>Stuart Glaser</author>
+
   <author>Adam Leeper</author>
+  <author email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</author>
+  <author>Stuart Glaser</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
