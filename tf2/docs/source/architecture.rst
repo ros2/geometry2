@@ -137,29 +137,29 @@ These data types support linear algebra operations between each other.
 High level Design
 -----------------
 
-- A distributed system
+- A distributed system:
 
   - Purpose: No bottle neck process and all processes are one step away for minimal latency.
   - Implementation: Everything is broadcast and reassembled at end consumer points.
     There can be multiple data sources for tf information.
     Data is not required to be synchronized by using interpolation, so data can arrive out of order.
 
-- Only transform data between coordinate frames at the time of use
+- Only transform data between coordinate frames at the time of use:
 
   - Purpose: Efficiency, both computational, bandwidth, and simplicity.
   - Implementation: Transform data between given frames only when required.
 
-- Support queries on data which are timestamped at times other than the current time
+- Support queries on data which are timestamped at times other than the current time:
 
   - Purpose: Handle data processing lag gracefully.
   - Implementation: Interface class stores all transform data in memory and traverses tree on request.
 
-- Only have to know the name of the coordinate frame to work with data
+- Only have to know the name of the coordinate frame to work with data:
 
   - Purpose: Ease of use for users/developers.
   - Implementation: Use string ``frame_ids`` as unique identifiers.
 
-- The system doesn't need to know about the configuration before hand and can handle reconfiguring on the fly
+- The system doesn't need to know about the configuration before hand and can handle reconfiguring on the fly:
 
   - Purpose: Generic system for any configuration.
   - Implementation: Use directed tree structure.
@@ -167,25 +167,25 @@ High level Design
     It can be reconfigured simply by redefining a link.
     It does not require any structure verification or maintenance of the data structure, except for maintaining a sorted linked list of data for each link.
 
-- Core is ROS agnostic
+- Core is ROS agnostic:
 
   - Purpose: Code reuse.
   - Implementation: Core library is C++ class.
     A second class provides ROS interface and instantiates the core library.
 
-- Thread Safe Interface
+- Thread Safe Interface:
 
   - Purpose: Can be used in a multithreaded program.
   - Implementation: Mutexes around data storage for each frame.
     Mutexes around ``frame_id`` lookup map.
     Each are individually locked and unlocked, neither can block the other.
 
-- Multi-Robot Support
+- Multi-Robot Support:
 
   - Purpose: Can be used with multiple robots with the same or similar configuration.
   - Implementation: Use a ``tf_prefix`` similar to a namespace for each robot.
 
-- Native Datatype Interfaces
+- Native Datatype Interfaces:
 
   - Purpose: Users can interact with ``tf2_ros`` in their native datatypes, the conversion is handled implicitly by the library.
   - Implementation: There is a ``tf2::convert(A, B)`` templated method that converts from type A to type B using the ``geometry_msgs`` types as the common factor.
