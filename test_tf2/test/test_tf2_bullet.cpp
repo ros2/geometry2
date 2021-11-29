@@ -35,7 +35,7 @@
 #include <gtest/gtest.h>
 #include <tf2/convert.h>
 
-std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
+std::shared_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
 TEST(TfBullet, Transform)
@@ -81,7 +81,7 @@ int main(int argc, char **argv){
   auto node = rclcpp::Node::make_shared("test_tf2_bullet");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+  tf_buffer = tf2_ros::Buffer::make(clock);
 
   // populate buffer
   geometry_msgs::msg::TransformStamped t;
