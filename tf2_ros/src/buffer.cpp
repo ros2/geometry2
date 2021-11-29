@@ -267,7 +267,6 @@ Buffer::waitForTransform(
     auto timer_handle = timer_interface_->createTimer(
       clock_,
       timeout,
-      // std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
       [b = shared_from_this(), promise, future, callback](const TimerHandle & timer_handle)
       {
         b->timerCallback(timer_handle, promise, future, callback);

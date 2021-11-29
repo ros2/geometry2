@@ -77,17 +77,6 @@ public:
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
     rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
 
-  // /** \brief  Constructor for a Buffer object
-  //  * \param clock A clock to use for time and sleeping
-  //  * \param cache_time How long to keep a history of transforms
-  //  * \param node If passed advertise the view_frames service that exposes debugging
-  //  information from the buffer
-  //  */
-  // TF2_ROS_PUBLIC Buffer(
-  //   rclcpp::Clock::SharedPtr clock,
-  //   tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
-  //   rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
-
   /** \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed
    * \param source_frame The frame where the data originated
