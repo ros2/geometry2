@@ -58,21 +58,35 @@ namespace tf2_ros
  * Stores known frames and offers a ROS service, "tf_frames", which responds to client requests
  * with a response containing a tf2_msgs::FrameGraph representing the relationship of known frames.
  */
-class Buffer : public BufferInterface, public AsyncBufferInterface, public tf2::BufferCore
+class Buffer : public BufferInterface, public AsyncBufferInterface, public tf2::BufferCore,
+  public std::enable_shared_from_this<Buffer>
 {
 public:
   using tf2::BufferCore::lookupTransform;
   using tf2::BufferCore::canTransform;
 
-  /** \brief  Constructor for a Buffer object
+  /** \brief Factory function to create a shared Buffer object.
    * \param clock A clock to use for time and sleeping
    * \param cache_time How long to keep a history of transforms
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
    */
-  TF2_ROS_PUBLIC Buffer(
+  TF2_ROS_PUBLIC
+  static
+  std::shared_ptr<Buffer> make(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
     rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
+
+  // /** \brief  Constructor for a Buffer object
+  //  * \param clock A clock to use for time and sleeping
+  //  * \param cache_time How long to keep a history of transforms
+  //  * \param node If passed advertise the view_frames service that exposes debugging
+  //  information from the buffer
+  //  */
+  // TF2_ROS_PUBLIC Buffer(
+  //   rclcpp::Clock::SharedPtr clock,
+  //   tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
+  //   rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
 
   /** \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed
@@ -260,6 +274,11 @@ public:
   }
 
 private:
+  Buffer(
+    rclcpp::Clock::SharedPtr clock,
+    tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
+    rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
+
   void timerCallback(
     const TimerHandle & timer_handle,
     std::shared_ptr<std::promise<geometry_msgs::msg::TransformStamped>> promise,

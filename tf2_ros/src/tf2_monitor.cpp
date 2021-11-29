@@ -59,7 +59,7 @@ public:
   std::map<std::string, std::vector<double>> authority_frequency_map;
 
   rclcpp::Clock::SharedPtr clock_;
-  tf2_ros::Buffer buffer_;
+  std::shared_ptr<tf2_ros::Buffer> buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tf_;
 
   tf2_msgs::msg::TFMessage message_;
@@ -125,14 +125,15 @@ public:
     frameb_(frameb),
     using_specific_chain_(using_specific_chain),
     node_(node),
-    clock_(node->get_clock()),
-    buffer_(clock_, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node)
+    clock_(node->get_clock())
   {
-    tf_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
+    buffer_ = tf2_ros::Buffer::make(
+      clock_, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), node_);
+    tf_ = std::make_shared<tf2_ros::TransformListener>(*buffer_);
 
     if (using_specific_chain_) {
       std::string warning_msg;
-      while (rclcpp::ok() && !buffer_.canTransform(
+      while (rclcpp::ok() && !buffer_->canTransform(
           framea_, frameb_, tf2::TimePoint(), &warning_msg))
       {
         RCLCPP_INFO_THROTTLE(
@@ -143,7 +144,7 @@ public:
       }
 
       try {
-        buffer_._chainAsVector(
+        buffer_->_chainAsVector(
           frameb_, tf2::TimePointZero, framea_, tf2::TimePointZero, frameb_,
           chain_);
       } catch (const tf2::TransformException & ex) {
@@ -195,7 +196,7 @@ public:
     while (rclcpp::ok()) {
       counter++;
       if (using_specific_chain_) {
-        auto tmp = buffer_.lookupTransform(framea_, frameb_, tf2::TimePointZero);
+        auto tmp = buffer_->lookupTransform(framea_, frameb_, tf2::TimePointZero);
         double diff = clock_->now().seconds() - tf2_ros::timeToSec(tmp.header.stamp);
         avg_diff = lowpass * diff + (1 - lowpass) * avg_diff;
         if (diff > max_diff) {

@@ -122,7 +122,7 @@ protected:
   void SetUp()
   {
     node_ = std::make_shared<rclcpp::Node>("tf_buffer");
-    buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
+    buffer_ = tf2_ros::Buffer::make(node_->get_clock());
     server_ = std::make_unique<tf2_ros::BufferServer>(*buffer_, node_, ACTION_NAME);
     mock_client_ = std::make_shared<MockBufferClient>();
 

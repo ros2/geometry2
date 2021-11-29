@@ -49,9 +49,15 @@ int main(int argc, char ** argv)
   auto node = std::make_shared<rclcpp::Node>("tf_buffer");
   double buffer_size = node->declare_parameter("buffer_size", 120.0);
 
-  tf2_ros::Buffer buffer(node->get_clock(), tf2::durationFromSec(buffer_size));
-  tf2_ros::TransformListener listener(buffer);
-  tf2_ros::BufferServer buffer_server(buffer, node, "tf2_buffer_server");
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(
+    node->get_clock(), tf2::durationFromSec(buffer_size));
+  if (!buffer) {
+    RCLCPP_ERROR(node->get_logger(), "Failed to create a tf2_ros::Buffer");
+    return 1;
+  }
+
+  tf2_ros::TransformListener listener(*buffer);
+  tf2_ros::BufferServer buffer_server(*buffer, node, "tf2_buffer_server");
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);

@@ -94,15 +94,16 @@ public:
 
 TEST(test_buffer, construct_with_null_clock)
 {
-  EXPECT_THROW(tf2_ros::Buffer(nullptr), std::invalid_argument);
+  EXPECT_THROW(tf2_ros::Buffer::make(nullptr), std::invalid_argument);
 }
 
 TEST(test_buffer, can_transform_valid_transform)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
   // Silence error about dedicated thread's being necessary
-  buffer.setUsingDedicatedThread(true);
+  buffer->setUsingDedicatedThread(true);
 
   rclcpp::Time rclcpp_time = clock->now();
   tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
@@ -119,18 +120,18 @@ TEST(test_buffer, can_transform_valid_transform)
   transform.transform.rotation.y = 0.0;
   transform.transform.rotation.z = 0.0;
 
-  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+  EXPECT_TRUE(buffer->setTransform(transform, "unittest"));
 
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", rclcpp_time));
 
-  auto output = buffer.lookupTransform("foo", "bar", tf2_time);
+  auto output = buffer->lookupTransform("foo", "bar", tf2_time);
   EXPECT_STREQ(transform.child_frame_id.c_str(), output.child_frame_id.c_str());
   EXPECT_DOUBLE_EQ(transform.transform.translation.x, output.transform.translation.x);
   EXPECT_DOUBLE_EQ(transform.transform.translation.y, output.transform.translation.y);
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, output.transform.translation.z);
 
-  auto output_rclcpp = buffer.lookupTransform("foo", "bar", rclcpp_time);
+  auto output_rclcpp = buffer->lookupTransform("foo", "bar", rclcpp_time);
   EXPECT_STREQ(transform.child_frame_id.c_str(), output_rclcpp.child_frame_id.c_str());
   EXPECT_DOUBLE_EQ(transform.transform.translation.x, output_rclcpp.transform.translation.x);
   EXPECT_DOUBLE_EQ(transform.transform.translation.y, output_rclcpp.transform.translation.y);
@@ -140,17 +141,18 @@ TEST(test_buffer, can_transform_valid_transform)
 TEST(test_buffer, wait_for_transform_valid)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
   // Silence error about dedicated thread's being necessary
-  buffer.setUsingDedicatedThread(true);
+  buffer->setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
-  buffer.setCreateTimerInterface(mock_create_timer);
+  buffer->setCreateTimerInterface(mock_create_timer);
 
   rclcpp::Time rclcpp_time = clock->now();
   tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
 
   geometry_msgs::msg::TransformStamped transform_callback_result;
-  auto future = buffer.waitForTransform(
+  auto future = buffer->waitForTransform(
     "foo",
     "bar",
     tf2_time, tf2::durationFromSec(1.0),
@@ -171,10 +173,10 @@ TEST(test_buffer, wait_for_transform_valid)
   transform.transform.rotation.y = 0.0;
   transform.transform.rotation.z = 0.0;
 
-  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+  EXPECT_TRUE(buffer->setTransform(transform, "unittest"));
 
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", rclcpp_time));
   const auto status = future.wait_for(std::chrono::seconds(1));
   EXPECT_EQ(status, std::future_status::ready);
 
@@ -201,17 +203,18 @@ TEST(test_buffer, wait_for_transform_valid)
 TEST(test_buffer, wait_for_transform_timeout)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
   // Silence error about dedicated thread's being necessary
-  buffer.setUsingDedicatedThread(true);
+  buffer->setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
-  buffer.setCreateTimerInterface(mock_create_timer);
+  buffer->setCreateTimerInterface(mock_create_timer);
 
   rclcpp::Time time_start = clock->now();
   tf2::TimePoint tf2_time(std::chrono::nanoseconds(time_start.nanoseconds()));
 
   bool callback_timeout = false;
-  auto future = buffer.waitForTransform(
+  auto future = buffer->waitForTransform(
     "foo",
     "bar",
     tf2_time, tf2::durationFromSec(1.0),
@@ -231,7 +234,7 @@ TEST(test_buffer, wait_for_transform_timeout)
   transform.header.stamp = builtin_interfaces::msg::Time(clock->now());
   transform.child_frame_id = "baz";
   transform.transform.rotation.w = 1.0;
-  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+  EXPECT_TRUE(buffer->setTransform(transform, "unittest"));
 
   auto status = future.wait_for(std::chrono::milliseconds(1));
   EXPECT_EQ(status, std::future_status::timeout);
@@ -239,8 +242,8 @@ TEST(test_buffer, wait_for_transform_timeout)
   // Fake a time out
   mock_create_timer->execute_timers();
 
-  EXPECT_FALSE(buffer.canTransform("bar", "foo", tf2_time));
-  EXPECT_FALSE(buffer.canTransform("bar", "foo", time_start));
+  EXPECT_FALSE(buffer->canTransform("bar", "foo", tf2_time));
+  EXPECT_FALSE(buffer->canTransform("bar", "foo", time_start));
   status = future.wait_for(std::chrono::milliseconds(1));
   EXPECT_EQ(status, std::future_status::ready);
   EXPECT_TRUE(callback_timeout);
@@ -250,17 +253,18 @@ TEST(test_buffer, wait_for_transform_timeout)
 TEST(test_buffer, wait_for_transform_race)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
   // Silence error about dedicated thread's being necessary
-  buffer.setUsingDedicatedThread(true);
+  buffer->setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
-  buffer.setCreateTimerInterface(mock_create_timer);
+  buffer->setCreateTimerInterface(mock_create_timer);
 
   rclcpp::Time rclcpp_time = clock->now();
   tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
 
   bool callback_timeout = false;
-  auto future = buffer.waitForTransform(
+  auto future = buffer->waitForTransform(
     "foo",
     "bar",
     tf2_time, tf2::durationFromSec(1.0),
@@ -283,13 +287,13 @@ TEST(test_buffer, wait_for_transform_race)
   transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
   transform.child_frame_id = "bar";
   transform.transform.rotation.w = 1.0;
-  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+  EXPECT_TRUE(buffer->setTransform(transform, "unittest"));
 
   // Fake a time out (race with setTransform above)
   mock_create_timer->execute_timers();
 
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer->canTransform("bar", "foo", rclcpp_time));
   status = future.wait_for(std::chrono::milliseconds(1));
   EXPECT_EQ(status, std::future_status::ready);
   EXPECT_FALSE(callback_timeout);

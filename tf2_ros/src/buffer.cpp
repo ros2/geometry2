@@ -43,6 +43,15 @@
 namespace tf2_ros
 {
 
+std::shared_ptr<Buffer> Buffer::make(
+  rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time,
+  rclcpp::Node::SharedPtr node)
+{
+  // return std::make_shared<Buffer>(clock, cache_time, node);
+  std::shared_ptr<Buffer> buffer(new Buffer(clock, cache_time, node));
+  return buffer;
+}
+
 Buffer::Buffer(
   rclcpp::Clock::SharedPtr clock, tf2::Duration cache_time,
   rclcpp::Node::SharedPtr node)
@@ -258,7 +267,11 @@ Buffer::waitForTransform(
     auto timer_handle = timer_interface_->createTimer(
       clock_,
       timeout,
-      std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
+      // std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
+      [b = shared_from_this(), promise, future, callback](const TimerHandle & timer_handle)
+      {
+        b->timerCallback(timer_handle, promise, future, callback);
+      });
 
     // Save association between timer and request handle
     timer_to_request_map_[timer_handle] = handle;

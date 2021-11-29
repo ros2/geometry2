@@ -45,8 +45,9 @@ TEST(tf2_ros_test_listener, transform_listener)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, false);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
+  tf2_ros::TransformListener tfl(*buffer, node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -63,13 +64,13 @@ TEST(tf2_ros_test_listener, transform_listener)
   ts.transform.translation.y = 2;
   ts.transform.translation.z = 3;
 
-  buffer.setTransform(ts, "authority");
+  buffer->setTransform(ts, "authority");
 
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-  EXPECT_TRUE(buffer.canTransform("a", "b", tf2::timeFromSec(0)));
+  EXPECT_TRUE(buffer->canTransform("a", "b", tf2::timeFromSec(0)));
 
-  geometry_msgs::msg::TransformStamped out_rootc = buffer.lookupTransform(
+  geometry_msgs::msg::TransformStamped out_rootc = buffer->lookupTransform(
     "a", "b",
     builtin_interfaces::msg::Time());
 

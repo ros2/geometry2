@@ -46,7 +46,7 @@
 #include <memory>
 #include <string>
 
-std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
+std::shared_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
 geometry_msgs::msg::TransformStamped generate_stamped_transform()
@@ -544,7 +544,7 @@ int main(int argc, char ** argv)
   testing::InitGoogleTest(&argc, argv);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+  tf_buffer = tf2_ros::Buffer::make(clock);
   tf_buffer->setUsingDedicatedThread(true);
 
   // populate buffer

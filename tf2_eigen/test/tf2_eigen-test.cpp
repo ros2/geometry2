@@ -149,7 +149,7 @@ struct EigenBufferTransform : public ::testing::Test
   static void SetUpTestSuite()
   {
     rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-    tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+    tf_buffer = tf2_ros::Buffer::make(clock);
     tf_buffer->setUsingDedicatedThread(true);
 
     // populate buffer
@@ -173,11 +173,11 @@ struct EigenBufferTransform : public ::testing::Test
   ::testing::AssertionResult doTestEigenQuaternion(
     const Eigen::Quaterniond & parameter, const Eigen::Quaterniond & expected);
 
-  static std::unique_ptr<tf2_ros::Buffer> tf_buffer;
+  static std::shared_ptr<tf2_ros::Buffer> tf_buffer;
   static constexpr double EPS = 1e-3;
 };
 
-std::unique_ptr<tf2_ros::Buffer> EigenBufferTransform::tf_buffer;
+std::shared_ptr<tf2_ros::Buffer> EigenBufferTransform::tf_buffer;
 
 template<int mode>
 void EigenBufferTransform::testEigenTransform()

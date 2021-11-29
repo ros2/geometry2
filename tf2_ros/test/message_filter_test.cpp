@@ -56,29 +56,30 @@ TEST(tf2_ros_message_filter, construction_and_destruction)
 {
   auto node = rclcpp::Node::make_shared("test_message_filter_node");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
 
   // Node constructor with defaults
   {
-    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(*buffer, "map", 10, node);
   }
 
   // Node constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer, "map", 10, node, std::chrono::milliseconds(100));
+      *buffer, "map", 10, node, std::chrono::milliseconds(100));
   }
 
   // Node interface constructor with defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+      *buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
   }
 
   // Node interface constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer,
+      *buffer,
       "map",
       10,
       node->get_node_logging_interface(),
@@ -89,26 +90,27 @@ TEST(tf2_ros_message_filter, construction_and_destruction)
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
   // Filter + node constructor with defaults
   {
-    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, buffer, "map", 10, node);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, *buffer, "map", 10, node);
   }
 
   // Filter + node constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      sub, buffer, "map", 10, node, std::chrono::hours(1));
+      sub, *buffer, "map", 10, node, std::chrono::hours(1));
   }
 
   // Filter + node interface constructor with defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      sub, buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+      sub, *buffer, "map", 10, node->get_node_logging_interface(),
+      node->get_node_clock_interface());
   }
 
   // Filter + node interface constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
       sub,
-      buffer,
+      *buffer,
       "map",
       10,
       node->get_node_logging_interface(),
@@ -129,10 +131,11 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   sub.subscribe(node, "point");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
-  buffer.setCreateTimerInterface(create_timer_interface);
-  tf2_ros::TransformListener tfl(buffer);
-  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
+  buffer->setCreateTimerInterface(create_timer_interface);
+  tf2_ros::TransformListener tfl(*buffer);
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(*buffer, "map", 10, node);
   filter.connectInput(sub);
   filter.registerCallback(&filter_callback);
 

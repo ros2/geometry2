@@ -45,13 +45,13 @@
 class echoListener
 {
 public:
-  tf2_ros::Buffer buffer_;
+  std::shared_ptr<tf2_ros::Buffer> buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tfl_;
 
   explicit echoListener(rclcpp::Clock::SharedPtr clock)
-  : buffer_(clock)
   {
-    tfl_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
+    buffer_ = tf2_ros::Buffer::make(clock);
+    tfl_ = std::make_shared<tf2_ros::TransformListener>(*buffer_);
   }
 
   ~echoListener()
@@ -117,7 +117,7 @@ int main(int argc, char ** argv)
 
   // Wait for the first transforms to become avaiable.
   std::string warning_msg;
-  while (rclcpp::ok() && !echoListener.buffer_.canTransform(
+  while (rclcpp::ok() && !echoListener.buffer_->canTransform(
       source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
   {
     RCLCPP_INFO_THROTTLE(
@@ -131,7 +131,7 @@ int main(int argc, char ** argv)
   while (rclcpp::ok()) {
     try {
       geometry_msgs::msg::TransformStamped echo_transform;
-      echo_transform = echoListener.buffer_.lookupTransform(
+      echo_transform = echoListener.buffer_->lookupTransform(
         source_frameid, target_frameid,
         tf2::TimePoint());
       std::cout.precision(3);
@@ -157,7 +157,7 @@ int main(int argc, char ** argv)
       std::cout << "Failure at " << clock->now().seconds() << std::endl;
       std::cout << "Exception thrown:" << ex.what() << std::endl;
       std::cout << "The current list of frames is:" << std::endl;
-      std::cout << echoListener.buffer_.allFramesAsString() << std::endl;
+      std::cout << echoListener.buffer_->allFramesAsString() << std::endl;
     }
     rate.sleep();
   }

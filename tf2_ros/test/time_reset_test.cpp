@@ -55,14 +55,15 @@ TEST(tf2_ros_time_reset_test, time_backwards)
     "transform_listener_backwards_reset");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer);
+  std::shared_ptr<tf2_ros::Buffer> buffer = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, buffer);
+  tf2_ros::TransformListener tfl(*buffer);
   tf2_ros::TransformBroadcaster tfb(node_);
 
   auto clock_pub = node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", 1);
 
   // basic test
-  ASSERT_FALSE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
+  ASSERT_FALSE(buffer->canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
   // make sure endpoints have discovered each other
   spin_for_a_second(node_);
@@ -88,7 +89,7 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   spin_for_a_second(node_);
 
   // verify it's been set
-  ASSERT_TRUE(buffer.canTransform("foo", "bar", rclcpp::Time(101, 0)));
+  ASSERT_TRUE(buffer->canTransform("foo", "bar", rclcpp::Time(101, 0)));
 
   // TODO(ahcorde): review this
   // c.clock.sec = 90;

@@ -53,8 +53,9 @@ TEST(StaticTransformPublisher, a_b_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_b_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  std::shared_ptr<tf2_ros::Buffer> mB = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, mB);
+  tf2_ros::TransformListener tfl(*mB, node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -64,7 +65,7 @@ TEST(StaticTransformPublisher, a_b_different_times)
 
   int attempts = 0;
 
-  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
+  while (!mB->canTransform("a", "b", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
     if (attempts > MAX_ATTEMPTS) {
@@ -72,9 +73,9 @@ TEST(StaticTransformPublisher, a_b_different_times)
     }
   }
 
-  EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(100)));
-  EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(1000)));
+  EXPECT_TRUE(mB->canTransform("a", "b", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("a", "b", tf2::timeFromSec(100)));
+  EXPECT_TRUE(mB->canTransform("a", "b", tf2::timeFromSec(1000)));
 
   executor.cancel();
   spin_thread.join();
@@ -86,8 +87,9 @@ TEST(StaticTransformPublisher, a_c_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_c_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  std::shared_ptr<tf2_ros::Buffer> mB = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, mB);
+  tf2_ros::TransformListener tfl(*mB, node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -96,7 +98,7 @@ TEST(StaticTransformPublisher, a_c_different_times)
     std::bind(&rclcpp::executors::SingleThreadedExecutor::spin, &executor));
 
   int attempts = 0;
-  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
+  while (!mB->canTransform("a", "c", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
     if (attempts > MAX_ATTEMPTS) {
@@ -104,9 +106,9 @@ TEST(StaticTransformPublisher, a_c_different_times)
     }
   }
 
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(10)));
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(1000)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(10)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(1000)));
 
   executor.cancel();
   spin_thread.join();
@@ -118,8 +120,9 @@ TEST(StaticTransformPublisher, a_d_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_d_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  std::shared_ptr<tf2_ros::Buffer> mB = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, mB);
+  tf2_ros::TransformListener tfl(*mB, node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -129,7 +132,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
 
   int attempts = 0;
 
-  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
+  while (!mB->canTransform("a", "c", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
     if (attempts > MAX_ATTEMPTS) {
@@ -144,18 +147,18 @@ TEST(StaticTransformPublisher, a_d_different_times)
   ts.child_frame_id = "d";
 
   // make sure listener has populated
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(100)));
-  EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(1000)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(100)));
+  EXPECT_TRUE(mB->canTransform("a", "c", tf2::timeFromSec(1000)));
 
-  mB.setTransform(ts, "authority");
+  mB->setTransform(ts, "authority");
   //printf("%s\n", mB.allFramesAsString().c_str());
-  EXPECT_TRUE(mB.canTransform("c", "d", tf2::timeFromSec(10)));
+  EXPECT_TRUE(mB->canTransform("c", "d", tf2::timeFromSec(10)));
 
-  EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
-  EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1)));
-  EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(10)));
-  EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1000)));
+  EXPECT_TRUE(mB->canTransform("a", "d", tf2::timeFromSec(0)));
+  EXPECT_FALSE(mB->canTransform("a", "d", tf2::timeFromSec(1)));
+  EXPECT_TRUE(mB->canTransform("a", "d", tf2::timeFromSec(10)));
+  EXPECT_FALSE(mB->canTransform("a", "d", tf2::timeFromSec(1000)));
 
   executor.cancel();
   spin_thread.join();
@@ -167,8 +170,9 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_d_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  std::shared_ptr<tf2_ros::Buffer> mB = tf2_ros::Buffer::make(clock);
+  ASSERT_NE(nullptr, mB);
+  tf2_ros::TransformListener tfl(*mB, node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -178,7 +182,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
   int attempts = 0;
 
-  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
+  while (!mB->canTransform("a", "b", tf2::timeFromSec(0))) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     attempts++;
     if (attempts > MAX_ATTEMPTS) {
@@ -198,9 +202,9 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
   // make sure listener has populated
-  EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(100)));
-  EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(1000)));
+  EXPECT_TRUE(mB->canTransform("a", "d", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("a", "d", tf2::timeFromSec(100)));
+  EXPECT_TRUE(mB->canTransform("a", "d", tf2::timeFromSec(1000)));
 
   // Publish new transform with child 'd', should replace old one in static tf
   ts.header.frame_id = "new_parent";
@@ -212,10 +216,10 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-  EXPECT_TRUE(mB.canTransform("new_parent", "d", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("new_parent", "other_child", tf2::timeFromSec(0)));
-  EXPECT_TRUE(mB.canTransform("new_parent", "other_child2", tf2::timeFromSec(0)));
-  EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("new_parent", "d", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("new_parent", "other_child", tf2::timeFromSec(0)));
+  EXPECT_TRUE(mB->canTransform("new_parent", "other_child2", tf2::timeFromSec(0)));
+  EXPECT_FALSE(mB->canTransform("a", "d", tf2::timeFromSec(0)));
 
   executor.cancel();
   spin_thread.join();
