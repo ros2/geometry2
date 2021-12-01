@@ -149,10 +149,12 @@ CompactFrameID BufferCore::validateFrameId(
 
 BufferCore::BufferCore(tf2::Duration cache_time)
 : cache_time_(cache_time),
-  transformable_callbacks_counter_(0),
-  transformable_requests_counter_(0),
   using_dedicated_thread_(false)
 {
+  transformable_data_ = std::make_shared<TransformableData>();
+  transformable_data_->transformable_callbacks_counter_ = 0;
+  transformable_data_->transformable_requests_counter_ = 0;
+
   frameIDs_["NO_PARENT"] = 0;
   frames_.push_back(TimeCacheInterfacePtr());
   frameIDs_reverse_.push_back("NO_PARENT");
@@ -1153,7 +1155,7 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
   // If nothing ever calls setTransform() again, then the callback for the
   // current request will never get called.  We fix this by holding the mutex
   // across most of this method.
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
+  std::unique_lock<std::mutex> lock(transformable_data_->transformable_requests_mutex_);
 
   TransformableRequest req;
   req.target_id = lookupFrameNumber(target_frame);
@@ -1176,17 +1178,17 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
   }
 
   {
-    std::unique_lock<std::mutex> lock(transformable_callbacks_mutex_);
-    TransformableCallbackHandle handle = ++transformable_callbacks_counter_;
-    while (!transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
-      handle = ++transformable_callbacks_counter_;
+    std::unique_lock<std::mutex> lock(transformable_data_->transformable_callbacks_mutex_);
+    TransformableCallbackHandle handle = ++transformable_data_->transformable_callbacks_counter_;
+    while (!transformable_data_->transformable_callbacks_.insert(std::make_pair(handle, cb)).second) {
+      handle = ++transformable_data_->transformable_callbacks_counter_;
     }
 
     req.cb_handle = handle;
   }
 
   req.time = time;
-  req.request_handle = ++transformable_requests_counter_;
+  req.request_handle = ++transformable_data_->transformable_requests_counter_;
   if (req.request_handle == 0 || req.request_handle == 0xffffffffffffffffULL) {
     req.request_handle = 1;
   }
@@ -1199,12 +1201,12 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     req.source_string = source_frame;
   }
 
-  transformable_requests_.push_back(req);
+  transformable_data_->transformable_requests_.push_back(req);
 
   return req.request_handle;
 }
 
-void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
+void BufferCore::TransformableData::cancelTransformableRequest(TransformableRequestHandle handle)
 {
   std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
   std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
@@ -1261,9 +1263,9 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 
 void BufferCore::testTransformableRequests()
 {
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-  V_TransformableRequest::iterator it = transformable_requests_.begin();
-  while (it != transformable_requests_.end()) {
+  std::unique_lock<std::mutex> lock(transformable_data_->transformable_requests_mutex_);
+  V_TransformableRequest::iterator it = transformable_data_->transformable_requests_.begin();
+  while (it != transformable_data_->transformable_requests_.end()) {
     TransformableRequest & req = *it;
 
     // One or both of the frames may not have existed when the request was originally made.
@@ -1291,27 +1293,27 @@ void BufferCore::testTransformableRequests()
 
     if (do_cb) {
       {
-        std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
-        M_TransformableCallback::iterator it = transformable_callbacks_.find(req.cb_handle);
-        if (it != transformable_callbacks_.end()) {
+        std::unique_lock<std::mutex> lock2(transformable_data_->transformable_callbacks_mutex_);
+        M_TransformableCallback::iterator it = transformable_data_->transformable_callbacks_.find(req.cb_handle);
+        if (it != transformable_data_->transformable_callbacks_.end()) {
           const TransformableCallback & cb = it->second;
           cb(
             req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
               req.source_id), req.time, result);
-          transformable_callbacks_.erase(req.cb_handle);
+          transformable_data_->transformable_callbacks_.erase(req.cb_handle);
         }
       }
 
-      if (transformable_requests_.size() > 1) {
-        transformable_requests_[it -
-          transformable_requests_.begin()] = transformable_requests_.back();
+      if (transformable_data_->transformable_requests_.size() > 1) {
+        transformable_data_->transformable_requests_[it -
+          transformable_data_->transformable_requests_.begin()] = transformable_data_->transformable_requests_.back();
       }
 
-      transformable_requests_.erase(transformable_requests_.end() - 1);
+      transformable_data_->transformable_requests_.erase(transformable_data_->transformable_requests_.end() - 1);
 
       // If we've removed the last element, then the iterator is invalid
-      if (0u == transformable_requests_.size()) {
-        it = transformable_requests_.end();
+      if (0u == transformable_data_->transformable_requests_.size()) {
+        it = transformable_data_->transformable_requests_.end();
       }
     } else {
       ++it;

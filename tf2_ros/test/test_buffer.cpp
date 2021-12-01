@@ -295,6 +295,41 @@ TEST(test_buffer, wait_for_transform_race)
   EXPECT_FALSE(callback_timeout);
 }
 
+TEST(test_buffer, wait_for_transform_buffer_destructed_race)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  bool callback_timeout = false;
+  tf2_ros::TransformStampedFuture future;
+
+  {
+    tf2_ros::Buffer buffer(clock);
+    // Silence error about dedicated thread's being necessary
+    buffer.setUsingDedicatedThread(true);
+    auto mock_create_timer = std::make_shared<MockCreateTimer>();
+    buffer.setCreateTimerInterface(mock_create_timer);
+
+    rclcpp::Time rclcpp_time = clock->now();
+    tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+    future = buffer.waitForTransform(
+      "foo",
+      "bar",
+      tf2_time, tf2::durationFromSec(1.0),
+      [&callback_timeout](const tf2_ros::TransformStampedFuture & future)
+      {
+        try {
+          // We don't expect this throw, even though a timeout will occur
+          future.get();
+        } catch (...) {
+          callback_timeout = true;
+        }
+      });
+  }
+
+  auto status = future.wait_for(std::chrono::seconds(1));
+  EXPECT_EQ(status, std::future_status::timeout);
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);

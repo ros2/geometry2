@@ -256,15 +256,30 @@ public:
   inline void
   setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)
   {
-    timer_interface_ = create_timer_interface;
+    timer_callback_data_->timer_interface_ = create_timer_interface;
   }
 
 private:
-  void timerCallback(
-    const TimerHandle & timer_handle,
-    std::shared_ptr<std::promise<geometry_msgs::msg::TransformStamped>> promise,
-    TransformStampedFuture future,
-    TransformReadyCallback callback);
+  struct TimerCallbackData
+  {
+    /// \brief Interface for creating timers
+    CreateTimerInterface::SharedPtr timer_interface_;
+
+    /// \brief A map from active timers to BufferCore request handles
+    std::unordered_map<TimerHandle, tf2::TransformableRequestHandle> timer_to_request_map_;
+
+    /// \brief A mutex on the timer_to_request_map_ data
+    std::mutex timer_to_request_map_mutex_;
+
+    void timerCallback(
+      const TimerHandle & timer_handle,
+      std::shared_ptr<std::promise<geometry_msgs::msg::TransformStamped>> promise,
+      TransformStampedFuture future,
+      TransformReadyCallback callback,
+      std::shared_ptr<TransformableData> transformable_data);
+  };
+
+  std::shared_ptr<TimerCallbackData> timer_callback_data_;
 
   bool getFrames(
     const tf2_msgs::srv::FrameGraph::Request::SharedPtr req,
@@ -286,15 +301,6 @@ private:
 
   /// \brief A node to advertise the view_frames service
   rclcpp::Node::SharedPtr node_;
-
-  /// \brief Interface for creating timers
-  CreateTimerInterface::SharedPtr timer_interface_;
-
-  /// \brief A map from active timers to BufferCore request handles
-  std::unordered_map<TimerHandle, tf2::TransformableRequestHandle> timer_to_request_map_;
-
-  /// \brief A mutex on the timer_to_request_map_ data
-  std::mutex timer_to_request_map_mutex_;
 
   /// \brief Reference to a jump handler registered to the clock
   rclcpp::JumpHandler::SharedPtr jump_handler_;

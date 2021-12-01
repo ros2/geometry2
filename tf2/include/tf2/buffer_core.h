@@ -218,10 +218,6 @@ public:
     const std::string & target_frame,
     const std::string & source_frame,
     TimePoint time);
-  /// \brief Internal use only
-  TF2_PUBLIC
-  void cancelTransformableRequest(TransformableRequestHandle handle);
-
 
   // Tell the buffer that there are multiple threads servicing it.
   // This is useful for derived classes to know if they can block or not.
@@ -329,9 +325,6 @@ private:
 
   typedef std::unordered_map<TransformableCallbackHandle,
       TransformableCallback> M_TransformableCallback;
-  M_TransformableCallback transformable_callbacks_;
-  uint32_t transformable_callbacks_counter_;
-  std::mutex transformable_callbacks_mutex_;
 
   struct TransformableRequest
   {
@@ -344,9 +337,6 @@ private:
     std::string source_string;
   };
   typedef std::vector<TransformableRequest> V_TransformableRequest;
-  V_TransformableRequest transformable_requests_;
-  std::mutex transformable_requests_mutex_;
-  uint64_t transformable_requests_counter_;
 
   bool using_dedicated_thread_;
 
@@ -437,6 +427,24 @@ private:
   bool canTransformInternal(
     CompactFrameID target_id, CompactFrameID source_id,
     const TimePoint & time, std::string * error_msg) const;
+
+protected:
+  struct TransformableData
+  {
+    M_TransformableCallback transformable_callbacks_;
+    uint32_t transformable_callbacks_counter_;
+    std::mutex transformable_callbacks_mutex_;
+
+    V_TransformableRequest transformable_requests_;
+    std::mutex transformable_requests_mutex_;
+    uint64_t transformable_requests_counter_;
+
+    /// \brief Internal use only
+    TF2_PUBLIC
+    void cancelTransformableRequest(TransformableRequestHandle handle);
+  };
+
+  std::shared_ptr<TransformableData> transformable_data_;
 };
 }  // namespace tf2
 
