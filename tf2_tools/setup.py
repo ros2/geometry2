@@ -14,8 +14,8 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     author='Wim Meeussen',
-    maintainer='Chris Lalancette',
-    maintainer_email='clalancette@openrobotics.org',
+    maintainer='Alejandro Hernandez Cordero, Chris Lalancette',
+    maintainer_email='alejandro@openrobotics.org, clalancette@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
