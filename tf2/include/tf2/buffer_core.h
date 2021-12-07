@@ -429,6 +429,8 @@ private:
     const TimePoint & time, std::string * error_msg) const;
 
 protected:
+  // This data structure contains members and functions needed in multi-threaded operations,
+  // and should be shared with callback functions or lambdas to prevent use-after-free scenarios.
   struct TransformableData
   {
     M_TransformableCallback transformable_callbacks_;
