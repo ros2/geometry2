@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixes for uncrustify 0.72 (`#486 <https://github.com/ros2/geometry2/issues/486>`_)
+* Contributors: Chris Lalancette
+
 0.19.0 (2021-10-15)
 -------------------
 * More Intuitive CLI for Static Transform Publisher (`#392 <https://github.com/ros2/geometry2/issues/392>`_)

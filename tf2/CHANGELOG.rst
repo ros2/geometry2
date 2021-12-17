@@ -2,6 +2,21 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Move time functions into time.cpp.
+* Change a for loop to a while loop.
+* Switch to C++-style casts.
+* Remove totally unused (and unreachable) code.
+* Replace NULL with nullptr.
+* Fix up some comments.
+* Use std::make_shared where we can.
+* Replace two comparisons with empty string to empty().
+* Make sure to include-what-you-use.
+* Remove unnecessary internal method.
+* Remove long-deprecated walkToTopParent overload.
+* Contributors: Chris Lalancette
+
 0.19.0 (2021-10-15)
 -------------------
 * Remove unnecessary test dependencies.
