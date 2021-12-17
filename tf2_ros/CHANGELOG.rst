@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.20.0 (2021-12-17)
+-------------------
 * Fixes for uncrustify 0.72 (`#486 <https://github.com/ros2/geometry2/issues/486>`_)
 * Contributors: Chris Lalancette
 

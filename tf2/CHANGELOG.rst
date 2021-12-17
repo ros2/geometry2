@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.20.0 (2021-12-17)
+-------------------
 * Move time functions into time.cpp.
 * Change a for loop to a while loop.
 * Switch to C++-style casts.
