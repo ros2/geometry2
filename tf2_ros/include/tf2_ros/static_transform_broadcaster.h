@@ -58,7 +58,7 @@ public:
   StaticTransformBroadcaster(
     NodeT && node,
     const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = []() {
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
       rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
       options.qos_overriding_options = rclcpp::QosOverridingOptions{
         rclcpp::QosPolicyKind::Depth,
