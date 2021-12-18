@@ -26,13 +26,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
+#include <tf2/time_cache.h>
+
 #include <gtest/gtest.h>
 
 #include <chrono>
 #include <cmath>
 #include <stdexcept>
-
-#include <tf2/time_cache.h>
 
 void setIdentity(tf2::TransformStorage & stor)
 {

@@ -45,9 +45,39 @@ install(DIRECTORY include/${PROJECT_NAME}/
 
 # Tests
 if(BUILD_TESTING)
-  # TODO(clalancette) enable linters once https://github.com/ament/ament_lint/pull/238 lands
+  find_package(ament_cmake_copyright REQUIRED)
+  find_package(ament_cmake_cppcheck REQUIRED)
+  find_package(ament_cmake_cpplint REQUIRED)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  find_package(ament_cmake_uncrustify REQUIRED)
+  find_package(ament_cmake_xmllint REQUIRED)
 
-  find_package(ament_cmake_gtest)
+  # Should not lint external code
+  set(
+    _linter_excludes
+    include/tf2/LinearMath/Matrix3x3.h
+    include/tf2/LinearMath/MinMax.h
+    include/tf2/LinearMath/QuadWord.h
+    include/tf2/LinearMath/Quaternion.h
+    include/tf2/LinearMath/Scalar.h
+    include/tf2/LinearMath/Transform.h
+    include/tf2/LinearMath/Vector3.h
+  )
+
+  ament_copyright(EXCLUDE ${_linter_excludes})
+  ament_cppcheck(
+    EXCLUDE ${_linter_excludes}
+    LANGUAGE c++
+  )
+  ament_cpplint(EXCLUDE ${_linter_excludes})
+  ament_lint_cmake()
+  ament_uncrustify(
+    EXCLUDE ${_linter_excludes}
+    LANGUAGE c++
+  )
+  ament_xmllint()
+
+  find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(test_cache_unittest test/cache_unittest.cpp)
   if(TARGET test_cache_unittest)
