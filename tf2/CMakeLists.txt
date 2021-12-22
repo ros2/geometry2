@@ -23,25 +23,23 @@ find_package(rosidl_runtime_cpp REQUIRED)
 add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
 target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
-ament_target_dependencies(tf2
-  "console_bridge"
-  "geometry_msgs"
-  "rcutils"
-)
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(tf2
+  console_bridge::console_bridge
+  ${geometry_msgs_TARGETS}
+  rcutils::rcutils)
+
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(tf2 PRIVATE "TF2_BUILDING_DLL")
 
-install(TARGETS tf2 EXPORT tf2
+install(TARGETS tf2 EXPORT export_tf2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 # Tests
 if(BUILD_TESTING)
@@ -92,9 +90,6 @@ if(BUILD_TESTING)
   ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
   if(TARGET test_simple_tf2_core)
     target_link_libraries(test_simple_tf2_core tf2)
-    ament_target_dependencies(test_simple_tf2_core
-      "geometry_msgs"
-    )
   endif()
 
   ament_add_gtest(test_time test/test_time.cpp)
@@ -104,7 +99,6 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
-ament_export_include_directories(include)
-ament_export_libraries(tf2)
-ament_export_targets(tf2)
+
+ament_export_targets(export_tf2)
 ament_package()

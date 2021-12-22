@@ -27,6 +27,16 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
   tf2::tf2
   tf2_ros::tf2_ros)
 
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(${PROJECT_NAME} INTERFACE
+  ${geometry_msgs_TARGETS}
+  orocos-kdl
+  tf2::tf2
+  tf2_ros::tf2_ros)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
@@ -55,7 +65,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
-install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(
