@@ -33,8 +33,10 @@
 #include <functional>
 #include <future>
 #include <string>
+#include <utility>
 
 #include "tf2_ros/visibility_control.h"
+#include "tf2/buffer_core.h"
 #include "tf2/time.h"
 #include "tf2/transform_datatypes.h"
 
@@ -43,7 +45,39 @@
 namespace tf2_ros
 {
 
-using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
+class TransformStampedFuture : public std::shared_future<geometry_msgs::msg::TransformStamped>
+{
+  typedef std::shared_future<geometry_msgs::msg::TransformStamped> _Base_type;
+
+public:
+  /// Constructor
+  explicit TransformStampedFuture(_Base_type && future) noexcept
+  : _Base_type(std::move(future)) {}
+
+  /// Copy constructor
+  TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept
+  : _Base_type(ts_future),
+    handle_(ts_future.handle_) {}
+
+  /// Move constructor
+  TransformStampedFuture(TransformStampedFuture && ts_future) noexcept
+  : _Base_type(std::move(ts_future)),
+    handle_(std::move(ts_future.handle_)) {}
+
+  void setHandle(const tf2::TransformableRequestHandle handle)
+  {
+    handle_ = handle;
+  }
+
+  tf2::TransformableRequestHandle getHandle() const
+  {
+    return handle_;
+  }
+
+private:
+  tf2::TransformableRequestHandle handle_ {};
+};
+
 using TransformReadyCallback = std::function<void (const TransformStampedFuture &)>;
 
 /**
@@ -75,6 +109,13 @@ public:
     const tf2::TimePoint & time,
     const tf2::Duration & timeout,
     TransformReadyCallback callback) = 0;
+
+  /**
+   * \brief Cancel the future to make sure the callback of requested transform is clean.
+   * \param ts_future The future to the requested transform.
+   */
+  virtual void
+  cancel(const TransformStampedFuture & ts_future) = 0;
 };  // class AsyncBufferInterface
 
 }  // namespace tf2_ros

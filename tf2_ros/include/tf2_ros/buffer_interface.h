@@ -49,8 +49,6 @@
 
 namespace tf2_ros
 {
-using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
-using TransformReadyCallback = std::function<void (const TransformStampedFuture &)>;
 
 inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
 {
