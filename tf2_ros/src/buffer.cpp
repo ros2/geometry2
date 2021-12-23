@@ -246,7 +246,7 @@ Buffer::waitForTransform(
       target_frame, source_frame, time);
     promise->set_value(msg_stamped);
     callback(future);
-  } else if (0xffffffffffffffffULL == handle) {
+  } else if (std::numeric_limits<tf2::TransformableRequestHandle>::max() == handle) {
     // Never transformable
     promise->set_exception(
       std::make_exception_ptr(

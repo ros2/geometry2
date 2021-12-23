@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <limits>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -1174,7 +1175,7 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     // any of the frames
     getLatestCommonTime(req.target_id, req.source_id, latest_time, 0);
     if ((latest_time != TimePointZero) && (time + cache_time_ < latest_time)) {
-      return 0xffffffffffffffffULL;
+      return std::numeric_limits<TransformableRequestHandle>::max();
     }
   }
 
@@ -1190,7 +1191,7 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
 
   req.time = time;
   req.request_handle = ++transformable_requests_counter_;
-  if (req.request_handle == 0 || req.request_handle == 0xffffffffffffffffULL) {
+  if (req.request_handle == 0 || req.request_handle == std::numeric_limits<TransformableRequestHandle>::max()) {
     req.request_handle = 1;
   }
 
