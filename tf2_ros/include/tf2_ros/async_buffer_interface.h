@@ -47,7 +47,7 @@ namespace tf2_ros
 
 class TransformStampedFuture : public std::shared_future<geometry_msgs::msg::TransformStamped>
 {
-  typedef std::shared_future<geometry_msgs::msg::TransformStamped> _Base_type;
+  using _Base_type = std::shared_future<geometry_msgs::msg::TransformStamped>;
 
 public:
   /// Constructor
