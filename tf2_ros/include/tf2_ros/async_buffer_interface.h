@@ -47,21 +47,21 @@ namespace tf2_ros
 
 class TransformStampedFuture : public std::shared_future<geometry_msgs::msg::TransformStamped>
 {
-  using _Base_type = std::shared_future<geometry_msgs::msg::TransformStamped>;
+  using BaseType = std::shared_future<geometry_msgs::msg::TransformStamped>;
 
 public:
   /// Constructor
-  explicit TransformStampedFuture(_Base_type && future) noexcept
-  : _Base_type(std::move(future)) {}
+  explicit TransformStampedFuture(BaseType && future) noexcept
+  : BaseType(std::move(future)) {}
 
   /// Copy constructor
   TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept
-  : _Base_type(ts_future),
+  : BaseType(ts_future),
     handle_(ts_future.handle_) {}
 
   /// Move constructor
   TransformStampedFuture(TransformStampedFuture && ts_future) noexcept
-  : _Base_type(std::move(ts_future)),
+  : BaseType(std::move(ts_future)),
     handle_(std::move(ts_future.handle_)) {}
 
   void setHandle(const tf2::TransformableRequestHandle handle)
