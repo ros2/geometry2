@@ -113,8 +113,13 @@ CompactFrameID BufferCore::validateFrameId(
     return 0;
   }
 
+  // Only check that a frame is non-existent once a frame was found
+  static bool init_state = true;
   CompactFrameID id = lookupFrameNumber(frame_id);
-  if (id == 0) {
+  if (id != 0) {
+    init_state = false;
+  }
+  if (!init_state && id == 0) {
     fillOrWarnMessageForInvalidFrame(
       function_name_arg, frame_id, error_msg, "frame does not exist");
   }
