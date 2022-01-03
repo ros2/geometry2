@@ -132,13 +132,12 @@ private:
       // Duplicate to modify option of subscription
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_static_options = static_options;
-      tf_options.callback_group = callback_group_;
-      tf_static_options.callback_group = callback_group_;
 
       message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node, "/tf", qos, std::move(cb), tf_options);
+        node, "/tf", qos, std::move(cb), tf_options, callback_group_);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node, "/tf_static", static_qos, std::move(static_cb), tf_static_options);
+        node, "/tf_static", static_qos, std::move(static_cb), tf_static_options,
+        callback_group_);
 
       // Create executor with dedicated thread to spin.
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
