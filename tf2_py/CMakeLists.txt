@@ -27,6 +27,7 @@ find_package(tf2 REQUIRED)
 
 find_package(python_cmake_module REQUIRED)
 find_package(PythonExtra REQUIRED)
+find_package(Python3 REQUIRED COMPONENTS Development)
 
 set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
 
@@ -36,33 +37,20 @@ endif()
 
 ament_python_install_package(${PROJECT_NAME})
 
-function(set_properties _targetname _build_type)
-  set_target_properties(${_targetname} PROPERTIES
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-    RUNTIME_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-    OUTPUT_NAME "_${_targetname}${PythonExtra_EXTENSION_SUFFIX}"
-    SUFFIX "${PythonExtra_EXTENSION_EXTENSION}")
-endfunction()
+python3_add_library(_tf2_py src/tf2_py.cpp)
 
-add_library(${PROJECT_NAME} SHARED src/tf2_py.cpp)
+set_target_properties(_tf2_py PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+)
 
-set_properties(${PROJECT_NAME} "")
-if(WIN32)
-  set_properties(${PROJECT_NAME} "_DEBUG")
-  set_properties(${PROJECT_NAME} "_MINSIZEREL")
-  set_properties(${PROJECT_NAME} "_RELEASE")
-  set_properties(${PROJECT_NAME} "_RELWITHDEBINFO")
-endif()
-
-ament_target_dependencies(${PROJECT_NAME}
-  "geometry_msgs"
-  "tf2"
-  "PythonExtra"
+target_link_libraries(_tf2_py PRIVATE
+  ${geometry_msgs_TARGETS}
+  tf2::tf2
 )
 
 install(TARGETS
-  ${PROJECT_NAME}
+  _tf2_py
   DESTINATION ${PYTHON_INSTALL_DIR}/${PROJECT_NAME}
 )
 
