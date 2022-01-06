@@ -20,20 +20,19 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wno-cast-function-type)
 endif()
 
+# Figure out Python3 debug/release before anything else can find_package it
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  find_package(python_cmake_module REQUIRED)
+  find_package(PythonExtra REQUIRED)
+  # Force FindPython3 to use the debug interpretter where ROS 2 expects it
+  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+endif()
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
-
-find_package(python_cmake_module REQUIRED)
-find_package(PythonExtra REQUIRED)
-find_package(Python3 REQUIRED COMPONENTS Development)
-
-set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
-
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-endif()
 
 ament_python_install_package(${PROJECT_NAME})
 
@@ -67,14 +66,11 @@ if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
 
   ament_add_pytest_test(tf2_py_test test
-    PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}"
     APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 
   # Create importable location in build directory
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py/__init__.py" "")
 endif()
-
-set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
 
 ament_package()
