@@ -38,9 +38,12 @@ ament_python_install_package(${PROJECT_NAME})
 
 python3_add_library(_tf2_py src/tf2_py.cpp)
 
+# Set output directories to import module from the build directory
+# Use a no-op generator expression so multi-config generators don't append an
+# extra directory like Release/ or Debug/ and break the Python import.
 set_target_properties(_tf2_py PROPERTIES
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
+  LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}>"
+  RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}>"
 )
 
 target_link_libraries(_tf2_py PRIVATE
