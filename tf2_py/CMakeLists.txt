@@ -38,6 +38,11 @@ ament_python_install_package(${PROJECT_NAME})
 
 python3_add_library(_tf2_py src/tf2_py.cpp)
 
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  # python3_add_library should really take care of this for us, but it doesn't
+  set_property(TARGET _tf2_py PROPERTY SUFFIX "_d.pyd")
+endif()
+
 # Set output directories to import module from the build directory
 # Use a no-op generator expression so multi-config generators don't append an
 # extra directory like Release/ or Debug/ and break the Python import.
