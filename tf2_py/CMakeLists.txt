@@ -20,49 +20,44 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wno-cast-function-type)
 endif()
 
+# Figure out Python3 debug/release before anything else can find_package it
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  find_package(python_cmake_module REQUIRED)
+  find_package(PythonExtra REQUIRED)
+  # Force FindPython3 to use the debug interpretter where ROS 2 expects it
+  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+endif()
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 
-find_package(python_cmake_module REQUIRED)
-find_package(PythonExtra REQUIRED)
-
-set(_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}")
-
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-endif()
-
 ament_python_install_package(${PROJECT_NAME})
 
-function(set_properties _targetname _build_type)
-  set_target_properties(${_targetname} PROPERTIES
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-    RUNTIME_OUTPUT_DIRECTORY${_build_type} "${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}"
-    OUTPUT_NAME "_${_targetname}${PythonExtra_EXTENSION_SUFFIX}"
-    SUFFIX "${PythonExtra_EXTENSION_EXTENSION}")
-endfunction()
+python3_add_library(_tf2_py src/tf2_py.cpp)
 
-add_library(${PROJECT_NAME} SHARED src/tf2_py.cpp)
-
-set_properties(${PROJECT_NAME} "")
-if(WIN32)
-  set_properties(${PROJECT_NAME} "_DEBUG")
-  set_properties(${PROJECT_NAME} "_MINSIZEREL")
-  set_properties(${PROJECT_NAME} "_RELEASE")
-  set_properties(${PROJECT_NAME} "_RELWITHDEBINFO")
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  # python3_add_library should really take care of this for us, but it doesn't
+  set_property(TARGET _tf2_py PROPERTY SUFFIX "_d.pyd")
 endif()
 
-ament_target_dependencies(${PROJECT_NAME}
-  "geometry_msgs"
-  "tf2"
-  "PythonExtra"
+# Set output directories to import module from the build directory
+# Use a no-op generator expression so multi-config generators don't append an
+# extra directory like Release/ or Debug/ and break the Python import.
+set_target_properties(_tf2_py PROPERTIES
+  LIBRARY_OUTPUT_DIRECTORY "$<1:${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}>"
+  RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_CURRENT_BINARY_DIR}/test_${PROJECT_NAME}>"
+)
+
+target_link_libraries(_tf2_py PRIVATE
+  ${geometry_msgs_TARGETS}
+  tf2::tf2
 )
 
 install(TARGETS
-  ${PROJECT_NAME}
+  _tf2_py
   DESTINATION ${PYTHON_INSTALL_DIR}/${PROJECT_NAME}
 )
 
@@ -79,14 +74,11 @@ if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)
 
   ament_add_pytest_test(tf2_py_test test
-    PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}"
     APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}
   )
 
   # Create importable location in build directory
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_tf2_py/__init__.py" "")
 endif()
-
-set(PYTHON_EXECUTABLE "${_PYTHON_EXECUTABLE}")
 
 ament_package()
