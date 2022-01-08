@@ -26,9 +26,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+# Bullet CMake only exports old-style CMake variables.
+# This script makes an imported target for them.
+
 if(WIN32)
   set(BULLET_ROOT $ENV{ChocolateyInstall}/lib/bullet)
 endif()
 find_package(Bullet REQUIRED)
 
-include_directories(SYSTEM ${BULLET_INCLUDE_DIRS})
+add_library(tf2_bullet::Bullet INTERFACE IMPORTED)
+target_include_directories(tf2_bullet::Bullet INTERFACE ${BULLET_INCLUDE_DIRS})
+target_link_libraries(tf2_bullet::Bullet INTERFACE ${BULLET_LIBRARIES})
