@@ -92,7 +92,7 @@ public:
       }
     }
 
-    average_offset /= std::max((size_t) 1, message.transforms.size());
+    average_offset /= std::max(static_cast<size_t>(1), message.transforms.size());
 
     // create the authority log
     std::map<std::string, std::vector<double>>::iterator it2 = authority_map.find(authority);
