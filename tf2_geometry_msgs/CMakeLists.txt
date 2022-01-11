@@ -50,7 +50,10 @@ if(BUILD_TESTING)
   if(TARGET test_tf2_geometry_msgs)
     target_link_libraries(test_tf2_geometry_msgs
       ${PROJECT_NAME}
-      rclcpp::rclcpp)
+      rclcpp::rclcpp
+      # Used, but not linked to test ${PROJECT_NAME}'s exports:
+      #   tf2_ros::tf2_ros
+    )
   endif()
 endif()
 
