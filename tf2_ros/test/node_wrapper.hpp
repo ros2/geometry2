@@ -30,11 +30,11 @@
 #ifndef NODE_WRAPPER_HPP_
 #define NODE_WRAPPER_HPP_
 
-#include <gtest/gtest.h>
-#include <rclcpp/rclcpp.hpp>
-
 #include <memory>
 #include <string>
+
+#include "gtest/gtest.h"
+#include "rclcpp/rclcpp.hpp"
 
 class NodeWrapper
 {
