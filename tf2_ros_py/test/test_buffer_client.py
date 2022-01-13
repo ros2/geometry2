@@ -127,7 +127,7 @@ class TestBufferClient(unittest.TestCase):
 
     def test_lookup_transform_true(self):
         buffer_client = BufferClient(
-            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)
+            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=rclpy.duration.Duration(seconds=0.0))
 
         result = buffer_client.lookup_transform(
             'foo', 'bar', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
@@ -137,7 +137,7 @@ class TestBufferClient(unittest.TestCase):
 
     def test_lookup_transform_fail(self):
         buffer_client = BufferClient(
-            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)
+            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=rclpy.duration.Duration(seconds=0.0))
 
         with self.assertRaises(LookupException) as ex:
             result = buffer_client.lookup_transform(
