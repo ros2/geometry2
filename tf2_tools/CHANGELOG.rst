@@ -2,6 +2,9 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-01-14)
+-------------------
+
 0.20.0 (2021-12-17)
 -------------------
 * Update maintainers to Alejandro Hernandez Cordero and Chris Lalancette (`#481 <https://github.com/ros2/geometry2/issues/481>`_)

@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-01-14)
+-------------------
+* tf2: Enable common linter tests (`#469 <https://github.com/ros2/geometry2/issues/469>`_)
+* Contributors: Abrar Rahman Protyasha
+
 0.20.0 (2021-12-17)
 -------------------
 * Move time functions into time.cpp.

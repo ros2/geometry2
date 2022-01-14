@@ -2,6 +2,13 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-01-14)
+-------------------
+* Be much more careful about cleanup in the tf2_ros_py tests. (`#499 <https://github.com/ros2/geometry2/issues/499>`_)
+* Use the correct type for BufferClient timeout_padding. (`#498 <https://github.com/ros2/geometry2/issues/498>`_)
+  It should be a duration, not a float.
+* Contributors: Chris Lalancette
+
 0.20.0 (2021-12-17)
 -------------------
 * Update maintainers to Alejandro Hernandez Cordero and Chris Lalancette (`#481 <https://github.com/ros2/geometry2/issues/481>`_)
