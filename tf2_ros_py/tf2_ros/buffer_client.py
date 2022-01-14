@@ -273,3 +273,8 @@ class BufferClient(tf2_ros.BufferInterface):
             raise tf2.TransformException(result.error.error_string)
 
         return result.transform
+
+    def destroy(self) -> None:
+        """Cleanup resources associated with this BufferClient."""
+
+        self.action_client.destroy()

@@ -63,9 +63,7 @@ def build_transform(target_frame, source_frame, stamp):
 class MockBufferServer():
     def __init__(self, node, buffer_core):
         self.action_server = rclpy.action.ActionServer(node, LookupTransform, 'lookup_transform', self.execute_callback)
-        self.node = node
         self.buffer_core = buffer_core
-        self.result_buffer = {}
 
     def execute_callback(self, goal_handle):
         response = LookupTransform.Result()
@@ -86,10 +84,15 @@ class MockBufferServer():
                     fixed_frame=goal_handle.request.fixed_frame
                 )
             response.transform = transform
+            goal_handle.succeed()
         except LookupException as e:
             response.error.error = TF2Error.LOOKUP_ERROR
+            goal_handle.abort()
 
         return response
+
+    def destroy(self):
+        self.action_server.destroy()
 
 
 class TestBufferClient(unittest.TestCase):
@@ -109,6 +112,7 @@ class TestBufferClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.mock_action_server.destroy()
         cls.node.destroy_node()
         rclpy.shutdown(context=cls.context)
 
@@ -144,6 +148,8 @@ class TestBufferClient(unittest.TestCase):
                 'bar', 'baz', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
 
         self.assertEqual(LookupException, type(ex.exception))
+
+        buffer_client.destroy()
 
 if __name__ == '__main__':
     unittest.main()
