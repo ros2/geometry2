@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.13 (2022-01-31)
+--------------------
+* Fix covariance transformation in ``doTransform<PoseWithCovarianceStamped, TransformStamped>`` (`#430 <https://github.com/ros2/geometry2/issues/430>`_) (`#489 <https://github.com/ros2/geometry2/issues/489>`_)
+* Contributors: Abrar Rahman Protyasha
+
 0.13.12 (2021-10-05)
 --------------------
 

@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.13 (2022-01-31)
+--------------------
+
 0.13.12 (2021-10-05)
 --------------------
 * Workaround with pragma push and pop for NO_ERROR collison (`#456 <https://github.com/ros2/geometry2/issues/456>`_)

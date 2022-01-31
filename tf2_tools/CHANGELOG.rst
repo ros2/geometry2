@@ -2,6 +2,12 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.13.13 (2022-01-31)
+--------------------
+* Address security bug in yaml loading (`#313 <https://github.com/ros2/geometry2/issues/313>`_) (`#484 <https://github.com/ros2/geometry2/issues/484>`_)
+* Add ``graphviz`` as a runtime dependency (`#483 <https://github.com/ros2/geometry2/issues/483>`_)
+* Contributors: Abrar Rahman Protyasha, Víctor Mayoral Vilches
+
 0.13.12 (2021-10-05)
 --------------------
 
