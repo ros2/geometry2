@@ -146,7 +146,8 @@ Buffer::canTransform(
   // poll for transform if timeout is set
   rclcpp::Time start_time = clock_->now();
   while (clock_->now() < start_time + rclcpp_timeout &&
-    !canTransform(target_frame, source_frame, time) &&
+    !canTransform(target_frame, source_frame, time,
+                  tf2::Duration(std::chrono::nanoseconds::zero()), errstr) &&
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
@@ -174,7 +175,8 @@ Buffer::canTransform(
   // poll for transform if timeout is set
   rclcpp::Time start_time = clock_->now();
   while (clock_->now() < start_time + rclcpp_timeout &&
-    !canTransform(target_frame, target_time, source_frame, source_time, fixed_frame) &&
+    !canTransform(target_frame, target_time, source_frame, source_time, fixed_frame,
+                  tf2::Duration(std::chrono::nanoseconds::zero()), errstr) &&
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
