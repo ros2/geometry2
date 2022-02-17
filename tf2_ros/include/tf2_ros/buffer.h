@@ -252,6 +252,14 @@ public:
       callback);
   }
 
+  /**
+   * \brief Cancel the future to make sure the callback of requested transform is clean.
+   * \param ts_future The future to the requested transform.
+   */
+  TF2_ROS_PUBLIC
+  void
+  cancel(const TransformStampedFuture & ts_future) override;
+
   TF2_ROS_PUBLIC
   inline void
   setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)

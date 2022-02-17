@@ -240,6 +240,7 @@ Buffer::waitForTransform(
     };
 
   auto handle = addTransformableRequest(cb, target_frame, source_frame, time);
+  future.setHandle(handle);
   if (0 == handle) {
     // Immediately transformable
     geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(
@@ -264,6 +265,18 @@ Buffer::waitForTransform(
     timer_to_request_map_[timer_handle] = handle;
   }
   return future;
+}
+
+void
+Buffer::cancel(const TransformStampedFuture & ts_future)
+{
+  cancelTransformableRequest(ts_future.getHandle());
+
+  std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
+  auto iter = timer_to_request_map_.find(ts_future.getHandle());
+  if (iter != timer_to_request_map_.end()) {
+    timer_to_request_map_.erase(iter);
+  }
 }
 
 void
