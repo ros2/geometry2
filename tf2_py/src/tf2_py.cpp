@@ -386,6 +386,21 @@ static int BufferCore_init(PyObject * self, PyObject * args, PyObject * kw)
   return 0;
 }
 
+static void BufferCore_finalize(PyObject * self)
+{
+  PyObject * error_type, * error_value, * error_traceback;
+
+  /* Save the current exception, if any. */
+  PyErr_Fetch(&error_type, &error_value, &error_traceback);
+
+  buffer_core_t * buffer_core = reinterpret_cast<buffer_core_t *>(self);
+
+  delete buffer_core->bc;
+
+  /* Restore the saved exception. */
+  PyErr_Restore(error_type, error_value, error_traceback);
+}
+
 static PyObject * allFramesAsYAML(PyObject * self, PyObject * args)
 {
   (void)args;
@@ -1073,6 +1088,7 @@ bool staticInit()
   buffer_core_Type.tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE;
   buffer_core_Type.tp_methods = buffer_core_methods;
   buffer_core_Type.tp_init = BufferCore_init;
+  buffer_core_Type.tp_finalize = BufferCore_finalize;
   buffer_core_Type.tp_alloc = PyType_GenericAlloc;
   buffer_core_Type.tp_new = PyType_GenericNew;
 
