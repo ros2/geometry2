@@ -15,7 +15,7 @@
 
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
-  <depend>orocos_kdl</depend>
+  <depend>orocos_kdl_vendor</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 

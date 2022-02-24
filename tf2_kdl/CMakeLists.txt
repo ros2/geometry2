@@ -29,7 +29,8 @@ target_link_libraries(tf2_kdl INTERFACE
   tf2_ros::tf2_ros)
 target_include_directories(tf2_kdl INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  ${orocos_kdl_INCLUDE_DIRS})
 
 install(TARGETS tf2_kdl EXPORT export_tf2_kdl)
 
@@ -61,5 +62,6 @@ ament_export_include_directories("include/${PROJECT_NAME}")
 # Export modern CMake targets
 ament_export_targets(export_tf2_kdl)
 
-ament_export_dependencies(builtin_interfaces geometry_msgs orocos_kdl tf2 tf2_ros)
+ament_export_dependencies(builtin_interfaces geometry_msgs orocos_kdl_vendor tf2 tf2_ros)
+
 ament_package()
