@@ -7,15 +7,6 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
-
-  # The version of Eigen in Ubuntu 22.04 has a bug that causes Wmem-access warnings on aarch64.
-  # Upstream has already fixed this in https://gitlab.com/libeigen/eigen/-/merge_requests/645 .
-  # There is a fix in progress for this in Debian: https://salsa.debian.org/science-team/eigen3/-/merge_requests/1
-  # However, it is not clear that that fix is going to make it into Ubuntu 22.04 before it
-  # freezes, so disable the warning here.
-  if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-    add_compile_options(-Wno-mem-access)
-  endif()
 endif()
 
 find_package(ament_cmake_auto REQUIRED)
