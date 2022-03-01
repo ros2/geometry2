@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.22.0 (2022-03-01)
+-------------------
 * Add in one more destroy call that was missed in testing. (`#504 <https://github.com/ros2/geometry2/issues/504>`_)
 * Contributors: Chris Lalancette
 
