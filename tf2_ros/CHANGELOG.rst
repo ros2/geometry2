@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* clear relative callback of Buffer if MessageFilter is destroyed (`#490 <https://github.com/ros2/geometry2/issues/490>`_)
+* More info in tf2_echo output (`#468 <https://github.com/ros2/geometry2/issues/468>`_)
+* Contributors: Chen Lihui, simulacrus
+
 0.21.0 (2022-01-14)
 -------------------
 * Fix cpplint errors (`#497 <https://github.com/ros2/geometry2/issues/497>`_)

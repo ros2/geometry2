@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add in one more destroy call that was missed in testing. (`#504 <https://github.com/ros2/geometry2/issues/504>`_)
+* Contributors: Chris Lalancette
+
 0.21.0 (2022-01-14)
 -------------------
 * Be much more careful about cleanup in the tf2_ros_py tests. (`#499 <https://github.com/ros2/geometry2/issues/499>`_)

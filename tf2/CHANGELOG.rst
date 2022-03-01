@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.21.0 (2022-01-14)
 -------------------
 * tf2: Enable common linter tests (`#469 <https://github.com/ros2/geometry2/issues/469>`_)
