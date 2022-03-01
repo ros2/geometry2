@@ -32,17 +32,6 @@
 #ifndef TF2_ROS__MESSAGE_FILTER_H_
 #define TF2_ROS__MESSAGE_FILTER_H_
 
-#include <message_filters/connection.h>
-#include <message_filters/message_traits.h>
-#include <message_filters/simple_filter.h>
-#include <tf2/buffer_core_interface.h>
-#include <tf2/time.h>
-#include <tf2_ros/async_buffer_interface.h>
-#include <tf2_ros/buffer.h>
-
-#include <builtin_interfaces/msg/time.hpp>
-#include <rclcpp/rclcpp.hpp>
-
 #include <algorithm>
 #include <chrono>
 #include <functional>
@@ -54,7 +43,20 @@
 #include <string>
 #include <tuple>
 #include <type_traits>
+#include <unordered_map>
+#include <utility>
 #include <vector>
+
+#include "message_filters/connection.h"
+#include "message_filters/message_traits.h"
+#include "message_filters/simple_filter.h"
+#include "tf2/buffer_core_interface.h"
+#include "tf2/time.h"
+#include "tf2_ros/async_buffer_interface.h"
+#include "tf2_ros/buffer.h"
+
+#include "builtin_interfaces/msg/time.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 #define TF2_ROS_MESSAGEFILTER_DEBUG(fmt, ...) \
   RCUTILS_LOG_DEBUG_NAMED( \
@@ -335,6 +337,14 @@ public:
    */
   void clear()
   {
+    {
+      std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+      for (auto & kv : ts_futures_) {
+        buffer_.cancel(kv.second);
+      }
+      ts_futures_.clear();
+    }
+
     std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
     TF2_ROS_MESSAGEFILTER_DEBUG("%s", "Cleared");
@@ -423,12 +433,19 @@ public:
       const auto & handle = std::get<0>(param);
       const auto & stamp = std::get<1>(param);
       const auto & target_frame = std::get<2>(param);
-      buffer_.waitForTransform(
+      tf2_ros::TransformStampedFuture future = buffer_.waitForTransform(
         target_frame,
         frame_id,
         stamp,
         buffer_timeout_,
         std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+
+      // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform have already called
+      // the callback.
+      if (0 != future.getHandle() || 0xffffffffffffffffULL != future.getHandle()) {
+        std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+        ts_futures_.insert({handle, std::move(future)});
+      }
     }
   }
 
@@ -484,6 +501,14 @@ private:
 
     MEvent saved_event;
     bool event_found = false;
+
+    {
+      std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+      auto iter = ts_futures_.find(handle);
+      if (iter != ts_futures_.end()) {
+        ts_futures_.erase(iter);
+      }
+    }
 
     {
       // We will be accessing and mutating messages now, require unique lock
@@ -748,6 +773,13 @@ private:
 
   // Timeout duration when calling the buffer method 'waitForTransform'
   tf2::Duration buffer_timeout_;
+
+  ///< The mutex used for locking TransformStampedFuture map operations
+  std::mutex ts_futures_mutex_;
+
+  ///< Store the TransformStampedFuture returned by 'waitForTransform',
+  // to clear the callback in the Buffer if MessageFiltered object is destroyed.
+  std::unordered_map<uint64_t, tf2_ros::TransformStampedFuture> ts_futures_;
 };
 }  // namespace tf2_ros
 

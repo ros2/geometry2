@@ -32,25 +32,23 @@
 #ifndef TF2_ROS__BUFFER_INTERFACE_H_
 #define TF2_ROS__BUFFER_INTERFACE_H_
 
-#include <tf2_ros/visibility_control.h>
-#include <tf2/transform_datatypes.h>
-#include <tf2/exceptions.h>
-#include <tf2/convert.h>
-
-#include <builtin_interfaces/msg/duration.hpp>
-#include <builtin_interfaces/msg/time.hpp>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <rclcpp/rclcpp.hpp>
-
 #include <chrono>
 #include <functional>
 #include <future>
 #include <string>
 
+#include "tf2_ros/visibility_control.h"
+#include "tf2/transform_datatypes.h"
+#include "tf2/exceptions.h"
+#include "tf2/convert.h"
+
+#include "builtin_interfaces/msg/duration.hpp"
+#include "builtin_interfaces/msg/time.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/rclcpp.hpp"
+
 namespace tf2_ros
 {
-using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
-using TransformReadyCallback = std::function<void (const TransformStampedFuture &)>;
 
 inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
 {

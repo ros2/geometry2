@@ -2,6 +2,13 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-01-14)
+-------------------
+* Fix cpplint errors (`#497 <https://github.com/ros2/geometry2/issues/497>`_)
+* Export a tf2_geometry_msgs::tf2_geometry_msgs target (`#496 <https://github.com/ros2/geometry2/issues/496>`_)
+* Feature: Add doTransform for Wrench messages (`#476 <https://github.com/ros2/geometry2/issues/476>`_)
+* Contributors: Denis Štogl, Jacob Perron, Shane Loretz
+
 0.20.0 (2021-12-17)
 -------------------
 

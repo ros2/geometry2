@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.21.0 (2022-01-14)
+-------------------
+* Fix cpplint errors (`#497 <https://github.com/ros2/geometry2/issues/497>`_)
+* Contributors: Jacob Perron
+
 0.20.0 (2021-12-17)
 -------------------
 

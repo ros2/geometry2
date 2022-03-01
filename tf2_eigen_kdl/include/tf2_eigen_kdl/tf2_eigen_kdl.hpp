@@ -40,9 +40,9 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <kdl/frames.hpp>
+#include "kdl/frames.hpp"
 
-#include <tf2/impl/convert.h>
+#include "tf2/impl/convert.h"
 
 #include "tf2_eigen_kdl/visibility_control.h"
 

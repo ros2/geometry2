@@ -29,15 +29,17 @@
 #ifndef TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
 #define TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
 
-#include <tf2/convert.h>
-#include <tf2/time.h>
-#include <sensor_msgs/msg/point_cloud2.hpp>
-#include <sensor_msgs/point_cloud2_iterator.hpp>
-#include <Eigen/Eigen>
-#include <Eigen/Geometry>
-#include <tf2_ros/buffer_interface.h>
-
 #include <string>
+
+#include <Eigen/Eigen>  // NOLINT
+#include <Eigen/Geometry>  // NOLINT
+
+#include "tf2_ros/buffer_interface.h"
+
+#include "tf2/convert.h"
+#include "tf2/time.h"
+#include "sensor_msgs/msg/point_cloud2.hpp"
+#include "sensor_msgs/point_cloud2_iterator.hpp"
 
 namespace tf2
 {

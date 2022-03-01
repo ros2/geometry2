@@ -36,14 +36,6 @@ from geometry_msgs.msg import TransformStamped, PointStamped
 
 
 class TestBuffer(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
     def build_transform(self, target, source, rclpy_time):
         transform = TransformStamped()
         transform.header.frame_id = target
