@@ -107,7 +107,7 @@ def _get_mat_from_quat(quaternion: np.ndarray) -> np.ndarray:
     :param quaternion: A numpy array containing the w, x, y, and z components of the quaternion
     :returns: An array containing an X, Y, and Z translation component
     """
-    Nq = np.linalg.norm(quaternion)
+    Nq = np.sum(np.square(quaternion, 2))
     if Nq < np.finfo(np.float64).eps:
         return np.eye(3)
 
