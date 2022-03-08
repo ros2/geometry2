@@ -26,12 +26,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import tf2_ros
 import numpy as np
 import numpy.typing as npt
+import tf2_ros
+from geometry_msgs.msg import Transform
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.point_cloud2 import create_cloud, read_points
-from geometry_msgs.msg import Transform
 
 
 def to_msg_msg(msg):
