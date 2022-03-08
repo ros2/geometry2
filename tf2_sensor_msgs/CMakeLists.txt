@@ -12,7 +12,6 @@ endif()
 find_package(ament_cmake_auto REQUIRED)
 set(required_dependencies
   "sensor_msgs"
-  #"python_orocos_kdl"
   "tf2"
   "tf2_ros"
 )
@@ -37,9 +36,8 @@ if(BUILD_TESTING)
   set(ament_cmake_cppcheck_LANGUAGE c++)
   ament_lint_auto_find_test_dependencies()
 
-  # TODO(ros2/orocos_kinematics_dynamics): reenable when PyKDL is ready to use
-  #find_package(ament_cmake_pytest REQUIRED)
-  #ament_add_pytest_test(test_tf2_sensor_msgs_py test/test_tf2_sensor_msgs.py)
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_tf2_sensor_msgs_py test/test_tf2_sensor_msgs.py)
 
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
   if(TARGET test_tf2_sensor_msgs_cpp)

@@ -26,11 +26,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import PyKDL
+import tf2_ros
+import numpy as np
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.point_cloud2 import create_cloud, read_points
-import rospy  # noqa(E401)
-import tf2_ros
+from geometry_msgs.msg import Transform
 
 
 def to_msg_msg(msg):
@@ -47,24 +47,71 @@ def from_msg_msg(msg):
 tf2_ros.ConvertRegistration().add_from_msg(PointCloud2, from_msg_msg)
 
 
-def transform_to_kdl(t):
-    return PyKDL.Frame(PyKDL.Rotation.Quaternion(
-                            t.transform.rotation.x, t.transform.rotation.y,
-                            t.transform.rotation.z, t.transform.rotation.w),
-                       PyKDL.Vector(t.transform.translation.x,
-                                    t.transform.translation.y,
-                                    t.transform.translation.z))
+def transform_points(point_cloud: np.ndarray, transform: Transform) -> np.ndarray:
+    """
+    Transforms a bulk of points from an numpy array using a provided `Transform`.
+
+    :param point_cloud: nx3 Array of points where n is the number of points
+    :param transform: TF2 transform used for the transformation
+    :returns: Array with the same shape as the input array, but with the transformation applied
+    """
+    # Build affine transformation
+    transform_translation = np.array([
+        transform.translation.x,
+        transform.translation.y,
+        transform.translation.z
+    ])
+    transform_rotation_matrix = _get_mat_from_quat(
+        np.array([
+            transform.rotation.w,
+            transform.rotation.x,
+            transform.rotation.y,
+            transform.rotation.z
+        ]))
+
+    # "Batched" matmul meaning a matmul for each point
+    # First we offset all points by the translation part followed by a rotation using the rotation matrix
+    return np.einsum('ij, pj -> pi', transform_rotation_matrix, point_cloud + transform_translation)
 
 
-# PointStamped
-def do_transform_cloud(cloud, transform):
-    t_kdl = transform_to_kdl(transform)
-    points_out = []
-    for p_in in read_points(cloud):
-        p_out = t_kdl * PyKDL.Vector(p_in[0], p_in[1], p_in[2])
-        points_out.append(p_out)
-    res = create_cloud(transform.header, cloud.fields, points_out)
-    return res
+
+def do_transform_cloud(cloud: PointCloud2, transform: Transform) -> PointCloud2:
+    """
+    Applies a `Transform` on a `PointCloud2`.
+
+    :param cloud: The point cloud that should be transformed
+    :param transform: The transform which will applied to the point cloud
+    :returns: The transformed point cloud
+    """
+    points = read_points(cloud)
+    points_out = transform_points(points, transform)
+    return create_cloud(transform.header, cloud.fields, points_out)
 
 
 tf2_ros.TransformRegistration().add(PointCloud2, do_transform_cloud)
+
+
+def _get_mat_from_quat(quaternion: np.ndarray):
+    """
+    Converts a quaternion to a rotation matrix
+
+    This method is currently needed because transforms3d is not released as a `.dep` and
+    would require user interaction to set up.
+
+    :param quaternion: A numpy array containing the w, x, y, and z components of the quaternion
+    :returns: An array containing an X, Y, and Z translation component
+    """
+    Nq = np.linalg.norm(quaternion)
+    if Nq < np.finfo(np.float64).eps:
+        return np.eye(3)
+
+    XYZ = quaternion[1:] * 2.0 / Nq
+    wXYZ = XYZ * quaternion[0]
+    xXYZ = XYZ * quaternion[1]
+    yYZ = XYZ[1:] * quaternion[2]
+    zZ = XYZ[2] * quaternion[3]
+
+    return np.array(
+        [[ 1.0-(yYZ[0]+zZ), xXYZ[1]-wXYZ[2], xXYZ[2]+wXYZ[1]],
+        [ xXYZ[1]+wXYZ[2], 1.0-(xXYZ[0]+zZ), yYZ[1]-wXYZ[0]],
+        [ xXYZ[2]-wXYZ[1], yYZ[1]+wXYZ[0], 1.0-(xXYZ[0]+yYZ[0])]])
