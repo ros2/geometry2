@@ -102,6 +102,8 @@ def _get_mat_from_quat(quaternion: np.ndarray) -> np.ndarray:
     This method is currently needed because transforms3d is not released as a `.dep` and
     would require user interaction to set up.
 
+    For reference see: https://github.com/matthew-brett/transforms3d/blob/f185e866ecccb66c545559bc9f2e19cb5025e0ab/transforms3d/quaternions.py#L101
+
     :param quaternion: A numpy array containing the w, x, y, and z components of the quaternion
     :returns: An array containing an X, Y, and Z translation component
     """
