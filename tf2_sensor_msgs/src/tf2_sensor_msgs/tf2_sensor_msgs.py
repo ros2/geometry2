@@ -28,6 +28,7 @@
 
 import tf2_ros
 import numpy as np
+import numpy.typing as npt
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.point_cloud2 import create_cloud, read_points
 from geometry_msgs.msg import Transform
@@ -47,7 +48,7 @@ def from_msg_msg(msg):
 tf2_ros.ConvertRegistration().add_from_msg(PointCloud2, from_msg_msg)
 
 
-def transform_points(point_cloud: np.ndarray, transform: Transform) -> np.ndarray:
+def transform_points(point_cloud: npt.ArrayLike, transform: Transform) -> np.ndarray:
     """
     Transforms a bulk of points from an numpy array using a provided `Transform`.
 
@@ -55,6 +56,9 @@ def transform_points(point_cloud: np.ndarray, transform: Transform) -> np.ndarra
     :param transform: TF2 transform used for the transformation
     :returns: Array with the same shape as the input array, but with the transformation applied
     """
+    # Cast ArrayLike object to np.ndarray
+    point_cloud = np.asarray(point_cloud)
+
     # Build affine transformation
     transform_translation = np.array([
         transform.translation.x,
@@ -91,7 +95,7 @@ def do_transform_cloud(cloud: PointCloud2, transform: Transform) -> PointCloud2:
 tf2_ros.TransformRegistration().add(PointCloud2, do_transform_cloud)
 
 
-def _get_mat_from_quat(quaternion: np.ndarray):
+def _get_mat_from_quat(quaternion: np.ndarray) -> np.ndarray:
     """
     Converts a quaternion to a rotation matrix
 
