@@ -26,6 +26,9 @@ ament_export_dependencies(Eigen3)
 ament_export_dependencies(tf2)
 ament_export_dependencies(tf2_ros)
 
+ament_python_install_package(${PROJECT_NAME}
+      PACKAGE_DIR ${PROJECT_NAME})
+
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
