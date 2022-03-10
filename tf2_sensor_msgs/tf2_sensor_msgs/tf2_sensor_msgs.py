@@ -86,7 +86,7 @@ def transform_points(
     return np.einsum(
         'ij, pj -> pi',
         transform_rotation_matrix,
-        point_cloud + transform_translation)
+        point_cloud) + transform_translation
 
 
 def do_transform_cloud(
