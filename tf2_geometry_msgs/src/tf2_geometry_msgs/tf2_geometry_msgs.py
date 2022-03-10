@@ -152,7 +152,7 @@ def _build_affine(
         translation: Optional[npt.ArrayLike] = None) -> np.ndarray:
     affine = np.eye(4)
     if rotation is not None:
-        affine[:3, :3] = np.asarray(rotation)
+        affine[:3, :3] = _get_mat_from_quat(np.asarray(rotation))
     if translation is not None:
         affine[:3, 3] = np.asarray(translation)
     return affine
@@ -160,17 +160,17 @@ def _build_affine(
 
 def _transform_to_affine(transform: TransformStamped) -> np.ndarray:
     transform = transform.transform
-    transform_rotation_matrix = _get_mat_from_quat(np.array([
+    transform_rotation_matrix = [
         transform.rotation.w,
         transform.rotation.x,
         transform.rotation.y,
         transform.rotation.z
-    ]))
-    transform_translation = np.array([
+    ]
+    transform_translation = [
         transform.translation.x,
         transform.translation.y,
         transform.translation.z
-    ])
+    ]
     return _build_affine(transform_rotation_matrix, transform_translation)
 
 
@@ -249,7 +249,7 @@ def do_transform_point(
         point: PointStamped,
         transform: TransformStamped) -> PointStamped:
 
-    _, p = _decompose_affine(
+    _, point = _decompose_affine(
         np.matmul(
             _transform_to_affine(transform),
             _build_affine(translation=[
@@ -259,9 +259,9 @@ def do_transform_point(
             ])))
 
     res = PointStamped()
-    res.point.x = p[0]
-    res.point.y = p[1]
-    res.point.z = p[2]
+    res.point.x = point[0]
+    res.point.y = point[1]
+    res.point.z = point[2]
     res.header = transform.header
     return res
 
@@ -277,7 +277,7 @@ def do_transform_vector3(
     transform.transform.translation.x = 0.0
     transform.transform.translation.y = 0.0
     transform.transform.translation.z = 0.0
-    _, p = _decompose_affine(
+    _, point = _decompose_affine(
         np.matmul(
             _transform_to_affine(transform),
             _build_affine(translation=[
@@ -286,9 +286,9 @@ def do_transform_vector3(
                 vector3.vector.z
             ])))
     res = Vector3Stamped()
-    res.vector.x = p[0]
-    res.vector.y = p[1]
-    res.vector.z = p[2]
+    res.vector.x = point[0]
+    res.vector.y = point[1]
+    res.vector.z = point[2]
     res.header = transform.header
     return res
 
@@ -317,13 +317,15 @@ def do_transform_pose(
                     pose.orientation.y,
                     pose.orientation.z])))
     res = Pose()
-    res.position.x = p[0]
-    res.position.y = p[1]
-    res.position.z = p[2]
-    res.orientation.w = q[0]
-    res.orientation.x = q[1]
-    res.orientation.y = q[2]
-    res.orientation.z = q[3]
+    res.position.x = point[0]
+    res.position.y = point[1]
+    res.position.z = point[2]
+    res.orientation.w = quaternion[0]
+    res.orientation.x = quaternion[1]
+    res.orientation.y = quaternion[2]
+    res.orientation.z = quaternion[3]
+    return res
+
 
 # PoseStamped
 
