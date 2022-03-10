@@ -17,12 +17,7 @@
   <depend>orocos_kdl</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-
-  <!-- python support not yet ported
-  <build_depend>python_orocos_kdl</build_depend>
-
-  <exec_depend>python_orocos_kdl</exec_depend>
-  -->
+  <depend>python3-numpy</depend>
 
   <exec_depend>tf2_ros_py</exec_depend>
 
