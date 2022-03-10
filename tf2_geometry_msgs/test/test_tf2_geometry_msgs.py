@@ -102,7 +102,6 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.pose.position.x, 0)
         self.assertEqual(out.pose.pose.position.y, -2)
         self.assertEqual(out.pose.pose.position.z, -3)
-        self.assertEqual(out.pose.covariance, v.pose.covariance)
 
         # Translation shouldn't affect Vector3
         t = TransformStamped()
@@ -171,13 +170,12 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.pose.position.x, 2)
         self.assertEqual(out.pose.pose.position.y, 0)
         self.assertEqual(out.pose.pose.position.z, 0)
-        self.assertEqual(out.pose.orientation.x, 0)
-        self.assertEqual(out.pose.orientation.y, 0)
-        self.assertEqual(out.pose.orientation.z, 0)
-        self.assertEqual(out.pose.orientation.w, 1)
+        self.assertEqual(out.pose.pose.orientation.x, 0)
+        self.assertEqual(out.pose.pose.orientation.y, 0)
+        self.assertEqual(out.pose.pose.orientation.z, 0)
+        self.assertEqual(out.pose.pose.orientation.w, 1)
         self.assertTrue(np.array_equal(out.pose.covariance, expected_covariance))
 
 
 if __name__ == '__main__':
     rclpy.init(args=None)
-    unittest.main()
