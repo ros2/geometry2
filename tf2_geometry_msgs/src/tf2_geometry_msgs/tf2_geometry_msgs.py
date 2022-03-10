@@ -57,6 +57,13 @@ tf2_ros.ConvertRegistration().add_from_msg(PointStamped, from_msg_msg)
 
 
 def transform_covariance(cov_in, transform):
+    """
+    Apply a given transform to a covariance matrix.
+
+    :param cov_in: Covariance matrix
+    :param transform: The transform that will be applies
+    :returns: The transformed covariance matrix
+    """
     # Converting the Quaternion to a Rotation Matrix first
     # Taken from: https://automaticaddison.com/how-to-convert-a-quaternion-to-a-rotation-matrix/
     q0 = transform.transform.rotation.w
@@ -150,6 +157,13 @@ def transform_covariance(cov_in, transform):
 def _build_affine(
         rotation: Optional[npt.ArrayLike] = None,
         translation: Optional[npt.ArrayLike] = None) -> np.ndarray:
+    """
+    Build an affine matrix from a quaternion and a translation.
+
+    :param rotation: The quaternion as [w, x, y, z]
+    :param translation: The translation as [x, y, z]
+    :returns: The quaternion and the translation array
+    """
     affine = np.eye(4)
     if rotation is not None:
         affine[:3, :3] = _get_mat_from_quat(np.asarray(rotation))
@@ -159,6 +173,12 @@ def _build_affine(
 
 
 def _transform_to_affine(transform: TransformStamped) -> np.ndarray:
+    """
+    Convert a `TransformStamped` to a affine matrix.
+
+    :param transform: The transform that should be converted
+    :returns: The affine transform
+    """
     transform = transform.transform
     transform_rotation_matrix = [
         transform.rotation.w,
@@ -241,6 +261,12 @@ def _get_quat_from_mat(rot_mat: np.ndarray) -> np.ndarray:
 
 
 def _decompose_affine(affine: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Decompose an affine transformation into a quaternion and the translation.
+
+    :param affine: The affine transformation matrix
+    :returns: The quaternion and the translation array
+    """
     return _get_quat_from_mat(affine[:3, :3]), affine[:3, 3]
 
 
@@ -248,7 +274,13 @@ def _decompose_affine(affine: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
 def do_transform_point(
         point: PointStamped,
         transform: TransformStamped) -> PointStamped:
+    """
+    Transform a `PointStamped` using a given `TransformStamped`.
 
+    :param point: The point
+    :param transform: The transform
+    :returns: The transformed point
+    """
     _, point = _decompose_affine(
         np.matmul(
             _transform_to_affine(transform),
@@ -273,7 +305,13 @@ tf2_ros.TransformRegistration().add(PointStamped, do_transform_point)
 def do_transform_vector3(
         vector3: Vector3Stamped,
         transform: TransformStamped) -> Vector3Stamped:
+    """
+    Transform a `Vector3Stamped` using a given `TransformStamped`.
 
+    :param point: The vector3
+    :param transform: The transform
+    :returns: The transformed vector3
+    """
     transform.transform.translation.x = 0.0
     transform.transform.translation.y = 0.0
     transform.transform.translation.z = 0.0
@@ -295,14 +333,22 @@ def do_transform_vector3(
 
 tf2_ros.TransformRegistration().add(Vector3Stamped, do_transform_vector3)
 
+
 # Pose
-
-
 def do_transform_pose(
         pose: Pose,
         transform: TransformStamped) -> Pose:
+    """
+    Transform a `Pose` using a given `TransformStamped`.
 
-    q, p = _decompose_affine(
+    This method is used to share the tranformation done in
+    `do_transform_pose_stamped()` and `do_transform_pose_with_covariance_stamped()`
+
+    :param point: The pose
+    :param transform: The transform
+    :returns: The transformed pose
+    """
+    quaternion, point = _decompose_affine(
         np.matmul(
             _transform_to_affine(transform),
             _build_affine(
@@ -328,25 +374,36 @@ def do_transform_pose(
 
 
 # PoseStamped
-
-
 def do_transform_pose_stamped(
         pose: PoseStamped,
         transform: TransformStamped) -> PoseStamped:
+    """
+    Transform a `PoseStamped` using a given `TransformStamped`.
 
+    :param point: The stamped pose
+    :param transform: The transform
+    :returns: The transformed pose stamped
+    """
     res = PoseStamped()
     res.pose = do_transform_pose(pose.pose, transform)
     res.header = transform.header
     return res
 
 
-tf2_ros.TransformRegistration().add(PoseStamped, do_transform_pose)
+tf2_ros.TransformRegistration().add(PoseStamped, do_transform_pose_stamped)
 
 
 # PoseWithCovarianceStamped
 def do_transform_pose_with_covariance_stamped(
         pose: PoseWithCovarianceStamped,
         transform: TransformStamped) -> PoseWithCovarianceStamped:
+    """
+    Transform a `PoseWithCovarianceStamped` using a given `TransformStamped`.
+
+    :param point: The pose with covariance stamped
+    :param transform: The transform
+    :returns: The transformed pose with covariance stamped
+    """
     res = PoseWithCovarianceStamped()
     res.pose.pose = do_transform_pose(pose.pose.pose, transform)
     res.pose.covariance = transform_covariance(pose.pose.covariance, transform)
