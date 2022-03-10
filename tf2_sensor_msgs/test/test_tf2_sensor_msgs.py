@@ -35,7 +35,7 @@ import numpy as np
 from sensor_msgs_py.point_cloud2 import create_cloud_xyz32, read_points
 from std_msgs.msg import Header
 from tf2_ros import TransformStamped
-from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud
+from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud, transform_points
 
 
 class PointCloudConversions(unittest.TestCase):
@@ -111,6 +111,23 @@ class PointCloudConversions(unittest.TestCase):
         # Compare to ground truth
         new_points = np.array(list(read_points(point_cloud_transformed)))
         self.assertTrue(np.allclose(expected_coordinates, new_points))
+
+    def test_direct_transform(self):
+        # Create atransform combining a 100m z translation with
+        # a 180° rotation around the x-axis
+        transform = TransformStamped()
+        transform.transform.translation.z = 100.0
+        transform.transform.rotation.x = 1.0
+        transform.transform.rotation.w = 6.123234e-17
+
+        # Transform points
+        points = transform_points(self.points, transform)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 100], [10, -20, 70]], dtype=np.float32)
+
+        # Compare to ground truth
+        self.assertTrue(np.allclose(expected_coordinates, points))
 
 
 if __name__ == '__main__':
