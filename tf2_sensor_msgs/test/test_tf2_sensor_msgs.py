@@ -56,6 +56,7 @@ class PointCloudConversions(unittest.TestCase):
         # no rotation so we only set w
         transform_translate_xyz.transform.rotation.w = 1.0
 
+        # Check if point cloud contains our points
         self.assertEqual(
             list(read_points(self.point_cloud_in)),
             [(1.0, 2.0, 0.0), (10.0, 20.0, 30.0)])
@@ -70,13 +71,46 @@ class PointCloudConversions(unittest.TestCase):
         # Expected output
         expected_coordinates = self.points + k
 
-        new_points = list(map(list, read_points(point_cloud_transformed)))
-        self.assertEqual(expected_coordinates.tolist(), new_points)
+        new_points = np.array(list(read_points(point_cloud_transformed)))
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
         # checking no modification in input cloud
         self.assertEqual(old_data, self.point_cloud_in.data)
 
     def test_simple_rotation_transform(self):
-        pass
+        # Create a transform containing only a 180° rotation around the x-axis
+        transform_rot = TransformStamped()
+        transform_rot.transform.rotation.x = 1.0
+        transform_rot.transform.rotation.w = 6.123234e-17
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(self.point_cloud_in, transform_rot)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 0], [10, -20, -30]], dtype=np.float32)
+
+        # Compare to ground truth
+        new_points = np.array(list(read_points(point_cloud_transformed)))
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
+    def test_rotation_and_translation_transform(self):
+        # Create atransform combining a 100m z translation with
+        # a 180° rotation around the x-axis
+        transform = TransformStamped()
+        transform.transform.translation.z = 100.0
+        transform.transform.rotation.x = 1.0
+        transform.transform.rotation.w = 6.123234e-17
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(
+            self.point_cloud_in, transform)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 100], [10, -20, 70]], dtype=np.float32)
+
+        # Compare to ground truth
+        new_points = np.array(list(read_points(point_cloud_transformed)))
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
 
 
 if __name__ == '__main__':
