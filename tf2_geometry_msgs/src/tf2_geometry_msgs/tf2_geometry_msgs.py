@@ -344,7 +344,7 @@ def do_transform_pose(
     This method is used to share the tranformation done in
     `do_transform_pose_stamped()` and `do_transform_pose_with_covariance_stamped()`
 
-    :param point: The pose
+    :param pose: The pose
     :param transform: The transform
     :returns: The transformed pose
     """
