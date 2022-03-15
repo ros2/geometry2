@@ -308,7 +308,7 @@ def do_transform_vector3(
     """
     Transform a `Vector3Stamped` using a given `TransformStamped`.
 
-    :param point: The vector3
+    :param vector3: The vector3
     :param transform: The transform
     :returns: The transformed vector3
     """
