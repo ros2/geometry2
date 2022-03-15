@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright 2008 Willow Garage, Inc.
 #
 # Redistribution and use in source and binary forms, with or without
