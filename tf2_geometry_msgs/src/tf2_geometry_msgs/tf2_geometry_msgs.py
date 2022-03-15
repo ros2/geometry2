@@ -304,7 +304,7 @@ def do_transform_vector3(
     """
     Transform a `Vector3Stamped` using a given `TransformStamped`.
 
-    :param point: The vector3
+    :param vector3: The vector3
     :param transform: The transform
     :returns: The transformed vector3
     """
@@ -340,7 +340,7 @@ def do_transform_pose(
     This method is used to share the tranformation done in
     `do_transform_pose_stamped()` and `do_transform_pose_with_covariance_stamped()`
 
-    :param point: The pose
+    :param pose: The pose
     :param transform: The transform
     :returns: The transformed pose
     """
@@ -376,7 +376,7 @@ def do_transform_pose_stamped(
     """
     Transform a `PoseStamped` using a given `TransformStamped`.
 
-    :param point: The stamped pose
+    :param pose: The stamped pose
     :param transform: The transform
     :returns: The transformed pose stamped
     """
@@ -396,7 +396,7 @@ def do_transform_pose_with_covariance_stamped(
     """
     Transform a `PoseWithCovarianceStamped` using a given `TransformStamped`.
 
-    :param point: The pose with covariance stamped
+    :param pose: The pose with covariance stamped
     :param transform: The transform
     :returns: The transformed pose with covariance stamped
     """
