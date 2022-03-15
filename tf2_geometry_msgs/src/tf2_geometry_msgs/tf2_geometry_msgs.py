@@ -380,7 +380,7 @@ def do_transform_pose_stamped(
     """
     Transform a `PoseStamped` using a given `TransformStamped`.
 
-    :param point: The stamped pose
+    :param pose: The stamped pose
     :param transform: The transform
     :returns: The transformed pose stamped
     """
