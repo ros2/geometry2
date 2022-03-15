@@ -400,7 +400,7 @@ def do_transform_pose_with_covariance_stamped(
     """
     Transform a `PoseWithCovarianceStamped` using a given `TransformStamped`.
 
-    :param point: The pose with covariance stamped
+    :param pose: The pose with covariance stamped
     :param transform: The transform
     :returns: The transformed pose with covariance stamped
     """
