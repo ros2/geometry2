@@ -198,11 +198,9 @@ def _get_mat_from_quat(quaternion: np.ndarray) -> np.ndarray:
     """
     Convert a quaternion to a rotation matrix.
 
-    This method is currently needed because transforms3d is not released as a `.dep` and
-    would require user interaction to set up.
-
-    For reference see: https://github.com/matthew-brett/transforms3d/blob/
-    f185e866ecccb66c545559bc9f2e19cb5025e0ab/transforms3d/quaternions.py#L101
+    This method is based on quat2mat from https://github.com
+    f185e866ecccb66c545559bc9f2e19cb5025e0ab/transforms3d/quaternions.py#L101 ,
+    since that library is not available via rosdep.
 
     :param quaternion: A numpy array containing the w, x, y, and z components of the quaternion
     :returns: The rotation matrix
@@ -227,11 +225,9 @@ def _get_quat_from_mat(rot_mat: np.ndarray) -> np.ndarray:
     """
     Convert a rotation matrix to a quaternion.
 
-    This method is currently needed because transforms3d is not released as a `.dep` and
-    would require user interaction to set up.
-
-    For reference see: https://github.com/matthew-brett/transforms3d/blob/
-    f185e866ecccb66c545559bc9f2e19cb5025e0ab/transforms3d/quaternions.py#L150
+    This method is a copy of mat2quat from https://github.com
+    f185e866ecccb66c545559bc9f2e19cb5025e0ab/transforms3d/quaternions.py#L150 ,
+    since that library is not available via rosdep.
 
     Method from
     Bar-Itzhack, Itzhack Y. (2000), "New method for extracting the
@@ -239,7 +235,7 @@ def _get_quat_from_mat(rot_mat: np.ndarray) -> np.ndarray:
     Control and Dynamics 23(6):1085-1087 (Engineering Note), ISSN
     0731-5090
 
-    :param quaternion: A numpy array containing the w, x, y, and z components of the quaternion
+    :param rot_mat: A roatation matrix
     :returns: An quaternion
     """
     # Decompose rotation matrix
