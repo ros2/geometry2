@@ -29,10 +29,9 @@
 
 # author: Wim Meeussen
 
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
-import numpy.typing as npt
 import tf2_ros
 from geometry_msgs.msg import (PointStamped, Pose, PoseStamped,
                                PoseWithCovarianceStamped, Vector3Stamped, TransformStamped)
@@ -155,8 +154,8 @@ def transform_covariance(cov_in, transform):
 
 
 def _build_affine(
-        rotation: Optional[npt.ArrayLike] = None,
-        translation: Optional[npt.ArrayLike] = None) -> np.ndarray:
+        rotation: Optional[Iterable] = None,
+        translation: Optional[Iterable] = None) -> np.ndarray:
     """
     Build an affine matrix from a quaternion and a translation.
 
