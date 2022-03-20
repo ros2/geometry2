@@ -452,6 +452,7 @@ TEST(MessageFilter, tolerance)
 //   EXPECT_EQ(1, n.count_);
 // }
 
+// See: https://github.com/ros2/geometry2/pull/511
 TEST(MessageFilter, checkStampPrecisionLoss)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
