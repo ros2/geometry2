@@ -442,7 +442,7 @@ public:
 
       // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform have already called
       // the callback.
-      if (0 != future.getHandle() || 0xffffffffffffffffULL != future.getHandle()) {
+      if (0 != future.getHandle() && 0xffffffffffffffffULL != future.getHandle()) {
         std::unique_lock<std::mutex> lock(ts_futures_mutex_);
         ts_futures_.insert({handle, std::move(future)});
       }
