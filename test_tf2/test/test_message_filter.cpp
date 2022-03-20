@@ -47,6 +47,9 @@
 #include <tf2_ros/buffer_interface.h>
 #include <tf2_ros/create_timer_ros.h>
 #include <tf2_ros/message_filter.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/transform_listener.h>
+#include <message_filters/subscriber.h>
 
 class Notification
 {
@@ -452,6 +455,72 @@ TEST(MessageFilter, tolerance)
 //   EXPECT_EQ(1, n.count_);
 // }
 
+
+// This node is taken from https://docs.ros.org/en/foxy/Tutorials/Tf2/Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter.html#writing-the-message-filter-listener-node
+// and slightly modified to fit the other tests here
+class PoseDrawer : public rclcpp::Node
+{
+public:
+  PoseDrawer()
+  : Node("pose_drawer")
+  {
+    buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+    // Create the timer interface before call to waitForTransform,
+    // to avoid a tf2_ros::CreateTimerInterfaceException exception
+    auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+      this->get_node_base_interface(),
+      this->get_node_timers_interface());
+    buffer->setCreateTimerInterface(timer_interface);
+    tfListener =
+      std::make_shared<tf2_ros::TransformListener>(*buffer);
+
+    point_sub_.subscribe(this, "test_topic");
+    tf2_filter_ = std::make_shared<tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped>>(
+      point_sub_, *buffer, "turtle1", 100, this->get_node_logging_interface(),
+      this->get_node_clock_interface());
+    // Register a callback with tf2_ros::MessageFilter to be called when transforms are available
+    tf2_filter_->registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
+  }
+
+  Notification n{1};
+
+private:
+  std::shared_ptr<tf2_ros::Buffer> buffer;
+  std::shared_ptr<tf2_ros::TransformListener> tfListener;
+  message_filters::Subscriber<geometry_msgs::msg::PointStamped> point_sub_;
+  std::shared_ptr<tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped>> tf2_filter_;
+};
+
+TEST(MessageFilter, test_callback_called)
+{
+  auto poseDrawerNode = std::make_shared<PoseDrawer>();
+  auto testNode = std::make_shared<rclcpp::Node>("test_node");
+
+  // Get current timestamp
+  // builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));  // THIS WORKS
+  builtin_interfaces::msg::Time stamp = testNode->now();  // THIS DOESN'T WORK
+
+  // Publish transform
+  tf2_ros::TransformBroadcaster br(testNode);
+  geometry_msgs::msg::TransformStamped tf;
+  tf.header.stamp = stamp;
+  tf.header.frame_id = "world";
+  tf.child_frame_id = "turtle1";
+  br.sendTransform(tf);
+
+  // Publish pointstamped
+  auto publisher = testNode->create_publisher<geometry_msgs::msg::PointStamped>(
+    "test_topic", 10);
+  geometry_msgs::msg::PointStamped ps;
+  ps.header.stamp = stamp;
+  ps.header.frame_id = "world";
+  publisher->publish(ps);
+
+  rclcpp::spin_some(testNode);
+  rclcpp::spin_some(poseDrawerNode);
+
+  EXPECT_EQ(1, poseDrawerNode->n.count_);
+}
 
 int main(int argc, char** argv)
 {
