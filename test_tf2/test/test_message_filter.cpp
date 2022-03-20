@@ -518,6 +518,7 @@ TEST(MessageFilter, test_callback_called)
 
   rclcpp::spin_some(testNode);
   rclcpp::spin_some(poseDrawerNode);
+  rclcpp::sleep_for(std::chrono::milliseconds(5));
 
   EXPECT_EQ(1, poseDrawerNode->n.count_);
 }
