@@ -1,0 +1,28 @@
+<package format="2">
+  <name>tf2_ros_py</name>
+  <version>0.22.0</version>
+  <description>
+    This package contains the ROS Python bindings for the tf2 library
+  </description>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <license>BSD</license>
+  <url type="website">http://www.ros.org/wiki/tf2_ros</url>
+  <author>Eitan Marder-Eppstein</author>
+  <author>Wim Meeussen</author>
+  <author email="tfoote@osrfoundation.org">Tully Foote</author>
+
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf2_msgs</exec_depend>
+  <exec_depend>tf2_py</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>sensor_msgs</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
