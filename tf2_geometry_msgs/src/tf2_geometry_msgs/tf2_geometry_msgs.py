@@ -31,11 +31,11 @@
 
 from typing import Iterable, Optional, Tuple
 
-import numpy as np
-import tf2_ros
 from geometry_msgs.msg import (PointStamped, Pose, PoseStamped,
                                PoseWithCovarianceStamped, TransformStamped,
                                Vector3Stamped)
+import numpy as np
+import tf2_ros
 
 
 def to_msg_msg(msg):
