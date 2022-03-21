@@ -24,6 +24,10 @@
 
 namespace tf2
 {
+
+// Forward declare functions needed in this header
+void fromMsg(const geometry_msgs::msg::Quaternion & in, tf2::Quaternion & out);
+
 namespace impl
 {
 
