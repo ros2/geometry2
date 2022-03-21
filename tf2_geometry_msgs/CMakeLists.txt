@@ -18,18 +18,19 @@ set(required_dependencies
 )
 ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
 
-# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
-# ament_python_install_package(${PROJECT_NAME}
-#      PACKAGE_DIR src/${PROJECT_NAME})
-
-# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
-# install(PROGRAMS scripts/test.py
-#    DESTINATION lib/${PROJECT_NAME}
-# )
+ament_python_install_package(${PROJECT_NAME}
+  PACKAGE_DIR src/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
+<<<<<<< HEAD
+=======
+
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_tf2_geometry_msgs_py test/test_tf2_geometry_msgs.py)
+
+>>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)
