@@ -14,14 +14,8 @@ find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
-# ament_python_install_package(${PROJECT_NAME}
-#      PACKAGE_DIR src/${PROJECT_NAME})
-
-# TODO(ros2/geometry2#110) Port python once PyKDL becomes usable in ROS 2
-# install(PROGRAMS scripts/test.py
-#    DESTINATION lib/${PROJECT_NAME}
-# )
+ament_python_install_package(${PROJECT_NAME}
+  PACKAGE_DIR src/${PROJECT_NAME})
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
@@ -45,6 +39,9 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
+
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_tf2_geometry_msgs_py test/test_tf2_geometry_msgs.py)
 
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
