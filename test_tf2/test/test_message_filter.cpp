@@ -452,6 +452,34 @@ TEST(MessageFilter, tolerance)
 //   EXPECT_EQ(1, n.count_);
 // }
 
+// See: https://github.com/ros2/geometry2/pull/511
+TEST(MessageFilter, checkStampPrecisionLoss)
+{
+  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+    node->get_node_base_interface(),
+    node->get_node_timers_interface());
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  buffer.setCreateTimerInterface(create_timer_interface);
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
+  Notification n(1);
+  filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
+  filter.setTargetFrame("frame1");
+
+  // Use a large timestamp to trigger potential precision loss if converted to a double somewhere
+  builtin_interfaces::msg::Time stamp(rclcpp::Time(1000000000, 000000001));
+  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  msg->header.stamp = stamp;
+  msg->header.frame_id = "frame2";
+
+  filter.add(msg);
+
+  EXPECT_EQ(1, n.count_);
+}
 
 int main(int argc, char** argv)
 {

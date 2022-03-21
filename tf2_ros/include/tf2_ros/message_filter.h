@@ -387,13 +387,13 @@ public:
       for (; it != end; ++it) {
         const std::string & target_frame = *it;
         wait_params.emplace_back(
-          next_handle_index_, tf2::timeFromSec(stamp.seconds()), target_frame);
+          next_handle_index_, tf2_ros::fromRclcpp(stamp), target_frame);
         info.handles.push_back(next_handle_index_++);
 
         if (time_tolerance_.nanoseconds()) {
           wait_params.emplace_back(
             next_handle_index_,
-            tf2::timeFromSec((stamp + time_tolerance_).seconds()),
+            tf2_ros::fromRclcpp(stamp + time_tolerance_),
             target_frame);
           info.handles.push_back(next_handle_index_++);
         }
@@ -559,7 +559,7 @@ private:
       typename V_string::iterator end = target_frames_.end();
       for (; it != end; ++it) {
         const std::string & target = *it;
-        if (!buffer_.canTransform(target, frame_id, tf2::timeFromSec(stamp.seconds()), NULL)) {
+        if (!buffer_.canTransform(target, frame_id, tf2_ros::fromRclcpp(stamp), NULL)) {
           can_transform = false;
           break;
         }
@@ -567,7 +567,7 @@ private:
         if (time_tolerance_.nanoseconds()) {
           if (!buffer_.canTransform(
               target, frame_id,
-              tf2::timeFromSec((stamp + time_tolerance_).seconds()), NULL))
+              tf2_ros::fromRclcpp(stamp + time_tolerance_), NULL))
           {
             can_transform = false;
             break;
