@@ -468,7 +468,8 @@ TEST(MessageFilter, checkStampPrecisionLoss)
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
   filter.setTargetFrame("frame1");
 
-  builtin_interfaces::msg::Time stamp(rclcpp::Time(0, 000000001));
+  // Use a large timestamp to trigger potential precision loss if converted to a double somewhere
+  builtin_interfaces::msg::Time stamp(rclcpp::Time(1000000000, 000000001));
   buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
 
   std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
