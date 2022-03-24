@@ -63,6 +63,7 @@ class Buffer : public BufferInterface, public AsyncBufferInterface, public tf2::
 public:
   using tf2::BufferCore::lookupTransform;
   using tf2::BufferCore::canTransform;
+  using SharedPtr = std::shared_ptr<tf2_ros::Buffer>;
 
   /** \brief  Constructor for a Buffer object
    * \param clock A clock to use for time and sleeping
