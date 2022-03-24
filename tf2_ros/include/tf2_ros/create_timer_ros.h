@@ -53,7 +53,8 @@ public:
   TF2_ROS_PUBLIC
   CreateTimerROS(
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
-    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers);
+    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers,
+    rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
 
   virtual ~CreateTimerROS() = default;
 
@@ -123,6 +124,8 @@ private:
   TimerHandle next_timer_handle_index_;
   std::unordered_map<TimerHandle, rclcpp::TimerBase::SharedPtr> timers_map_;
   std::mutex timers_map_mutex_;
+
+  rclcpp::CallbackGroup::SharedPtr callback_group_;
 };  // class CreateTimerROS
 
 }  // namespace tf2_ros
