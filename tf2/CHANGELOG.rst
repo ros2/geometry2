@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.23.0 (2022-03-28)
+-------------------
+* forward declare fromMsg to avoid missing symbols in downstream libraries (`#485 <https://github.com/ros2/geometry2/issues/485>`_)
+* Contributors: João C. Monteiro
+
 0.22.0 (2022-03-01)
 -------------------
 

@@ -5,7 +5,7 @@ package_name = 'tf2_ros_py'
 
 setup(
     name=package_name,
-    version='0.22.0',
+    version='0.23.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',

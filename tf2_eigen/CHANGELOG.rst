@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.23.0 (2022-03-28)
+-------------------
+* Disable mem-access warnings on aarch64. (`#506 <https://github.com/ros2/geometry2/issues/506>`_)
+* Contributors: Chris Lalancette
+
 0.22.0 (2022-03-01)
 -------------------
 

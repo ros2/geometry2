@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.23.0 (2022-03-28)
+-------------------
+* use dedicated callback group and executor to isolate timer (`#447 <https://github.com/ros2/geometry2/issues/447>`_)
+* Adding shared pointer definition to tf2 buffer (`#508 <https://github.com/ros2/geometry2/issues/508>`_)
+* fix for a basic logic (`#510 <https://github.com/ros2/geometry2/issues/510>`_)
+* Fix precision loss from using rclcpp::Time::seconds() (`#511 <https://github.com/ros2/geometry2/issues/511>`_)
+* Contributors: Chen Lihui, Kenji Brameld, Steve Macenski, Zhenpeng Ge
+
 0.22.0 (2022-03-01)
 -------------------
 * clear relative callback of Buffer if MessageFilter is destroyed (`#490 <https://github.com/ros2/geometry2/issues/490>`_)
