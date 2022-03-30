@@ -20,10 +20,12 @@
 
   <build_export_depend>eigen</build_export_depend>
 
+  <depend>geometry_msgs</depend>
+  <depend>python3-numpy</depend>
   <depend>sensor_msgs</depend>
+  <depend>sensor_msgs_py</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
-  <depend>python3-numpy</depend>
 
   <exec_depend>tf2_ros_py</exec_depend>
 
