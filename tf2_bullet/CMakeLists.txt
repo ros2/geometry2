@@ -16,12 +16,19 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-if(WIN32)
-  set(BULLET_ROOT $ENV{ChocolateyInstall}/lib/bullet)
-endif()
-find_package(Bullet REQUIRED)
+include(bullet-extras.cmake)
 
-include_directories(include ${BULLET_INCLUDE_DIRS})
+add_library(tf2_bullet INTERFACE)
+target_include_directories(tf2_bullet INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include>")
+target_link_libraries(tf2_bullet INTERFACE
+  tf2_bullet::Bullet
+  tf2::tf2
+  ${geometry_msgs_TARGETS}
+  tf2_ros::tf2_ros)
+
+install(TARGETS tf2_bullet EXPORT export_tf2_bullet)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
@@ -38,12 +45,9 @@ if(BUILD_TESTING)
 
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_bullet test/test_tf2_bullet.cpp)
-  ament_target_dependencies(test_bullet
-    tf2
-    geometry_msgs
-    tf2_ros
-  )
+  target_link_libraries(test_bullet tf2_bullet)
 endif()
 
-ament_export_include_directories(include)
+ament_export_targets(export_tf2_bullet)
+
 ament_package(CONFIG_EXTRAS bullet-extras.cmake)
