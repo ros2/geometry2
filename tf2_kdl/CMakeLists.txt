@@ -49,12 +49,14 @@ if(BUILD_TESTING)
   target_link_libraries(test_kdl
     tf2_kdl
     rclcpp::rclcpp
-    ${tf2_msgs_TARGETS})
+    # Used, but not linked to test tf2_kdl's exports:
+    #   tf2::tf2
+    #   tf2_ros::tf2_ros
+  )
 endif()
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
-ament_export_libraries(tf2_kdl)
 
 # Export modern CMake targets
 ament_export_targets(export_tf2_kdl)

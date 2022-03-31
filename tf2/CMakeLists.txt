@@ -13,6 +13,7 @@ endif()
 find_package(ament_cmake)
 find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
 find_package(console_bridge REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
@@ -24,9 +25,11 @@ add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp sr
 target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
-target_link_libraries(tf2
+target_link_libraries(tf2 PUBLIC
+  ${geometry_msgs_TARGETS})
+target_link_libraries(tf2 PRIVATE
+  ${builtin_interfaces_TARGETS}
   console_bridge::console_bridge
-  ${geometry_msgs_TARGETS}
   rcutils::rcutils)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -89,7 +92,12 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
   if(TARGET test_simple_tf2_core)
-    target_link_libraries(test_simple_tf2_core tf2)
+    target_link_libraries(test_simple_tf2_core
+      ${builtin_interfaces_TARGETS}
+      tf2
+      # Used, but not linked to test tf2's exports:
+      #   ${geometry_msgs_TARGETS}
+    )
   endif()
 
   ament_add_gtest(test_time test/test_time.cpp)

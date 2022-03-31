@@ -56,6 +56,7 @@ add_library(static_transform_broadcaster_node SHARED
 target_compile_definitions(static_transform_broadcaster_node PRIVATE "STATIC_TRANSFORM_BROADCASTER_BUILDING_DLL")
 target_link_libraries(static_transform_broadcaster_node
   ${PROJECT_NAME}
+  rclcpp::rclcpp
   rclcpp_components::component)
 rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
 
@@ -65,7 +66,9 @@ add_executable(static_transform_publisher
 )
 target_link_libraries(static_transform_publisher
   ${PROJECT_NAME}
+  rclcpp::rclcpp
   static_transform_broadcaster_node
+  tf2::tf2
 )
 
 add_executable(tf2_echo
@@ -73,6 +76,7 @@ add_executable(tf2_echo
 )
 target_link_libraries(tf2_echo
   ${PROJECT_NAME}
+  rclcpp::rclcpp
 )
 
 add_executable(tf2_monitor
@@ -80,6 +84,8 @@ add_executable(tf2_monitor
 )
 target_link_libraries(tf2_monitor
   ${PROJECT_NAME}
+  rclcpp::rclcpp
+  ${tf2_msgs_TARGETS}
 )
 
 # Install rules
@@ -114,6 +120,7 @@ if(BUILD_TESTING)
   find_package(ament_cmake_cpplint REQUIRED)
   find_package(ament_cmake_lint_cmake REQUIRED)
   find_package(ament_cmake_uncrustify REQUIRED)
+  find_package(rosgraph_msgs REQUIRED)
 
   ament_cppcheck(LANGUAGE "c++")
   ament_cpplint()
@@ -123,35 +130,78 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(test_buffer test/test_buffer.cpp)
-  target_link_libraries(test_buffer ${PROJECT_NAME})
+  target_link_libraries(test_buffer
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(test_buffer_server test/test_buffer_server.cpp)
-  target_link_libraries(test_buffer_server ${PROJECT_NAME})
+  target_link_libraries(test_buffer_server
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+    #   rclcpp_action::rclcpp_action
+    #   ${tf2_msgs_TARGETS}
+  )
 
   ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
-  target_link_libraries(test_buffer_client ${PROJECT_NAME})
+  target_link_libraries(test_buffer_client
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+    #   rclcpp_action::rclcpp_action
+    #   ${tf2_msgs_TARGETS}
+  )
 
   # Adds a tf2_ros message_filter unittest that uses
   # multiple target frames and a non-zero time tolerance
   ament_add_gtest(${PROJECT_NAME}_test_message_filter test/message_filter_test.cpp)
-  target_link_libraries(${PROJECT_NAME}_test_message_filter ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}_test_message_filter
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   ${geometry_msgs_TARGETS}
+    #   message_filters::message_filters
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(${PROJECT_NAME}_test_transform_listener test/test_transform_listener.cpp)
-  target_link_libraries(${PROJECT_NAME}_test_transform_listener ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}_test_transform_listener
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(${PROJECT_NAME}_test_static_transform_broadcaster test/test_static_transform_broadcaster.cpp)
-  target_link_libraries(${PROJECT_NAME}_test_static_transform_broadcaster ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}_test_static_transform_broadcaster
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(${PROJECT_NAME}_test_transform_broadcaster test/test_transform_broadcaster.cpp)
-  target_link_libraries(${PROJECT_NAME}_test_transform_broadcaster ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}_test_transform_broadcaster
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(${PROJECT_NAME}_test_time_reset test/time_reset_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_time_reset
     ${PROJECT_NAME}
-    ${rosgraph_msgs_TARGETS})
+    ${rosgraph_msgs_TARGETS}
+    # Used, but not linked to test tf2_ros's exports:
+    #   ${builtin_interfaces_TARGETS}
+    #   rclcpp::rclcpp
+  )
 
   ament_add_gtest(${PROJECT_NAME}_test_listener test/listener_unittest.cpp)
-  target_link_libraries(${PROJECT_NAME}_test_listener ${PROJECT_NAME})
+  target_link_libraries(${PROJECT_NAME}_test_listener
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   ${builtin_interfaces_TARGETS}
+    #   rclcpp::rclcpp
+  )
 
 endif()
 

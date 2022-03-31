@@ -19,6 +19,7 @@ find_package(Eigen3 REQUIRED)
 add_library(tf2_eigen INTERFACE)
 target_link_libraries(tf2_eigen INTERFACE
   Eigen3::Eigen
+  ${geometry_msgs_TARGETS}
   tf2::tf2
   tf2_ros::tf2_ros)
 target_include_directories(tf2_eigen INTERFACE
@@ -43,7 +44,14 @@ if(BUILD_TESTING)
 
   ament_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
   if(TARGET tf2_eigen-test)
-    target_link_libraries(tf2_eigen-test tf2_eigen)
+    target_link_libraries(tf2_eigen-test
+      tf2_eigen
+      # Used, but not linked to test tf2_eigen's exports:
+      #   Eigen3::Eigen
+      #   ${geometry_msgs_TARGETS}
+      #   tf2::tf2
+      #   tf2_ros::tf2_ros
+    )
   endif()
 endif()
 
@@ -54,7 +62,6 @@ ament_export_dependencies(
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
-ament_export_libraries(tf2_eigen)
 
 # Export modern CMake targets
 ament_export_targets(export_tf2_eigen)
