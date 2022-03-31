@@ -48,7 +48,7 @@ def main():
     parser.add_argument(
         '--wait-time', '-t', type=float, default=5.0,
         help='Listen to the /tf topic for this many seconds before rendering the frame tree')
-    parser.add_argument('-o','--output', help='Output filename')
+    parser.add_argument('-o', '--output', help='Output filename')
     parsed_args = parser.parse_args(args=args_without_ros[1:])
 
     node = rclpy.create_node('view_frames')
@@ -73,7 +73,7 @@ def main():
         node.get_logger().info('service not available, waiting again...')
 
     future = cli.call_async(req)
-    rclpy.spin_until_future_complete(node, future)
+    rclpy.spin_until_complete(node, future)
 
     ret = 1
     try:
@@ -83,9 +83,9 @@ def main():
         node.get_logger().error('Service call failed %r' % (e,))
     else:
         node.get_logger().info(
-            'Result:'+ str(result) )
+            'Result:' + str(result))
         data = yaml.safe_load(result.frame_yaml)
-        
+
         if parsed_args.output is not None:
             frames_gv = '{:s}.gv'.format(parsed_args.output)
             frames_pdf = '{:s}.pdf'.format(parsed_args.output)
@@ -93,10 +93,10 @@ def main():
             datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
             frames_gv = 'frames_{:s}.gv'.format(datetime)
             frames_pdf = 'frames_{:s}.pdf'.format(datetime)
-        
+
         with open(frames_gv, 'w') as f:
             f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
-        
+
         cmd = ['dot', '-Tpdf', frames_gv, '-o', frames_pdf]
         subprocess.Popen(cmd).communicate()
     finally:
@@ -104,6 +104,7 @@ def main():
         node.destroy_node()
         rclpy.shutdown()
         return ret
+
 
 def generate_dot(data, recorded_time):
     if len(data) == 0:
