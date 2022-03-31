@@ -52,6 +52,12 @@ if(BUILD_TESTING)
     ${tf2_msgs_TARGETS})
 endif()
 
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
+ament_export_libraries(tf2_kdl)
+
+# Export modern CMake targets
 ament_export_targets(export_tf2_kdl)
+
 ament_export_dependencies(builtin_interfaces geometry_msgs orocos_kdl tf2 tf2_ros)
 ament_package()

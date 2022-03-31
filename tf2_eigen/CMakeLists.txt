@@ -52,5 +52,11 @@ ament_export_dependencies(
   tf2
   tf2_ros)
 
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
+ament_export_libraries(tf2_eigen)
+
+# Export modern CMake targets
 ament_export_targets(export_tf2_eigen)
+
 ament_package()

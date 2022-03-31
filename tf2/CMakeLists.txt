@@ -100,5 +100,11 @@ endif()
 
 ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
 
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
+ament_export_libraries(tf2)
+
+# Export modern CMake targets
 ament_export_targets(export_tf2)
+
 ament_package()
