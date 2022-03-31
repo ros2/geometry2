@@ -57,29 +57,29 @@ endif()
 ament_add_gtest(test_convert test/test_convert.cpp)
 if(TARGET test_convert)
   target_link_libraries(test_convert
+    Eigen3::Eigen
     ${geometry_msgs_TARGETS}
     tf2::tf2
-    tf2_kdl::tf2_kdl
     tf2_bullet::tf2_bullet
     tf2_eigen::tf2_eigen
     ${tf2_geometry_msgs_TARGETS}
-    Eigen3::Eigen)
+    tf2_kdl::tf2_kdl)
 endif()
 
 ament_add_gtest(test_utils test/test_utils.cpp)
 if(TARGET test_utils)
   target_link_libraries(test_utils
     ${geometry_msgs_TARGETS}
-    ${tf2_geometry_msgs_TARGETS}
     tf2::tf2
+    ${tf2_geometry_msgs_TARGETS}
     tf2_kdl::tf2_kdl)
 endif()
 
 add_executable(test_buffer_server test/test_buffer_server.cpp)
 if(TARGET test_buffer_server)
   target_link_libraries(test_buffer_server
-    tf2_ros::tf2_ros
-    rclcpp::rclcpp)
+    rclcpp::rclcpp
+    tf2_ros::tf2_ros)
 endif()
 
 add_executable(test_buffer_client test/test_buffer_client.cpp)
@@ -108,9 +108,9 @@ endif()
 ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
 if(TARGET test_tf2_bullet)
   target_link_libraries(test_tf2_bullet
+    rclcpp::rclcpp
     tf2_bullet::tf2_bullet
     tf2_ros::tf2_ros
-    rclcpp::rclcpp
     tf2::tf2)
 endif()
 
