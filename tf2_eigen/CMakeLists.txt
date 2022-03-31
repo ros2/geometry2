@@ -25,7 +25,6 @@ target_include_directories(tf2_eigen INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
-
 install(TARGETS tf2_eigen EXPORT export_tf2_eigen)
 install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
