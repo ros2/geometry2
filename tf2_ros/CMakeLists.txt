@@ -48,15 +48,22 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "TF2_ROS_BUILDING_DLL")
 add_executable(buffer_server src/buffer_server_main.cpp)
 target_link_libraries(buffer_server
   ${PROJECT_NAME}
+  rclcpp::rclcpp
 )
 
 add_library(static_transform_broadcaster_node SHARED
   src/static_transform_broadcaster_node.cpp
 )
 target_compile_definitions(static_transform_broadcaster_node PRIVATE "STATIC_TRANSFORM_BROADCASTER_BUILDING_DLL")
-target_link_libraries(static_transform_broadcaster_node
+target_include_directories(static_transform_broadcaster_node PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(static_transform_broadcaster_node PUBLIC
   ${PROJECT_NAME}
+  ${geometry_msgs_TARGETS}
   rclcpp::rclcpp
+  ${tf2_msgs_TARGETS})
+target_link_libraries(static_transform_broadcaster_node PRIVATE
   rclcpp_components::component)
 rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
 
