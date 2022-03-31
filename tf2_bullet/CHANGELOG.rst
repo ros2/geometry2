@@ -2,8 +2,8 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.24.0 (2022-03-31)
+-------------------
 * Export a tf2_bullet::tf2_bullet target (`#495 <https://github.com/ros2/geometry2/issues/495>`_)
 * Contributors: Shane Loretz
 
