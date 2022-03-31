@@ -2,6 +2,9 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.23.0 (2022-03-28)
 -------------------
 * Make sure to finalize tf2_py BufferCore. (`#505 <https://github.com/ros2/geometry2/issues/505>`_)

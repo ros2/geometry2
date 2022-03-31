@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.23.0 (2022-03-28)
 -------------------
 * use dedicated callback group and executor to isolate timer (`#447 <https://github.com/ros2/geometry2/issues/447>`_)

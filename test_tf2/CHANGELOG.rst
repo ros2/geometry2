@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.23.0 (2022-03-28)
 -------------------
 * Fix precision loss from using rclcpp::Time::seconds() (`#511 <https://github.com/ros2/geometry2/issues/511>`_)
