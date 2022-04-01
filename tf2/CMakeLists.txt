@@ -13,6 +13,7 @@ endif()
 find_package(ament_cmake)
 find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
 find_package(console_bridge REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
@@ -23,25 +24,25 @@ find_package(rosidl_runtime_cpp REQUIRED)
 add_library(tf2 SHARED src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
 target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
-ament_target_dependencies(tf2
-  "console_bridge"
-  "geometry_msgs"
-  "rcutils"
-)
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+target_link_libraries(tf2 PUBLIC
+  ${geometry_msgs_TARGETS})
+target_link_libraries(tf2 PRIVATE
+  ${builtin_interfaces_TARGETS}
+  console_bridge::console_bridge
+  rcutils::rcutils)
+
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(tf2 PRIVATE "TF2_BUILDING_DLL")
 
-install(TARGETS tf2 EXPORT tf2
+install(TARGETS tf2 EXPORT export_tf2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 # Tests
 if(BUILD_TESTING)
@@ -91,9 +92,11 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
   if(TARGET test_simple_tf2_core)
-    target_link_libraries(test_simple_tf2_core tf2)
-    ament_target_dependencies(test_simple_tf2_core
-      "geometry_msgs"
+    target_link_libraries(test_simple_tf2_core
+      ${builtin_interfaces_TARGETS}
+      tf2
+      # Used, but not linked to test tf2's exports:
+      #   ${geometry_msgs_TARGETS}
     )
   endif()
 
@@ -104,7 +107,12 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
-ament_export_include_directories(include)
+
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_libraries(tf2)
-ament_export_targets(tf2)
+
+# Export modern CMake targets
+ament_export_targets(export_tf2)
+
 ament_package()

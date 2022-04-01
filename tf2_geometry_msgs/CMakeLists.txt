@@ -20,7 +20,7 @@ ament_python_install_package(${PROJECT_NAME}
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
   orocos-kdl
@@ -55,7 +55,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
-install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(
