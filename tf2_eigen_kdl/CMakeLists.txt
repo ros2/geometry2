@@ -21,9 +21,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Eigen3::Eigen
   orocos-kdl
   tf2::tf2)
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
+else()
+  target_include_directories(${PROJECT_NAME} PUBLIC ${Eigen3_INCLUDE_DIRS})
+endif()
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.

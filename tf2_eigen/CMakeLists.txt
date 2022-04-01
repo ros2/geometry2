@@ -18,13 +18,18 @@ find_package(Eigen3 REQUIRED)
 
 add_library(tf2_eigen INTERFACE)
 target_link_libraries(tf2_eigen INTERFACE
-  Eigen3::Eigen
   ${geometry_msgs_TARGETS}
   tf2::tf2
   tf2_ros::tf2_ros)
 target_include_directories(tf2_eigen INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(tf2_eigen INTERFACE Eigen3::Eigen)
+else()
+  target_include_directories(tf2_eigen INTERFACE ${Eigen3_INCLUDE_DIRS})
+endif()
 
 install(TARGETS tf2_eigen EXPORT export_tf2_eigen)
 install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
