@@ -67,7 +67,7 @@ if(TARGET test_convert)
       # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
       target_link_libraries(test_convert Eigen3::Eigen)
     else()
-      target_include_directories(test_convert ${Eigen3_INCLUDE_DIRS})
+      target_include_directories(test_convert PRIVATE ${Eigen3_INCLUDE_DIRS})
     endif()
 endif()
 
