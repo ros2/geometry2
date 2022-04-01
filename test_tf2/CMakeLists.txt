@@ -63,12 +63,12 @@ if(TARGET test_convert)
     tf2_eigen::tf2_eigen
     ${tf2_geometry_msgs_TARGETS}
     tf2_kdl::tf2_kdl)
-    if(TARGET Eigen3::Eigen)
-      # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
-      target_link_libraries(test_convert Eigen3::Eigen)
-    else()
-      target_include_directories(test_convert PRIVATE ${Eigen3_INCLUDE_DIRS})
-    endif()
+  if(TARGET Eigen3::Eigen)
+    # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+    target_link_libraries(test_convert Eigen3::Eigen)
+  else()
+    target_include_directories(test_convert PRIVATE ${Eigen3_INCLUDE_DIRS})
+  endif()
 endif()
 
 ament_add_gtest(test_utils test/test_utils.cpp)
