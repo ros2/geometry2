@@ -14,7 +14,11 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-find_package(Eigen3 REQUIRED)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+find_package(Eigen3 QUIET NO_MODULE)
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 
 add_library(tf2_eigen INTERFACE)
 target_link_libraries(tf2_eigen INTERFACE
