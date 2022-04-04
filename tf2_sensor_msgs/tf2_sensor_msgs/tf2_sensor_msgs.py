@@ -30,7 +30,12 @@ from typing import Union
 
 from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
-from numpy.lib.recfunctions import (structured_to_unstructured, unstructured_to_structured)
+try:
+    from numpy.lib.recfunctions import (structured_to_unstructured, unstructured_to_structured)
+except ImportError:
+    # Fix for RHEL because its NumPy version does not include these functions
+    from sensor_msgs_py.numpy_compat import (structured_to_unstructured,
+                                             unstructured_to_structured)
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs_py.point_cloud2 import create_cloud, read_points
 from std_msgs.msg import Header
