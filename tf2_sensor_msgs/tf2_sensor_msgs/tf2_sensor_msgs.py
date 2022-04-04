@@ -108,22 +108,27 @@ def do_transform_cloud(
         transform = transform.transform
 
     # Check if xyz are a subset of the field names
-    assert set(['x', 'y', 'z']) <= set(field.name for field in cloud.fields), \
+    required_fields = set(['x', 'y', 'z'])
+    present_fields = set(field.name for field in cloud.fields)
+    assert required_fields <= present_fields, \
         'Point cloud needs the fields x, y, and z for the transformation'
 
     # Read points as structured NumPy array
     points = read_points(cloud)
-
-    # Copy point cloud, so the original is not modified
-    points = points.copy()
 
     # Transform xyz part of the pointcloud using the given transform
     transformed_xyz = transform_points(
         structured_to_unstructured(points[['x', 'y', 'z']]),
         transform)
 
-    # Recast points into the original array
-    points[['x', 'y', 'z']] = unstructured_to_structured(transformed_xyz)
+    # Check if there are additional fields that need to be merged with the transformed coordinates
+    if required_fields != present_fields:
+        # Merge original array including non coordinate fields with the transformed coordinates
+        # The copy is needed as the original message would be altered otherwise
+        points = points.copy()
+        points[['x', 'y', 'z']] = unstructured_to_structured(transformed_xyz)
+    else:
+        points = transformed_xyz
 
     # Serialize pointcloud message
     return create_cloud(new_header, cloud.fields, points)
