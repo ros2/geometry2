@@ -30,7 +30,7 @@ from typing import Union
 
 from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
-import numpy.typing as npt
+from numpy.lib.recfunctions import (structured_to_unstructured, unstructured_to_structured)
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs_py.point_cloud2 import create_cloud, read_points
 import tf2_ros
@@ -51,8 +51,8 @@ tf2_ros.ConvertRegistration().add_from_msg(PointCloud2, from_msg_msg)
 
 
 def transform_points(
-        point_cloud: npt.ArrayLike,
-        transform: Union[Transform, TransformStamped]) -> np.ndarray:
+        point_cloud: np.ndarray,
+        transform: Transform) -> np.ndarray:
     """
     Transform a bulk of points from an numpy array using a provided `Transform`.
 
@@ -60,13 +60,6 @@ def transform_points(
     :param transform: TF2 transform used for the transformation
     :returns: Array with the same shape as the input array, but with the transformation applied
     """
-    # Check if we have a TransformStamped
-    if isinstance(transform, TransformStamped):
-        transform = transform.transform
-
-    # Cast ArrayLike object to np.ndarray
-    point_cloud = np.asarray(point_cloud)
-
     # Build affine transformation
     transform_translation = np.array([
         transform.translation.x,
