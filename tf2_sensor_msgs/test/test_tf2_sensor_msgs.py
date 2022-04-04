@@ -31,11 +31,13 @@
 import copy
 import unittest
 
+from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
-from sensor_msgs_py.point_cloud2 import create_cloud_xyz32, read_points
+from sensor_msgs_py.point_cloud2 import create_cloud_xyz32, read_points_numpy
 from std_msgs.msg import Header
 from tf2_ros import TransformStamped
 from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud, transform_points
+from tf2_sensor_msgs import do_transform_cloud, transform_points
 
 
 class PointCloudConversions(unittest.TestCase):
@@ -57,9 +59,9 @@ class PointCloudConversions(unittest.TestCase):
         transform_translate_xyz.transform.rotation.w = 1.0
 
         # Check if point cloud contains our points
-        self.assertEqual(
-            list(read_points(self.point_cloud_in)),
-            [(1.0, 2.0, 0.0), (10.0, 20.0, 30.0)])
+        self.assertTrue(np.allclose(
+            read_points_numpy(self.point_cloud_in),
+            [(1.0, 2.0, 0.0), (10.0, 20.0, 30.0)]))
 
         # deepcopy is not required here because we have a str for now
         old_data = copy.deepcopy(self.point_cloud_in.data)
@@ -71,7 +73,7 @@ class PointCloudConversions(unittest.TestCase):
         # Expected output
         expected_coordinates = self.points + k
 
-        new_points = np.array(list(read_points(point_cloud_transformed)))
+        new_points = read_points_numpy(point_cloud_transformed)
         self.assertTrue(np.allclose(expected_coordinates, new_points))
 
         # checking no modification in input cloud
@@ -90,7 +92,7 @@ class PointCloudConversions(unittest.TestCase):
         expected_coordinates = np.array([[1, -2, 0], [10, -20, -30]], dtype=np.float32)
 
         # Compare to ground truth
-        new_points = np.array(list(read_points(point_cloud_transformed)))
+        new_points = read_points_numpy(point_cloud_transformed)
         self.assertTrue(np.allclose(expected_coordinates, new_points))
 
     def test_rotation_and_translation_transform(self):
@@ -109,16 +111,16 @@ class PointCloudConversions(unittest.TestCase):
         expected_coordinates = np.array([[1, -2, 100], [10, -20, 70]], dtype=np.float32)
 
         # Compare to ground truth
-        new_points = np.array(list(read_points(point_cloud_transformed)))
+        new_points = read_points_numpy(point_cloud_transformed)
         self.assertTrue(np.allclose(expected_coordinates, new_points))
 
     def test_direct_transform(self):
-        # Create atransform combining a 100m z translation with
+        # Create a transform combining a 100m z translation with
         # a 180° rotation around the x-axis
-        transform = TransformStamped()
-        transform.transform.translation.z = 100.0
-        transform.transform.rotation.x = 1.0
-        transform.transform.rotation.w = 6.123234e-17
+        transform = Transform()
+        transform.translation.z = 100.0
+        transform.rotation.x = 1.0
+        transform.rotation.w = 6.123234e-17
 
         # Transform points
         points = transform_points(self.points, transform)
