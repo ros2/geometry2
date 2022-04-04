@@ -35,8 +35,7 @@ from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
 from sensor_msgs_py.point_cloud2 import create_cloud_xyz32, read_points_numpy
 from std_msgs.msg import Header
-from tf2_ros import TransformStamped
-from tf2_sensor_msgs.tf2_sensor_msgs import do_transform_cloud, transform_points
+import tf2_ros
 from tf2_sensor_msgs import do_transform_cloud, transform_points
 
 
@@ -130,6 +129,34 @@ class PointCloudConversions(unittest.TestCase):
 
         # Compare to ground truth
         self.assertTrue(np.allclose(expected_coordinates, points))
+
+    def test_tf2_ros_transform(self):
+        # Our target frame
+        target_frame_name = "base_footprint"
+
+        # We need to create a local test tf buffer
+        tf_buffer = tf2_ros.Buffer()
+
+        # We need to fill this tf_buffer with a possible transform
+        # Se we create a transform with a 100m z translation
+        transform = TransformStamped()
+        transform.header.frame_id = "test"
+        transform.child_frame_id = target_frame_name
+        transform.transform.translation.z = 100.0
+        transform.transform.rotation.w = 1.0
+
+        # Set the new transform in our local tf_buffer
+        tf_buffer.set_transform_static(transform, "")
+
+        point_cloud_transformed = tf_buffer.transform(self.point_cloud_in, target_frame_name)
+
+        # Check if our pointloud is in the correct frame
+        self.assertEqual(point_cloud_transformed.header.frame_id, target_frame_name)
+
+        # Check if the points are viewed from the target frame (inverse of the transform above)
+        self.assertTrue(np.allclose(
+            read_points_numpy(point_cloud_transformed),
+            self.points - np.array([0, 0, 100])))
 
 
 if __name__ == '__main__':
