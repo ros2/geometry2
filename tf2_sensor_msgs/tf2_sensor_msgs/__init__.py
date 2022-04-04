@@ -26,4 +26,4 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from tf2_sensor_msgs import *  # noqa(E401)
+from .tf2_sensor_msgs import *  # noqa(E401)
