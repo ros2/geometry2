@@ -33,6 +33,7 @@ import numpy as np
 from numpy.lib.recfunctions import (structured_to_unstructured, unstructured_to_structured)
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs_py.point_cloud2 import create_cloud, read_points
+from std_msgs.msg import Header
 import tf2_ros
 
 
@@ -96,12 +97,36 @@ def do_transform_cloud(
     :param transform: The transform which will applied to the point cloud
     :returns: The transformed point cloud
     """
-    points = list(read_points(  # TODO remove list and use numpy method
-        cloud,
-        field_names=["x", "y", "z"]))
-    points = transform_points(points, transform)  # TODO set points[["x", "y", "z"]]
-    # TODO add points to the rest of the points
-    return create_cloud(transform.header, cloud.fields, points)
+    # Create new Header so original header is not altered
+    new_header = Header(
+        stamp=cloud.header.stamp,
+        frame_id=cloud.header.frame_id)
+
+    # Check if we have a TransformStamped and are able to update the frame_id
+    if isinstance(transform, TransformStamped):
+        new_header.frame_id = transform.header.frame_id
+        transform = transform.transform
+
+    # Check if xyz are a subset of the field names
+    assert set(['x', 'y', 'z']) <= set(field.name for field in cloud.fields), \
+        'Point cloud needs the fields x, y, and z for the transformation'
+
+    # Read points as structured NumPy array
+    points = read_points(cloud)
+
+    # Copy point cloud, so the original is not modified
+    points = points.copy()
+
+    # Transform xyz part of the pointcloud using the given transform
+    transformed_xyz = transform_points(
+        structured_to_unstructured(points[['x', 'y', 'z']]),
+        transform)
+
+    # Recast points into the original array
+    points[['x', 'y', 'z']] = unstructured_to_structured(transformed_xyz)
+
+    # Serialize pointcloud message
+    return create_cloud(new_header, cloud.fields, points)
 
 
 tf2_ros.TransformRegistration().add(PointCloud2, do_transform_cloud)
