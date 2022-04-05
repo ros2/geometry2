@@ -13,7 +13,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl_vendor REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 

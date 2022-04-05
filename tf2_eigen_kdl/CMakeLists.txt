@@ -15,7 +15,7 @@ find_package(Eigen3 QUIET NO_MODULE)
 if(NOT Eigen3_FOUND)
   find_package(Eigen3 REQUIRED)
 endif()
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl_vendor REQUIRED)
 find_package(tf2 REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
