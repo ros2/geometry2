@@ -20,7 +20,11 @@ endif()
 
 find_package(ament_cmake_gtest REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-find_package(Eigen3 REQUIRED)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+find_package(Eigen3 QUIET NO_MODULE)
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 find_package(geometry_msgs REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)

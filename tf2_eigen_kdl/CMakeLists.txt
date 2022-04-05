@@ -10,7 +10,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(Eigen3 REQUIRED)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+find_package(Eigen3 QUIET NO_MODULE)
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 
