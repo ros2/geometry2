@@ -2,6 +2,12 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+* Depend on orocos_kdl_vendor  (`#473 <https://github.com/ros2/geometry2/issues/473>`_)
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Jacob Perron, Shane Loretz
+
 0.24.0 (2022-03-31)
 -------------------
 
