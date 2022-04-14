@@ -77,6 +77,14 @@ TEST(tf2_test_transform_listener, transform_listener_as_member)
   custom_node->init_tf_listener();
 }
 
+TEST(tf2_test_transform_listener, transform_listener_should_destroy_correctly)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  tf2_ros::TransformListener tfl(buffer, true);
+  (void) tfl;
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
