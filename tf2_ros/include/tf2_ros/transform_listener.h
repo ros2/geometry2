@@ -36,6 +36,7 @@
 #include <tf2/time.h>
 #include <tf2_ros/visibility_control.h>
 
+#include <atomic>
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <rclcpp/rclcpp.hpp>
 
@@ -45,6 +46,7 @@
 #include <memory>
 #include <thread>
 #include <utility>
+#include <atomic>
 
 
 namespace tf2_ros
@@ -155,6 +157,7 @@ private:
   using thread_ptr =
     std::unique_ptr<std::thread, std::function<void (std::thread *)>>;
   thread_ptr dedicated_listener_thread_;
+  std::atomic_bool keep_running_;
 
   rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
