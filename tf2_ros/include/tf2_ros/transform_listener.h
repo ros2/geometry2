@@ -36,7 +36,6 @@
 #include <tf2/time.h>
 #include <tf2_ros/visibility_control.h>
 
-#include <atomic>
 #include <tf2_msgs/msg/tf_message.hpp>
 #include <rclcpp/rclcpp.hpp>
 
