@@ -115,7 +115,7 @@ class PointCloudConversions(unittest.TestCase):
         transform = Transform()
         transform.translation.z = 100.0
         transform.rotation.x = 1.0
-        transform.rotation.w = 6.123234e-17
+        transform.rotation.w = 0
 
         # Transform points
         points = transform_points(self.points, transform)
