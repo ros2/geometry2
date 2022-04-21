@@ -83,7 +83,7 @@ class PointCloudConversions(unittest.TestCase):
         # Create a transform containing only a 180° rotation around the x-axis
         transform_rot = TransformStamped()
         transform_rot.transform.rotation.x = 1.0
-        transform_rot.transform.rotation.w = 6.123234e-17
+        transform_rot.transform.rotation.w = 0
 
         # Apply transform
         point_cloud_transformed = do_transform_cloud(self.point_cloud_in, transform_rot)
