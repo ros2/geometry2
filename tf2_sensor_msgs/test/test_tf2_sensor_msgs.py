@@ -139,7 +139,7 @@ class PointCloudConversions(unittest.TestCase):
         tf_buffer = tf2_ros.Buffer()
 
         # We need to fill this tf_buffer with a possible transform
-        # Se we create a transform with a 100m z translation
+        # So we create a transform with a 100m z translation
         transform = TransformStamped()
         transform.header.frame_id = "test"
         transform.child_frame_id = target_frame_name
