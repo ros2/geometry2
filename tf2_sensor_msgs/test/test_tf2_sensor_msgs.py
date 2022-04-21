@@ -142,7 +142,7 @@ class PointCloudConversions(unittest.TestCase):
         transform.transform.rotation.w = 1.0
 
         # Set the new transform in our local tf_buffer
-        tf_buffer.set_transform_static(transform, "")
+        tf_buffer.set_transform_static(transform, "unittest")
 
         point_cloud_transformed = tf_buffer.transform(self.point_cloud_in, target_frame_name)
 
