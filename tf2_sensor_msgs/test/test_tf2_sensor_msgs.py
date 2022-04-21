@@ -152,7 +152,10 @@ class PointCloudConversions(unittest.TestCase):
         # Check if the points are viewed from the target frame (inverse of the transform above)
         self.assertTrue(np.allclose(
             read_points_numpy(point_cloud_transformed),
-            self.points - np.array([0, 0, 100])))
+            self.points -
+            np.array([transform.transform.translation.x,
+                transform.transform.translation.y,
+                transform.transform.translation.z,])))
 
     def test_non_coordinate_fields(self):
         # Test if point clouds with additional fields (non xyz) behave as desired
