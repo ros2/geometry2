@@ -58,11 +58,6 @@ class PointCloudConversions(unittest.TestCase):
         # no rotation so we only set w
         transform_translate_xyz.transform.rotation.w = 1.0
 
-        # Check if point cloud contains our points
-        self.assertTrue(np.allclose(
-            read_points_numpy(self.point_cloud_in),
-            [(1.0, 2.0, 0.0), (10.0, 20.0, 30.0)]))
-
         # Copy current state of the original message for later check
         old_data = copy.deepcopy(self.point_cloud_in.data)
 
@@ -83,7 +78,7 @@ class PointCloudConversions(unittest.TestCase):
         # Create a transform containing only a 180° rotation around the x-axis
         transform_rot = TransformStamped()
         transform_rot.transform.rotation.x = 1.0
-        transform_rot.transform.rotation.w = 0
+        transform_rot.transform.rotation.w = 0.0
 
         # Apply transform
         point_cloud_transformed = do_transform_cloud(self.point_cloud_in, transform_rot)
