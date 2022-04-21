@@ -96,7 +96,7 @@ class PointCloudConversions(unittest.TestCase):
         transform = TransformStamped()
         transform.transform.translation.z = 100.0
         transform.transform.rotation.x = 1.0
-        transform.transform.rotation.w = 0
+        transform.transform.rotation.w = 0.0
 
         # Apply transform
         point_cloud_transformed = do_transform_cloud(
@@ -115,7 +115,7 @@ class PointCloudConversions(unittest.TestCase):
         transform = Transform()
         transform.translation.z = 100.0
         transform.rotation.x = 1.0
-        transform.rotation.w = 0
+        transform.rotation.w = 0.0
 
         # Transform points
         points = transform_points(self.points, transform)
