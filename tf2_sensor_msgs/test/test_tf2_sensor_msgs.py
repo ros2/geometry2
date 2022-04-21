@@ -96,7 +96,7 @@ class PointCloudConversions(unittest.TestCase):
         self.assertTrue(np.allclose(expected_coordinates, new_points))
 
     def test_rotation_and_translation_transform(self):
-        # Create atransform combining a 100m z translation with
+        # Create a transform combining a 100m z translation with
         # a 180° rotation around the x-axis
         transform = TransformStamped()
         transform.transform.translation.z = 100.0
