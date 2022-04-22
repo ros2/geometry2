@@ -46,7 +46,7 @@ class PointCloudConversions(unittest.TestCase):
         self.points = np.array([[1, 2, 0], [10, 20, 30]], dtype=np.float32)
 
         self.point_cloud_in = create_cloud_xyz32(
-            Header(frame_id="test"),
+            Header(frame_id='test'),
             self.points)
 
     def test_simple_transform(self):
@@ -128,7 +128,7 @@ class PointCloudConversions(unittest.TestCase):
 
     def test_tf2_ros_transform(self):
         # Our target frame
-        target_frame_name = "base_footprint"
+        target_frame_name = 'base_footprint'
 
         # We need to create a local test tf buffer
         tf_buffer = tf2_ros.Buffer()
@@ -136,7 +136,7 @@ class PointCloudConversions(unittest.TestCase):
         # We need to fill this tf_buffer with a possible transform
         # So we create a transform with a 100m z translation
         transform = TransformStamped()
-        transform.header.frame_id = "test"
+        transform.header.frame_id = 'test'
         transform.child_frame_id = target_frame_name
         transform.transform.translation.z = 100.0
         transform.transform.rotation.w = 1.0
@@ -173,7 +173,7 @@ class PointCloudConversions(unittest.TestCase):
 
         # Create cloud with four fields
         point_cloud = create_cloud(
-            Header(frame_id="test"),
+            Header(frame_id='test'),
             fields,
             points)
 

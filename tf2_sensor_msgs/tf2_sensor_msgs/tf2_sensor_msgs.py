@@ -114,7 +114,7 @@ def do_transform_cloud(
 
     # Check if xyz are a subset of the field names
     required_fields = set('xyz')
-    present_fields = set(field.name for field in cloud.fields)
+    present_fields = {field.name for field in cloud.fields}
     assert required_fields <= present_fields, \
         'Point cloud needs the fields x, y, and z for the transformation'
 
