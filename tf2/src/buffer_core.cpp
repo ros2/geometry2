@@ -734,7 +734,10 @@ bool BufferCore::canTransformInternal(
   }
 
   CanTransformAccum accum;
-  if (walkToTopParent(accum, time, target_id, source_id, error_msg, nullptr) == tf2::TF2Error::TF2_NO_ERROR) {
+  if (walkToTopParent(
+      accum, time, target_id, source_id,
+      error_msg, nullptr) == tf2::TF2Error::TF2_NO_ERROR)
+  {
     return true;
   }
 
@@ -1354,7 +1357,9 @@ std::string BufferCore::_allFramesAsDot(TimePoint current_time) const
       frame_id_num = temp.frame_id_;
     }
     std::string authority = "no recorded authority";
-    std::map<CompactFrameID, std::string>::const_iterator it = frame_authority_.find(static_cast<CompactFrameID>(counter));
+    std::map<CompactFrameID,
+      std::string>::const_iterator it =
+      frame_authority_.find(static_cast<CompactFrameID>(counter));
     if (it != frame_authority_.end()) {
       authority = it->second;
     }

@@ -30,19 +30,19 @@
 
 /** \author Wim Meeussen */
 
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/transform_listener.h>
-
-#include <tf2_ros/qos.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
-#include <rclcpp/rclcpp.hpp>
-
 #include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/qos.hpp"
+
+#include "rclcpp/rclcpp.hpp"
+#include "tf2_msgs/msg/tf_message.hpp"
 
 class TFMonitor
 {
@@ -92,7 +92,7 @@ public:
       }
     }
 
-    average_offset /= std::max((size_t) 1, message.transforms.size());
+    average_offset /= std::max(static_cast<size_t>(1), message.transforms.size());
 
     // create the authority log
     std::map<std::string, std::vector<double>>::iterator it2 = authority_map.find(authority);

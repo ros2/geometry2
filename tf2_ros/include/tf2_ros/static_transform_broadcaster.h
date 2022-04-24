@@ -33,15 +33,15 @@
 #ifndef TF2_ROS__STATIC_TRANSFORM_BROADCASTER_H_
 #define TF2_ROS__STATIC_TRANSFORM_BROADCASTER_H_
 
-#include <tf2_ros/visibility_control.h>
-
-#include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <tf2_msgs/msg/tf_message.hpp>
-#include <tf2_ros/qos.hpp>
-
 #include <memory>
 #include <vector>
+
+#include "tf2_ros/visibility_control.h"
+
+#include "rclcpp/rclcpp.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2_msgs/msg/tf_message.hpp"
+#include "tf2_ros/qos.hpp"
 
 namespace tf2_ros
 {
@@ -58,7 +58,7 @@ public:
   StaticTransformBroadcaster(
     NodeT && node,
     const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = []() {
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
       rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
       options.qos_overriding_options = rclcpp::QosOverridingOptions{
         rclcpp::QosPolicyKind::Depth,

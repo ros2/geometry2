@@ -2,6 +2,31 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+* Workaround broken RHEL FindEigen3.cmake (`#513 <https://github.com/ros2/geometry2/issues/513>`_)
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
+0.23.0 (2022-03-28)
+-------------------
+* Disable mem-access warnings on aarch64. (`#506 <https://github.com/ros2/geometry2/issues/506>`_)
+* Contributors: Chris Lalancette
+
+0.22.0 (2022-03-01)
+-------------------
+
+0.21.0 (2022-01-14)
+-------------------
+* Fix cpplint errors (`#497 <https://github.com/ros2/geometry2/issues/497>`_)
+* Contributors: Jacob Perron
+
+0.20.0 (2021-12-17)
+-------------------
+
 0.19.0 (2021-10-15)
 -------------------
 * Remove some references to the ROS 1 wiki.

@@ -30,20 +30,54 @@
 #ifndef TF2_ROS__ASYNC_BUFFER_INTERFACE_H_
 #define TF2_ROS__ASYNC_BUFFER_INTERFACE_H_
 
-#include <tf2_ros/visibility_control.h>
-#include <tf2/time.h>
-#include <tf2/transform_datatypes.h>
-
-#include <geometry_msgs/msg/transform_stamped.hpp>
-
 #include <functional>
 #include <future>
 #include <string>
+#include <utility>
+
+#include "tf2_ros/visibility_control.h"
+#include "tf2/buffer_core.h"
+#include "tf2/time.h"
+#include "tf2/transform_datatypes.h"
+
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
 namespace tf2_ros
 {
 
-using TransformStampedFuture = std::shared_future<geometry_msgs::msg::TransformStamped>;
+class TransformStampedFuture : public std::shared_future<geometry_msgs::msg::TransformStamped>
+{
+  using BaseType = std::shared_future<geometry_msgs::msg::TransformStamped>;
+
+public:
+  /// Constructor
+  explicit TransformStampedFuture(BaseType && future) noexcept
+  : BaseType(std::move(future)) {}
+
+  /// Copy constructor
+  TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept
+  : BaseType(ts_future),
+    handle_(ts_future.handle_) {}
+
+  /// Move constructor
+  TransformStampedFuture(TransformStampedFuture && ts_future) noexcept
+  : BaseType(std::move(ts_future)),
+    handle_(std::move(ts_future.handle_)) {}
+
+  void setHandle(const tf2::TransformableRequestHandle handle)
+  {
+    handle_ = handle;
+  }
+
+  tf2::TransformableRequestHandle getHandle() const
+  {
+    return handle_;
+  }
+
+private:
+  tf2::TransformableRequestHandle handle_ {};
+};
+
 using TransformReadyCallback = std::function<void (const TransformStampedFuture &)>;
 
 /**
@@ -75,6 +109,13 @@ public:
     const tf2::TimePoint & time,
     const tf2::Duration & timeout,
     TransformReadyCallback callback) = 0;
+
+  /**
+   * \brief Cancel the future to make sure the callback of requested transform is clean.
+   * \param ts_future The future to the requested transform.
+   */
+  virtual void
+  cancel(const TransformStampedFuture & ts_future) = 0;
 };  // class AsyncBufferInterface
 
 }  // namespace tf2_ros

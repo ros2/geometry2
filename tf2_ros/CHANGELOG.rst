@@ -2,6 +2,38 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
+0.23.0 (2022-03-28)
+-------------------
+* use dedicated callback group and executor to isolate timer (`#447 <https://github.com/ros2/geometry2/issues/447>`_)
+* Adding shared pointer definition to tf2 buffer (`#508 <https://github.com/ros2/geometry2/issues/508>`_)
+* fix for a basic logic (`#510 <https://github.com/ros2/geometry2/issues/510>`_)
+* Fix precision loss from using rclcpp::Time::seconds() (`#511 <https://github.com/ros2/geometry2/issues/511>`_)
+* Contributors: Chen Lihui, Kenji Brameld, Steve Macenski, Zhenpeng Ge
+
+0.22.0 (2022-03-01)
+-------------------
+* clear relative callback of Buffer if MessageFilter is destroyed (`#490 <https://github.com/ros2/geometry2/issues/490>`_)
+* More info in tf2_echo output (`#468 <https://github.com/ros2/geometry2/issues/468>`_)
+* Contributors: Chen Lihui, simulacrus
+
+0.21.0 (2022-01-14)
+-------------------
+* Fix cpplint errors (`#497 <https://github.com/ros2/geometry2/issues/497>`_)
+* Contributors: Jacob Perron
+
+0.20.0 (2021-12-17)
+-------------------
+* Fixes for uncrustify 0.72 (`#486 <https://github.com/ros2/geometry2/issues/486>`_)
+* Contributors: Chris Lalancette
+
 0.19.0 (2021-10-15)
 -------------------
 * More Intuitive CLI for Static Transform Publisher (`#392 <https://github.com/ros2/geometry2/issues/392>`_)

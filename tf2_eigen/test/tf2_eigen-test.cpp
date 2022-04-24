@@ -34,23 +34,38 @@
 #endif
 #endif
 
-#include <gtest/gtest.h>
-#include <geometry_msgs/msg/point.hpp>
-#include <geometry_msgs/msg/point_stamped.hpp>
-#include <geometry_msgs/msg/pose.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-#include <rclcpp/clock.hpp>
-#include <tf2/convert.h>
-#include <tf2/transform_datatypes.h>
-#include <tf2_eigen/tf2_eigen.hpp>
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/transform_listener.h>
-
-#include <Eigen/Geometry>
-
 #include <cmath>
 #include <memory>
+
+// Version 3.4.0 of Eigen in Ubuntu 22.04 has a bug that causes -Wclass-memaccess warnings on
+// aarch64.  Upstream Eigen has already fixed this in
+// https://gitlab.com/libeigen/eigen/-/merge_requests/645 .  The Debian fix for this is in
+// https://salsa.debian.org/science-team/eigen3/-/merge_requests/1 .
+// However, it is not clear that that fix is going to make it into Ubuntu 22.04 before it
+// freezes, so disable the warning here.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
+#include <Eigen/Geometry>  // NOLINT
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
+#include "gtest/gtest.h"
+
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/point_stamped.hpp"
+#include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/clock.hpp"
+
+#include "tf2/convert.h"
+#include "tf2/transform_datatypes.h"
+#include "tf2_eigen/tf2_eigen.hpp"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
 
 TEST(TfEigen, ConvertVector3dStamped)
 {

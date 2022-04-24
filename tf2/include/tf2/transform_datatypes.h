@@ -97,7 +97,7 @@ class WithCovarianceStamped : public T
 public:
   TimePoint stamp_;   ///< The timestamp associated with this data
   std::string frame_id_;   ///< The frame_id associated this data
-  std::array<std::array<double, 6>, 6> cov_mat_;  ///< The covariance matrix associated with this data
+  std::array<std::array<double, 6>, 6> cov_mat_;  ///< The covariance matrix associated with this data // NOLINT
 
   /** Default constructor */
   WithCovarianceStamped()

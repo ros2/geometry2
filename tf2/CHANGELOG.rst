@@ -2,6 +2,42 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
+0.23.0 (2022-03-28)
+-------------------
+* forward declare fromMsg to avoid missing symbols in downstream libraries (`#485 <https://github.com/ros2/geometry2/issues/485>`_)
+* Contributors: João C. Monteiro
+
+0.22.0 (2022-03-01)
+-------------------
+
+0.21.0 (2022-01-14)
+-------------------
+* tf2: Enable common linter tests (`#469 <https://github.com/ros2/geometry2/issues/469>`_)
+* Contributors: Abrar Rahman Protyasha
+
+0.20.0 (2021-12-17)
+-------------------
+* Move time functions into time.cpp.
+* Change a for loop to a while loop.
+* Switch to C++-style casts.
+* Remove totally unused (and unreachable) code.
+* Replace NULL with nullptr.
+* Fix up some comments.
+* Use std::make_shared where we can.
+* Replace two comparisons with empty string to empty().
+* Make sure to include-what-you-use.
+* Remove unnecessary internal method.
+* Remove long-deprecated walkToTopParent overload.
+* Contributors: Chris Lalancette
+
 0.19.0 (2021-10-15)
 -------------------
 * Remove unnecessary test dependencies.

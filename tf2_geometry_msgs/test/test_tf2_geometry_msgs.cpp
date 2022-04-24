@@ -35,16 +35,16 @@
 #endif
 #endif
 
-#include <rclcpp/clock.hpp>
-#include <tf2_ros/transform_listener.h>
-#include <gtest/gtest.h>
-#include <tf2_ros/buffer.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-
-// To get M_PI, especially on Windows.
 #include <cmath>
 #include <memory>
 #include <string>
+
+#include "gtest/gtest.h"
+
+#include "rclcpp/clock.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
 
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
@@ -538,6 +538,31 @@ TEST(TfGeometry, Transform)
   }
 }
 
+TEST(TfGeometry, Wrench)
+{
+  geometry_msgs::msg::Wrench v1, res;
+  v1.force.x = 2;
+  v1.force.y = 1;
+  v1.force.z = 3;
+  v1.torque.x = 2;
+  v1.torque.y = 1;
+  v1.torque.z = 3;
+
+  geometry_msgs::msg::TransformStamped trafo;
+  trafo.transform.translation.x = -1;
+  trafo.transform.translation.y = 2;
+  trafo.transform.translation.z = -3;
+  trafo.transform.rotation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), -M_PI / 2.0));
+
+  tf2::doTransform(v1, res, trafo);
+  EXPECT_NEAR(res.force.x, 1, EPS);
+  EXPECT_NEAR(res.force.y, -2, EPS);
+  EXPECT_NEAR(res.force.z, 3, EPS);
+
+  EXPECT_NEAR(res.torque.x, 1, EPS);
+  EXPECT_NEAR(res.torque.y, -2, EPS);
+  EXPECT_NEAR(res.torque.z, 3, EPS);
+}
 
 int main(int argc, char ** argv)
 {

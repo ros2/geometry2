@@ -37,12 +37,25 @@
 #ifndef TF2_EIGEN_KDL__TF2_EIGEN_KDL_HPP_
 #define TF2_EIGEN_KDL__TF2_EIGEN_KDL_HPP_
 
+// Version 3.4.0 of Eigen in Ubuntu 22.04 has a bug that causes -Wclass-memaccess warnings on
+// aarch64.  Upstream Eigen has already fixed this in
+// https://gitlab.com/libeigen/eigen/-/merge_requests/645 .  The Debian fix for this is in
+// https://salsa.debian.org/science-team/eigen3/-/merge_requests/1 .
+// However, it is not clear that that fix is going to make it into Ubuntu 22.04 before it
+// freezes, so disable the warning here.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
+#endif
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
-#include <kdl/frames.hpp>
+#include "kdl/frames.hpp"
 
-#include <tf2/impl/convert.h>
+#include "tf2/impl/convert.h"
 
 #include "tf2_eigen_kdl/visibility_control.h"
 

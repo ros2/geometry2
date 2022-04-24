@@ -4,7 +4,7 @@ package_name = 'tf2_tools'
 
 setup(
     name=package_name,
-    version='0.19.0',
+    version='0.25.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -14,8 +14,8 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     author='Wim Meeussen',
-    maintainer='Chris Lalancette',
-    maintainer_email='clalancette@openrobotics.org',
+    maintainer='Alejandro Hernandez Cordero, Chris Lalancette',
+    maintainer_email='alejandro@openrobotics.org, clalancette@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',

@@ -2,6 +2,34 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+
+0.24.0 (2022-03-31)
+-------------------
+
+0.23.0 (2022-03-28)
+-------------------
+* Drop PyKDL dependency in tf2_geometry_msgs (`#509 <https://github.com/ros2/geometry2/issues/509>`_)
+* Contributors: Florian Vahl
+
+0.22.0 (2022-03-01)
+-------------------
+* Add in one more destroy call that was missed in testing. (`#504 <https://github.com/ros2/geometry2/issues/504>`_)
+* Contributors: Chris Lalancette
+
+0.21.0 (2022-01-14)
+-------------------
+* Be much more careful about cleanup in the tf2_ros_py tests. (`#499 <https://github.com/ros2/geometry2/issues/499>`_)
+* Use the correct type for BufferClient timeout_padding. (`#498 <https://github.com/ros2/geometry2/issues/498>`_)
+  It should be a duration, not a float.
+* Contributors: Chris Lalancette
+
+0.20.0 (2021-12-17)
+-------------------
+* Update maintainers to Alejandro Hernandez Cordero and Chris Lalancette (`#481 <https://github.com/ros2/geometry2/issues/481>`_)
+* Contributors: Audrow Nash
+
 0.19.0 (2021-10-15)
 -------------------
 * Fix buffer_client.py using default timeout_padding (`#437 <https://github.com/ros2/geometry2/issues/437>`_)

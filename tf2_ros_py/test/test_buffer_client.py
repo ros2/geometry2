@@ -63,9 +63,7 @@ def build_transform(target_frame, source_frame, stamp):
 class MockBufferServer():
     def __init__(self, node, buffer_core):
         self.action_server = rclpy.action.ActionServer(node, LookupTransform, 'lookup_transform', self.execute_callback)
-        self.node = node
         self.buffer_core = buffer_core
-        self.result_buffer = {}
 
     def execute_callback(self, goal_handle):
         response = LookupTransform.Result()
@@ -86,10 +84,15 @@ class MockBufferServer():
                     fixed_frame=goal_handle.request.fixed_frame
                 )
             response.transform = transform
+            goal_handle.succeed()
         except LookupException as e:
             response.error.error = TF2Error.LOOKUP_ERROR
+            goal_handle.abort()
 
         return response
+
+    def destroy(self):
+        self.action_server.destroy()
 
 
 class TestBufferClient(unittest.TestCase):
@@ -109,6 +112,7 @@ class TestBufferClient(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.mock_action_server.destroy()
         cls.node.destroy_node()
         rclpy.shutdown(context=cls.context)
 
@@ -127,7 +131,7 @@ class TestBufferClient(unittest.TestCase):
 
     def test_lookup_transform_true(self):
         buffer_client = BufferClient(
-            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)
+            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=rclpy.duration.Duration(seconds=0.0))
 
         result = buffer_client.lookup_transform(
             'foo', 'bar', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
@@ -135,15 +139,19 @@ class TestBufferClient(unittest.TestCase):
         self.assertEqual(build_transform(
             'foo', 'bar', rclpy.time.Time().to_msg()), result)
 
+        buffer_client.destroy()
+
     def test_lookup_transform_fail(self):
         buffer_client = BufferClient(
-            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=0.0)
+            self.node, 'lookup_transform', check_frequency=10.0, timeout_padding=rclpy.duration.Duration(seconds=0.0))
 
         with self.assertRaises(LookupException) as ex:
             result = buffer_client.lookup_transform(
                 'bar', 'baz', rclpy.time.Time(), rclpy.duration.Duration(seconds=5.0))
 
         self.assertEqual(LookupException, type(ex.exception))
+
+        buffer_client.destroy()
 
 if __name__ == '__main__':
     unittest.main()

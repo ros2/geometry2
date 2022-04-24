@@ -4,7 +4,7 @@ package_name = 'examples_tf2_py'
 
 setup(
     name=package_name,
-    version='0.19.0',
+    version='0.25.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -16,8 +16,8 @@ setup(
     zip_safe=True,
     author='Shane Loretz',
     author_email='sloretz@openrobotics.org',
-    maintainer='Tully Foote',
-    maintainer_email='tfoote@osrfoundation.org',
+    maintainer='Alejandro Hernandez Cordero, Chris Lalancette',
+    maintainer_email='alejandro@openrobotics.org, clalancette@openrobotics.org',
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',

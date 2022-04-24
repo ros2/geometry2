@@ -2,6 +2,28 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.0 (2022-04-05)
+-------------------
+
+0.24.0 (2022-03-31)
+-------------------
+
+0.23.0 (2022-03-28)
+-------------------
+* Make sure to finalize tf2_py BufferCore. (`#505 <https://github.com/ros2/geometry2/issues/505>`_)
+* Contributors: Chris Lalancette
+
+0.22.0 (2022-03-01)
+-------------------
+
+0.21.0 (2022-01-14)
+-------------------
+* Make tf2_py Use FindPython3 (`#494 <https://github.com/ros2/geometry2/issues/494>`_)
+* Contributors: Shane Loretz
+
+0.20.0 (2021-12-17)
+-------------------
+
 0.19.0 (2021-10-15)
 -------------------
 * Change TF2Error names to be a bit more descriptive. (`#349 <https://github.com/ros2/geometry2/issues/349>`_)
