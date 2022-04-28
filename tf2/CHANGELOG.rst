@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Workaround with pragma push and pop for NO_ERROR collison (`#456 <https://github.com/ros2/geometry2/issues/456>`_) (`#458 <https://github.com/ros2/geometry2/issues/458>`_)
+* Contributors: Abrar Rahman Protyasha
+
 0.17.2 (2021-05-10)
 -------------------
 

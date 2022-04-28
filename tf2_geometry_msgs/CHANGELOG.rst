@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* `tf2_geometry_msgs`: Fixing covariance transformation in `doTransform<PoseWithCovarianceStamped, TransformStamped>` (`#430 <https://github.com/ros2/geometry2/issues/430>`_) (`#488 <https://github.com/ros2/geometry2/issues/488>`_)
+* Contributors: mergify[bot]
+
 0.17.2 (2021-05-10)
 -------------------
 
