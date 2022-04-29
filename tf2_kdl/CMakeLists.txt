@@ -12,6 +12,16 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+# TODO(clalancette): This package doesn't directly depend on Eigen, but orocos-kdl
+# fails to properly export the dependency.  One possible solution would be to add
+# ${orocos_kdl_INCLUDE_DIRS} to the include directories, but that unfortunately causes
+# hard-coded paths to show up in Windows packaging builds.  Instead, depend on Eigen3
+# here to fix the missing export
+find_package(Eigen3 QUIET NO_MODULE)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 find_package(geometry_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
@@ -29,8 +39,13 @@ target_link_libraries(tf2_kdl INTERFACE
   tf2_ros::tf2_ros)
 target_include_directories(tf2_kdl INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-  ${orocos_kdl_INCLUDE_DIRS})
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(tf2_kdl INTERFACE Eigen3::Eigen)
+else()
+  target_include_directories(tf2_kdl INTERFACE ${Eigen3_INCLUDE_DIRS})
+endif()
 
 install(TARGETS tf2_kdl EXPORT export_tf2_kdl)
 

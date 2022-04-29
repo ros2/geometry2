@@ -18,6 +18,16 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
+# TODO(clalancette): This package doesn't directly depend on Eigen, but orocos-kdl
+# fails to properly export the dependency.  One possible solution would be to add
+# ${orocos_kdl_INCLUDE_DIRS} to the include directories, but that unfortunately causes
+# hard-coded paths to show up in Windows packaging builds.  Instead, depend on Eigen3
+# here to fix the missing export
+find_package(Eigen3 QUIET NO_MODULE)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 find_package(geometry_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
@@ -29,13 +39,18 @@ ament_python_install_package(${PROJECT_NAME}
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-  ${orocos_kdl_INCLUDE_DIRS})
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
   orocos-kdl
   tf2::tf2
   tf2_ros::tf2_ros)
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(${PROJECT_NAME} INTERFACE Eigen3::Eigen)
+else()
+  target_include_directories(${PROJECT_NAME} INTERFACE ${Eigen3_INCLUDE_DIRS})
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
