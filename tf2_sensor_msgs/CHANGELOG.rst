@@ -2,6 +2,12 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+* Add missing ament_cmake_pytest package needed because of newly-enabled test (`#520 <https://github.com/ros2/geometry2/issues/520>`_)
+* Port point cloud transformation to numpy (`#507 <https://github.com/ros2/geometry2/issues/507>`_)
+* Contributors: Florian Vahl, Michael Jeronimo
+
 0.25.0 (2022-04-05)
 -------------------
 

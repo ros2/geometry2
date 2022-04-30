@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
 0.25.0 (2022-04-05)
 -------------------
 * Workaround broken RHEL FindEigen3.cmake (`#513 <https://github.com/ros2/geometry2/issues/513>`_)

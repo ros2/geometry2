@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
 0.25.0 (2022-04-05)
 -------------------
 * Fix more instances of Eigen problems on RHEL. (`#515 <https://github.com/ros2/geometry2/issues/515>`_)
