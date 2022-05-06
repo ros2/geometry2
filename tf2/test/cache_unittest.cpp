@@ -267,8 +267,8 @@ TEST(TimeCache, SetRPYEqualsSetEuler)
     pitch = 1.0 * get_rand();
     roll = 1.0 * get_rand();
 
-    q1.setEuler(yaw, pitch, roll); // YPR
-    q2.setRPY(roll, pitch, yaw); // RPY
+    q1.setEuler(yaw, pitch, roll);
+    q2.setRPY(roll, pitch, yaw);
 
     EXPECT_NEAR(q1.x(), q2.x(), 1e-5);
     EXPECT_NEAR(q1.y(), q2.y(), 1e-5);
