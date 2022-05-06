@@ -75,10 +75,10 @@ public:
 		tf2Scalar sinPitch = tf2Sin(halfPitch);
 		tf2Scalar cosRoll = tf2Cos(halfRoll);
 		tf2Scalar sinRoll = tf2Sin(halfRoll);
-		setValue(cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw,
-			cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw,
-			sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw,
-			cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw);
+		setValue(sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw,
+                cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw,
+                cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw,
+                cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw);
 	}
   /**@brief Set the quaternion using fixed axis RPY
    * @param roll Angle around X 
@@ -97,9 +97,9 @@ public:
 		tf2Scalar cosRoll = tf2Cos(halfRoll);
 		tf2Scalar sinRoll = tf2Sin(halfRoll);
 		setValue(sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw, //x
-                         cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw, //y
-                         cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw, //z
-                         cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw); //formerly yzx
+                cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw, //y
+                cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw, //z
+                cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw); //formerly yzx
 	}
   /**@brief Add two quaternions
    * @param q The quaternion to add to this one */
