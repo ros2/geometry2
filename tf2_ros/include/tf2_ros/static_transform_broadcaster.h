@@ -81,6 +81,12 @@ public:
   TF2_ROS_PUBLIC
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
+  /** \brief Clear the memory of any previously sent transforms
+   * This can be used to "remove" transforms that are no longer valid
+   */
+  TF2_ROS_PUBLIC
+  void clearTransforms();
+
 private:
   /// Internal reference to ros::Node
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;

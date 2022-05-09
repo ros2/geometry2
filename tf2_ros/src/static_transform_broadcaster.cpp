@@ -71,4 +71,9 @@ void StaticTransformBroadcaster::sendTransform(
   publisher_->publish(net_message_);
 }
 
+void StaticTransformBroadcaster::clearTransforms()
+{
+  net_message_.transforms.clear();
+}
+
 }  // namespace tf2_ros
