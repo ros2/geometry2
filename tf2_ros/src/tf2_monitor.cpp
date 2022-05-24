@@ -179,8 +179,6 @@ public:
       max_delay = std::max(max_delay, it->second[i]);
     }
     average_delay /= it->second.size();
-    // ss << "Frame: " << it->first << ", published by " << frame_authority << ", Average Delay: " <<
-    //   average_delay << ", Max Delay: " << max_delay << std::endl;
     double frequency_out = static_cast<double>(it4->second.size()) /
       std::max(0.00000001, (it4->second.back() - it4->second.front()));
     ss << "Frame: " << it->first << ", published by " << frame_authority << " " << frequency_out << 
