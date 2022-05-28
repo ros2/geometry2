@@ -183,7 +183,7 @@ public:
     double frequency_out = static_cast<double>(it4->second.size()) /
       std::max(0.00000001, (it4->second.back() - it4->second.front()));
     ss << "Frame: " << it->first << ", published by " << frame_authority << " " << frequency_out <<
-    " Hz, Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
+      " Hz, Average Delay: " << average_delay << " Max Delay: " << max_delay << std::endl;
     return ss.str();
   }
 
