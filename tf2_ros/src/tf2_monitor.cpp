@@ -87,7 +87,8 @@ public:
         message.transforms[i].child_frame_id);
       if (it == delay_map.end()) {
         delay_map[message.transforms[i].child_frame_id] = std::vector<double>(1, offset);
-        frequency_map[message.transforms[i].child_frame_id] = std::vector<double>(1, clock_->now().seconds());
+        frequency_map[message.transforms[i].child_frame_id] = std::vector<double>(
+          1, clock_->now().seconds());
       } else {
         it->second.push_back(offset);
         it4->second.push_back(clock_->now().seconds());
