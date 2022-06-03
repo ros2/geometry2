@@ -14,11 +14,29 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-find_package(eigen3_cmake_module REQUIRED)
-find_package(Eigen3 REQUIRED)
+# Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
+find_package(Eigen3 QUIET NO_MODULE)
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED)
+endif()
 
-install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION include/${PROJECT_NAME})
+add_library(tf2_eigen INTERFACE)
+target_link_libraries(tf2_eigen INTERFACE
+  ${geometry_msgs_TARGETS}
+  tf2::tf2
+  tf2_ros::tf2_ros)
+target_include_directories(tf2_eigen INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(tf2_eigen INTERFACE Eigen3::Eigen)
+else()
+  target_include_directories(tf2_eigen INTERFACE ${Eigen3_INCLUDE_DIRS})
+endif()
+
+install(TARGETS tf2_eigen EXPORT export_tf2_eigen)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_cppcheck REQUIRED)
@@ -35,20 +53,26 @@ if(BUILD_TESTING)
 
   ament_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
   if(TARGET tf2_eigen-test)
-    target_include_directories(tf2_eigen-test PUBLIC
-      include)
-    ament_target_dependencies(tf2_eigen-test
-      "tf2"
-      "tf2_ros")
-    target_include_directories(tf2_eigen-test PUBLIC
-      ${Eigen3_INCLUDE_DIRS})
+    target_link_libraries(tf2_eigen-test
+      tf2_eigen
+      # Used, but not linked to test tf2_eigen's exports:
+      #   Eigen3::Eigen
+      #   ${geometry_msgs_TARGETS}
+      #   tf2::tf2
+      #   tf2_ros::tf2_ros
+    )
   endif()
 endif()
 
-ament_export_include_directories(include)
 ament_export_dependencies(
-  eigen3_cmake_module
   Eigen3
   tf2
   tf2_ros)
+
+# Export old-style CMake variables
+ament_export_include_directories("include/${PROJECT_NAME}")
+
+# Export modern CMake targets
+ament_export_targets(export_tf2_eigen)
+
 ament_package()

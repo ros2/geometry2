@@ -21,7 +21,7 @@ include(bullet-extras.cmake)
 add_library(tf2_bullet INTERFACE)
 target_include_directories(tf2_bullet INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(tf2_bullet INTERFACE
   tf2_bullet::Bullet
   tf2::tf2
@@ -30,9 +30,7 @@ target_link_libraries(tf2_bullet INTERFACE
 
 install(TARGETS tf2_bullet EXPORT export_tf2_bullet)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION include/${PROJECT_NAME}
-)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

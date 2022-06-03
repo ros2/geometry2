@@ -9,6 +9,15 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
 
+# Figure out Python3 debug/release before anything else can find_package it
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  find_package(python_cmake_module REQUIRED)
+  find_package(PythonExtra REQUIRED)
+  # Force FindPython3 to use the debug interpretter where ROS 2 expects it
+  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+endif()
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
 find_package(geometry_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
@@ -20,7 +29,8 @@ ament_python_install_package(${PROJECT_NAME}
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  ${orocos_kdl_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
   orocos-kdl
@@ -55,7 +65,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
-install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(

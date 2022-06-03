@@ -2,6 +2,19 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
+0.25.0 (2022-04-05)
+-------------------
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+* Export a tf2_bullet::tf2_bullet target (`#495 <https://github.com/ros2/geometry2/issues/495>`_)
+* Contributors: Shane Loretz
+
 0.23.0 (2022-03-28)
 -------------------
 

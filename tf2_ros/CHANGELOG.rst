@@ -2,6 +2,17 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
+0.25.0 (2022-04-05)
+-------------------
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
 0.23.0 (2022-03-28)
 -------------------
 * use dedicated callback group and executor to isolate timer (`#447 <https://github.com/ros2/geometry2/issues/447>`_)

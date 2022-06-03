@@ -2,6 +2,19 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
+0.25.0 (2022-04-05)
+-------------------
+* Make sure to find the right Python executable. (`#514 <https://github.com/ros2/geometry2/issues/514>`_)
+* Depend on orocos_kdl_vendor  (`#473 <https://github.com/ros2/geometry2/issues/473>`_)
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Chris Lalancette, Jacob Perron, Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
 0.23.0 (2022-03-28)
 -------------------
 * Drop PyKDL dependency in tf2_geometry_msgs (`#509 <https://github.com/ros2/geometry2/issues/509>`_)

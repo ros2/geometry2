@@ -2,6 +2,18 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
+0.25.0 (2022-04-05)
+-------------------
+* Fix more instances of Eigen problems on RHEL. (`#515 <https://github.com/ros2/geometry2/issues/515>`_)
+* Install includes to include/${PROJECT_NAME} and use modern CMake (`#493 <https://github.com/ros2/geometry2/issues/493>`_)
+* Contributors: Chris Lalancette, Shane Loretz
+
+0.24.0 (2022-03-31)
+-------------------
+
 0.23.0 (2022-03-28)
 -------------------
 * Fix precision loss from using rclcpp::Time::seconds() (`#511 <https://github.com/ros2/geometry2/issues/511>`_)
