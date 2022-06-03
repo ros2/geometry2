@@ -22,12 +22,9 @@
   <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
-<<<<<<< HEAD
-=======
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
   <test_depend>rclcpp</test_depend>
 
   <export>

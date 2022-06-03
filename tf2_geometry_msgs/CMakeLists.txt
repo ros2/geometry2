@@ -24,13 +24,10 @@ ament_python_install_package(${PROJECT_NAME}
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
-<<<<<<< HEAD
-=======
 
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(test_tf2_geometry_msgs_py test/test_tf2_geometry_msgs.py)
 
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
     target_include_directories(test_tf2_geometry_msgs PUBLIC include)
