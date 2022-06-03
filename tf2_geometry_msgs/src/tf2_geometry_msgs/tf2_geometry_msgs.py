@@ -27,17 +27,12 @@
 
 # author: Wim Meeussen
 
-<<<<<<< HEAD
-from geometry_msgs.msg import PoseStamped, Vector3Stamped, PointStamped, PoseWithCovarianceStamped
-import PyKDL
-=======
 from typing import Iterable, Optional, Tuple
 
 from geometry_msgs.msg import (PointStamped, Pose, PoseStamped,
                                PoseWithCovarianceStamped, TransformStamped,
                                Vector3Stamped)
 import numpy as np
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
 import tf2_ros
 
 def to_msg_msg(msg):
@@ -54,19 +49,6 @@ tf2_ros.ConvertRegistration().add_from_msg(Vector3Stamped, from_msg_msg)
 tf2_ros.ConvertRegistration().add_from_msg(PoseStamped, from_msg_msg)
 tf2_ros.ConvertRegistration().add_from_msg(PointStamped, from_msg_msg)
 
-<<<<<<< HEAD
-def transform_to_kdl(t):
-    return PyKDL.Frame(PyKDL.Rotation.Quaternion(t.transform.rotation.x, t.transform.rotation.y,
-                                                 t.transform.rotation.z, t.transform.rotation.w),
-                       PyKDL.Vector(t.transform.translation.x,
-                                    t.transform.translation.y,
-                                    t.transform.translation.z))
-
-
-# PointStamped
-def do_transform_point(point, transform):
-    p = transform_to_kdl(transform) * PyKDL.Vector(point.point.x, point.point.y, point.point.z)
-=======
 
 def transform_covariance(cov_in, transform):
     """
@@ -298,7 +280,6 @@ def do_transform_point(
                 point.point.z
             ])))
 
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
     res = PointStamped()
     res.point.x = point[0]
     res.point.y = point[1]
@@ -309,13 +290,6 @@ tf2_ros.TransformRegistration().add(PointStamped, do_transform_point)
 
 
 # Vector3Stamped
-<<<<<<< HEAD
-def do_transform_vector3(vector3, transform):
-    transform.transform.translation.x = 0.0;
-    transform.transform.translation.y = 0.0;
-    transform.transform.translation.z = 0.0;
-    p = transform_to_kdl(transform) * PyKDL.Vector(vector3.vector.x, vector3.vector.y, vector3.vector.z)
-=======
 def do_transform_vector3(
         vector3: Vector3Stamped,
         transform: TransformStamped) -> Vector3Stamped:
@@ -337,7 +311,6 @@ def do_transform_vector3(
                 vector3.vector.y,
                 vector3.vector.z
             ])))
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
     res = Vector3Stamped()
     res.vector.x = point[0]
     res.vector.y = point[1]
@@ -346,21 +319,6 @@ def do_transform_vector3(
     return res
 tf2_ros.TransformRegistration().add(Vector3Stamped, do_transform_vector3)
 
-<<<<<<< HEAD
-# PoseStamped
-def do_transform_pose(pose, transform):
-    f = transform_to_kdl(transform) * PyKDL.Frame(PyKDL.Rotation.Quaternion(pose.pose.orientation.x, pose.pose.orientation.y,
-                                                                          pose.pose.orientation.z, pose.pose.orientation.w),
-                                                PyKDL.Vector(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z))
-    res = PoseStamped()
-    res.pose.position.x = f.p[0]
-    res.pose.position.y = f.p[1]
-    res.pose.position.z = f.p[2]
-    (res.pose.orientation.x, res.pose.orientation.y, res.pose.orientation.z, res.pose.orientation.w) = f.M.GetQuaternion()
-    res.header = transform.header
-    return res
-tf2_ros.TransformRegistration().add(PoseStamped, do_transform_pose)
-=======
 
 # Pose
 def do_transform_pose(
@@ -419,21 +377,9 @@ def do_transform_pose_stamped(
 
 
 tf2_ros.TransformRegistration().add(PoseStamped, do_transform_pose_stamped)
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
+
 
 # PoseWithCovarianceStamped
-<<<<<<< HEAD
-def do_transform_pose_with_covariance_stamped(pose, transform):
-    f = transform_to_kdl(transform) * PyKDL.Frame(PyKDL.Rotation.Quaternion(pose.pose.pose.orientation.x, pose.pose.pose.orientation.y,
-                                                                          pose.pose.pose.orientation.z, pose.pose.pose.orientation.w),
-                                                PyKDL.Vector(pose.pose.pose.position.x, pose.pose.pose.position.y, pose.pose.pose.position.z))
-    res = PoseWithCovarianceStamped()
-    res.pose.pose.position.x = f.p[0]
-    res.pose.pose.position.y = f.p[1]
-    res.pose.pose.position.z = f.p[2]
-    (res.pose.pose.orientation.x, res.pose.pose.orientation.y, res.pose.pose.orientation.z, res.pose.pose.orientation.w) = f.M.GetQuaternion()
-    res.pose.covariance = pose.pose.covariance
-=======
 def do_transform_pose_with_covariance_stamped(
         pose: PoseWithCovarianceStamped,
         transform: TransformStamped) -> PoseWithCovarianceStamped:
@@ -447,7 +393,6 @@ def do_transform_pose_with_covariance_stamped(
     res = PoseWithCovarianceStamped()
     res.pose.pose = do_transform_pose(pose.pose.pose, transform)
     res.pose.covariance = transform_covariance(pose.pose.covariance, transform)
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509))
     res.header = transform.header
     return res
 tf2_ros.TransformRegistration().add(PoseWithCovarianceStamped, do_transform_pose_with_covariance_stamped)

@@ -1,6 +1,3 @@
-<<<<<<< HEAD:tf2_geometry_msgs/scripts/test.py
-#!/usr/bin/env python3
-=======
 # Copyright 2008 Willow Garage, Inc.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,14 +26,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509)):tf2_geometry_msgs/test/test_tf2_geometry_msgs.py
-
 import unittest
 import rclpy
-import PyKDL
 import tf2_ros
 import tf2_geometry_msgs
 from geometry_msgs.msg import TransformStamped, PointStamped, Vector3Stamped, PoseStamped, PoseWithCovarianceStamped, Quaternion
+import numpy as np
+
 
 class GeometryMsgs(unittest.TestCase):
     def test_transform(self):
@@ -130,8 +126,6 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.vector.y, 0)
         self.assertEqual(out.vector.z, 0)
 
-<<<<<<< HEAD:tf2_geometry_msgs/scripts/test.py
-=======
         # Testing for pose and covariance transform
         t = TransformStamped()
         t.transform.translation.x = 1.0
@@ -174,6 +168,5 @@ class GeometryMsgs(unittest.TestCase):
         self.assertTrue(np.array_equal(out.pose.covariance, expected_covariance))
 
 
->>>>>>> 6b18a400 (Drop PyKDL dependency in tf2_geometry_msgs (#509)):tf2_geometry_msgs/test/test_tf2_geometry_msgs.py
 if __name__ == '__main__':
     rclpy.init(args=None)
