@@ -46,12 +46,7 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 # Tests
 if(BUILD_TESTING)
-  find_package(ament_cmake_copyright REQUIRED)
-  find_package(ament_cmake_cppcheck REQUIRED)
-  find_package(ament_cmake_cpplint REQUIRED)
-  find_package(ament_cmake_lint_cmake REQUIRED)
-  find_package(ament_cmake_uncrustify REQUIRED)
-  find_package(ament_cmake_xmllint REQUIRED)
+  find_package(ament_lint_auto REQUIRED)
 
   # Should not lint external code
   set(
@@ -64,19 +59,13 @@ if(BUILD_TESTING)
     include/tf2/LinearMath/Transform.h
     include/tf2/LinearMath/Vector3.h
   )
+  set(AMENT_LINT_AUTO_FILE_EXCLUDE ${_linter_excludes})
 
-  ament_copyright(EXCLUDE ${_linter_excludes})
-  ament_cppcheck(
-    EXCLUDE ${_linter_excludes}
-    LANGUAGE c++
-  )
-  ament_cpplint(EXCLUDE ${_linter_excludes})
-  ament_lint_cmake()
-  ament_uncrustify(
-    EXCLUDE ${_linter_excludes}
-    LANGUAGE c++
-  )
-  ament_xmllint()
+
+  set(ament_cmake_cppcheck_LANGUAGE c++)
+  set(ament_cmake_uncrustify_LANGUAGE c++)
+
+  ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_gtest REQUIRED)
 
