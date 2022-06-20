@@ -2,6 +2,9 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.0 (2022-04-29)
+-------------------
+
 0.25.0 (2022-04-05)
 -------------------
 * Make sure to find the right Python executable. (`#514 <https://github.com/ros2/geometry2/issues/514>`_)

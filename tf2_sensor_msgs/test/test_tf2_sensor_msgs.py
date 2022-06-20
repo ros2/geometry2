@@ -29,61 +29,185 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import copy
-import struct
 import unittest
 
-from sensor_msgs import point_cloud2
+from geometry_msgs.msg import Transform, TransformStamped
+import numpy as np
 from sensor_msgs.msg import PointField
-from tf2_ros import TransformStamped
-import tf2_sensor_msgs
+from sensor_msgs_py.point_cloud2 import create_cloud, create_cloud_xyz32, read_points_numpy
+from std_msgs.msg import Header
+import tf2_ros
+from tf2_sensor_msgs import do_transform_cloud, transform_points
 
 
-# A sample python unit test
 class PointCloudConversions(unittest.TestCase):
 
     def setUp(self):
-        self.point_cloud_in = point_cloud2.PointCloud2()
-        self.point_cloud_in.fields = [
-            PointField('x', 0, PointField.FLOAT32, 1),
-            PointField('y', 4, PointField.FLOAT32, 1),
-            PointField('z', 8, PointField.FLOAT32, 1)]
+        self.points = np.array([[1, 2, 0], [10, 20, 30]], dtype=np.float32)
 
-        self.point_cloud_in.point_step = 4 * 3
-        self.point_cloud_in.height = 1
-        # we add two points (with x, y, z to the cloud)
-        self.point_cloud_in.width = 2
-        self.point_cloud_in.row_step = \
-            self.point_cloud_in.point_step * self.point_cloud_in.width
-
-        points = [1, 2, 0, 10, 20, 30]
-        self.point_cloud_in.data = struct.pack('%sf' % len(points), *points)
-
-        self.transform_translate_xyz_300 = TransformStamped()
-        self.transform_translate_xyz_300.transform.translation.x = 300
-        self.transform_translate_xyz_300.transform.translation.y = 300
-        self.transform_translate_xyz_300.transform.translation.z = 300
-        # no rotation so we only set w
-        self.transform_translate_xyz_300.transform.rotation.w = 1
-
-        assert(list(point_cloud2.read_points(self.point_cloud_in)) ==
-               [(1.0, 2.0, 0.0), (10.0, 20.0, 30.0)])
+        self.point_cloud_in = create_cloud_xyz32(
+            Header(frame_id='test'),
+            self.points)
 
     def test_simple_transform(self):
-        # deepcopy is not required here because we have a str for now
-        old_data = copy.deepcopy(self.point_cloud_in.data)
-        point_cloud_transformed = tf2_sensor_msgs.do_transform_cloud(
-            self.point_cloud_in, self.transform_translate_xyz_300)
+        k = 300.0
+        transform_translate_xyz = TransformStamped()
+        transform_translate_xyz.transform.translation.x = k
+        transform_translate_xyz.transform.translation.y = k
+        transform_translate_xyz.transform.translation.z = k
+        # no rotation so we only set w
+        transform_translate_xyz.transform.rotation.w = 1.0
 
-        k = 300
-        expected_coordinates = [(1+k, 2+k, 0+k), (10+k, 20+k, 30+k)]
-        new_points = list(point_cloud2.read_points(point_cloud_transformed))
-        print('new_points are %s' % new_points)
-        assert(expected_coordinates == new_points)
+        # Copy current state of the original message for later check
+        old_data = copy.deepcopy(self.point_cloud_in.data)
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(
+            self.point_cloud_in, transform_translate_xyz)
+
+        # Expected output
+        expected_coordinates = self.points + k
+
+        new_points = read_points_numpy(point_cloud_transformed)
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
         # checking no modification in input cloud
-        assert(old_data == self.point_cloud_in.data)
+        self.assertEqual(old_data, self.point_cloud_in.data)
+
+    def test_simple_rotation_transform(self):
+        # Create a transform containing only a 180° rotation around the x-axis
+        transform_rot = TransformStamped()
+        transform_rot.transform.rotation.x = 1.0
+        transform_rot.transform.rotation.w = 0.0
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(self.point_cloud_in, transform_rot)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 0], [10, -20, -30]], dtype=np.float32)
+
+        # Compare to ground truth
+        new_points = read_points_numpy(point_cloud_transformed)
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
+    def test_rotation_and_translation_transform(self):
+        # Create a transform combining a 100m z translation with
+        # a 180° rotation around the x-axis
+        transform = TransformStamped()
+        transform.transform.translation.z = 100.0
+        transform.transform.rotation.x = 1.0
+        transform.transform.rotation.w = 0.0
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(
+            self.point_cloud_in, transform)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 100], [10, -20, 70]], dtype=np.float32)
+
+        # Compare to ground truth
+        new_points = read_points_numpy(point_cloud_transformed)
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
+    def test_direct_transform(self):
+        # Create a transform combining a 100m z translation with
+        # a 180° rotation around the x-axis
+        transform = Transform()
+        transform.translation.z = 100.0
+        transform.rotation.x = 1.0
+        transform.rotation.w = 0.0
+
+        # Transform points
+        points = transform_points(self.points, transform)
+
+        # Expected output
+        expected_coordinates = np.array([[1, -2, 100], [10, -20, 70]], dtype=np.float32)
+
+        # Compare to ground truth
+        self.assertTrue(np.allclose(expected_coordinates, points))
+
+    def test_tf2_ros_transform(self):
+        # Our target frame
+        target_frame_name = 'base_footprint'
+
+        # We need to create a local test tf buffer
+        tf_buffer = tf2_ros.Buffer()
+
+        # We need to fill this tf_buffer with a possible transform
+        # So we create a transform with a 100m z translation
+        transform = TransformStamped()
+        transform.header.frame_id = 'test'
+        transform.child_frame_id = target_frame_name
+        transform.transform.translation.z = 100.0
+        transform.transform.rotation.w = 1.0
+
+        # Set the new transform in our local tf_buffer
+        tf_buffer.set_transform_static(transform, 'unittest')
+
+        point_cloud_transformed = tf_buffer.transform(self.point_cloud_in, target_frame_name)
+
+        # Check if our pointloud is in the correct frame
+        self.assertEqual(point_cloud_transformed.header.frame_id, target_frame_name)
+
+        # Check if the points are viewed from the target frame (inverse of the transform above)
+        self.assertTrue(np.allclose(
+            read_points_numpy(point_cloud_transformed),
+            self.points -
+            np.array([
+                transform.transform.translation.x,
+                transform.transform.translation.y,
+                transform.transform.translation.z])))
+
+    def test_non_coordinate_fields(self):
+        # Test if point clouds with additional fields (non xyz) behave as desired
+
+        # Create points with an additional field in addition to the x, y, and z ones
+        points = np.array([[1, 2, 0, 9], [10, 20, 30, 9]], dtype=np.float32)
+
+        # Create the field layout
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='a', offset=12, datatype=PointField.FLOAT32, count=1)]
+
+        # Create cloud with four fields
+        point_cloud = create_cloud(
+            Header(frame_id='test'),
+            fields,
+            points)
+
+        # Create the test transformation
+        k = 300.0
+        transform_translate_xyz = TransformStamped()
+        transform_translate_xyz.transform.translation.x = k
+        transform_translate_xyz.transform.translation.y = k
+        transform_translate_xyz.transform.translation.z = k
+        # no rotation so we only set w
+        transform_translate_xyz.transform.rotation.w = 1.0
+
+        # Copy current state of the original message for later check
+        old_data = copy.deepcopy(point_cloud.data)
+
+        # Check if the created point cloud contains our points
+        self.assertTrue(np.allclose(
+            read_points_numpy(point_cloud),
+            points))
+
+        # Apply transform
+        point_cloud_transformed = do_transform_cloud(
+            point_cloud, transform_translate_xyz)
+
+        # Expected output, the last field should be unaltered
+        expected_coordinates = points + np.array([k, k, k, 0])
+
+        # Check if this is the case
+        new_points = read_points_numpy(point_cloud_transformed)
+        self.assertTrue(np.allclose(expected_coordinates, new_points))
+
+        # Checking for no modification in input cloud
+        self.assertEqual(old_data, point_cloud.data)
 
 
 if __name__ == '__main__':
-    import rosunit
-    rosunit.unitrun('test_tf2_sensor_msgs', 'test_point_cloud_conversion',
-                    PointCloudConversions)
+    unittest.main()
