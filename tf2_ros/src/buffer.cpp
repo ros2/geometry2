@@ -91,7 +91,9 @@ Buffer::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const tf2::TimePoint & lookup_time, const tf2::Duration timeout) const
 {
-  canTransform(target_frame, source_frame, lookup_time, timeout);
+  // Pass error string to suppress console spam
+  std::string error;
+  canTransform(target_frame, source_frame, lookup_time, timeout, &error);
   return lookupTransform(target_frame, source_frame, lookup_time);
 }
 
@@ -114,7 +116,9 @@ Buffer::lookupTransform(
   const std::string & source_frame, const tf2::TimePoint & source_time,
   const std::string & fixed_frame, const tf2::Duration timeout) const
 {
-  canTransform(target_frame, target_time, source_frame, source_time, fixed_frame, timeout);
+  // Pass error string to suppress console spam
+  std::string error;
+  canTransform(target_frame, target_time, source_frame, source_time, fixed_frame, timeout, &error);
   return lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame);
 }
 
