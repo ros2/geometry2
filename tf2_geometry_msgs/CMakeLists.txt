@@ -19,6 +19,7 @@ endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 find_package(geometry_msgs REQUIRED)
+find_package(orocos_kdl_vendor REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -29,8 +30,7 @@ ament_python_install_package(${PROJECT_NAME}
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
-  ${orocos_kdl_INCLUDE_DIRS})
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
   orocos-kdl
@@ -70,6 +70,7 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(
   "geometry_msgs"
+  "orocos_kdl_vendor"
   "orocos_kdl"
   "tf2"
   "tf2_ros")
