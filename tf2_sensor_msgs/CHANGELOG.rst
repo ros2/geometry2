@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.26.1 (2022-06-24)
+-------------------
+* tf2_sensor_msgs find the right Python executable. (`#525 <https://github.com/ros2/geometry2/issues/525>`_)
+* Contributors: Jorge Perez
+
 0.26.0 (2022-04-29)
 -------------------
 * Add missing ament_cmake_pytest package needed because of newly-enabled test (`#520 <https://github.com/ros2/geometry2/issues/520>`_)
