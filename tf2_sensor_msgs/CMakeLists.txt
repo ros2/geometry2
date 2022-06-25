@@ -18,24 +18,27 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
-find_package(ament_cmake_auto REQUIRED)
-set(required_dependencies
-  "sensor_msgs"
-  "tf2"
-  "tf2_ros"
-)
-
-ament_auto_find_build_dependencies(REQUIRED ${required_dependencies})
-
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
-
-ament_export_dependencies(eigen3_cmake_module)
-ament_export_dependencies(Eigen3)
-ament_export_dependencies(tf2)
-ament_export_dependencies(tf2_ros)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+)
+target_link_libraries(${PROJECT_NAME} INTERFACE
+  ${geometry_msgs_TARGETS}
+  ${sensor_msgs_TARGETS}
+  Eigen3::Eigen
+  tf2::tf2
+  tf2_ros::tf2_ros
+)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -53,14 +56,27 @@ if(BUILD_TESTING)
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
   if(TARGET test_tf2_sensor_msgs_cpp)
     target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
-    ament_target_dependencies(test_tf2_sensor_msgs_cpp
-      "Eigen3"
-      "rclcpp"
-      "sensor_msgs"
-      "tf2"
-      "tf2_ros"
+    target_link_libraries(test_tf2_sensor_msgs_cpp
+      ${geometry_msgs_TARGETS}
+      ${sensor_msgs_TARGETS}
+      Eigen3::Eigen
+      rclcpp::rclcpp
+      tf2::tf2
+      tf2_ros::tf2_ros
     )
   endif()
 endif()
 
-ament_auto_package()
+install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
+install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
+
+ament_export_targets(export_${PROJECT_NAME})
+ament_export_dependencies(
+  "Eigen3"
+  "geometry_msgs"
+  "sensor_msgs"
+  "tf2"
+  "tf2_ros"
+)
+
+ament_package()

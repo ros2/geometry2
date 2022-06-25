@@ -11,7 +11,7 @@
   <author>Vincent Rabaud</author>
   <author email="vincent.rabaud@gmail.com">Vincent Rabaud</author>
 
-  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>
   <buildtool_depend>python_cmake_module</buildtool_depend>
 
