@@ -35,10 +35,16 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
   ${sensor_msgs_TARGETS}
-  Eigen3::Eigen
   tf2::tf2
   tf2_ros::tf2_ros
 )
+
+if(TARGET Eigen3::Eigen)
+  # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+  target_link_libraries(${PROJECT_NAME} INTERFACE Eigen3::Eigen)
+else()
+  target_include_directories(${PROJECT_NAME} INTERFACE ${Eigen3_INCLUDE_DIRS})
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
@@ -59,11 +65,16 @@ if(BUILD_TESTING)
     target_link_libraries(test_tf2_sensor_msgs_cpp
       ${geometry_msgs_TARGETS}
       ${sensor_msgs_TARGETS}
-      Eigen3::Eigen
       rclcpp::rclcpp
       tf2::tf2
       tf2_ros::tf2_ros
     )
+    if(TARGET Eigen3::Eigen)
+      # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
+      target_link_libraries(test_tf2_sensor_msgs_cpp Eigen3::Eigen)
+    else()
+      target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC ${Eigen3_INCLUDE_DIRS})
+    endif()
   endif()
 endif()
 
