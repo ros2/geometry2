@@ -1186,7 +1186,7 @@ void doTransform(
   doTransform(t_in.torque, t_out.torque, transform);
   // add additional torque created by translating the force
   Vector3 offset = {transform.transform.translation.x, transform.transform.translation.y,
-                     transform.transform.translation.z};
+                    transform.transform.translation.z};
   auto added_torque = offset.cross({t_out.force.x, t_out.force.y, t_out.force.z});
   t_out.torque.x += added_torque.getX();
   t_out.torque.y += added_torque.getY();
