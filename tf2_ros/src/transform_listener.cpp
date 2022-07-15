@@ -30,7 +30,6 @@
 /** \author Tully Foote */
 
 #include <memory>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <utility>
