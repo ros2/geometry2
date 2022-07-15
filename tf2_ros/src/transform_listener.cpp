@@ -47,8 +47,9 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
   // but specify its name in .arguments to override any __node passed on the command line.
   // avoiding sstream because it's behavior can be overridden by external libraries.
   // See this issue: https://github.com/ros2/geometry2/issues/540
-  char node_name[64];
-  sprintf(node_name, "transform_listener_impl_%lx", reinterpret_cast<size_t>(this));
+  const int temp_buf_size = 64;
+  char node_name[temp_buf_size];
+  snprintf(node_name, temp_buf_size, "transform_listener_impl_%lx", reinterpret_cast<size_t>(this));
   options.arguments({"--ros-args", "-r", "__node:=" + std::string(node_name)});
   options.start_parameter_event_publisher(false);
   options.start_parameter_services(false);
