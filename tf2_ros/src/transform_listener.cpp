@@ -43,12 +43,14 @@ namespace tf2_ros
 TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
 : buffer_(buffer)
 {
-  // create a unique name for the node
-  std::stringstream sstream;
-  sstream << "transform_listener_impl_" << std::hex << reinterpret_cast<size_t>(this);
   rclcpp::NodeOptions options;
-  // but specify its name in .arguments to override any __node passed on the command line
-  options.arguments({"--ros-args", "-r", "__node:=" + std::string(sstream.str())});
+  // create a unique name for the node
+  // but specify its name in .arguments to override any __node passed on the command line.
+  // avoiding sstream because it's behavior can be overridden by external libraries.
+  // See this issue: https://github.com/ros2/geometry2/issues/540
+  char node_name[42];
+  snprintf(node_name, 42, "transform_listener_impl_%lx", reinterpret_cast<size_t>(this));
+  options.arguments({"--ros-args", "-r", "__node:=" + std::string(node_name)});
   options.start_parameter_event_publisher(false);
   options.start_parameter_services(false);
   optional_default_node_ = rclcpp::Node::make_shared("_", options);
