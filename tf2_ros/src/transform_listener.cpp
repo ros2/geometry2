@@ -49,7 +49,10 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
   // avoiding sstream because it's behavior can be overridden by external libraries.
   // See this issue: https://github.com/ros2/geometry2/issues/540
   char node_name[42];
-  snprintf(node_name, sizeof(node_name), "transform_listener_impl_%lx", reinterpret_cast<size_t>(this));
+  snprintf(
+    node_name, sizeof(node_name), "transform_listener_impl_%lx",
+    reinterpret_cast<size_t>(this)
+  );
   options.arguments({"--ros-args", "-r", "__node:=" + std::string(node_name)});
   options.start_parameter_event_publisher(false);
   options.start_parameter_services(false);
