@@ -404,19 +404,37 @@ public:
       // Keep a lock on the messages
       std::unique_lock<std::mutex> unique_lock(messages_mutex_);
 
-      // If this message is about to push us past our queue size, erase the oldest message
+      // If this message is about to push us past our queue size, erase the 2nd oldest message.
+      // Note: The oldest message is not removed because that would preempt the waitForTransform check that is currently
+      //       being conducted for it.
       if (queue_size_ != 0 && messages_.size() + 1 > queue_size_) {
-        ++dropped_message_count_;
-        const MessageInfo & front = messages_.front();
-        TF2_ROS_MESSAGEFILTER_DEBUG(
-          "Removed oldest message because buffer is full, count now %d (frame_id=%s, stamp=%f)",
-          messages_.size(),
-          (mt::FrameId<M>::value(*front.event.getMessage())).c_str(),
-          mt::TimeStamp<M>::value(*front.event.getMessage()).seconds());
+        if (messages_.size() > 1) {
+          // Drop 2nd oldest message
+          auto second_oldest = std::next(messages_.begin());
 
-        messageDropped(front.event, filter_failure_reasons::QueueFull);
+          ++dropped_message_count_;
+          TF2_ROS_MESSAGEFILTER_DEBUG(
+            "Removed old message because buffer is full, count now %d (frame_id=%s, stamp=%f)",
+            messages_.size(),
+            (mt::FrameId<M>::value(*second_oldest->event.getMessage())).c_str(),
+            mt::TimeStamp<M>::value(*second_oldest->event.getMessage()).seconds());
 
-        messages_.pop_front();
+          messageDropped(second_oldest->event, filter_failure_reasons::QueueFull);
+
+          messages_.erase(second_oldest);
+        }
+        else {
+          // Drop this message because the queue size is only 1 and we don't want to preempt the message currently being
+          // waited on.
+
+          TF2_ROS_MESSAGEFILTER_DEBUG(
+            "Removed message because buffer is full, count now %d (frame_id=%s, stamp=%f)",
+            messages_.size(),
+            (mt::FrameId<M>::value(*evt.getMessage())).c_str(),
+            mt::TimeStamp<M>::value(*evt.getMessage()).seconds());
+
+          messageDropped(evt, filter_failure_reasons::QueueFull);
+        }
       }
 
       // Add the message to our list
