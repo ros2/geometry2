@@ -123,6 +123,12 @@ if(TARGET test_tf2_bullet)
     tf2::tf2)
 endif()
 
+ament_add_gtest(test_transform_listener test/test_transform_listener.cpp)
+if(TARGET test_transform_listener)
+  target_link_libraries(test_transform_listener
+    tf2_ros::tf2_ros)
+endif()
+
 # TODO(ahcorde): enable once python part of tf2_geometry_msgs is working
 # add_launch_test(test/test_buffer_client.launch.py)
 
