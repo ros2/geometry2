@@ -67,13 +67,64 @@ TransformListener::~TransformListener()
 }
 
 
+inline
+bool
+_make_authority_str(
+  const std::vector<rclcpp::TopicEndpointInfo> & endpoints,
+  const rmw_gid_t & pub_gid,
+  std::string & authority)
+{
+  for (const rclcpp::TopicEndpointInfo & pub : endpoints) {
+    // Compare gid to see if this is the right publisher
+    bool match = true;
+    for (decltype(RMW_GID_STORAGE_SIZE) i = 0; i < RMW_GID_STORAGE_SIZE; ++i) {
+      if (pub.endpoint_gid()[i] != pub_gid.data[i]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      authority = pub.node_namespace() + '/' + pub.node_name();
+      return true;
+    }
+  }
+  return false;
+}
+
+
+std::string
+TransformListener::make_authority_str(const rmw_gid_t & pub_gid, bool is_static)
+{
+  std::string authority = "Authority undetectable";
+  std::vector<rclcpp::TopicEndpointInfo> & endpoints = tf_publishers_;
+  if (is_static) {
+    endpoints = tf_static_publishers_;
+  }
+
+  if (!_make_authority_str(endpoints, pub_gid, authority)) {
+    // Update the cached endpoints
+    tf_publishers_ = node_graph_interface_->get_publishers_info_by_topic(
+      message_subscription_tf_->get_topic_name());
+    tf_static_publishers_ = node_graph_interface_->get_publishers_info_by_topic(
+      message_subscription_tf_static_->get_topic_name());
+
+    // Try making the authority string again
+    _make_authority_str(endpoints, pub_gid, authority);
+  }
+
+  return authority;
+}
+
+
 void TransformListener::subscription_callback(
   const tf2_msgs::msg::TFMessage::ConstSharedPtr msg,
+  const rclcpp::MessageInfo & msg_info,
   bool is_static)
 {
   const tf2_msgs::msg::TFMessage & msg_in = *msg;
-  // TODO(tfoote) find a way to get the authority
-  std::string authority = "Authority undetectable";
+  const rmw_gid_t & pub_gid = msg_info.get_rmw_message_info().publisher_gid;
+
+  std::string authority = make_authority_str(pub_gid, is_static);
   for (size_t i = 0u; i < msg_in.transforms.size(); i++) {
     try {
       buffer_.setTransform(msg_in.transforms[i], authority, is_static);
