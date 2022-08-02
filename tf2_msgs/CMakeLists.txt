@@ -12,8 +12,6 @@ endif()
 find_package(ament_cmake)
 find_package(rosidl_default_generators REQUIRED)
 find_package(builtin_interfaces REQUIRED)
-find_package(action_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -21,7 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TFMessage.msg"
   "srv/FrameGraph.srv"
   "action/LookupTransform.action"
-  DEPENDENCIES builtin_interfaces std_msgs geometry_msgs action_msgs
+  DEPENDENCIES builtin_interfaces geometry_msgs
   ADD_LINTER_TESTS
 )
 
