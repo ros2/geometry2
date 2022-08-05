@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.1 (2022-08-05)
+-------------------
+* Use orocos_kdl_vendor and orocos-kdl target (`#548 <https://github.com/ros2/geometry2/issues/548>`_)
+* Contributors: Scott K Logan
+
 0.25.0 (2022-04-05)
 -------------------
 * Make sure to find the right Python executable. (`#514 <https://github.com/ros2/geometry2/issues/514>`_)

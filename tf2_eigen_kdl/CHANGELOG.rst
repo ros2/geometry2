@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.1 (2022-08-05)
+-------------------
+* Use orocos_kdl_vendor and orocos-kdl target (`#548 <https://github.com/ros2/geometry2/issues/548>`_)
+* Contributors: Scott K Logan
+
 0.25.0 (2022-04-05)
 -------------------
 * Fix more instances of Eigen problems on RHEL. (`#515 <https://github.com/ros2/geometry2/issues/515>`_)
