@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* feat: export tf2 sensor msgs target (`#536 <https://github.com/ros2/geometry2/issues/536>`_)
+* Contributors: Daisuke Nishimatsu
+
 0.26.1 (2022-06-24)
 -------------------
 * tf2_sensor_msgs find the right Python executable. (`#525 <https://github.com/ros2/geometry2/issues/525>`_)
