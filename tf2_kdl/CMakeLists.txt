@@ -30,7 +30,9 @@ target_link_libraries(tf2_kdl INTERFACE
   tf2_ros::tf2_ros)
 target_include_directories(tf2_kdl INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+  "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+  ${orocos_kdl_INCLUDE_DIRS}
+)
 
 install(TARGETS tf2_kdl EXPORT export_tf2_kdl)
 
