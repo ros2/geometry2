@@ -67,7 +67,7 @@ public:
         rclcpp::QosPolicyKind::Reliability};
       return options;
     } ())
-  : TransformBroadcaster(
+    : TransformBroadcaster(
       node->get_node_parameters_interface(),
       node->get_node_topics_interface(),
       qos,
