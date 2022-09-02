@@ -72,7 +72,7 @@ public:
       node->get_node_topics_interface(),
       qos,
       options)
-  { }
+  {}
 
   /** \brief Node interfaces constructor */
   template<class AllocatorT = std::allocator<void>>

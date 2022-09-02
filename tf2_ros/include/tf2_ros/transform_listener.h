@@ -114,7 +114,7 @@ public:
       static_qos,
       options,
       static_options)
-  { }
+  {}
 
   /** \brief Node interface constructor */
   template<class AllocatorT = std::allocator<void>>
@@ -219,8 +219,10 @@ private:
   rclcpp::Executor::SharedPtr executor_ {nullptr};
 
   rclcpp::Node::SharedPtr optional_default_node_ {nullptr};
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_ {nullptr};
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_ {nullptr};
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr
+    message_subscription_tf_ {nullptr};
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr
+    message_subscription_tf_static_ {nullptr};
   tf2::BufferCore & buffer_;
   tf2::TimePoint last_update_;
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_ {nullptr};
