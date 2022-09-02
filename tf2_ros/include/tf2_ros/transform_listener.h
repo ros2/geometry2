@@ -120,10 +120,10 @@ public:
   template<class AllocatorT = std::allocator<void>>
   TransformListener(
     tf2::BufferCore & buffer,
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr & node_base,
-    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
-    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr & node_parameters,
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr & node_topics,
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
     bool spin_thread = true,
     const rclcpp::QoS & qos = DynamicListenerQoS(),
     const rclcpp::QoS & static_qos = StaticListenerQoS(),
@@ -151,10 +151,10 @@ public:
 private:
   template<class AllocatorT = std::allocator<void>>
   void init(
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr & node_base,
-    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr & node_logging,
-    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr & node_parameters,
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr & node_topics,
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
     bool spin_thread,
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,

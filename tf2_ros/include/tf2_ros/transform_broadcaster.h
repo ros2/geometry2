@@ -77,8 +77,8 @@ public:
   /** \brief Node interfaces constructor */
   template<class AllocatorT = std::allocator<void>>
   TransformBroadcaster(
-    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr & node_parameters,
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr & node_topics,
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
     const rclcpp::QoS & qos = DynamicBroadcasterQoS(),
     const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
       rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
