@@ -70,7 +70,6 @@ TransformListener::~TransformListener()
   }
 }
 
-
 void TransformListener::subscription_callback(
   const tf2_msgs::msg::TFMessage::ConstSharedPtr msg,
   bool is_static)

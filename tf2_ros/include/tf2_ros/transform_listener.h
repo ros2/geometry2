@@ -213,19 +213,18 @@ private:
   TF2_ROS_PUBLIC
   void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
 
-  // ros::CallbackQueue tf_message_callback_queue_;
   bool spin_thread_{false};
-  std::unique_ptr<std::thread> dedicated_listener_thread_;
+  std::unique_ptr<std::thread> dedicated_listener_thread_ {nullptr};
   rclcpp::CallbackGroup::SharedPtr callback_group_{nullptr};
-  rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
+  rclcpp::Executor::SharedPtr executor_ {nullptr};
 
-  rclcpp::Node::SharedPtr optional_default_node_ = nullptr;
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_;
-  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_;
+  rclcpp::Node::SharedPtr optional_default_node_ {nullptr};
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_ {nullptr};
+  rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr message_subscription_tf_static_ {nullptr};
   tf2::BufferCore & buffer_;
   tf2::TimePoint last_update_;
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_;
+  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_ {nullptr};
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_ {nullptr};
 };
 }  // namespace tf2_ros
 
