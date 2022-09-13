@@ -34,8 +34,10 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <thread>
 #include <utility>
+#include <vector>
 
 #include "tf2/buffer_core.h"
 #include "tf2/time.h"
@@ -118,12 +120,16 @@ private:
     spin_thread_ = spin_thread;
     node_base_interface_ = node->get_node_base_interface();
     node_logging_interface_ = node->get_node_logging_interface();
+    node_graph_interface_ = node->get_node_graph_interface();
 
-    using callback_t = std::function<void (tf2_msgs::msg::TFMessage::ConstSharedPtr)>;
+    using callback_t = std::function<void (tf2_msgs::msg::TFMessage::ConstSharedPtr,
+        const rclcpp::MessageInfo &)>;
     callback_t cb = std::bind(
-      &TransformListener::subscription_callback, this, std::placeholders::_1, false);
+      &TransformListener::subscription_callback, this,
+      std::placeholders::_1, std::placeholders::_2, false);
     callback_t static_cb = std::bind(
-      &TransformListener::subscription_callback, this, std::placeholders::_1, true);
+      &TransformListener::subscription_callback, this,
+      std::placeholders::_1, std::placeholders::_2, true);
 
     if (spin_thread_) {
       // Create new callback group for message_subscription of tf and tf_static
@@ -155,7 +161,13 @@ private:
   }
   /// Callback function for ros message subscriptoin
   TF2_ROS_PUBLIC
-  void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
+  void subscription_callback(
+    tf2_msgs::msg::TFMessage::ConstSharedPtr msg,
+    const rclcpp::MessageInfo & msg_info,
+    bool is_static);
+
+  std::string
+  make_authority_str(const rmw_gid_t & pub_gid, bool is_static);
 
   // ros::CallbackQueue tf_message_callback_queue_;
   bool spin_thread_{false};
@@ -170,6 +182,10 @@ private:
   tf2::TimePoint last_update_;
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_;
+  rclcpp::node_interfaces::NodeGraphInterface::SharedPtr node_graph_interface_;
+
+  std::vector<rclcpp::TopicEndpointInfo> tf_publishers_;
+  std::vector<rclcpp::TopicEndpointInfo> tf_static_publishers_;
 };
 }  // namespace tf2_ros
 
