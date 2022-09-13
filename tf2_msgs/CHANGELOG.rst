@@ -2,6 +2,11 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove action_msgs dependency (`#547 <https://github.com/ros2/geometry2/issues/547>`_)
+* Contributors: Jacob Perron
+
 0.26.2 (2022-08-15)
 -------------------
 

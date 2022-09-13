@@ -2,6 +2,9 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.26.2 (2022-08-15)
 -------------------
 * feat: export tf2 sensor msgs target (`#536 <https://github.com/ros2/geometry2/issues/536>`_)
