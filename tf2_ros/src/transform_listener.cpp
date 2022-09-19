@@ -53,7 +53,11 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
   options.start_parameter_services(false);
   optional_default_node_ = rclcpp::Node::make_shared("_", options);
   init(
-    optional_default_node_, spin_thread, DynamicListenerQoS(), StaticListenerQoS(),
+    optional_default_node_->get_node_base_interface(),
+    optional_default_node_->get_node_logging_interface(),
+    optional_default_node_->get_node_parameters_interface(),
+    optional_default_node_->get_node_topics_interface(),
+    spin_thread, DynamicListenerQoS(), StaticListenerQoS(),
     detail::get_default_transform_listener_sub_options(),
     detail::get_default_transform_listener_static_sub_options());
 }
@@ -65,7 +69,6 @@ TransformListener::~TransformListener()
     dedicated_listener_thread_->join();
   }
 }
-
 
 void TransformListener::subscription_callback(
   const tf2_msgs::msg::TFMessage::ConstSharedPtr msg,

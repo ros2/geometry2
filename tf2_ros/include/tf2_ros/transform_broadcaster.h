@@ -53,7 +53,7 @@ namespace tf2_ros
 class TransformBroadcaster
 {
 public:
-  /** \brief Node interface constructor */
+  /** \brief Node constructor */
   template<class NodeT, class AllocatorT = std::allocator<void>>
   TransformBroadcaster(
     NodeT && node,
@@ -67,9 +67,31 @@ public:
         rclcpp::QosPolicyKind::Reliability};
       return options;
     } ())
+    : TransformBroadcaster(
+      node->get_node_parameters_interface(),
+      node->get_node_topics_interface(),
+      qos,
+      options)
+  {}
+
+  /** \brief Node interfaces constructor */
+  template<class AllocatorT = std::allocator<void>>
+  TransformBroadcaster(
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+    const rclcpp::QoS & qos = DynamicBroadcasterQoS(),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
+      options.qos_overriding_options = rclcpp::QosOverridingOptions{
+        rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::Durability,
+        rclcpp::QosPolicyKind::History,
+        rclcpp::QosPolicyKind::Reliability};
+      return options;
+    } ())
   {
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
-      node, "/tf", qos, options);
+      node_parameters, node_topics, "/tf", qos, options);
   }
 
   /** \brief Send a TransformStamped message
