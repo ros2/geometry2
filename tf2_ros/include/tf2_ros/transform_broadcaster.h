@@ -38,6 +38,8 @@
 
 #include "tf2_ros/visibility_control.h"
 
+#include "rclcpp/node_interfaces/get_node_parameters_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_topics_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
@@ -68,8 +70,8 @@ public:
       return options;
     } ())
     : TransformBroadcaster(
-      node->get_node_parameters_interface(),
-      node->get_node_topics_interface(),
+      rclcpp::node_interfaces::get_node_parameters_interface(node),
+      rclcpp::node_interfaces::get_node_topics_interface(node),
       qos,
       options)
   {}
