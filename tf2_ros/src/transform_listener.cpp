@@ -50,7 +50,7 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread)
   // See this issue: https://github.com/ros2/geometry2/issues/540
   char node_name[42];
   snprintf(
-    node_name, sizeof(node_name), "transform_listener_impl_%lx",
+    node_name, sizeof(node_name), "transform_listener_impl_%zx",
     reinterpret_cast<size_t>(this)
   );
   options.arguments({"--ros-args", "-r", "__node:=" + std::string(node_name)});
