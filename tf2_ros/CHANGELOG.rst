@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.28.0 (2022-11-02)
+-------------------
 * Switching from sstream to c string formatting to fix ros arg issue (`#557 <https://github.com/ros2/geometry2/issues/557>`_)
 * allow construction of tf broadcaster from node object (not a pointer) (`#555 <https://github.com/ros2/geometry2/issues/555>`_)
 * Allow to construct `TransformBroadcaster` and `TransformListener` from node interfaces (`#552 <https://github.com/ros2/geometry2/issues/552>`_)
