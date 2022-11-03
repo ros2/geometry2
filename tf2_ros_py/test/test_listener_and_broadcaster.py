@@ -28,7 +28,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import unittest
+import pytest
 import rclpy
 
 from geometry_msgs.msg import TransformStamped
@@ -56,9 +56,9 @@ def build_transform(target_frame, source_frame, stamp):
     return transform
 
 
-class TestBroadcasterAndListener(unittest.TestCase):
+class TestBroadcasterAndListener:
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         rclpy.init()
 
         cls.buffer = Buffer()
@@ -72,11 +72,11 @@ class TestBroadcasterAndListener(unittest.TestCase):
         cls.executor.add_node(cls.node)
 
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         cls.node.destroy_node()
         rclpy.shutdown()
 
-    def setUp(self):
+    def setup_method(self, method):
         self.buffer = Buffer()
         self.listener.buffer = self.buffer
 
@@ -109,7 +109,7 @@ class TestBroadcasterAndListener(unittest.TestCase):
         listened_transform = self.buffer.lookup_transform(
             target_frame='foo', source_frame='bar', time=time_stamp)
 
-        self.assertTrue(broadcasted_transform, listened_transform)
+        assert broadcasted_transform == listened_transform
 
         # Execute a coroutine
         listened_transform_async = None
@@ -122,7 +122,7 @@ class TestBroadcasterAndListener(unittest.TestCase):
             coro.close()
             listened_transform_async = e.value
 
-        self.assertTrue(broadcasted_transform, listened_transform_async)
+        assert broadcasted_transform == listened_transform_async
 
     def test_extrapolation_exception(self):
         self.broadcast_transform(
@@ -133,21 +133,19 @@ class TestBroadcasterAndListener(unittest.TestCase):
             target_frame='foo', source_frame='bar',
             time_stamp=rclpy.time.Time(seconds=0.2, nanoseconds=0).to_msg())
 
-        with self.assertRaises(ExtrapolationException) as e:
+        with pytest.raises(ExtrapolationException) as excinfo:
             self.buffer.lookup_transform(
                 target_frame='foo', source_frame='bar',
                 time=rclpy.time.Time(seconds=0.1, nanoseconds=0).to_msg())
 
-        self.assertTrue(
-            'Lookup would require extrapolation into the past' in str(e.exception))
+        assert 'Lookup would require extrapolation into the past' in str(excinfo.value)
 
-        with self.assertRaises(ExtrapolationException) as e:
+        with pytest.raises(ExtrapolationException) as excinfo:
             self.buffer.lookup_transform(
                 target_frame='foo', source_frame='bar',
                 time=rclpy.time.Time(seconds=0.4, nanoseconds=0).to_msg())
 
-        self.assertTrue(
-            'Lookup would require extrapolation into the future' in str(e.exception))
+        assert 'Lookup would require extrapolation into the future' in str(excinfo.value)
 
     def test_static_broadcaster_and_listener(self):
         broadcasted_transform = self.broadcast_static_transform(
@@ -158,8 +156,13 @@ class TestBroadcasterAndListener(unittest.TestCase):
             target_frame='foo', source_frame='bar',
             time=rclpy.time.Time(seconds=1.5, nanoseconds=0).to_msg())
 
-        self.assertTrue(broadcasted_transform, listened_transform)
+        assert broadcasted_transform.header.stamp.sec == 1
+        assert broadcasted_transform.header.stamp.nanosec == 100000000
 
+        assert listened_transform.header.stamp.sec == 1
+        assert listened_transform.header.stamp.nanosec == 500000000
 
-if __name__ == '__main__':
-    unittest.main()
+        assert broadcasted_transform.header.frame_id == listened_transform.header.frame_id
+        assert broadcasted_transform.child_frame_id == listened_transform.child_frame_id
+        assert broadcasted_transform.transform.translation == listened_transform.transform.translation
+        assert broadcasted_transform.transform.rotation == listened_transform.transform.rotation
