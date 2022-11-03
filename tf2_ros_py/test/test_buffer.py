@@ -55,15 +55,15 @@ class TestBuffer:
         rclpy_time = clock.now()
         transform = self.build_transform('foo', 'bar', rclpy_time)
 
-        assert buffer.set_transform(transform, 'unittest') == None
-        assert buffer.can_transform('foo', 'bar', rclpy_time) ==  True
+        assert buffer.set_transform(transform, 'unittest') is None
+        assert buffer.can_transform('foo', 'bar', rclpy_time)
 
         output = buffer.lookup_transform('foo', 'bar', rclpy_time)
 
         assert transform.child_frame_id == output.child_frame_id
         assert transform.transform.translation.x == output.transform.translation.x
-        assert transform.transform.translation.y ==  output.transform.translation.y
-        assert transform.transform.translation.z ==  output.transform.translation.z
+        assert transform.transform.translation.y == output.transform.translation.y
+        assert transform.transform.translation.z == output.transform.translation.z
 
     def test_await_transform_immediately_available(self):
         # wait for a transform that is already available to test short-cut code
@@ -139,10 +139,10 @@ class TestBuffer:
 
         assert buffer.set_transform(transform, 'unittest') is None
 
-        assert buffer.can_transform('foo', 'bar', rclpy_time) == True
+        assert buffer.can_transform('foo', 'bar', rclpy_time)
 
         output = buffer.lookup_transform('foo', 'bar', rclpy_time)
         assert transform.child_frame_id == output.child_frame_id
         assert transform.transform.translation.x == output.transform.translation.x
-        assert transform.transform.translation.y ==  output.transform.translation.y
-        assert transform.transform.translation.z ==  output.transform.translation.z
+        assert transform.transform.translation.y == output.transform.translation.y
+        assert transform.transform.translation.z == output.transform.translation.z
