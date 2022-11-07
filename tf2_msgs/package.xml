@@ -6,10 +6,13 @@
   <description>
     tf2_msgs
   </description>
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
   <url type="website">http://www.ros.org/wiki/tf2_msgs</url>
+
   <author>Eitan Marder-Eppstein</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
