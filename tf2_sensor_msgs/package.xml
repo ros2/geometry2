@@ -4,10 +4,13 @@
   <description>
     Small lib to transform sensor_msgs with tf. Most notably, PointCloud2
   </description>
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
   <url type="website">http://www.ros.org/wiki/tf2_ros</url>
+
   <author>Vincent Rabaud</author>
   <author email="vincent.rabaud@gmail.com">Vincent Rabaud</author>
 

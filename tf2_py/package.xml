@@ -5,10 +5,12 @@
   <version>0.28.0</version>
   <description>The tf2_py package</description>
 
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/tf2_py</url>
+
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

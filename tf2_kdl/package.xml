@@ -4,10 +4,13 @@
   <description>
     KDL binding for tf2
   </description>
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/tf2</url>
+
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>
 

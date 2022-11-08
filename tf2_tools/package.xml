@@ -6,12 +6,15 @@
   <description>
     tf2_tools
   </description>
-  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
   <license>BSD</license>
   <url type="website">http://www.ros.org/wiki/tf2_tools</url>
-  <author>Wim Meeussen</author>
+
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
+  <author>Wim Meeussen</author>
 
   <exec_depend>graphviz</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
