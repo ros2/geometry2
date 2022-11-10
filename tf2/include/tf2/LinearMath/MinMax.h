@@ -17,7 +17,7 @@ subject to the following restrictions:
 #ifndef GEN_MINMAX_H
 #define GEN_MINMAX_H
 
-#include <tf2/LinearMath/Scalar.h>
+#include "Scalar.h"
 
 template <class T>
 TF2SIMD_FORCE_INLINE const T& tf2Min(const T& a, const T& b) 
