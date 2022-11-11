@@ -28,7 +28,6 @@
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.point_cloud2 import read_points, create_cloud
 import PyKDL
-import rospy
 import tf2_ros
 
 def to_msg_msg(msg):
@@ -52,9 +51,13 @@ def transform_to_kdl(t):
 def do_transform_cloud(cloud, transform):
     t_kdl = transform_to_kdl(transform)
     points_out = []
-    for p_in in read_points(cloud):
+
+    points = read_points_list(cloud)
+
+    for idp,p_in in enumerate(read_points(cloud)):
         p_out = t_kdl * PyKDL.Vector(p_in[0], p_in[1], p_in[2])
-        points_out.append(p_out)
+        points_out.append(list(p_out) + list(points[idp][3:]))
+
     res = create_cloud(transform.header, cloud.fields, points_out)
     return res
 tf2_ros.TransformRegistration().add(PointCloud2, do_transform_cloud)

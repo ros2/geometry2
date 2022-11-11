@@ -24,6 +24,7 @@ find_package(Eigen3 REQUIRED)
 
 ament_export_dependencies(eigen3_cmake_module)
 ament_export_dependencies(Eigen3)
+ament_python_install_package(${PROJECT_NAME})
 
 # TODO enable tests
 #if(BUILD_TESTING)
