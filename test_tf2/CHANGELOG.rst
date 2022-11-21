@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.29.0 (2022-11-21)
+-------------------
+* Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)
+* Contributors: Audrow Nash
+
 0.28.0 (2022-11-02)
 -------------------
 

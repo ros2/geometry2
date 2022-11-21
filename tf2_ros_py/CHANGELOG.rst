@@ -2,6 +2,12 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.29.0 (2022-11-21)
+-------------------
+* Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)
+* Use pytest rather than unittest to enable repeat (`#558 <https://github.com/ros2/geometry2/issues/558>`_)
+* Contributors: Audrow Nash, Michael Carroll
+
 0.28.0 (2022-11-02)
 -------------------
 
