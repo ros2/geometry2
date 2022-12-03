@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.17.5 (2022-12-02)
+-------------------
+
 0.17.4 (2022-06-30)
 -------------------
 * [tf2_ros/tf2_monitor] Calculate hz for each tf (`#526 <https://github.com/ros2/geometry2/issues/526>`_)

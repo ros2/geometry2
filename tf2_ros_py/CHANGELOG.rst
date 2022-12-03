@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.17.5 (2022-12-02)
+-------------------
+* Drop PyKDL dependency in tf2_geometry_msgs (`#533 <https://github.com/ros2/geometry2/issues/533>`_)
+* Contributors: Charles Dawson, Florian Vahl
+
 0.17.4 (2022-06-30)
 -------------------
 
