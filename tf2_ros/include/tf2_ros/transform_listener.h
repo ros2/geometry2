@@ -61,6 +61,7 @@ get_default_transform_listener_sub_options()
     rclcpp::QosPolicyKind::Durability,
     rclcpp::QosPolicyKind::History,
     rclcpp::QosPolicyKind::Reliability};
+  options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
   return options;
 }
 
@@ -73,6 +74,7 @@ get_default_transform_listener_static_sub_options()
     rclcpp::QosPolicyKind::Depth,
     rclcpp::QosPolicyKind::History,
     rclcpp::QosPolicyKind::Reliability};
+  options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
   return options;
 }
 }  // namespace detail
