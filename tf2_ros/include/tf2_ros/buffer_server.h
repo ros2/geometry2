@@ -78,7 +78,7 @@ public:
    */
   template<typename NodePtr>
   BufferServer(
-    const tf2::BufferCoreInterface & buffer,
+    const tf2_ros::Buffer & buffer,
     NodePtr node,
     const std::string & ns,
     tf2::Duration check_period = tf2::durationFromSec(0.01))
@@ -137,15 +137,12 @@ private:
   bool canTransform(GoalHandle gh);
 
   TF2_ROS_PUBLIC
-  bool canTransform(const std::shared_ptr<LookupTransformService::Request> request);
-
-  TF2_ROS_PUBLIC
   geometry_msgs::msg::TransformStamped lookupTransform(GoalHandle gh);
 
   TF2_ROS_PUBLIC
   geometry_msgs::msg::TransformStamped lookupTransform(const std::shared_ptr<LookupTransformService::Request> request);
 
-  const tf2::BufferCoreInterface & buffer_;
+  const tf2_ros::Buffer & buffer_;
   rclcpp::Logger logger_;
   rclcpp_action::Server<LookupTransformAction>::SharedPtr server_;
   rclcpp::Service<LookupTransformService>::SharedPtr service_server_;

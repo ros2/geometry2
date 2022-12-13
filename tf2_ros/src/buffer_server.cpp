@@ -146,7 +146,6 @@ rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
 void BufferServer::serviceCB(const std::shared_ptr<LookupTransformService::Request> request,
           std::shared_ptr<LookupTransformService::Response> response)
 {
-    // TODO: implement retrying + timeout
     try {
       response->transform = lookupTransform(request);
     } catch (const tf2::ConnectivityException & ex) {
@@ -244,21 +243,6 @@ bool BufferServer::canTransform(GoalHandle gh)
     goal->source_frame, source_time_point, goal->fixed_frame, nullptr);
 }
 
-bool BufferServer::canTransform(const std::shared_ptr<LookupTransformService::Request> request)
-{
-  tf2::TimePoint source_time_point = tf2_ros::fromMsg(request->source_time);
-
-  // check whether we need to used the advanced or simple api
-  if (!request->advanced) {
-    return buffer_.canTransform(request->target_frame, request->source_frame, source_time_point, nullptr);
-  }
-
-  tf2::TimePoint target_time_point = tf2_ros::fromMsg(request->target_time);
-  return buffer_.canTransform(
-    request->target_frame, target_time_point,
-    request->source_frame, source_time_point, request->fixed_frame, nullptr);
-}
-
 geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(GoalHandle gh)
 {
   const auto goal = gh->get_goal();
@@ -281,12 +265,13 @@ geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(const std::sh
   if (!request->advanced) {
     return buffer_.lookupTransform(
       request->target_frame, request->source_frame,
-      tf2_ros::fromMsg(request->source_time));
+      tf2_ros::fromMsg(request->source_time), tf2_ros::fromMsg(request->timeout));
   }
 
   return buffer_.lookupTransform(
     request->target_frame, tf2_ros::fromMsg(request->target_time),
-    request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
+    request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame,
+    tf2_ros::fromMsg(request->timeout));
 }
 
 }  // namespace tf2_ros
