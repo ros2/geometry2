@@ -65,8 +65,8 @@ TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_rclcpp_node)
   // Construct static tf broadcaster from node interfaces
   {
     tf2_ros::StaticTransformBroadcaster tfb(
-        node->get_node_parameters_interface(),
-        node->get_node_topics_interface());
+      node->get_node_parameters_interface(),
+      node->get_node_topics_interface());
   }
 }
 
@@ -85,8 +85,8 @@ TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_custom_rclcpp_
   // Construct static tf broadcaster from node interfaces
   {
     tf2_ros::StaticTransformBroadcaster tfb(
-        node->get_node_parameters_interface(),
-        node->get_node_topics_interface());
+      node->get_node_parameters_interface(),
+      node->get_node_topics_interface());
   }
 }
 
