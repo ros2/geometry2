@@ -67,19 +67,25 @@ void TransformListener::initThread(
 {
   auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
 
+  keep_running_ = true;
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
   // I (wjwwood) chose to use the lamda rather than the static cast solution.
   auto run_func =
-    [executor](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
+    [executor,
+      & keep_running =
+      keep_running_](rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface) {
       executor->add_node(node_base_interface);
-      executor->spin();
+      while (keep_running.load()) {
+        executor->spin_once();
+      }
       executor->remove_node(node_base_interface);
     };
   dedicated_listener_thread_ = thread_ptr(
     new std::thread(run_func, node_base_interface),
-    [executor](std::thread * t) {
+    [executor, & keep_running = keep_running_](std::thread * t) {
+      keep_running.store(false);
       executor->cancel();
       t->join();
       delete t;
