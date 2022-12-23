@@ -61,13 +61,32 @@ TEST(tf2_test_transform_broadcaster, transform_broadcaster_rclcpp_node)
   {
     tf2_ros::TransformBroadcaster tfb(*node);
   }
+  // Construct tf broadcaster from node interfaces
+  {
+    tf2_ros::TransformBroadcaster tfb(
+      node->get_node_parameters_interface(),
+      node->get_node_topics_interface());
+  }
 }
 
 TEST(tf2_test_transform_broadcaster, transform_broadcaster_custom_rclcpp_node)
 {
   auto node = std::make_shared<NodeWrapper>("tf2_ros_message_filter");
 
-  tf2_ros::TransformBroadcaster tfb(node);
+  // Construct tf broadcaster from node pointer
+  {
+    tf2_ros::TransformBroadcaster tfb(node);
+  }
+  // Construct tf broadcaster from node object
+  {
+    tf2_ros::TransformBroadcaster tfb(*node);
+  }
+  // Construct tf broadcaster from node interfaces
+  {
+    tf2_ros::TransformBroadcaster tfb(
+      node->get_node_parameters_interface(),
+      node->get_node_topics_interface());
+  }
 }
 
 TEST(tf2_test_transform_broadcaster, transform_broadcaster_as_member)
