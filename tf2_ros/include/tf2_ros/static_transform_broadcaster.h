@@ -38,6 +38,8 @@
 
 #include "tf2_ros/visibility_control.h"
 
+#include "rclcpp/node_interfaces/get_node_parameters_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_topics_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/msg/tf_message.hpp"
@@ -53,7 +55,7 @@ namespace tf2_ros
 class StaticTransformBroadcaster
 {
 public:
-  /** \brief Node interface constructor */
+  /** \brief Node constructor */
   template<class NodeT, class AllocatorT = std::allocator<void>>
   StaticTransformBroadcaster(
     NodeT && node,
@@ -66,9 +68,30 @@ public:
         rclcpp::QosPolicyKind::Reliability};
       return options;
     } ())
+    : StaticTransformBroadcaster(
+      rclcpp::node_interfaces::get_node_parameters_interface(node),
+      rclcpp::node_interfaces::get_node_topics_interface(node),
+      qos,
+      options)
+  {}
+
+  /** \brief Node interfaces constructor */
+  template<class AllocatorT = std::allocator<void>>
+  StaticTransformBroadcaster(
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
+      options.qos_overriding_options = rclcpp::QosOverridingOptions{
+        rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::History,
+        rclcpp::QosPolicyKind::Reliability};
+      return options;
+    } ())
   {
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
-      node, "/tf_static", qos, options);
+      node_parameters, node_topics, "/tf_static", qos, options);
   }
 
   /** \brief Send a TransformStamped message
