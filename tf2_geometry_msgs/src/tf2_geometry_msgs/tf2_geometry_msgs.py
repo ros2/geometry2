@@ -31,7 +31,7 @@
 
 from typing import Iterable, Optional, Tuple
 
-from geometry_msgs.msg import (PointStamped, Point, PolygonStamped, Pose,
+from geometry_msgs.msg import (PointStamped, Point, Point32, PolygonStamped, Pose,
                                PoseStamped, PoseWithCovarianceStamped,
                                TransformStamped, Vector3Stamped)
 import numpy as np
@@ -423,12 +423,14 @@ def do_transform_polygon_stamped(
     """
     res = PolygonStamped()
     for point in polygon.polygon.points:
-        # convert from Point32 to Point
-        point = Point(x=point.x, y=point.y, z=point.z)
-        # convert from Point to PointStamped
-        point = PointStamped(point=point)
+        # convert from Point32 to PointStamped
+        point = PointStamped(point=Point(x=point.x, y=point.y, z=point.z))
         transformed_point = do_transform_point(point, transform)
-        res.polygon.points.append(transformed_point.point)
+        # convert back from PointStamped to Point32
+        transformed_point = Point32(x=transformed_point.point.x,
+                                    y=transformed_point.point.y,
+                                    z=transformed_point.point.z)
+        res.polygon.points.append(transformed_point)
     res.header = transform.header
     return res
 
