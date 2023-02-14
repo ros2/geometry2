@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update geometry2 to C++17 (`#584 <https://github.com/ros2/geometry2/issues/584>`_)
+* Contributors: Chris Lalancette
+
 0.29.0 (2022-11-21)
 -------------------
 * Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)

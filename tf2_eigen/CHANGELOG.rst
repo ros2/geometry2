@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update the demos to C++17. (`#578 <https://github.com/ros2/geometry2/issues/578>`_)
+* Contributors: Chris Lalancette
+
 0.29.0 (2022-11-21)
 -------------------
 * Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)
