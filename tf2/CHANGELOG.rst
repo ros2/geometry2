@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.30.0 (2023-02-14)
+-------------------
 * Update geometry2 to C++17 (`#584 <https://github.com/ros2/geometry2/issues/584>`_)
 * Contributors: Chris Lalancette
 
