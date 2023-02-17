@@ -351,6 +351,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
   CompactFrameID top_parent = frame;
   uint32_t depth = 0;
 
+  TimeCacheError error_code = TimeCacheError::TIME_CACHE_NO_ERROR;
   std::string extrapolation_error_string;
   bool extrapolation_might_have_occurred = false;
 
@@ -366,7 +367,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
-    CompactFrameID parent = f.gather(cache, time, &extrapolation_error_string);
+    CompactFrameID parent = f.gather(cache, time, &error_code, &extrapolation_error_string);
     if (parent == 0) {
       // Just break out here... there may still be a path from source -> target
       top_parent = frame;
@@ -412,7 +413,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
-    CompactFrameID parent = f.gather(cache, time, error_string);
+    CompactFrameID parent = f.gather(cache, time, &error_code, error_string);
     if (parent == 0) {
       if (error_string) {
         std::stringstream ss;
@@ -421,7 +422,16 @@ tf2::TF2Error BufferCore::walkToTopParent(
         *error_string = ss.str();
       }
 
-      return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
+      switch (error_code) {
+        case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
+          return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
+        case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
+          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;        
+        case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
+          return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
+        default: // Shall never fall down here
+          return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
+      }
     }
 
     // Early out... source frame is a direct parent of the target frame
@@ -457,7 +467,16 @@ tf2::TF2Error BufferCore::walkToTopParent(
           lookupFrameString(source_id) << "] to frame [" << lookupFrameString(target_id) << "]";
         *error_string = ss.str();
       }
-      return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
+      switch (error_code) {
+        case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
+          return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
+        case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
+          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;        
+        case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
+          return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
+        default: // Shall never fall down here
+          return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
+      }
     }
     createConnectivityErrorString(source_id, target_id, error_string);
     return tf2::TF2Error::TF2_CONNECTIVITY_ERROR;
@@ -504,9 +523,9 @@ struct TransformAccum
   {
   }
 
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, std::string * error_string)
+  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, TimeCacheError * error_code, std::string * error_string)
   {
-    if (!cache->getData(time, st, error_string)) {
+    if (!cache->getData(time, st, error_code, error_string)) {
       return 0;
     }
 
@@ -661,6 +680,12 @@ void BufferCore::lookupTransformImpl(
     switch (retval) {
       case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
         throw ConnectivityException(error_string);
+      case tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR:
+        throw BackwardExtrapolationException(error_string);
+      case tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR:
+        throw ForwardExtrapolationException(error_string);
+      case tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR:
+        throw NoDataForExtrapolationException(error_string);
       case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
         throw ExtrapolationException(error_string);
       case tf2::TF2Error::TF2_LOOKUP_ERROR:
@@ -698,9 +723,9 @@ void BufferCore::lookupTransformImpl(
 
 struct CanTransformAccum
 {
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, std::string * error_string)
+  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, TimeCacheError * error_code, std::string * error_string)
   {
-    return cache->getParent(time, error_string);
+    return cache->getParent(time, error_code, error_string);
   }
 
   void accum(bool source)
@@ -1455,6 +1480,12 @@ void BufferCore::_chainAsVector(
     switch (retval) {
       case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
         throw ConnectivityException(error_string);
+      case tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR:
+        throw BackwardExtrapolationException(error_string);
+      case tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR:
+        throw ForwardExtrapolationException(error_string);
+      case tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR:
+        throw NoDataForExtrapolationException(error_string);
       case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
         throw ExtrapolationException(error_string);
       case tf2::TF2Error::TF2_LOOKUP_ERROR:
@@ -1475,6 +1506,12 @@ void BufferCore::_chainAsVector(
       switch (retval) {
         case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
           throw ConnectivityException(error_string);
+        case tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR:
+          throw BackwardExtrapolationException(error_string);
+        case tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR:
+          throw ForwardExtrapolationException(error_string);
+        case tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR:
+          throw NoDataForExtrapolationException(error_string);
         case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
           throw ExtrapolationException(error_string);
         case tf2::TF2Error::TF2_LOOKUP_ERROR:

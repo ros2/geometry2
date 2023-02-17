@@ -66,6 +66,9 @@ enum class TF2Error : std::uint8_t
   TF2_INVALID_ARGUMENT_ERROR = 4,
   TF2_TIMEOUT_ERROR = 5,
   TF2_TRANSFORM_ERROR = 6,
+  TF2_BACKWARD_EXTRAPOLATION_ERROR = 7,
+  TF2_FORWARD_EXTRAPOLATION_ERROR = 8,
+  TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR = 9,
 
   NO_ERROR [[deprecated("Use TF2_NO_ERROR instead")]] = 0,
   LOOKUP_ERROR [[deprecated("Use TF2_LOOKUP_ERROR instead")]] = 1,
@@ -143,6 +146,45 @@ public:
   TF2_PUBLIC
   explicit ExtrapolationException(const std::string errorDescription)
   : tf2::TransformException(errorDescription)
+  {
+  }
+};
+
+/** \brief An exception class to notify that the requested value would have required extrapolation in the past.
+ *
+ */
+class BackwardExtrapolationException : public ExtrapolationException
+{
+public:
+  TF2_PUBLIC
+  explicit BackwardExtrapolationException(const std::string errorDescription)
+  : ExtrapolationException(errorDescription)
+  {
+  }
+};
+
+/** \brief An exception class to notify that the requested value would have required extrapolation in the future.
+ *
+ */
+class ForwardExtrapolationException : public ExtrapolationException
+{
+public:
+  TF2_PUBLIC
+  explicit ForwardExtrapolationException(const std::string errorDescription)
+  : ExtrapolationException(errorDescription)
+  {
+  }
+};
+
+/** \brief An exception class to notify that the requested value would have required extrapolation, but only zero or one data is available, so not enough for extrapolation.
+ *
+ */
+class NoDataForExtrapolationException : public ExtrapolationException
+{
+public:
+  TF2_PUBLIC
+  explicit NoDataForExtrapolationException(const std::string errorDescription)
+  : ExtrapolationException(errorDescription)
   {
   }
 };
