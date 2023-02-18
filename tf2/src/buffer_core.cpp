@@ -426,10 +426,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
         case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
           return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
         case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;        
+          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
         case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
           return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
-        default: // Shall never fall down here
+        default:  // Shall never fall down here
           return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
       }
     }
@@ -471,10 +471,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
         case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
           return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
         case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;        
+          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
         case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
           return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
-        default: // Shall never fall down here
+        default:  // Shall never fall down here
           return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
       }
     }
@@ -523,7 +523,8 @@ struct TransformAccum
   {
   }
 
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, TimeCacheError * error_code, std::string * error_string)
+  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
+    TimeCacheError * error_code, std::string * error_string)
   {
     if (!cache->getData(time, st, error_code, error_string)) {
       return 0;
@@ -723,7 +724,8 @@ void BufferCore::lookupTransformImpl(
 
 struct CanTransformAccum
 {
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time, TimeCacheError * error_code, std::string * error_string)
+  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
+    TimeCacheError * error_code, std::string * error_string)
   {
     return cache->getParent(time, error_code, error_string);
   }

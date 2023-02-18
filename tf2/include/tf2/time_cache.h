@@ -76,7 +76,8 @@ public:
 
   /** \brief Retrieve the parent at a specific time */
   TF2_PUBLIC
-  virtual CompactFrameID getParent(tf2::TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0) = 0;
+  virtual CompactFrameID getParent(
+    tf2::TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0) = 0;
 
   /**
    * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
@@ -131,7 +132,8 @@ public:
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual tf2::CompactFrameID getParent(tf2::TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0);
+  virtual tf2::CompactFrameID getParent(
+    tf2::TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
@@ -168,14 +170,17 @@ class StaticCache : public TimeCacheInterface
 public:
   /// Virtual methods
   TF2_PUBLIC
-  virtual bool getData(TimePoint time, TransformStorage & data_out, TimeCacheError * error_code = 0, std::string * error_str = 0);
+  virtual bool getData(
+    TimePoint time, TransformStorage & data_out,
+    TimeCacheError * error_code = 0, std::string * error_str = 0);
   // returns false if data unavailable (should be thrown as lookup exception
   TF2_PUBLIC
   virtual bool insertData(const TransformStorage & new_data);
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual CompactFrameID getParent(TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0);
+  virtual CompactFrameID getParent(
+    TimePoint time, TimeCacheError * error_code = 0, std::string * error_str = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 

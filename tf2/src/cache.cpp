@@ -67,7 +67,8 @@ namespace cache
 {
 // hoisting these into separate functions causes an ~8% speedup.
 // Removing calling them altogether adds another ~10%
-void createExtrapolationException1(TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+void createExtrapolationException1(
+  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR;
@@ -80,7 +81,8 @@ void createExtrapolationException1(TimePoint t0, TimePoint t1, TimeCacheError * 
   }
 }
 
-void createExtrapolationException2(TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+void createExtrapolationException2(
+  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR;
@@ -93,7 +95,8 @@ void createExtrapolationException2(TimePoint t0, TimePoint t1, TimeCacheError * 
   }
 }
 
-void createExtrapolationException3(TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+void createExtrapolationException3(
+  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR;
@@ -225,7 +228,8 @@ bool TimeCache::getData(
   return true;
 }
 
-CompactFrameID TimeCache::getParent(TimePoint time, TimeCacheError * error_code, std::string * error_str)
+CompactFrameID TimeCache::getParent(
+  TimePoint time, TimeCacheError * error_code, std::string * error_str)
 {
   TransformStorage * p_temp_1;
   TransformStorage * p_temp_2;
