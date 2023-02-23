@@ -68,7 +68,7 @@ namespace cache
 // hoisting these into separate functions causes an ~8% speedup.
 // Removing calling them altogether adds another ~10%
 void createExtrapolationException1(
-  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR;
@@ -82,7 +82,7 @@ void createExtrapolationException1(
 }
 
 void createExtrapolationException2(
-  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR;
@@ -96,7 +96,7 @@ void createExtrapolationException2(
 }
 
 void createExtrapolationException3(
-  TimePoint t0, TimePoint t1, TimeCacheError * error_code, std::string * error_str)
+  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR;
@@ -112,7 +112,7 @@ void createExtrapolationException3(
 
 uint8_t TimeCache::findClosest(
   TransformStorage * & one, TransformStorage * & two,
-  TimePoint target_time, TimeCacheError * error_code, std::string * error_str)
+  TimePoint target_time, std::string * error_str, TimeCacheError * error_code)
 {
   if (error_code) {
     *error_code = TimeCacheError::TIME_CACHE_NO_ERROR;
@@ -137,7 +137,7 @@ uint8_t TimeCache::findClosest(
       one = &ts;
       return 1;
     } else {
-      cache::createExtrapolationException1(target_time, ts.stamp_, error_code, error_str);
+      cache::createExtrapolationException1(target_time, ts.stamp_, error_str, error_code);
       return 0;
     }
   }
@@ -153,11 +153,11 @@ uint8_t TimeCache::findClosest(
     return 1;
   } else {   // Catch cases that would require extrapolation
     if (target_time > latest_time) {
-      cache::createExtrapolationException2(target_time, latest_time, error_code, error_str);
+      cache::createExtrapolationException2(target_time, latest_time, error_str, error_code);
       return 0;
     } else {
       if (target_time < earliest_time) {
-        cache::createExtrapolationException3(target_time, earliest_time, error_code, error_str);
+        cache::createExtrapolationException3(target_time, earliest_time, error_str, error_code);
         return 0;
       }
     }
@@ -205,13 +205,13 @@ void TimeCache::interpolate(
 
 bool TimeCache::getData(
   TimePoint time, TransformStorage & data_out,
-  TimeCacheError * error_code, std::string * error_str)
+  std::string * error_str, TimeCacheError * error_code)
 {
   // returns false if data not available
   TransformStorage * p_temp_1;
   TransformStorage * p_temp_2;
 
-  int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_code, error_str);
+  int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_str, error_code);
   if (num_nodes == 0) {
     return false;
   } else if (num_nodes == 1) {
@@ -229,12 +229,12 @@ bool TimeCache::getData(
 }
 
 CompactFrameID TimeCache::getParent(
-  TimePoint time, TimeCacheError * error_code, std::string * error_str)
+  TimePoint time, std::string * error_str, TimeCacheError * error_code)
 {
   TransformStorage * p_temp_1;
   TransformStorage * p_temp_2;
 
-  int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_code, error_str);
+  int num_nodes = findClosest(p_temp_1, p_temp_2, time, error_str, error_code);
   if (num_nodes == 0) {
     return 0;
   }

@@ -367,7 +367,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
-    CompactFrameID parent = f.gather(cache, time, &error_code, &extrapolation_error_string);
+    CompactFrameID parent = f.gather(cache, time, &extrapolation_error_string, &error_code);
     if (parent == 0) {
       // Just break out here... there may still be a path from source -> target
       top_parent = frame;
@@ -413,7 +413,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
-    CompactFrameID parent = f.gather(cache, time, &error_code, error_string);
+    CompactFrameID parent = f.gather(cache, time, error_string, &error_code);
     if (parent == 0) {
       if (error_string) {
         std::stringstream ss;
@@ -524,9 +524,9 @@ struct TransformAccum
   }
 
   CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
-    TimeCacheError * error_code, std::string * error_string)
+    std::string * error_string, TimeCacheError * error_code)
   {
-    if (!cache->getData(time, st, error_code, error_string)) {
+    if (!cache->getData(time, st, error_string, error_code)) {
       return 0;
     }
 
@@ -725,9 +725,9 @@ void BufferCore::lookupTransformImpl(
 struct CanTransformAccum
 {
   CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
-    TimeCacheError * error_code, std::string * error_string)
+    std::string * error_string, TimeCacheError * error_code)
   {
-    return cache->getParent(time, error_code, error_string);
+    return cache->getParent(time, error_string, error_code);
   }
 
   void accum(bool source)
