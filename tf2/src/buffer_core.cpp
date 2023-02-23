@@ -523,7 +523,8 @@ struct TransformAccum
   {
   }
 
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
+  CompactFrameID gather(
+    TimeCacheInterfacePtr cache, TimePoint time,
     std::string * error_string, TimeCacheError * error_code)
   {
     if (!cache->getData(time, st, error_string, error_code)) {
@@ -724,7 +725,8 @@ void BufferCore::lookupTransformImpl(
 
 struct CanTransformAccum
 {
-  CompactFrameID gather(TimeCacheInterfacePtr cache, TimePoint time,
+  CompactFrameID gather(
+    TimeCacheInterfacePtr cache, TimePoint time,
     std::string * error_string, TimeCacheError * error_code)
   {
     return cache->getParent(time, error_string, error_code);
