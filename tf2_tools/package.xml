@@ -21,6 +21,7 @@
   <exec_depend>rclpy</exec_depend>
   <exec_depend>tf2_msgs</exec_depend>
   <exec_depend>tf2_py</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
 
   <export>
