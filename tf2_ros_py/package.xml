@@ -15,12 +15,14 @@
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>
 
+  <exec_depend>builtin_interfaces</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>tf2_msgs</exec_depend>
   <exec_depend>tf2_py</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
 
   <test_depend>python3-pytest</test_depend>
   <test_depend>sensor_msgs</test_depend>
