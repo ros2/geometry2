@@ -15,11 +15,13 @@
   <author email="sloretz@openrobotics.org">Shane Loretz</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
+  <!-- Required for automatic document generation using sphinx-autodoc -->
+  <doc_depend>tf2_ros</doc_depend>
+
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
