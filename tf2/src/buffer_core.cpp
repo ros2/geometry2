@@ -351,7 +351,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
   CompactFrameID top_parent = frame;
   uint32_t depth = 0;
 
-  TimeCacheError error_code = TimeCacheError::TIME_CACHE_NO_ERROR;
+  TF2Error error_code = TF2Error::TF2_NO_ERROR;
   std::string extrapolation_error_string;
   bool extrapolation_might_have_occurred = false;
 
@@ -422,16 +422,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
         *error_string = ss.str();
       }
 
-      switch (error_code) {
-        case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
-        case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
-        case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
-          return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
-        default:  // Shall never fall down here
-          return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
-      }
+      return error_code;
     }
 
     // Early out... source frame is a direct parent of the target frame
@@ -467,16 +458,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
           lookupFrameString(source_id) << "] to frame [" << lookupFrameString(target_id) << "]";
         *error_string = ss.str();
       }
-      switch (error_code) {
-        case TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
-        case TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR:
-          return tf2::TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
-        case TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR:
-          return tf2::TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
-        default:  // Shall never fall down here
-          return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
-      }
+      return error_code;
     }
     createConnectivityErrorString(source_id, target_id, error_string);
     return tf2::TF2Error::TF2_CONNECTIVITY_ERROR;
@@ -525,7 +507,7 @@ struct TransformAccum
 
   CompactFrameID gather(
     TimeCacheInterfacePtr cache, TimePoint time,
-    std::string * error_string, TimeCacheError * error_code)
+    std::string * error_string, TF2Error * error_code)
   {
     if (!cache->getData(time, st, error_string, error_code)) {
       return 0;
@@ -727,7 +709,7 @@ struct CanTransformAccum
 {
   CompactFrameID gather(
     TimeCacheInterfacePtr cache, TimePoint time,
-    std::string * error_string, TimeCacheError * error_code)
+    std::string * error_string, TF2Error * error_code)
   {
     return cache->getParent(time, error_string, error_code);
   }

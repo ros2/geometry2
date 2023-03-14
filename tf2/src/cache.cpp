@@ -68,10 +68,10 @@ namespace cache
 // hoisting these into separate functions causes an ~8% speedup.
 // Removing calling them altogether adds another ~10%
 void createExtrapolationException1(
-  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
+  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
 {
   if (error_code) {
-    *error_code = TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR;
+    *error_code = TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
@@ -82,10 +82,10 @@ void createExtrapolationException1(
 }
 
 void createExtrapolationException2(
-  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
+  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
 {
   if (error_code) {
-    *error_code = TimeCacheError::TIME_CACHE_FORWARD_EXTRAPOLATION_ERROR;
+    *error_code = TF2Error::TF2_FORWARD_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
@@ -96,10 +96,10 @@ void createExtrapolationException2(
 }
 
 void createExtrapolationException3(
-  TimePoint t0, TimePoint t1, std::string * error_str, TimeCacheError * error_code)
+  TimePoint t0, TimePoint t1, std::string * error_str, TF2Error * error_code)
 {
   if (error_code) {
-    *error_code = TimeCacheError::TIME_CACHE_BACKWARD_EXTRAPOLATION_ERROR;
+    *error_code = TF2Error::TF2_BACKWARD_EXTRAPOLATION_ERROR;
   }
   if (error_str) {
     std::stringstream ss;
@@ -112,15 +112,15 @@ void createExtrapolationException3(
 
 uint8_t TimeCache::findClosest(
   TransformStorage * & one, TransformStorage * & two,
-  TimePoint target_time, std::string * error_str, TimeCacheError * error_code)
+  TimePoint target_time, std::string * error_str, TF2Error * error_code)
 {
   if (error_code) {
-    *error_code = TimeCacheError::TIME_CACHE_NO_ERROR;
+    *error_code = TF2Error::TF2_NO_ERROR;
   }
 
   // No values stored
   if (storage_.empty()) {
-    *error_code = TimeCacheError::TIME_CACHE_NOT_ENOUGH_DATA_ERROR;
+    *error_code = TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
     return 0;
   }
 
@@ -205,7 +205,7 @@ void TimeCache::interpolate(
 
 bool TimeCache::getData(
   TimePoint time, TransformStorage & data_out,
-  std::string * error_str, TimeCacheError * error_code)
+  std::string * error_str, TF2Error * error_code)
 {
   // returns false if data not available
   TransformStorage * p_temp_1;
@@ -229,7 +229,7 @@ bool TimeCache::getData(
 }
 
 CompactFrameID TimeCache::getParent(
-  TimePoint time, std::string * error_str, TimeCacheError * error_code)
+  TimePoint time, std::string * error_str, TF2Error * error_code)
 {
   TransformStorage * p_temp_1;
   TransformStorage * p_temp_2;
