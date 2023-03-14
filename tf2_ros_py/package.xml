@@ -15,11 +15,6 @@
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>
 
-  <!-- Required for automatic documentation generation (using sphinx-autodoc)
-  for modules in this package that import the tf2_ros module from the
-  tf2_ros_py package. -->
-  <doc_depend>tf2_ros</doc_depend>
-
   <exec_depend>builtin_interfaces</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>rclpy</exec_depend>
