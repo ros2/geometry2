@@ -23,12 +23,12 @@ from tf2_ros.transform_listener import TransformListener
 
 class BlockingWaitsForTransform(Node):
     """
-    Wait for a transform syncronously.
+    Wait for a transform synchronously.
 
     This class is an example of waiting for transforms.
     This will block the executor if used within a callback.
     Coroutine callbacks should be used instead to avoid this.
-    See :doc:`examples_tf2_py/async_waits_for_transform.py` for an example.
+    See :py:mod:`examples_tf2_py.async_waits_for_transform` for an example.
     """
 
     def __init__(self):

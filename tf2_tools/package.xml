@@ -16,6 +16,11 @@
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>
 
+  <!-- Required for automatic documentation generation (using sphinx-autodoc)
+  for modules in this package that import the tf2_ros module from the
+  tf2_ros_py package. -->
+  <doc_depend>tf2_ros</doc_depend>
+
   <exec_depend>graphviz</exec_depend>
   <exec_depend>python3-yaml</exec_depend>
   <exec_depend>rclpy</exec_depend>
