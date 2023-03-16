@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Drop PyKDL dependency in tf2_geometry_msgs (backport `#509 <https://github.com/ros2/geometry2/issues/509>`_ to foxy) (`#532 <https://github.com/ros2/geometry2/issues/532>`_)
+* Contributors: Charles Dawson, Florian Vahl
+
 0.13.13 (2022-01-31)
 --------------------
 * Fix covariance transformation in ``doTransform<PoseWithCovarianceStamped, TransformStamped>`` (`#430 <https://github.com/ros2/geometry2/issues/430>`_) (`#489 <https://github.com/ros2/geometry2/issues/489>`_)
