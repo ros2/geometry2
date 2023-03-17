@@ -31,7 +31,7 @@
 
 from typing import Iterable, Optional, Tuple
 
-from geometry_msgs.msg import (PointStamped, Point, Point32, PolygonStamped, Pose,
+from geometry_msgs.msg import (Point, Point32, PointStamped, PolygonStamped, Pose,
                                PoseStamped, PoseWithCovarianceStamped,
                                TransformStamped, Vector3Stamped)
 import numpy as np
@@ -409,6 +409,7 @@ def do_transform_pose_with_covariance_stamped(
 
 tf2_ros.TransformRegistration().add(PoseWithCovarianceStamped,
                                     do_transform_pose_with_covariance_stamped)
+
 
 # PolygonStamped
 def do_transform_polygon_stamped(
