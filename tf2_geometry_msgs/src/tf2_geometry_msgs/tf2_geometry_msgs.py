@@ -31,9 +31,9 @@
 
 from typing import Iterable, Optional, Tuple
 
-from geometry_msgs.msg import (PointStamped, Pose, PoseStamped,
-                               PoseWithCovarianceStamped, TransformStamped,
-                               Vector3Stamped)
+from geometry_msgs.msg import (Point, Point32, PointStamped, PolygonStamped, Pose,
+                               PoseStamped, PoseWithCovarianceStamped,
+                               TransformStamped, Vector3Stamped)
 import numpy as np
 import tf2_ros
 
@@ -409,3 +409,32 @@ def do_transform_pose_with_covariance_stamped(
 
 tf2_ros.TransformRegistration().add(PoseWithCovarianceStamped,
                                     do_transform_pose_with_covariance_stamped)
+
+
+# PolygonStamped
+def do_transform_polygon_stamped(
+        polygon: PolygonStamped,
+        transform: TransformStamped) -> PolygonStamped:
+    """
+    Transform a `PolygonStamped` using a given `TransformStamped`.
+
+    :param pose: The polygon stamped
+    :param transform: The transform
+    :returns: The transformed polygon stamped
+    """
+    res = PolygonStamped()
+    for point in polygon.polygon.points:
+        # convert from Point32 to PointStamped
+        point = PointStamped(point=Point(x=point.x, y=point.y, z=point.z))
+        transformed_point = do_transform_point(point, transform)
+        # convert back from PointStamped to Point32
+        transformed_point = Point32(x=transformed_point.point.x,
+                                    y=transformed_point.point.y,
+                                    z=transformed_point.point.z)
+        res.polygon.points.append(transformed_point)
+    res.header = transform.header
+    return res
+
+
+tf2_ros.TransformRegistration().add(PolygonStamped,
+                                    do_transform_polygon_stamped)
