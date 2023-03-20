@@ -81,7 +81,7 @@ get_default_transform_listener_static_sub_options()
     rclcpp::QosPolicyKind::Depth,
     rclcpp::QosPolicyKind::History,
     rclcpp::QosPolicyKind::Reliability};
-  /* 
+  /*
     This flag disables intra-process communication while subscribing to
     /tf_static topic, when the TransformListener is constructed using an existing
     node handle which happens to be a component (in rclcpp terminology).
