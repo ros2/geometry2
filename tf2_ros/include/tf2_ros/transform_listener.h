@@ -85,7 +85,7 @@ get_default_transform_listener_static_sub_options()
     This flag disables intra-process communication while subscribing to
     /tf_static topic, when the TransformListener is constructed using an existing
     node handle which happens to be a component (in rclcpp terminology).
-    Required until rclcpp intra-process communication does not support 
+    Required until rclcpp intra-process communication supports
     transient_local QoS durability.
   */
 options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
