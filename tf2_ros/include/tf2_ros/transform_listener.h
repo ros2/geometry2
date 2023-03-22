@@ -88,7 +88,7 @@ get_default_transform_listener_static_sub_options()
     Required until rclcpp intra-process communication supports
     transient_local QoS durability.
   */
-options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
+  options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
   return options;
 }
 }  // namespace detail
