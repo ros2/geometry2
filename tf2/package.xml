@@ -22,6 +22,7 @@
   <author>Wim Meeussen</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
   <build_depend>rosidl_runtime_cpp</build_depend>
   <build_export_depend>rosidl_runtime_cpp</build_export_depend>
