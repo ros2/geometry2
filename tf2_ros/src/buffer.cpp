@@ -141,7 +141,7 @@ Buffer::canTransform(
   const std::string & target_frame, const std::string & source_frame,
   const tf2::TimePoint & time, const tf2::Duration timeout, std::string * errstr) const
 {
-  if (!checkAndErrorDedicatedThreadPresent(errstr)) {
+  if (timeout != tf2::durationFromSec(0.0) && !checkAndErrorDedicatedThreadPresent(errstr)) {
     return false;
   }
 
@@ -171,7 +171,7 @@ Buffer::canTransform(
   const std::string & source_frame, const tf2::TimePoint & source_time,
   const std::string & fixed_frame, const tf2::Duration timeout, std::string * errstr) const
 {
-  if (!checkAndErrorDedicatedThreadPresent(errstr)) {
+  if (timeout != tf2::durationFromSec(0.0) && !checkAndErrorDedicatedThreadPresent(errstr)) {
     return false;
   }
 
