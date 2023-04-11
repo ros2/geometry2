@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.31.0 (2023-04-11)
+-------------------
 * Add do_transform_polygon_stamped (`#582 <https://github.com/ros2/geometry2/issues/582>`_)
 * Contributors: Tony Najjar
 

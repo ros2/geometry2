@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.31.0 (2023-04-11)
+-------------------
 * Enable TransformListener node-based constructor in Intra-process enabled components (`#572 <https://github.com/ros2/geometry2/issues/572>`_)
 * Contributors: Patrick Roncagliolo
 
