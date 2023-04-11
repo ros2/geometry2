@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Depend on ament_cmake_ros to default SHARED to ON (`#591 <https://github.com/ros2/geometry2/issues/591>`_)
+* Fix a potential crash in TimeCache::findClosest (`#592 <https://github.com/ros2/geometry2/issues/592>`_)
+* Extend TimeCache API to provide rich ExtrapolationException infos (`#586 <https://github.com/ros2/geometry2/issues/586>`_)
+* Contributors: Chris Lalancette, Patrick Roncagliolo, Tyler Weaver
+
 0.30.0 (2023-02-14)
 -------------------
 * Update geometry2 to C++17 (`#584 <https://github.com/ros2/geometry2/issues/584>`_)
