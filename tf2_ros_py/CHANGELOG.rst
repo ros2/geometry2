@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update sys.path with wokring directory (`#594 <https://github.com/ros2/geometry2/issues/594>`_)
+* Contributors: Yadu
+
 0.31.0 (2023-04-11)
 -------------------
 * Enable document generation using rosdoc2 for ament_python pkgs (`#587 <https://github.com/ros2/geometry2/issues/587>`_)
