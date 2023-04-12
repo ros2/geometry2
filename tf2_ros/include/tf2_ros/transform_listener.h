@@ -243,7 +243,6 @@ private:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_ {nullptr};
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_ {nullptr};
   rclcpp::CallbackGroup::SharedPtr callback_group_{nullptr};
-
 };
 }  // namespace tf2_ros
 
