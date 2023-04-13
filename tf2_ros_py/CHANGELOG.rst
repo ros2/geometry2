@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.31.1 (2023-04-12)
 -------------------
 * Update sys.path with wokring directory (`#594 <https://github.com/ros2/geometry2/issues/594>`_)

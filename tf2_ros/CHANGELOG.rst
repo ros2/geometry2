@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Destroy callback group before node (`#595 <https://github.com/ros2/geometry2/issues/595>`_)
+* Contributors: Michael Carroll
+
 0.31.1 (2023-04-12)
 -------------------
 
