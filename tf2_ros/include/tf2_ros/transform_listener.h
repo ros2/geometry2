@@ -175,7 +175,8 @@ private:
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options)
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options,
+    const std::string& tf_ns = "")
   {
     spin_thread_ = spin_thread;
     node_base_interface_ = node_base;
@@ -198,11 +199,11 @@ private:
       tf_static_options.callback_group = callback_group_;
 
       message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node_parameters, node_topics, "/tf", qos, std::move(cb), tf_options);
+        node_parameters, node_topics, tf_ns + "/tf", qos, std::move(cb), tf_options);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
-        "/tf_static",
+        tf_ns + "/tf_static",
         static_qos,
         std::move(static_cb),
         tf_static_options);
@@ -215,11 +216,11 @@ private:
       buffer_.setUsingDedicatedThread(true);
     } else {
       message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node_parameters, node_topics, "/tf", qos, std::move(cb), options);
+        node_parameters, node_topics, tf_ns + "/tf", qos, std::move(cb), options);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
-        "/tf_static",
+        tf_ns + "/tf_static",
         static_qos,
         std::move(static_cb),
         static_options);

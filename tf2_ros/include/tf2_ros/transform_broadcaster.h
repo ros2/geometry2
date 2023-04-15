@@ -90,10 +90,11 @@ public:
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
       return options;
-    } ())
+    } (),
+    const std::string& tf_ns = "" )
   {
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
-      node_parameters, node_topics, "/tf", qos, options);
+      node_parameters, node_topics, tf_ns + "/tf", qos, options);
   }
 
   /** \brief Send a TransformStamped message

@@ -120,7 +120,7 @@ public:
 
   TFMonitor(
     rclcpp::Node::SharedPtr node, bool using_specific_chain,
-    std::string framea = "", std::string frameb = "")
+    std::string framea = "", std::string frameb = "", std::string tf_ns = "")
   : framea_(framea),
     frameb_(frameb),
     using_specific_chain_(using_specific_chain),
@@ -153,10 +153,10 @@ public:
     }
 
     subscriber_tf_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf", tf2_ros::DynamicListenerQoS(),
+      tf_ns + "/tf", tf2_ros::DynamicListenerQoS(),
       std::bind(&TFMonitor::callback, this, std::placeholders::_1));
     subscriber_tf_message_ = node_->create_subscription<tf2_msgs::msg::TFMessage>(
-      "/tf_static", tf2_ros::StaticListenerQoS(),
+      tf_ns + "/tf_static", tf2_ros::StaticListenerQoS(),
       std::bind(&TFMonitor::callback, this, std::placeholders::_1));
   }
 

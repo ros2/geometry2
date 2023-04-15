@@ -46,7 +46,8 @@ class TransformBroadcaster:
     def __init__(
         self,
         node: Node,
-        qos: Optional[Union[QoSProfile, int]] = None
+        qos: Optional[Union[QoSProfile, int]] = None,
+        ns = ""
     ) -> None:
         """
         .. function:: __init__(node, qos=None)
@@ -58,7 +59,7 @@ class TransformBroadcaster:
         """
         if qos is None:
             qos = QoSProfile(depth=100)
-        self.pub_tf = node.create_publisher(TFMessage, "/tf", qos)
+        self.pub_tf = node.create_publisher(TFMessage, ns + "/tf", qos)
 
     def sendTransform(
         self,
