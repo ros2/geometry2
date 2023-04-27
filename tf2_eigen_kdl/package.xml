@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>tf2_eigen_kdl</name>
-  <version>0.31.2</version>
+  <version>0.32.0</version>
   <description>
 
      Conversion functions between:
