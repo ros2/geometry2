@@ -352,6 +352,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
   uint32_t depth = 0;
 
   TF2Error error_code = TF2Error::TF2_NO_ERROR;
+  TF2Error extrapolation_error_code = TF2Error::TF2_NO_ERROR;
   std::string extrapolation_error_string;
   bool extrapolation_might_have_occurred = false;
 
@@ -367,7 +368,9 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
-    CompactFrameID parent = f.gather(cache, time, &extrapolation_error_string, &error_code);
+    CompactFrameID parent = f.gather(
+      cache, time, &extrapolation_error_string,
+      &extrapolation_error_code);
     if (parent == 0) {
       // Just break out here... there may still be a path from source -> target
       top_parent = frame;
@@ -458,7 +461,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
           lookupFrameString(source_id) << "] to frame [" << lookupFrameString(target_id) << "]";
         *error_string = ss.str();
       }
-      return error_code;
+      return extrapolation_error_code;
     }
     createConnectivityErrorString(source_id, target_id, error_string);
     return tf2::TF2Error::TF2_CONNECTIVITY_ERROR;
