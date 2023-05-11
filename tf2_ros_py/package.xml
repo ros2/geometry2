@@ -1,6 +1,6 @@
 <package format="2">
   <name>tf2_ros_py</name>
-  <version>0.32.0</version>
+  <version>0.32.1</version>
   <description>
     This package contains the ROS Python bindings for the tf2 library
   </description>
