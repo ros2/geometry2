@@ -104,6 +104,15 @@ TEST(tf2_test_transform_listener, transform_listener_with_intraprocess)
   custom_node->init_tf_listener();
 }
 
+TEST(tf2_test_transform_listener, transform_listener_spin_thread)
+{
+  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  tf2_ros::TransformListener tfl(buffer, node, true);
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
