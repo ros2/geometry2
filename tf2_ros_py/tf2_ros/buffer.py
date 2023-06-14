@@ -43,6 +43,7 @@ from geometry_msgs.msg import TransformStamped
 # TODO(vinnamkim): It seems rosgraph is not ready
 # import rosgraph.masterapi
 from time import sleep
+from rclpy.clock import JumpThreshold
 from rclpy.node import Node
 from rclpy.time import Time
 from rclpy.duration import Duration
@@ -87,12 +88,26 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         if node is not None:
             self.srv = node.create_service(FrameGraph, 'tf2_frames', self.__get_frames)
 
+        # create a jump callback so as to clear the buffer if use_sim_true is true and there is a jump in time
+        threshold = JumpThreshold(min_forward=Duration(seconds=0),
+                                  min_backward=Duration(seconds=-1),
+                                  on_clock_change=True)
+        self.jump_handle = rclpy.clock.Clock().create_jump_callback
+        (
+            threshold,
+            post_callback=self.time_jump_callback
+        )
+
     def __get_frames(
         self,
         req: FrameGraphSrvRequest,
         res: FrameGraphSrvResponse
     ) -> FrameGraphSrvResponse:
         return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
+
+    def time_jump_callback(time_jump: TimeJump):
+        rclpy.logging.get_logger("tf2_buffer").warning("Detected jump back in time. Clearing tf buffer.")
+        self.clear()
 
     def set_transform(self, transform: TransformStamped, authority: str) -> None:
         super().set_transform(transform, authority)
