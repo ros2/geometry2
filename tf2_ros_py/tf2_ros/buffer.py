@@ -85,10 +85,11 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         self._callbacks_to_remove: List[Callable[[], None]] = []
         self._callbacks_lock = threading.RLock()
 
-        self.clock = rclpy.clock.Clock()
         if node is not None:
             self.srv = node.create_service(FrameGraph, 'tf2_frames', self.__get_frames)
             self.clock = node.get_clock()
+        else:
+            self.clock = rclpy.clock.Clock()
 
         # create a jump callback so as to clear the buffer if use_sim_true is true and there is a jump in time
         threshold = JumpThreshold(min_forward=None,
