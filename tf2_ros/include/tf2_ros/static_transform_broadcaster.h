@@ -67,9 +67,10 @@ public:
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
       /*
-        This flag disables intra-process communication while subscribing to
-        /tf_static topic, when the TransformListener is constructed using an existing
-        node handle which happens to be a component (in rclcpp terminology).
+        This flag disables intra-process communication while publishing to
+        /tf_static topic, when the StaticTransformBroadcaster is constructed
+        using an existing node handle which happens to be a component
+        (in rclcpp terminology).
         Required until rclcpp intra-process communication supports
         transient_local QoS durability.
       */
@@ -96,9 +97,10 @@ public:
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
       /*
-        This flag disables intra-process communication while subscribing to
-        /tf_static topic, when the TransformListener is constructed using an existing
-        node handle which happens to be a component (in rclcpp terminology).
+        This flag disables intra-process communication while publishing to
+        /tf_static topic, when the StaticTransformBroadcaster is constructed
+        using an existing node handle which happens to be a component
+        (in rclcpp terminology).
         Required until rclcpp intra-process communication supports
         transient_local QoS durability.
       */
