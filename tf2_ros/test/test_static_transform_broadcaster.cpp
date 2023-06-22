@@ -50,11 +50,36 @@ private:
   std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_broadcaster_;
 };
 
+class CustomComposableNode : public rclcpp::Node
+{
+public:
+  explicit CustomComposableNode(const rclcpp::NodeOptions & options)
+  : rclcpp::Node("tf2_ros_test_static_transform_broadcaster_composable_node", options)
+  {}
+
+  void init_tf_broadcaster()
+  {
+    tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(shared_from_this());
+  }
+
+private:
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_broadcaster_;
+};
+
 TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_rclcpp_node)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
 
   tf2_ros::StaticTransformBroadcaster tfb(node);
+}
+
+TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_with_intraprocess)
+{
+  rclcpp::executors::SingleThreadedExecutor exec;
+  rclcpp::NodeOptions options;
+  options = options.use_intra_process_comms(true);
+  auto custom_node = std::make_shared<CustomComposableNode>(options);
+  custom_node->init_tf_broadcaster();
 }
 
 TEST(tf2_test_static_transform_broadcaster, transform_broadcaster_custom_rclcpp_node)

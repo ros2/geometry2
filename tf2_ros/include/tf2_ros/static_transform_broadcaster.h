@@ -64,8 +64,50 @@ public:
         rclcpp::QosPolicyKind::Depth,
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
+      /*
+        This flag disables intra-process communication while publishing to
+        /tf_static topic, when the StaticTransformBroadcaster is constructed
+        using an existing node handle which happens to be a component
+        (in rclcpp terminology).
+        Required until rclcpp intra-process communication supports
+        transient_local QoS durability.
+      */
+      options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
       return options;
     } ())
+<<<<<<< HEAD
+=======
+    : StaticTransformBroadcaster(
+      rclcpp::node_interfaces::get_node_parameters_interface(node),
+      rclcpp::node_interfaces::get_node_topics_interface(node),
+      qos,
+      options)
+  {}
+
+  /** \brief Node interfaces constructor */
+  template<class AllocatorT = std::allocator<void>>
+  StaticTransformBroadcaster(
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
+      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
+      options.qos_overriding_options = rclcpp::QosOverridingOptions{
+        rclcpp::QosPolicyKind::Depth,
+        rclcpp::QosPolicyKind::History,
+        rclcpp::QosPolicyKind::Reliability};
+      /*
+        This flag disables intra-process communication while publishing to
+        /tf_static topic, when the StaticTransformBroadcaster is constructed
+        using an existing node handle which happens to be a component
+        (in rclcpp terminology).
+        Required until rclcpp intra-process communication supports
+        transient_local QoS durability.
+      */
+      options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
+      return options;
+    } ())
+>>>>>>> edad1bcc (Enable StaticTransformBroadcaster in Intra-process enabled components (#607))
   {
     publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
       node, "/tf_static", qos, options);
