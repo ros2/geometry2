@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.32.2 (2023-07-11)
+-------------------
 * Add time jump callback (`#608 <https://github.com/ros2/geometry2/issues/608>`_)
 * Contributors: Erich L Foster
 
