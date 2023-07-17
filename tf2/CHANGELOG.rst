@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.3 (2023-07-17)
+-------------------
+
 0.25.2 (2023-01-10)
 -------------------
 * Include required header Scalar.h (`#559 <https://github.com/ros2/geometry2/issues/559>`_) (`#562 <https://github.com/ros2/geometry2/issues/562>`_)

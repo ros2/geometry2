@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.3 (2023-07-17)
+-------------------
+* Add do_transform_polygon_stamped (`#582 <https://github.com/ros2/geometry2/issues/582>`_) (`#590 <https://github.com/ros2/geometry2/issues/590>`_)
+* Contributors: mergify[bot]
+
 0.25.2 (2023-01-10)
 -------------------
 
