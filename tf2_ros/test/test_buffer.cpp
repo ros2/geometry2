@@ -138,6 +138,49 @@ TEST(test_buffer, can_transform_valid_transform)
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
 }
 
+TEST(test_buffer, can_transform_without_dedicated_thread)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  buffer.setUsingDedicatedThread(false);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
+  transform.child_frame_id = "bar";
+  transform.transform.translation.x = 42.0;
+  transform.transform.translation.y = -3.14;
+  transform.transform.translation.z = 0.0;
+  transform.transform.rotation.w = 1.0;
+  transform.transform.rotation.x = 0.0;
+  transform.transform.rotation.y = 0.0;
+  transform.transform.rotation.z = 0.0;
+
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  // Should NOT error with default timeout
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+  // Should error when timeout is not default
+  EXPECT_FALSE(buffer.canTransform("bar", "foo", tf2_time, std::chrono::seconds(2)));
+  EXPECT_FALSE(buffer.canTransform("bar", "foo", rclcpp_time, rclcpp::Duration::from_seconds(1.0)));
+
+  auto output = buffer.lookupTransform("foo", "bar", tf2_time);
+  EXPECT_STREQ(transform.child_frame_id.c_str(), output.child_frame_id.c_str());
+  EXPECT_DOUBLE_EQ(transform.transform.translation.x, output.transform.translation.x);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.y, output.transform.translation.y);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.z, output.transform.translation.z);
+
+  auto output_rclcpp = buffer.lookupTransform("foo", "bar", rclcpp_time);
+  EXPECT_STREQ(transform.child_frame_id.c_str(), output_rclcpp.child_frame_id.c_str());
+  EXPECT_DOUBLE_EQ(transform.transform.translation.x, output_rclcpp.transform.translation.x);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.y, output_rclcpp.transform.translation.y);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
+}
+
 TEST(test_buffer, wait_for_transform_valid)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
