@@ -294,9 +294,9 @@ Buffer::timerCallback(
     timer_is_valid = (timer_to_request_map_.end() != timer_and_request_it);
     if (timer_is_valid) {
       request_handle = timer_and_request_it->second;
+      timer_to_request_map_.erase(timer_handle);
+      timer_interface_->remove(timer_handle);
     }
-    timer_to_request_map_.erase(timer_handle);
-    timer_interface_->remove(timer_handle);
   }
 
   if (timer_is_valid) {

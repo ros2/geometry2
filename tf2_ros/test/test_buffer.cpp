@@ -39,6 +39,7 @@
 
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_interface.h"
+#include "tf2_ros/create_timer_ros.h"
 #include "tf2_ros/transform_listener.h"
 
 class MockCreateTimer final : public tf2_ros::CreateTimerInterface
@@ -91,6 +92,51 @@ public:
 
   tf2_ros::TimerHandle timer_handle_index_;
   std::unordered_map<tf2_ros::TimerHandle, tf2_ros::TimerCallbackType> timer_to_callback_map_;
+};
+
+class MockCreateTimerROS final : public tf2_ros::CreateTimerROS
+{
+public:
+  MockCreateTimerROS(
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers)
+  : CreateTimerROS(node_base, node_timers), next_timer_handle_index_(0)
+  {
+  }
+
+  tf2_ros::TimerHandle
+  createTimer(
+    rclcpp::Clock::SharedPtr clock,
+    const tf2::Duration & period,
+    tf2_ros::TimerCallbackType callback) override
+  {
+    auto timer_handle_index = next_timer_handle_index_++;
+    auto timer_callback = std::bind(
+      &MockCreateTimerROS::timerCallback, this, timer_handle_index,
+      callback);
+    timer_to_callback_map_[timer_handle_index] = timer_callback;
+    return tf2_ros::CreateTimerROS::createTimer(clock, period, callback);
+  }
+
+  void
+  execute_timers()
+  {
+    for (const auto & elem : timer_to_callback_map_) {
+      elem.second(elem.first);
+    }
+  }
+
+private:
+  tf2_ros::TimerHandle next_timer_handle_index_;
+  std::unordered_map<tf2_ros::TimerHandle, tf2_ros::TimerCallbackType> timer_to_callback_map_;
+
+  void
+  timerCallback(
+    const tf2_ros::TimerHandle & timer_handle,
+    tf2_ros::TimerCallbackType callback)
+  {
+    callback(timer_handle);
+  }
 };
 
 TEST(test_buffer, construct_with_null_clock)
@@ -288,6 +334,62 @@ TEST(test_buffer, wait_for_transform_race)
 
   // Fake a time out (race with setTransform above)
   mock_create_timer->execute_timers();
+
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+  status = future.wait_for(std::chrono::milliseconds(1));
+  EXPECT_EQ(status, std::future_status::ready);
+  EXPECT_FALSE(callback_timeout);
+}
+
+TEST(test_buffer, timer_ros_wait_for_transform_race)
+{
+  int argc = 1;
+  char const * const argv[] = {"timer_ros_wait_for_transform_race"};
+  rclcpp::init(argc, argv);
+  std::shared_ptr<rclcpp::Node> rclcpp_node_ = std::make_shared<rclcpp::Node>(
+    "timer_ros_wait_for_transform_race");
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  // Silence error about dedicated thread's being necessary
+  buffer.setUsingDedicatedThread(true);
+  auto mock_create_timer_ros = std::make_shared<MockCreateTimerROS>(
+    rclcpp_node_->get_node_base_interface(),
+    rclcpp_node_->get_node_timers_interface());
+  buffer.setCreateTimerInterface(mock_create_timer_ros);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  bool callback_timeout = false;
+  auto future = buffer.waitForTransform(
+    "foo",
+    "bar",
+    tf2_time, tf2::durationFromSec(1.0),
+    [&callback_timeout](const tf2_ros::TransformStampedFuture & future)
+    {
+      try {
+        // We don't expect this throw, even though a timeout will occur
+        future.get();
+      } catch (...) {
+        callback_timeout = true;
+      }
+    });
+
+  auto status = future.wait_for(std::chrono::milliseconds(1));
+  EXPECT_EQ(status, std::future_status::timeout);
+
+  // Set the valid transform during the timeout
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
+  transform.child_frame_id = "bar";
+  transform.transform.rotation.w = 1.0;
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  // Fake a time out (race with setTransform above)
+  EXPECT_NO_THROW(mock_create_timer_ros->execute_timers());
 
   EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
   EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
