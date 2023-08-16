@@ -251,8 +251,8 @@ void fromMsg(const geometry_msgs::msg::Point & in, tf2::Vector3 & out)
 
 /** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs Point32 type.
  * This function is a specialization of the doTransform template defined in tf2/convert.h.
- * \param t_in The point to transform, as a Point3 message.
- * \param t_out The transformed point, as a Point3 message.
+ * \param t_in The point to transform, as a Point32 message.
+ * \param t_out The transformed point, as a Point32 message.
  * \param transform The timestamped transform to apply, as a TransformStamped message.
  */
 template<>
