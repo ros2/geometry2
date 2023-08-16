@@ -47,6 +47,7 @@
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/pose_with_covariance.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
+#include "geometry_msgs/msg/polygon_stamped.hpp"
 #include "geometry_msgs/msg/wrench.hpp"
 #include "geometry_msgs/msg/wrench_stamped.hpp"
 #include "kdl/frames.hpp"
@@ -256,10 +257,10 @@ void fromMsg(const geometry_msgs::msg::Point & in, tf2::Vector3 & out)
  */
 template<>
 inline
-    void doTransform(
-        const geometry_msgs::msg::Point32 & t_in,
-        geometry_msgs::msg::Point32 & t_out,
-        const geometry_msgs::msg::TransformStamped & transform)
+void doTransform(
+  const geometry_msgs::msg::Point32 & t_in,
+  geometry_msgs::msg::Point32 & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
 {
   KDL::Vector v_out = gmTransformToKDL(transform) * KDL::Vector(t_in.x, t_in.y, t_in.z);
   t_out.x = v_out[0];
@@ -273,7 +274,7 @@ inline
  * \return The Vector3 converted to a geometry_msgs message type.
  */
 inline
-    geometry_msgs::msg::Point32 & toMsg(const tf2::Vector3 & in, geometry_msgs::msg::Point32 & out)
+geometry_msgs::msg::Point32 & toMsg(const tf2::Vector3 & in, geometry_msgs::msg::Point32 & out)
 {
   out.x = in.getX();
   out.y = in.getY();
@@ -287,7 +288,7 @@ inline
  * \param out The Vector3 converted to a tf2 type.
  */
 inline
-    void fromMsg(const geometry_msgs::msg::Point32 & in, tf2::Vector3 & out)
+void fromMsg(const geometry_msgs::msg::Point32 & in, tf2::Vector3 & out)
 {
   out = tf2::Vector3(in.x, in.y, in.z);
 }
@@ -444,6 +445,125 @@ void fromMsg(const geometry_msgs::msg::PoseStamped & msg, geometry_msgs::msg::Po
   out = msg;
 }
 
+/*************/
+/** Polygon **/
+/*************/
+
+/** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs PolygonStamped type.
+ * This function is a specialization of the doTransform template defined in tf2/convert.h.
+ * \param poly_in The Polygon to transform.
+ * \param poly_out The transformed Polygon.
+ * \param transform The timestamped transform to apply, as a TransformStamped message.
+ */
+template<>
+inline
+void doTransform(
+  const geometry_msgs::msg::Polygon & poly_in,
+  geometry_msgs::msg::Polygon & poly_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  poly_out.points.clear();
+  for (auto & point : poly_in.points) {
+    geometry_msgs::msg::Point32 point_transformed;
+    doTransform(point, point_transformed, transform);
+    poly_out.points.push_back(point_transformed);
+  }
+}
+
+/** \brief Trivial "conversion" function for Polygon message type.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in A Polygon message.
+ * \return The input argument.
+ */
+inline
+geometry_msgs::msg::Polygon toMsg(const geometry_msgs::msg::Polygon & in)
+{
+  return in;
+}
+
+/** \brief Trivial "conversion" function for Polygon message type.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param msg A Polygon message.
+ * \param out The input argument.
+ */
+inline
+void fromMsg(
+  const geometry_msgs::msg::Polygon & msg,
+  geometry_msgs::msg::Polygon & out)
+{
+  out = msg;
+}
+
+/********************/
+/** PolygonStamped **/
+/********************/
+
+/** \brief Extract a timestamp from the header of a PolygonStamped message.
+ * This function is a specialization of the getTimestamp template defined in tf2/convert.h.
+ * \param t PolygonStamped message to extract the timestamp from.
+ * \return The timestamp of the message.
+ */
+template<>
+inline
+tf2::TimePoint getTimestamp(const geometry_msgs::msg::PolygonStamped & t)
+{
+  return tf2_ros::fromMsg(t.header.stamp);
+}
+
+/** \brief Extract a frame ID from the header of a PolygonStamped message.
+ * This function is a specialization of the getFrameId template defined in tf2/convert.h.
+ * \param t PoseStamped message to extract the frame ID from.
+ * \return A string containing the frame ID of the message.
+ */
+template<>
+inline
+std::string getFrameId(const geometry_msgs::msg::PolygonStamped & t)
+{
+  return t.header.frame_id;
+}
+
+/** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs PolygonStamped type.
+ * This function is a specialization of the doTransform template defined in tf2/convert.h.
+ * \param poly_in The PolygonStamped to transform.
+ * \param poly_out The transformed PolygonStamped.
+ * \param transform The timestamped transform to apply, as a TransformStamped message.
+ */
+template<>
+inline
+void doTransform(
+  const geometry_msgs::msg::PolygonStamped & poly_in,
+  geometry_msgs::msg::PolygonStamped & poly_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  doTransform(poly_in.polygon, poly_out.polygon, transform);
+
+  poly_out.header.stamp = transform.header.stamp;
+  poly_out.header.frame_id = transform.header.frame_id;
+}
+
+/** \brief Trivial "conversion" function for Polygon message type.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in A PoseStamped message.
+ * \return The input argument.
+ */
+inline
+geometry_msgs::msg::PolygonStamped toMsg(const geometry_msgs::msg::PolygonStamped & in)
+{
+  return in;
+}
+
+/** \brief Trivial "conversion" function for Polygon message type.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param msg A PoseStamped message.
+ * \param out The input argument.
+ */
+inline
+void fromMsg(
+  const geometry_msgs::msg::PolygonStamped & msg,
+  geometry_msgs::msg::PolygonStamped & out)
+{
+  out = msg;
+}
 
 /************************/
 /** PoseWithCovariance **/
