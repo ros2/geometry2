@@ -397,6 +397,21 @@ TEST(TfGeometry, Point)
     EXPECT_NEAR(res.z, 27, EPS);
   }
 
+  // non-stamped 32
+  {
+    geometry_msgs::msg::Point32 v1, res;
+    v1.x = 1;
+    v1.y = 2;
+    v1.z = 3;
+
+    geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
+
+    tf2::doTransform(v1, res, t);
+    EXPECT_NEAR(res.x, 11, EPS);
+    EXPECT_NEAR(res.y, 18, EPS);
+    EXPECT_NEAR(res.z, 27, EPS);
+  }
+
   // stamped
   {
     geometry_msgs::msg::PointStamped v1, res;
