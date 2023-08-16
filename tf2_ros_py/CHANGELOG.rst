@@ -2,6 +2,33 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.2 (2023-07-11)
+-------------------
+* Add time jump callback (`#608 <https://github.com/ros2/geometry2/issues/608>`_)
+* Contributors: Erich L Foster
+
+0.32.1 (2023-05-11)
+-------------------
+
+0.32.0 (2023-04-27)
+-------------------
+
+0.31.2 (2023-04-13)
+-------------------
+
+0.31.1 (2023-04-12)
+-------------------
+* Update sys.path with wokring directory (`#594 <https://github.com/ros2/geometry2/issues/594>`_)
+* Contributors: Yadu
+
+0.31.0 (2023-04-11)
+-------------------
+* Enable document generation using rosdoc2 for ament_python pkgs (`#587 <https://github.com/ros2/geometry2/issues/587>`_)
+* Contributors: Yadu
+
+0.30.0 (2023-02-14)
+-------------------
+
 0.29.0 (2022-11-21)
 -------------------
 * Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)

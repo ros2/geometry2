@@ -2,6 +2,37 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.2 (2023-07-11)
+-------------------
+* Enable StaticTransformBroadcaster in Intra-process enabled components (`#607 <https://github.com/ros2/geometry2/issues/607>`_)
+* Contributors: Patrick Roncagliolo
+
+0.32.1 (2023-05-11)
+-------------------
+
+0.32.0 (2023-04-27)
+-------------------
+
+0.31.2 (2023-04-13)
+-------------------
+* Destroy callback group before node (`#595 <https://github.com/ros2/geometry2/issues/595>`_)
+* Contributors: Michael Carroll
+
+0.31.1 (2023-04-12)
+-------------------
+
+0.31.0 (2023-04-11)
+-------------------
+* Enable TransformListener node-based constructor in Intra-process enabled components (`#572 <https://github.com/ros2/geometry2/issues/572>`_)
+* Contributors: Patrick Roncagliolo
+
+0.30.0 (2023-02-14)
+-------------------
+* Fix use-after-free bug in BufferServer::cancelCB (`#579 <https://github.com/ros2/geometry2/issues/579>`_)
+* Update the demos to C++17. (`#578 <https://github.com/ros2/geometry2/issues/578>`_)
+* add constructor to static tf broadcaster accepting node interfaces (`#576 <https://github.com/ros2/geometry2/issues/576>`_)
+* Contributors: Alberto Soragna, Alexander Hans, Chris Lalancette
+
 0.29.0 (2022-11-21)
 -------------------
 * Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)

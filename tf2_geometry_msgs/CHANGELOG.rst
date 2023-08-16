@@ -2,6 +2,31 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.32.2 (2023-07-11)
+-------------------
+
+0.32.1 (2023-05-11)
+-------------------
+
+0.32.0 (2023-04-27)
+-------------------
+
+0.31.2 (2023-04-13)
+-------------------
+
+0.31.1 (2023-04-12)
+-------------------
+
+0.31.0 (2023-04-11)
+-------------------
+* Add do_transform_polygon_stamped (`#582 <https://github.com/ros2/geometry2/issues/582>`_)
+* Contributors: Tony Najjar
+
+0.30.0 (2023-02-14)
+-------------------
+* Update the demos to C++17. (`#578 <https://github.com/ros2/geometry2/issues/578>`_)
+* Contributors: Chris Lalancette
+
 0.29.0 (2022-11-21)
 -------------------
 * Update maintainers (`#560 <https://github.com/ros2/geometry2/issues/560>`_)

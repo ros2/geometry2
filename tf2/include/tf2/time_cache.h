@@ -39,6 +39,7 @@
 
 #include "tf2/visibility_control.h"
 #include "tf2/transform_storage.h"
+#include "tf2/exceptions.h"
 
 namespace tf2
 {
@@ -56,7 +57,7 @@ public:
   TF2_PUBLIC
   virtual bool getData(
     tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0) = 0;
+    std::string * error_str = 0, TF2Error * error_code = 0) = 0;
 
   /** \brief Insert data into the cache */
   TF2_PUBLIC
@@ -68,7 +69,8 @@ public:
 
   /** \brief Retrieve the parent at a specific time */
   TF2_PUBLIC
-  virtual CompactFrameID getParent(tf2::TimePoint time, std::string * error_str) = 0;
+  virtual CompactFrameID getParent(
+    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0) = 0;
 
   /**
    * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
@@ -117,13 +119,14 @@ public:
   TF2_PUBLIC
   virtual bool getData(
     tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0);
+    std::string * error_str = 0, TF2Error * error_code = 0);
   TF2_PUBLIC
   virtual bool insertData(const tf2::TransformStorage & new_data);
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual tf2::CompactFrameID getParent(tf2::TimePoint time, std::string * error_str);
+  virtual tf2::CompactFrameID getParent(
+    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
@@ -146,7 +149,7 @@ private:
   // Assumes storage is already locked for it
   inline uint8_t findClosest(
     tf2::TransformStorage * & one, TransformStorage * & two,
-    tf2::TimePoint target_time, std::string * error_str);
+    tf2::TimePoint target_time, std::string * error_str = 0, TF2Error * error_code = 0);
 
   inline void interpolate(
     const tf2::TransformStorage & one, const tf2::TransformStorage & two,
@@ -160,14 +163,17 @@ class StaticCache : public TimeCacheInterface
 public:
   /// Virtual methods
   TF2_PUBLIC
-  virtual bool getData(TimePoint time, TransformStorage & data_out, std::string * error_str = 0);
+  virtual bool getData(
+    TimePoint time, TransformStorage & data_out,
+    std::string * error_str = 0, TF2Error * error_code = 0);
   // returns false if data unavailable (should be thrown as lookup exception
   TF2_PUBLIC
   virtual bool insertData(const TransformStorage & new_data);
   TF2_PUBLIC
   virtual void clearList();
   TF2_PUBLIC
-  virtual CompactFrameID getParent(TimePoint time, std::string * error_str);
+  virtual CompactFrameID getParent(
+    TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
   TF2_PUBLIC
   virtual P_TimeAndFrameID getLatestTimeAndParent();
 
