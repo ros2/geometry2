@@ -149,7 +149,6 @@ void doTransform(
 {
   // References:
   // https://core.ac.uk/download/pdf/154240607.pdf
-  // https://www.seas.upenn.edu/~meam520/notes02/Forces8.pdf
   // http://hades.mech.northwestern.edu/images/7/7f/MR.pdf Eq'n 3.83
 
   Eigen::Isometry3d affine_transform = tf2::transformToEigen(transform);
