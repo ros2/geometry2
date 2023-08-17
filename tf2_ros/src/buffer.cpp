@@ -317,13 +317,14 @@ Buffer::timerCallback(const TimerHandle & timer_handle,
 
         if (timer_is_valid) {
           callback_handle = timer_and_callback_it->second;
+          timer_to_request_map_.erase(timer_handle);
+          timer_interface_->remove(timer_handle);
         }
 
         deleteTransformCallbackHandle(this, timer_handle);
       }
     }
-    timer_to_request_map_.erase(timer_handle);
-    timer_interface_->remove(timer_handle);
+
   }
 
   if (timer_is_valid) {
