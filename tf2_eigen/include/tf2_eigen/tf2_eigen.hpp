@@ -131,7 +131,7 @@ void doTransform(
 /** \brief Apply a geometry_msgs TransformStamped to a 6-long Eigen vector.
  * Useful for transforming wrenches or twists.
  * Wrench: (force-x, force-y, force-z, torque-x, torque-y, torque-z)
- * Twist: (trans. vel. x, trans. vel. y, trans. vel. z, ang. vel. x, ang. vel. y, ang. vel. z)
+ * Twist: (ang. vel. x, ang. vel. y, ang. vel. z, trans. vel. x, trans. vel. y, trans. vel. z)
  * This function is a specialization of the doTransform template defined in tf2/convert.h,
  * although it can not be used in tf2_ros::BufferInterface::transform because this
  * functions rely on the existence of a time stamp and a frame id in the type which should
@@ -148,7 +148,9 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   // References:
-  // https://core.ac.uk/download/pdf/154240607.pdf, https://www.seas.upenn.edu/~meam520/notes02/Forces8.pdf
+  // https://core.ac.uk/download/pdf/154240607.pdf
+  // https://www.seas.upenn.edu/~meam520/notes02/Forces8.pdf
+  // http://hades.mech.northwestern.edu/images/7/7f/MR.pdf Eq'n 3.83
 
   Eigen::Isometry3d affine_transform = tf2::transformToEigen(transform);
 
