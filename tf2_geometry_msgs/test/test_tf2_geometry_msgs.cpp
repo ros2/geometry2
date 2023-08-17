@@ -397,6 +397,21 @@ TEST(TfGeometry, Point)
     EXPECT_NEAR(res.z, 27, EPS);
   }
 
+  // non-stamped 32
+  {
+    geometry_msgs::msg::Point32 v1, res;
+    v1.x = 1;
+    v1.y = 2;
+    v1.z = 3;
+
+    geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
+
+    tf2::doTransform(v1, res, t);
+    EXPECT_NEAR(res.x, 11, EPS);
+    EXPECT_NEAR(res.y, 18, EPS);
+    EXPECT_NEAR(res.z, 27, EPS);
+  }
+
   // stamped
   {
     geometry_msgs::msg::PointStamped v1, res;
@@ -419,6 +434,52 @@ TEST(TfGeometry, Point)
     EXPECT_NEAR(v_advanced.point.x, -9, EPS);
     EXPECT_NEAR(v_advanced.point.y, 18, EPS);
     EXPECT_NEAR(v_advanced.point.z, 27, EPS);
+  }
+}
+
+TEST(TfGeometry, Polygon)
+{
+  // non-stamped
+  {
+    geometry_msgs::msg::Polygon v1, res;
+    geometry_msgs::msg::Point32 p;
+    p.x = 1;
+    p.y = 2;
+    p.z = 3;
+    v1.points.push_back(p);
+
+    geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
+
+    tf2::doTransform(v1, res, t);
+    EXPECT_NEAR(res.points[0].x, 11, EPS);
+    EXPECT_NEAR(res.points[0].y, 18, EPS);
+    EXPECT_NEAR(res.points[0].z, 27, EPS);
+  }
+
+  // stamped
+  {
+    geometry_msgs::msg::PolygonStamped v1, res;
+    geometry_msgs::msg::Point32 p;
+    p.x = 1;
+    p.y = 2;
+    p.z = 3;
+    v1.polygon.points.push_back(p);
+    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.frame_id = "A";
+
+    // simple api
+    geometry_msgs::msg::PolygonStamped v_simple =
+      tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
+    EXPECT_NEAR(v_simple.polygon.points[0].x, -9, EPS);
+    EXPECT_NEAR(v_simple.polygon.points[0].y, 18, EPS);
+    EXPECT_NEAR(v_simple.polygon.points[0].z, 27, EPS);
+
+    // advanced api
+    geometry_msgs::msg::PolygonStamped v_advanced =
+      tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+    EXPECT_NEAR(v_simple.polygon.points[0].x, -9, EPS);
+    EXPECT_NEAR(v_simple.polygon.points[0].y, 18, EPS);
+    EXPECT_NEAR(v_simple.polygon.points[0].z, 27, EPS);
   }
 }
 
