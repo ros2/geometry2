@@ -263,9 +263,9 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   KDL::Vector v_out = gmTransformToKDL(transform) * KDL::Vector(t_in.x, t_in.y, t_in.z);
-  t_out.x = v_out[0];
-  t_out.y = v_out[1];
-  t_out.z = v_out[2];
+  t_out.x = static_cast<float>(v_out[0]);
+  t_out.y = static_cast<float>(v_out[1]);
+  t_out.z = static_cast<float>(v_out[2]);
 }
 
 /** \brief Convert a tf2 Vector3 type to its equivalent geometry_msgs representation.
@@ -276,9 +276,9 @@ void doTransform(
 inline
 geometry_msgs::msg::Point32 & toMsg(const tf2::Vector3 & in, geometry_msgs::msg::Point32 & out)
 {
-  out.x = in.getX();
-  out.y = in.getY();
-  out.z = in.getZ();
+  out.x = static_cast<float>(in.getX());
+  out.y = static_cast<float>(in.getY());
+  out.z = static_cast<float>(in.getZ());
   return out;
 }
 
