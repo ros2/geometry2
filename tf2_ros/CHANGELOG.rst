@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix invalid timer handle exception (`#613 <https://github.com/ros2/geometry2/issues/613>`_)
+* Contributors: Cliff Wu
+
 0.31.4 (2023-07-14)
 -------------------
 * Enable StaticTransformBroadcaster in Intra-process enabled components (`#611 <https://github.com/ros2/geometry2/issues/611>`_)

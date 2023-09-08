@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove 'efficient copy' prints (`#627 <https://github.com/ros2/geometry2/issues/627>`_)
+* Contributors: Matthijs van der Burgh
+
 0.31.4 (2023-07-14)
 -------------------
 
