@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.4 (2023-09-19)
+-------------------
+* Remove 'efficient copy' prints (`#625 <https://github.com/ros2/geometry2/issues/625>`_) (`#626 <https://github.com/ros2/geometry2/issues/626>`_)
+* Contributors: mergify[bot]
+
 0.25.3 (2023-07-17)
 -------------------
 

@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.4 (2023-09-19)
+-------------------
+* Suppress spam from calling canTransform (`#529 <https://github.com/ros2/geometry2/issues/529>`_) (`#615 <https://github.com/ros2/geometry2/issues/615>`_)
+* Fix invalid timer handle exception (`#474 <https://github.com/ros2/geometry2/issues/474>`_) (`#614 <https://github.com/ros2/geometry2/issues/614>`_)
+* Contributors: mergify[bot]
+
 0.25.3 (2023-07-17)
 -------------------
 * Enable StaticTransformBroadcaster in Intra-process enabled components (backport `#607 <https://github.com/ros2/geometry2/issues/607>`_) (`#612 <https://github.com/ros2/geometry2/issues/612>`_)
