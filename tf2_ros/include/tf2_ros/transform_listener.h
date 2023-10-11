@@ -164,6 +164,10 @@ public:
   TF2_ROS_PUBLIC
   virtual ~TransformListener();
 
+  /// Callback function for ros message subscription
+  TF2_ROS_PUBLIC
+  virtual void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
+
 private:
   template<class AllocatorT = std::allocator<void>>
   void init(
@@ -225,9 +229,6 @@ private:
         static_options);
     }
   }
-  /// Callback function for ros message subscriptoin
-  TF2_ROS_PUBLIC
-  void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
 
   bool spin_thread_{false};
   std::unique_ptr<std::thread> dedicated_listener_thread_ {nullptr};
