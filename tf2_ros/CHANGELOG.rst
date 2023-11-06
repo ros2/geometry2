@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Expose TF2 listener CB (`#632 <https://github.com/ros2/geometry2/issues/632>`_)
+* Contributors: Steve Macenski
+
 0.33.2 (2023-10-04)
 -------------------
 
