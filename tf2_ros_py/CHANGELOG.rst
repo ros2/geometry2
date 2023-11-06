@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.34.0 (2023-11-06)
+-------------------
 * Make sure to cache transforms in tf2_ros_py. (`#634 <https://github.com/ros2/geometry2/issues/634>`_)
 * Contributors: Chris Lalancette
 
