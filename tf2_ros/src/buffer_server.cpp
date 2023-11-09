@@ -250,7 +250,8 @@ bool BufferServer::canTransform(const std::shared_ptr<LookupTransformService::Re
 
   // check whether we need to used the advanced or simple api
   if (!request->advanced) {
-    return buffer_.canTransform(request->target_frame, request->source_frame, source_time_point, nullptr);
+    return buffer_.canTransform(
+      request->target_frame, request->source_frame, source_time_point, nullptr);
   }
 
   tf2::TimePoint target_time_point = tf2_ros::fromMsg(request->target_time);
