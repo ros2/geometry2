@@ -143,32 +143,32 @@ rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
   return rclcpp_action::CancelResponse::REJECT;
 }
 
-void BufferServer::serviceCB(const std::shared_ptr<LookupTransformService::Request> request,
-          std::shared_ptr<LookupTransformService::Response> response)
+void BufferServer::serviceCB(
+  const std::shared_ptr<LookupTransformService::Request> request,
+  std::shared_ptr<LookupTransformService::Response> response)
 {
-    // TODO: implement retrying + timeout
-    try {
-      response->transform = lookupTransform(request);
-    } catch (const tf2::ConnectivityException & ex) {
-      response->error.error = response->error.CONNECTIVITY_ERROR;
-      response->error.error_string = ex.what();
-    } catch (const tf2::LookupException & ex) {
-      response->error.error = response->error.LOOKUP_ERROR;
-      response->error.error_string = ex.what();
-    } catch (const tf2::ExtrapolationException & ex) {
-      response->error.error = response->error.EXTRAPOLATION_ERROR;
-      response->error.error_string = ex.what();
-    } catch (const tf2::InvalidArgumentException & ex) {
-      response->error.error = response->error.INVALID_ARGUMENT_ERROR;
-      response->error.error_string = ex.what();
-    } catch (const tf2::TimeoutException & ex) {
-      response->error.error = response->error.TIMEOUT_ERROR;
-      response->error.error_string = ex.what();
-    } catch (const tf2::TransformException & ex) {
-      response->error.error = response->error.TRANSFORM_ERROR;
-      response->error.error_string = ex.what();
-    }
-  
+  // TODO: implement retrying + timeout
+  try {
+    response->transform = lookupTransform(request);
+  } catch (const tf2::ConnectivityException & ex) {
+    response->error.error = response->error.CONNECTIVITY_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::LookupException & ex) {
+    response->error.error = response->error.LOOKUP_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::ExtrapolationException & ex) {
+    response->error.error = response->error.EXTRAPOLATION_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::InvalidArgumentException & ex) {
+    response->error.error = response->error.INVALID_ARGUMENT_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::TimeoutException & ex) {
+    response->error.error = response->error.TIMEOUT_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::TransformException & ex) {
+    response->error.error = response->error.TRANSFORM_ERROR;
+    response->error.error_string = ex.what();
+  } 
 }
 
 rclcpp_action::GoalResponse BufferServer::goalCB(
