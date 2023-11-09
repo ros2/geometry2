@@ -92,13 +92,13 @@ public:
       std::bind(&BufferServer::cancelCB, this, std::placeholders::_1),
       std::bind(&BufferServer::acceptedCB, this, std::placeholders::_1));
 
-    service_server_ =
-    rclcpp::create_service<LookupTransformService>(node->get_node_base_interface(), node->get_node_services_interface(), ns, std::bind(
-        &BufferServer::serviceCB, this, std::placeholders::_1,
-        std::placeholders::_2),
-        rmw_qos_profile_services_default,
-        nullptr
-        );
+    service_server_ =  rclcpp::create_service<LookupTransformService>(
+      node->get_node_base_interface(),
+      node->get_node_services_interface(),
+      ns,
+      std::bind(&BufferServer::serviceCB, this, std::placeholders::_1, std::placeholders::_2),
+      rmw_qos_profile_services_default,
+      nullptr);
     
     check_timer_ = rclcpp::create_timer(
       node, node->get_clock(), check_period, std::bind(&BufferServer::checkTransforms, this));
