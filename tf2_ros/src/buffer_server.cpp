@@ -275,7 +275,8 @@ geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(GoalHandle gh
     goal->source_frame, tf2_ros::fromMsg(goal->source_time), goal->fixed_frame);
 }
 
-geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(const std::shared_ptr<LookupTransformService::Request> request)
+geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(
+  const std::shared_ptr<LookupTransformService::Request> request)
 {
   // check whether we need to use the advanced or simple api
   if (!request->advanced) {
