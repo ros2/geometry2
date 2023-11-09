@@ -2,6 +2,47 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.34.0 (2023-11-06)
+-------------------
+
+0.33.2 (2023-10-04)
+-------------------
+
+0.33.1 (2023-09-07)
+-------------------
+
+0.33.0 (2023-08-21)
+-------------------
+
+0.32.2 (2023-07-11)
+-------------------
+
+0.32.1 (2023-05-11)
+-------------------
+* Fix error code returned in BufferCore::walkToTopParent (`#601 <https://github.com/ros2/geometry2/issues/601>`_)
+* Contributors: Patrick Roncagliolo
+
+0.32.0 (2023-04-27)
+-------------------
+
+0.31.2 (2023-04-13)
+-------------------
+
+0.31.1 (2023-04-12)
+-------------------
+
+0.31.0 (2023-04-11)
+-------------------
+* Depend on ament_cmake_ros to default SHARED to ON (`#591 <https://github.com/ros2/geometry2/issues/591>`_)
+* Fix a potential crash in TimeCache::findClosest (`#592 <https://github.com/ros2/geometry2/issues/592>`_)
+* Extend TimeCache API to provide rich ExtrapolationException infos (`#586 <https://github.com/ros2/geometry2/issues/586>`_)
+* Contributors: Chris Lalancette, Patrick Roncagliolo, Tyler Weaver
+
+0.30.0 (2023-02-14)
+-------------------
+* Update geometry2 to C++17 (`#584 <https://github.com/ros2/geometry2/issues/584>`_)
+* Contributors: Chris Lalancette
+
 0.29.0 (2022-11-21)
 -------------------
 * Include required header Scalar.h (`#559 <https://github.com/ros2/geometry2/issues/559>`_)

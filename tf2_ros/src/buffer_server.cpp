@@ -40,6 +40,7 @@
 #include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
 #include <tf2_ros/buffer_server.h>
 
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
@@ -119,20 +120,18 @@ rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
   // we need to find the goal in the list and remove it... also setting it as canceled
   // if its not in the list, we won't do anything since it will have already been set
   // as completed
-  for (std::list<GoalInfo>::iterator it = active_goals_.begin(); it != active_goals_.end(); ) {
-    GoalInfo & info = *it;
-    if (info.handle == gh) {
-      RCLCPP_DEBUG(
-        logger_,
-        "Accept cancel request for goal %s",
-        rclcpp_action::to_string(gh->get_goal_id()).c_str());
-      it = active_goals_.erase(it);
-      auto result = std::make_shared<LookupTransformAction::Result>();
-      info.handle->canceled(result);
-      return rclcpp_action::CancelResponse::ACCEPT;
-    } else {
-      ++it;
-    }
+  auto goal_to_cancel_it = std::find_if(
+    active_goals_.begin(), active_goals_.end(), [&gh](const auto & info) {
+      return info.handle == gh;
+    });
+  if (goal_to_cancel_it != active_goals_.end()) {
+    RCLCPP_DEBUG(
+      logger_,
+      "Accept cancel request for goal %s",
+      rclcpp_action::to_string(gh->get_goal_id()).c_str());
+    goal_to_cancel_it->handle->canceled(std::make_shared<LookupTransformAction::Result>());
+    active_goals_.erase(goal_to_cancel_it);
+    return rclcpp_action::CancelResponse::ACCEPT;
   }
 
   RCLCPP_DEBUG(
