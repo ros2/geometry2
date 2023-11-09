@@ -47,6 +47,46 @@
 
 namespace tf2_ros
 {
+
+void BufferServer::serviceCB(
+  const std::shared_ptr<LookupTransformService::Request> request,
+  std::shared_ptr<LookupTransformService::Response> response)
+{
+  // TODO: implement retrying + timeout
+  try {
+    // check whether we need to use the advanced or simple api
+    if (request->advanced) {
+    response->transform = buffer_.lookupTransform(
+      request->target_frame, tf2_ros::fromMsg(request->target_time),
+      request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
+    }
+    else {
+      response->transform = buffer_.lookupTransform(
+      request->target_frame, request->source_frame,
+      tf2_ros::fromMsg(request->source_time));
+    }
+
+  } catch (const tf2::ConnectivityException & ex) {
+    response->error.error = response->error.CONNECTIVITY_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::LookupException & ex) {
+    response->error.error = response->error.LOOKUP_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::ExtrapolationException & ex) {
+    response->error.error = response->error.EXTRAPOLATION_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::InvalidArgumentException & ex) {
+    response->error.error = response->error.INVALID_ARGUMENT_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::TimeoutException & ex) {
+    response->error.error = response->error.TIMEOUT_ERROR;
+    response->error.error_string = ex.what();
+  } catch (const tf2::TransformException & ex) {
+    response->error.error = response->error.TRANSFORM_ERROR;
+    response->error.error_string = ex.what();
+  } 
+}
+
 void BufferServer::checkTransforms()
 {
   std::unique_lock<std::mutex> lock(mutex_);
@@ -140,34 +180,6 @@ rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
     rclcpp_action::to_string(gh->get_goal_id()).c_str());
 
   return rclcpp_action::CancelResponse::REJECT;
-}
-
-void BufferServer::serviceCB(
-  const std::shared_ptr<LookupTransformService::Request> request,
-  std::shared_ptr<LookupTransformService::Response> response)
-{
-  // TODO: implement retrying + timeout
-  try {
-    response->transform = lookupTransform(request);
-  } catch (const tf2::ConnectivityException & ex) {
-    response->error.error = response->error.CONNECTIVITY_ERROR;
-    response->error.error_string = ex.what();
-  } catch (const tf2::LookupException & ex) {
-    response->error.error = response->error.LOOKUP_ERROR;
-    response->error.error_string = ex.what();
-  } catch (const tf2::ExtrapolationException & ex) {
-    response->error.error = response->error.EXTRAPOLATION_ERROR;
-    response->error.error_string = ex.what();
-  } catch (const tf2::InvalidArgumentException & ex) {
-    response->error.error = response->error.INVALID_ARGUMENT_ERROR;
-    response->error.error_string = ex.what();
-  } catch (const tf2::TimeoutException & ex) {
-    response->error.error = response->error.TIMEOUT_ERROR;
-    response->error.error_string = ex.what();
-  } catch (const tf2::TransformException & ex) {
-    response->error.error = response->error.TRANSFORM_ERROR;
-    response->error.error_string = ex.what();
-  } 
 }
 
 rclcpp_action::GoalResponse BufferServer::goalCB(
@@ -273,21 +285,6 @@ geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(GoalHandle gh
   return buffer_.lookupTransform(
     goal->target_frame, tf2_ros::fromMsg(goal->target_time),
     goal->source_frame, tf2_ros::fromMsg(goal->source_time), goal->fixed_frame);
-}
-
-geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(
-  const std::shared_ptr<LookupTransformService::Request> request)
-{
-  // check whether we need to use the advanced or simple api
-  if (!request->advanced) {
-    return buffer_.lookupTransform(
-      request->target_frame, request->source_frame,
-      tf2_ros::fromMsg(request->source_time));
-  }
-
-  return buffer_.lookupTransform(
-    request->target_frame, tf2_ros::fromMsg(request->target_time),
-    request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
 }
 
 }  // namespace tf2_ros

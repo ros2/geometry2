@@ -139,10 +139,6 @@ private:
   TF2_ROS_PUBLIC
   geometry_msgs::msg::TransformStamped lookupTransform(GoalHandle gh);
 
-  TF2_ROS_PUBLIC
-  geometry_msgs::msg::TransformStamped lookupTransform(
-    const std::shared_ptr<LookupTransformService::Request> request);
-
   const tf2::BufferCoreInterface & buffer_;
   rclcpp::Logger logger_;
   rclcpp_action::Server<LookupTransformAction>::SharedPtr server_;
