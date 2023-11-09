@@ -113,8 +113,9 @@ private:
   };
   
   TF2_ROS_PUBLIC
-  void serviceCB(const std::shared_ptr<LookupTransformService::Request> request,
-          std::shared_ptr<LookupTransformService::Response> response);
+  void serviceCB(
+    const std::shared_ptr<LookupTransformService::Request> request,
+    std::shared_ptr<LookupTransformService::Response> response);
 
   TF2_ROS_PUBLIC
   rclcpp_action::GoalResponse goalCB(
