@@ -56,9 +56,9 @@ void BufferServer::serviceCB(
   try {
     // check whether we need to use the advanced or simple api
     if (request->advanced) {
-    response->transform = buffer_.lookupTransform(
-      request->target_frame, tf2_ros::fromMsg(request->target_time),
-      request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
+      response->transform = buffer_.lookupTransform(
+        request->target_frame, tf2_ros::fromMsg(request->target_time),
+        request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
     }
     else {
       response->transform = buffer_.lookupTransform(
@@ -185,6 +185,8 @@ rclcpp_action::CancelResponse BufferServer::cancelCB(GoalHandle gh)
 rclcpp_action::GoalResponse BufferServer::goalCB(
   const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const LookupTransformAction::Goal> goal)
 {
+  RCLCPP_WARN_ONCE(logger_, "You are using the deprecated action interface of the tf2_ros::BufferServer. \
+   Please use the service interface instead.");
   (void)uuid;
   (void)goal;
   // accept all goals we get
