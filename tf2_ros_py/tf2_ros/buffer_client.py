@@ -54,7 +54,7 @@ from tf2_msgs.srv import LookupTransform
 
 # Used for documentation purposes only
 LookupTransformRequest = TypeVar('LookupTransformRequest')
-LookupTransformResult = TypeVar('LookupTransformResult')
+LookupTransformResponse = TypeVar('LookupTransformResponse')
 
 
 class BufferClient(tf2_ros.BufferInterface):
@@ -244,26 +244,26 @@ class BufferClient(tf2_ros.BufferInterface):
 
         response = future.result()
         
-        return self.__process_result(response)
+        return self.__process_response(response)
 
-    def __process_result(self, result: LookupTransform.Response) -> TransformStamped:
-        if result == None or result.error == None:
-            raise tf2.TransformException("The BufferServer returned None for result or result.error!  Something is likely wrong with the server.")
-        if result.error.error != result.error.NO_ERROR:
-            if result.error.error == result.error.LOOKUP_ERROR:
-                raise tf2.LookupException(result.error.error_string)
-            if result.error.error == result.error.CONNECTIVITY_ERROR:
-                raise tf2.ConnectivityException(result.error.error_string)
-            if result.error.error == result.error.EXTRAPOLATION_ERROR:
-                raise tf2.ExtrapolationException(result.error.error_string)
-            if result.error.error == result.error.INVALID_ARGUMENT_ERROR:
-                raise tf2.InvalidArgumentException(result.error.error_string)
-            if result.error.error == result.error.TIMEOUT_ERROR:
-                raise tf2.TimeoutException(result.error.error_string)
+    def __process_response(self, response: LookupTransform.Response) -> TransformStamped:
+        if response == None or response.error == None:
+            raise tf2.TransformException("The BufferServer returned None for response or response.error!  Something is likely wrong with the server.")
+        if response.error.error != response.error.NO_ERROR:
+            if response.error.error == response.error.LOOKUP_ERROR:
+                raise tf2.LookupException(response.error.error_string)
+            if response.error.error == response.error.CONNECTIVITY_ERROR:
+                raise tf2.ConnectivityException(response.error.error_string)
+            if response.error.error == response.error.EXTRAPOLATION_ERROR:
+                raise tf2.ExtrapolationException(response.error.error_string)
+            if response.error.error == response.error.INVALID_ARGUMENT_ERROR:
+                raise tf2.InvalidArgumentException(response.error.error_string)
+            if response.error.error == response.error.TIMEOUT_ERROR:
+                raise tf2.TimeoutException(response.error.error_string)
 
-            raise tf2.TransformException(result.error.error_string)
+            raise tf2.TransformException(response.error.error_string)
 
-        return result.transform
+        return response.transform
 
     def destroy(self) -> None:
         """Cleanup resources associated with this BufferClient."""
