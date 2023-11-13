@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.5 (2023-11-13)
+-------------------
+* add torque due to force offset (`#538 <https://github.com/ros2/geometry2/issues/538>`_) (`#633 <https://github.com/ros2/geometry2/issues/633>`_)
+* Contributors: mergify[bot]
+
 0.25.4 (2023-09-19)
 -------------------
 * Fixed Windows warnings (`#623 <https://github.com/ros2/geometry2/issues/623>`_)

@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.5 (2023-11-13)
+-------------------
+
 0.25.4 (2023-09-19)
 -------------------
 * Suppress spam from calling canTransform (`#529 <https://github.com/ros2/geometry2/issues/529>`_) (`#615 <https://github.com/ros2/geometry2/issues/615>`_)
