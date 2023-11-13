@@ -20,7 +20,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TFMessage.msg"
   "srv/FrameGraph.srv"
   "srv/LookupTransform.srv"
-  "action/LookupTransform.action"
   DEPENDENCIES builtin_interfaces geometry_msgs
   ADD_LINTER_TESTS
 )

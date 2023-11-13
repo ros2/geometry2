@@ -53,7 +53,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from tf2_msgs.srv import LookupTransform
 
 # Used for documentation purposes only
-LookupTransformGoal = TypeVar('LookupTransformGoal')
+LookupTransformRequest = TypeVar('LookupTransformRequest')
 LookupTransformResult = TypeVar('LookupTransformResult')
 
 
@@ -109,14 +109,14 @@ class BufferClient(tf2_ros.BufferInterface):
         else:
             raise TypeError('Must pass a rclpy.time.Time object.')
 
-        goal = LookupTransform.Request()
-        goal.target_frame = target_frame
-        goal.source_frame = source_frame
-        goal.source_time = source_time.to_msg()
-        goal.timeout = timeout.to_msg()
-        goal.advanced = False
+        request = LookupTransform.Request()
+        request.target_frame = target_frame
+        request.source_frame = source_frame
+        request.source_time = source_time.to_msg()
+        request.timeout = timeout.to_msg()
+        request.advanced = False
 
-        return self.__process_goal(goal)
+        return self.__process_request(request)
 
     # lookup, advanced api
     def lookup_transform_full(
@@ -139,16 +139,16 @@ class BufferClient(tf2_ros.BufferInterface):
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
-        goal = LookupTransform.Request()
-        goal.target_frame = target_frame
-        goal.source_frame = source_frame
-        goal.source_time = source_time.to_msg()
-        goal.timeout = timeout.to_msg()
-        goal.target_time = target_time.to_msg()
-        goal.fixed_frame = fixed_frame
-        goal.advanced = True
+        request = LookupTransform.Request()
+        request.target_frame = target_frame
+        request.source_frame = source_frame
+        request.source_time = source_time.to_msg()
+        request.timeout = timeout.to_msg()
+        request.target_time = target_time.to_msg()
+        request.fixed_frame = fixed_frame
+        request.advanced = True
 
-        return self.__process_goal(goal)
+        return self.__process_request(request)
 
     # can, simple api
     def can_transform(
@@ -204,7 +204,7 @@ class BufferClient(tf2_ros.BufferInterface):
         except tf2.TransformException:
             return False
 
-    def __process_goal(self, goal: LookupTransformGoal) -> TransformStamped:
+    def __process_request(self, request: LookupTransformRequest) -> TransformStamped:
         if not self.service_client.wait_for_service(timeout_sec=1.0):
             raise tf2.TimeoutException("The BufferServer is not ready.")
         event = threading.Event()
@@ -213,14 +213,14 @@ class BufferClient(tf2_ros.BufferInterface):
             nonlocal event
             event.set()
 
-        future = self.service_client.call_async(goal)
+        future = self.service_client.call_async(request)
         future.add_done_callback(unblock)
 
         def unblock_by_timeout():
-            nonlocal future, goal, event
+            nonlocal future, request, event
             clock = Clock()
             start_time = clock.now()
-            timeout = Duration.from_msg(goal.timeout)
+            timeout = Duration.from_msg(request.timeout)
             timeout_padding = self.timeout_padding
             while not future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
@@ -240,7 +240,7 @@ class BufferClient(tf2_ros.BufferInterface):
 
         # This shouldn't happen, but could in rare cases where the server hangs
         if not future.done():
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
+            raise tf2.TimeoutException("The LookupTransform request sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
 
         response = future.result()
         
