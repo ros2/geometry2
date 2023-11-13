@@ -456,7 +456,7 @@ public:
    */
   void add(const MConstPtr & message)
   {
-    builtin_interfaces::msg::Time t = node_clock_->get_clock()->now();
+    auto t = node_clock_->get_clock()->now();
     add(MEvent(message, t));
   }
 
