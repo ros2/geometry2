@@ -78,7 +78,7 @@ public:
   : buffer_(buffer),
     logger_(node->get_logger())
   {
-    service_server_ =  rclcpp::create_service<LookupTransformService>(
+    service_server_ = rclcpp::create_service<LookupTransformService>(
       node->get_node_base_interface(),
       node->get_node_services_interface(),
       ns,

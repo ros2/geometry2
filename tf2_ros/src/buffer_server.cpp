@@ -52,20 +52,17 @@ void BufferServer::serviceCB(
   const std::shared_ptr<LookupTransformService::Request> request,
   std::shared_ptr<LookupTransformService::Response> response)
 {
-  // TODO: implement timeout
   try {
     // check whether we need to use the advanced or simple api
     if (request->advanced) {
       response->transform = buffer_.lookupTransform(
         request->target_frame, tf2_ros::fromMsg(request->target_time),
         request->source_frame, tf2_ros::fromMsg(request->source_time), request->fixed_frame);
-    }
-    else {
+    } else {
       response->transform = buffer_.lookupTransform(
-      request->target_frame, request->source_frame,
-      tf2_ros::fromMsg(request->source_time));
+        request->target_frame, request->source_frame,
+        tf2_ros::fromMsg(request->source_time));
     }
-
   } catch (const tf2::ConnectivityException & ex) {
     response->error.error = response->error.CONNECTIVITY_ERROR;
     response->error.error_string = ex.what();
@@ -84,7 +81,7 @@ void BufferServer::serviceCB(
   } catch (const tf2::TransformException & ex) {
     response->error.error = response->error.TRANSFORM_ERROR;
     response->error.error_string = ex.what();
-  } 
+  }
 }
 
 bool BufferServer::canTransform(const std::shared_ptr<LookupTransformService::Request> request)
