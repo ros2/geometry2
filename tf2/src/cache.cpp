@@ -260,7 +260,10 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     }
     storage_it++;
   }
-  storage_.insert(storage_it, new_data);
+  // Insert elements only if the stamp is already not present
+  if (storage_it->stamp_ != new_data.stamp_) {
+    storage_.insert(storage_it, new_data);
+  }
 
   pruneList();
   return true;
