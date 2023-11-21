@@ -28,6 +28,7 @@
 
 /** \author Tully Foote */
 
+#include <algorithm>
 #include <cassert>
 #include <sstream>
 #include <string>
@@ -260,8 +261,8 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     }
     storage_it++;
   }
-  // Insert elements only if the stamp is already not present
-  if (storage_it->stamp_ != new_data.stamp_) {
+  // Insert elements only if not already already present
+  if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
     storage_.insert(storage_it, new_data);
   }
 
