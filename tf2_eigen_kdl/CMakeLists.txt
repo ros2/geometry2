@@ -69,8 +69,7 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 
   ament_add_gtest(tf2_eigen_kdl_test test/tf2_eigen_kdl_test.cpp)
-  target_link_libraries(tf2_eigen_kdl_test ${PROJECT_NAME})
-  ament_target_dependencies(tf2_eigen_kdl_test tf2)
+  target_link_libraries(tf2_eigen_kdl_test ${PROJECT_NAME} tf2::tf2)
 endif()
 
 ament_package()
