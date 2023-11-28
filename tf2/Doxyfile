@@ -1,0 +1,23 @@
+# All settings not listed here will use the Doxygen default values.
+
+PROJECT_NAME           = "tf2"
+PROJECT_NUMBER         = rolling
+PROJECT_BRIEF          = "tf2 maintains the relationship between coordinate frames in a tree \
+structure buffered in time, and lets the user transform points, vectors, etc between any two \
+coordinate frames at any desired point in time."
+
+INPUT                  = ./include mainpage.dox
+RECURSIVE              = YES
+OUTPUT_DIRECTORY       = doc_output
+
+EXTRACT_ALL            = YES
+SORT_MEMBER_DOCS       = NO
+
+GENERATE_LATEX         = NO
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             += TF2_PUBLIC=
+PREDEFINED             += TF2SIMD_FORCE_INLINE=
+PREDEFINED             += ATTRIBUTE_ALIGNED16(class)=
