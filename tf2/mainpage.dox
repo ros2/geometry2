@@ -103,7 +103,7 @@ Most are either C++ or Python specific.
 
 - tf2_geometry_msgs
 
-  - ``tf2`` methods to work with geometry_msgs datatypes natively in C++ or Python.
+  - ``tf2`` methods to work with `geometry_msgs` datatypes natively in C++ or Python.
 
 - tf2_kdl
 
