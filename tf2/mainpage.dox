@@ -3,7 +3,7 @@
 
 ``tf2`` is the second generation of the tf library.
 
-This library implements the interface defined by tf2::BufferCore.
+This library implements the interface defined by `tf2::BufferCore`.
 
 There is also a Python wrapper with the same API that class this library using CPython bindings.
 
@@ -17,9 +17,9 @@ The high level goal is to allow developers and users not to have to worry about 
 
 \subsection main-interface Main Interface
 
-The main interface is through the tf2::BufferCore interface.
+The main interface is through the `tf2::BufferCore` interface.
 
-It uses the exceptions in tf2/exceptions.h and the tf2::Stamped datatype in tf2/transform_datatypes.h.
+It uses the exceptions in tf2/exceptions.h and the `tf2::Stamped` datatype in tf2/transform_datatypes.h.
 
 \subsection conversion-interface Conversion Interface
 
@@ -30,7 +30,7 @@ The conversion interface is defined in tf2/convert.h.
 
 \subsection buffer-core-relations Buffer Core: Record and lookup relations between frames
 
-The ``tf2`` library implements the interface defined by tf2::BufferCore.
+The ``tf2`` library implements the interface defined by `tf2::BufferCore`.
 This class and all classes derived from it are responsible for providing coordinate transforms between any two frames in a system.
 This class provides a simple interface to allow recording and lookup of relationships between arbitrary frames of the system.
 
@@ -42,39 +42,39 @@ Additionally, ``tf2`` features data interpolation.
 The probability that a specific query would be at the same timestamp of all the frames in the system is very unlikely in an asynchronous system with nanosecond precision.
 Therefore, for any given query it can be expected that data is interpolated.
 
-It should be noted that buffer implicitly limits the maximum cache size of 10s by default as defined by the tf2::TIMECACHE_DEFAULT_MAX_STORAGE_TIME and it cannot interpolate outside of the cache history.
+It should be noted that buffer implicitly limits the maximum cache size of 10s by default as defined by the `tf2::TIMECACHE_DEFAULT_MAX_STORAGE_TIME` and it cannot interpolate outside of the cache history.
 Thus there is a risk of incurring extrapolation limits based on specific system.
 
 \subsubsection buffer-core-methods Buffer Core Methods
 
-The tf2::BufferCore class contains useful methods to update the existing tf buffer.
+The `tf2::BufferCore` class contains useful methods to update the existing tf buffer.
 
-- tf2::BufferCore::clear
+- `tf2::BufferCore::clear`
 
   - This method clears all data in the buffer.
 
-- tf2::BufferCore::setTransform
+- `tf2::BufferCore::setTransform`
 
-  - This method will add geometry_msgs::msg::TransformStamped information to the tf data structure.
+  - This method will add `geometry_msgs::msg::TransformStamped` information to the tf data structure.
 
-- tf2::BufferCore::lookupTransform
+- `tf2::BufferCore::lookupTransform`
 
   - This method returns the transform between two frames by frame ID.
-  - Possible exceptions are tf2::LookupException, tf2::ConnectivityException, tf2::ExtrapolationException, or tf2::InvalidArgumentException.
+  - Possible exceptions are `tf2::LookupException`, `tf2::ConnectivityException`, `tf2::ExtrapolationException`, or `tf2::InvalidArgumentException`.
 
-- tf2::BufferCore::canTransform
+- `tf2::BufferCore::canTransform`
 
   - This method tests if a transform is possible.
 
-- tf2::BufferCore::getAllFrameNames
+- `tf2::BufferCore::getAllFrameNames`
 
   - This method returns all frames that exist in the system.
 
-- tf2::BufferCore::allFramesAsYAML
+- `tf2::BufferCore::allFramesAsYAML`
 
   - This method allows to see what frames have been cached in yaml format and is useful for debugging tools.
 
-- tf2::BufferCore::allFramesAsString
+- `tf2::BufferCore::allFramesAsString`
 
   - This method allows to see what frames have been cached and is useful for debugging.
 
@@ -86,7 +86,7 @@ This allows the core packages to have minimal dependencies and there be packages
 However it's recommended to use a fully supported math datatype which best supports your application.
 ``tf2`` conversion methods also support converting between and transforming between multiple different datatypes too.
 
-At it's core ``tf2`` relies on the tf2::Stamped data types which can be conveniently correlated to ROS 2 messages which have a std_msgs::msg::Header.
+At it's core ``tf2`` relies on the `tf2::Stamped` data types which can be conveniently correlated to ROS 2 messages which have a `std_msgs::msg::Header`.
 
 \subsubsection data-type-support-packages Data Type Support Packages
 
@@ -128,13 +128,13 @@ There are several sources of conventions for using coordinate frames.
 
 ``tf2`` provides basic geometry data types, such as
 
-  - tf2::Vector3
+  - `tf2::Vector3`
 
-  - tf2::Matrix3x3
+  - `tf2::Matrix3x3`
 
-  - tf2::Quaternion
+  - `tf2::Quaternion`
 
-  - tf2::Transform
+  - `tf2::Transform`
 
 These data types support linear algebra operations between each other.
 
@@ -186,7 +186,7 @@ These data types support linear algebra operations between each other.
 - Native Datatype Interfaces:
 
   - Purpose: Users can interact with ``tf2_ros`` in their native datatypes, the conversion is handled implicitly by the library.
-  - Implementation: There is a tf2::convert templated method that converts from type A to type B using the geometry_msgs types as the common factor.
+  - Implementation: There is a `tf2::convert` templated method that converts from type A to type B using the geometry_msgs types as the common factor.
 
   And as long as any datatype provides the methods ``msgType toMsg(datatype)`` and ``fromMsg(msgType, datatype)`` it can be automatically converted to any other datatype with the same methods defined and a matching ``msgType``.
   All ``tf2_ros`` interfaces can then be called with native type in and native type out.
