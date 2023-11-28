@@ -41,7 +41,7 @@ void getEulerYPR(const A & a, double & yaw, double & pitch, double & roll)
  * This function is a specialization of getEulerYPR and is useful for its
  * wide-spread use in navigation
  * \param a the object to get data from (it represents a rotation/quaternion)
- * \param yaw yaw
+ * \return yaw
  */
 template<class A>
 double getYaw(const A & a)
