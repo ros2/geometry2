@@ -110,7 +110,7 @@ std::string getFrameId(const tf2::Stamped<P> & t)
  *
  * An implementation for WithCovarianceStamped<P> datatypes.
  *
- * \param[in] c The data input.
+ * \param[in] t The data input.
  * \return The covariance matrix associated with the data.
  */
 template<class P>
@@ -135,7 +135,7 @@ B toMsg(const A & a);
  * \param b the object to convert to
  */
 template<typename A, typename B>
-void fromMsg(const A &, B & b);
+void fromMsg(const A & a, B & b);
 
 /**\brief Function that converts any type to any type (messages or not).
  * Matching toMsg and from Msg conversion functions need to exist.

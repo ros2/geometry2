@@ -1,36 +1,195 @@
 /**
 \mainpage
-\htmlinclude manifest.html
 
-\b tf2 is the second generation of the tf library.
+``tf2`` is the second generation of the tf library.
 
-This library implements the interface defined by tf2::BufferCore.
+This library implements the interface defined by `tf2::BufferCore`.
 
 There is also a Python wrapper with the same API that class this library using CPython bindings.
 
-\section codeapi Code API
+Some tutorials are available at <A HREF="http://docs.ros.org/en/rolling/Tutorials/Intermediate/Tf2/Tf2-Main.html">https://docs.ros.org/</A>.
 
-The main interface is through the tf2::BufferCore interface.
+\section architecture Architecture
 
-It uses the exceptions in exceptions.h and the Stamped datatype
-in transform_datatypes.h.
+``tf2`` is a transform library designed to provide implementation of interface that keeps track of multiple coordinate frames over time.
+``tf2`` maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform data between any two coordinate frames at any desired point in time.
+The high level goal is to allow developers and users not to have to worry about which coordinate frame any specific data is stored in.
 
-\section conversions Conversion Interface
+\subsection main-interface Main Interface
 
-tf2 offers a templated conversion interface for external libraries to specify conversions between
-tf2-specific data types and user-defined data types. Various templated functions in tf2_ros use the
-conversion interface to apply transformations from the tf server to these custom datatypes.
+The main interface is through the `tf2::BufferCore` interface.
+
+It uses the exceptions in tf2/exceptions.h and the `tf2::Stamped` datatype in tf2/transform_datatypes.h.
+
+\subsection conversion-interface Conversion Interface
+
+tf2 offers a templated conversion interface for external libraries to specify conversions between ``tf2``-specific data types and user-defined data types.
+Various templated functions in ``tf2_ros`` use the conversion interface to apply transformations from the tf server to these custom datatypes.
 
 The conversion interface is defined in tf2/convert.h.
 
-Some packages that implement this interface:
+\subsection buffer-core-relations Buffer Core: Record and lookup relations between frames
+
+The ``tf2`` library implements the interface defined by `tf2::BufferCore`.
+This class and all classes derived from it are responsible for providing coordinate transforms between any two frames in a system.
+This class provides a simple interface to allow recording and lookup of relationships between arbitrary frames of the system.
+
+``tf2`` assumes that there is a tree of coordinate frame transforms which define the relationship between all coordinate frames.
+After transformation relationships are supplied, query specifiyng target frame, source frame, and time point can be used to obtain required data.
+``tf2`` will take care of all the intermediate transfromation steps for specific queries.
+
+Additionally, ``tf2`` features data interpolation.
+The probability that a specific query would be at the same timestamp of all the frames in the system is very unlikely in an asynchronous system with nanosecond precision.
+Therefore, for any given query it can be expected that data is interpolated.
+
+It should be noted that buffer implicitly limits the maximum cache size of 10s by default as defined by the `tf2::TIMECACHE_DEFAULT_MAX_STORAGE_TIME` and it cannot interpolate outside of the cache history.
+Thus there is a risk of incurring extrapolation limits based on specific system.
+
+\subsubsection buffer-core-methods Buffer Core Methods
+
+The `tf2::BufferCore` class contains useful methods to update the existing tf buffer.
+
+- `tf2::BufferCore::clear`
+
+  - This method clears all data in the buffer.
+
+- `tf2::BufferCore::setTransform`
+
+  - This method will add `geometry_msgs::msg::TransformStamped` information to the tf data structure.
+
+- `tf2::BufferCore::lookupTransform`
+
+  - This method returns the transform between two frames by frame ID.
+  - Possible exceptions are `tf2::LookupException`, `tf2::ConnectivityException`, `tf2::ExtrapolationException`, or `tf2::InvalidArgumentException`.
+
+- `tf2::BufferCore::canTransform`
+
+  - This method tests if a transform is possible.
+
+- `tf2::BufferCore::getAllFrameNames`
+
+  - This method returns all frames that exist in the system.
+
+- `tf2::BufferCore::allFramesAsYAML`
+
+  - This method allows to see what frames have been cached in yaml format and is useful for debugging tools.
+
+- `tf2::BufferCore::allFramesAsString`
+
+  - This method allows to see what frames have been cached and is useful for debugging.
+
+\subsection supported-datatypes Supported Datatypes
+
+``tf2`` implements templated datatype support.
+This allows the core packages to have minimal dependencies and there be packages which add support for converting to and from different datatypes as well as transforming those data types.
+``tf2`` does have an internal datatypes which are based on bullet's LinearMath library.
+However it's recommended to use a fully supported math datatype which best supports your application.
+``tf2`` conversion methods also support converting between and transforming between multiple different datatypes too.
+
+At it's core ``tf2`` relies on the `tf2::Stamped` data types which can be conveniently correlated to ROS 2 messages which have a `std_msgs::msg::Header`.
+
+\subsubsection data-type-support-packages Data Type Support Packages
+
+These packages provide methods to allow ``tf2`` to work natively with data types of any external library.
+Most are either C++ or Python specific.
 
 - tf2_bullet
+
+  - ``tf2`` methods to work with bullet datatypes natively in C++.
+
 - tf2_eigen
+
+  - ``tf2`` methods to work with Eigen datatypes natively in C++.
+
 - tf2_geometry_msgs
+
+  - ``tf2`` methods to work with `geometry_msgs` datatypes natively in C++ or Python.
+
 - tf2_kdl
+
+  - ``tf2`` methods to work with kdl datatypes natively in C++ or Python.
+
 - tf2_sensor_msgs
 
-Some tutorials are available at <A HREF="https://docs.ros.org/en/rolling/Tutorials/tf2.html">https://docs.ros.org/</A>.
+  - ``tf2`` methods to work with sensor_msgs datatypes natively in C++ or Python.
+
+\subsection coordinate-frame-conventions Coordinate Frame Conventions
+
+An important part of using ``tf2`` is to use standard conventions for coordinate frames.
+There are several sources of conventions for using coordinate frames.
+
+- Units, orientation conventions, chirality, rotation representations, and covariance representations are covered in <a href=https://www.ros.org/reps/rep-0103.html>REP 103</a>.
+
+- Standard names for mobile base coordinate frames are covered in <a href=https://www.ros.org/reps/rep-0105.html>REP 105</a>.
+
+- Standard coordinate frames for Humanoid Robots are in <a href=https://www.ros.org/reps/rep-0120.html>REP 120</a>.
+
+\subsection geometry Geometry
+
+``tf2`` provides basic geometry data types, such as
+
+  - `tf2::Vector3`
+
+  - `tf2::Matrix3x3`
+
+  - `tf2::Quaternion`
+
+  - `tf2::Transform`
+
+These data types support linear algebra operations between each other.
+
+\subsection high-level-design High level Design
+
+- A distributed system:
+
+  - Purpose: No bottle neck process and all processes are one step away for minimal latency.
+  - Implementation: Everything is broadcast and reassembled at end consumer points.
+    There can be multiple data sources for tf information.
+    Data is not required to be synchronized by using interpolation, so data can arrive out of order.
+
+- Only transform data between coordinate frames at the time of use:
+
+  - Purpose: Efficiency, both computational, bandwidth, and simplicity.
+  - Implementation: Transform data between given frames only when required.
+
+- Support queries on data which are timestamped at times other than the current time:
+
+  - Purpose: Handle data processing lag gracefully.
+  - Implementation: Interface class stores all transform data in memory and traverses tree on request.
+
+- Only have to know the name of the coordinate frame to work with data:
+
+  - Purpose: Ease of use for users/developers.
+  - Implementation: Use string ``frame_ids`` as unique identifiers.
+
+- The system doesn't need to know about the configuration before hand and can handle reconfiguring on the fly:
+
+  - Purpose: Generic system for any configuration.
+  - Implementation: Use directed tree structure.
+    It allows fast traversal (order ``n`` where ``n`` is the depth of the tree) when evaluating a transform.
+    It can be reconfigured simply by redefining a link.
+    It does not require any structure verification or maintenance of the data structure, except for maintaining a sorted linked list of data for each link.
+
+- Core is ROS agnostic:
+
+  - Purpose: Code reuse.
+  - Implementation: Core library is C++ class.
+    A second class provides ROS interface and instantiates the core library.
+
+- Thread Safe Interface:
+
+  - Purpose: Can be used in a multithreaded program.
+  - Implementation: Mutexes around data storage for each frame.
+    Mutexes around ``frame_id`` lookup map.
+    Each are individually locked and unlocked, neither can block the other.
+
+- Native Datatype Interfaces:
+
+  - Purpose: Users can interact with ``tf2_ros`` in their native datatypes, the conversion is handled implicitly by the library.
+  - Implementation: There is a `tf2::convert` templated method that converts from type A to type B using the geometry_msgs types as the common factor.
+
+  And as long as any datatype provides the methods ``msgType toMsg(datatype)`` and ``fromMsg(msgType, datatype)`` it can be automatically converted to any other datatype with the same methods defined and a matching ``msgType``.
+  All ``tf2_ros`` interfaces can then be called with native type in and native type out.
+  Note, the native type in and out do not need to match.
 
 */
