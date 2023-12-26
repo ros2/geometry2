@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.35.0 (2023-12-26)
+-------------------
 * Avoid unecessary time conversions. (`#635 <https://github.com/ros2/geometry2/issues/635>`_)
 * Contributors: AiVerisimilitude
 
