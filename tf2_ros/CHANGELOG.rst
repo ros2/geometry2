@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Avoid unecessary time conversions. (`#635 <https://github.com/ros2/geometry2/issues/635>`_)
+* Contributors: AiVerisimilitude
+
 0.34.0 (2023-11-06)
 -------------------
 * Expose TF2 listener CB (`#632 <https://github.com/ros2/geometry2/issues/632>`_)

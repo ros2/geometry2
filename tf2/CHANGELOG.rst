@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update the tf2 documentation (`#638 <https://github.com/ros2/geometry2/issues/638>`_)
+* Contributors: Chris Lalancette
+
 0.34.0 (2023-11-06)
 -------------------
 
