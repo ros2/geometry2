@@ -105,6 +105,11 @@ if(BUILD_TESTING)
   if(TARGET test_time)
     target_link_libraries(test_time tf2)
   endif()
+
+  ament_add_gtest(test_storage test/test_storage.cpp)
+  if(TARGET test_storage)
+    target_link_libraries(test_storage tf2)
+  endif()
 endif()
 
 ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
