@@ -67,6 +67,22 @@ public:
     return *this;
   }
 
+  TF2_PUBLIC
+  bool operator==(const TransformStorage & rhs) const
+  {
+    return (this->rotation_ == rhs.rotation_) &&
+           (this->translation_ == rhs.translation_) &&
+           (this->stamp_ == rhs.stamp_) &&
+           (this->frame_id_ == rhs.frame_id_) &&
+           (this->child_frame_id_ == rhs.child_frame_id_);
+  }
+
+  TF2_PUBLIC
+  bool operator!=(const TransformStorage & rhs) const
+  {
+    return !(*this == rhs);
+  }
+
   tf2::Quaternion rotation_;
   tf2::Vector3 translation_;
   TimePoint stamp_;
