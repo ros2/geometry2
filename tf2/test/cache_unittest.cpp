@@ -124,7 +124,7 @@ TEST(TimeCache, RepeatedElements)
   stor.frame_id_ = tf2::CompactFrameID(0);
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(0));
 
-  // Attempt to inster 100 times the exact same element
+  // Attempt to insert the same element 100 times
   for (uint64_t i = 1; i < runs; i++) {
     cache.insertData(stor);
   }
