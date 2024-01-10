@@ -125,7 +125,7 @@ TEST(TimeCache, RepeatedElements)
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(0));
 
   // Attempt to insert the same element 100 times
-  for (uint64_t i = 1; i < runs; i++) {
+  for (uint64_t i = 1; i < runs; ++i) {
     cache.insertData(stor);
   }
 
