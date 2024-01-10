@@ -114,7 +114,7 @@ TEST(TimeCache, RepeatabilityReverseInsertOrder)
 
 TEST(TimeCache, RepeatedElements)
 {
-  unsigned int runs = 100;
+  constexpr uint64_t runs = 100;
 
   tf2::TimeCache cache;
   EXPECT_EQ(cache.getListLength(), 0);
