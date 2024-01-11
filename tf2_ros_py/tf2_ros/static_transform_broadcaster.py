@@ -46,20 +46,32 @@ class StaticTransformBroadcaster:
     :class:`StaticTransformBroadcaster` is a convenient way to send static transformation on the ``"/tf_static"`` message topic.
     """
 
-    def __init__(self, node: Node, qos: Optional[Union[QoSProfile, int]] = None) -> None:
+    def __init__(
+        self,
+        node: Node,
+        qos: Optional[Union[QoSProfile, int]] = None,
+        override_tf_topics_namespaces: bool = False,
+    ) -> None:
         """
         Constructor.
 
         :param node: The ROS2 node.
         :param qos: A QoSProfile or a history depth to apply to the publisher.
+        :param override_tf_topics_namespaces: It true it remaps /tf to tf and /tf_static to tf_static. It allows to use namespaces.
         """
+
+        tf_static_topic = '/tf_static'
+
+        if override_tf_topics_namespaces:
+            tf_static_topic = 'tf_static'
+
         if qos is None:
             qos = QoSProfile(
                 depth=1,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL,
                 history=HistoryPolicy.KEEP_LAST,
                 )
-        self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
+        self.pub_tf = node.create_publisher(TFMessage, tf_static_topic, qos)
 
         self.net_message = TFMessage()
         self._child_frame_ids = set()

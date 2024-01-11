@@ -46,7 +46,8 @@ class TransformBroadcaster:
     def __init__(
         self,
         node: Node,
-        qos: Optional[Union[QoSProfile, int]] = None
+        qos: Optional[Union[QoSProfile, int]] = None,
+        override_tf_topics_namespaces: bool = False,
     ) -> None:
         """
         .. function:: __init__(node, qos=None)
@@ -55,10 +56,17 @@ class TransformBroadcaster:
 
             :param node: The ROS2 node.
             :param qos: A QoSProfile or a history depth to apply to the publisher.
+            :param override_tf_topics_namespaces: It true it remaps /tf to tf and /tf_static to tf_static. It allows to use namespaces.
         """
+
+        tf_topic = '/tf'
+
+        if override_tf_topics_namespaces:
+            tf_topic = 'tf'
+
         if qos is None:
             qos = QoSProfile(depth=100)
-        self.pub_tf = node.create_publisher(TFMessage, "/tf", qos)
+        self.pub_tf = node.create_publisher(TFMessage, tf_topic, qos)
 
     def sendTransform(
         self,

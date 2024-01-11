@@ -51,6 +51,7 @@ class TransformListener:
         self,
         buffer: Buffer,
         node: Node,
+        override_tf_topics_namespaces: bool = False,
         *,
         spin_thread: bool = False,
         qos: Optional[Union[QoSProfile, int]] = None,
@@ -61,6 +62,7 @@ class TransformListener:
 
         :param buffer: The buffer to propagate changes to when tf info updates.
         :param node: The ROS2 node.
+        :param override_tf_topics_namespaces: It true it remaps /tf to tf and /tf_static to tf_static. It allows to use namespaces.
         :param spin_thread: Whether to create a dedidcated thread to spin this node.
         :param qos: A QoSProfile or a history depth to apply to subscribers.
         :param static_qos: A QoSProfile or a history depth to apply to tf_static subscribers.
@@ -82,10 +84,18 @@ class TransformListener:
         # Default callback group is mutually exclusive, which would prevent waiting for transforms
         # from another callback in the same group.
         self.group = ReentrantCallbackGroup()
+
+        tf_topic = '/tf'
+        tf_static_topic = '/tf_static'
+
+        if override_tf_topics_namespaces:
+            tf_topic = 'tf'
+            tf_static_topic = 'tf_static'
+
         self.tf_sub = node.create_subscription(
-            TFMessage, '/tf', self.callback, qos, callback_group=self.group)
+            TFMessage, tf_topic, self.callback, qos, callback_group=self.group)
         self.tf_static_sub = node.create_subscription(
-            TFMessage, '/tf_static', self.static_callback, static_qos, callback_group=self.group)
+            TFMessage, tf_static_topic, self.static_callback, static_qos, callback_group=self.group)
 
         if spin_thread:
             self.executor = SingleThreadedExecutor()
