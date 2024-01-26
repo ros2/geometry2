@@ -216,6 +216,21 @@ public:
     return out;
   }
 
+  template<class T>
+  T & transform(
+    const T & in, T & out,
+    const std::string & target_frame,
+    double duration,
+    tf2::Duration timeout = tf2::durationFromSec(0.0)) const
+  {
+    // do the transform
+    tf2::doTransform(
+      in, out,
+      lookupVelocity(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout),
+      duration);
+    return out;
+  }
+
   /** \brief Transform an input into the target frame.
    * This function is templated and can take as input any valid mathematical object that tf knows
    * how to apply a transform to, by way of the templated math conversions interface.

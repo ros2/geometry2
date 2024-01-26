@@ -48,6 +48,7 @@
 #include "geometry_msgs/msg/pose_with_covariance.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "geometry_msgs/msg/polygon_stamped.hpp"
+#include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "geometry_msgs/msg/wrench.hpp"
 #include "geometry_msgs/msg/wrench_stamped.hpp"
 #include "kdl/frames.hpp"
@@ -1312,6 +1313,51 @@ void fromMsg(const geometry_msgs::msg::Pose & in, tf2::Transform & out)
   out.setRotation(
     tf2::Quaternion(in.orientation.x, in.orientation.y, in.orientation.z, in.orientation.w));
 }
+
+/*********************/
+/** VelocityStamped **/
+/*********************/
+
+/** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs VelocityStamped type.
+ * This function is a specialization of the doTransform template defined in tf2/convert.h.
+ * \param t_in The point to transform, as a VelocityStamped message.
+ * \param t_out The transformed point, as a VelocityStamped message.
+ * \param transform The timestamped transform to apply, as a TransformStamped message.
+ */
+template<>
+inline
+void doTransform(
+  const geometry_msgs::msg::VelocityStamped & t_in,
+  geometry_msgs::msg::VelocityStamped & t_out,
+  const geometry_msgs::msg::TransformStamped & transform,
+  double duration)
+{
+}
+
+// /** \brief Convert a tf2 Vector3 type to its equivalent geometry_msgs representation.
+//  * This function is a specialization of the toMsg template defined in tf2/convert.h.
+//  * \param in A tf2 Vector3 object.
+//  * \return The Vector3 converted to a geometry_msgs message type.
+//  */
+// inline
+// geometry_msgs::msg::Point32 & toMsg(const tf2::Vector3 & in, geometry_msgs::msg::Point32 & out)
+// {
+//   out.x = static_cast<float>(in.getX());
+//   out.y = static_cast<float>(in.getY());
+//   out.z = static_cast<float>(in.getZ());
+//   return out;
+// }
+
+// /** \brief Convert a Vector3 message to its equivalent tf2 representation.
+//  * This function is a specialization of the fromMsg template defined in tf2/convert.h.
+//  * \param in A Vector3 message type.
+//  * \param out The Vector3 converted to a tf2 type.
+//  */
+// inline
+// void fromMsg(const geometry_msgs::msg::Point32 & in, tf2::Vector3 & out)
+// {
+//   out = tf2::Vector3(in.x, in.y, in.z);
+// }
 
 /**********************/
 /*** WrenchStamped ****/

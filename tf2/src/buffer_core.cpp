@@ -38,6 +38,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 #include "tf2/buffer_core.h"
 #include "tf2/time_cache.h"
 #include "tf2/exceptions.h"
@@ -571,6 +573,56 @@ struct TransformAccum
   tf2::Quaternion result_quat;
   tf2::Vector3 result_vec;
 };
+
+geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
+  const std::string & reference_frame, const std::string & moving_frame,
+  const TimePoint & time, const tf2::Duration & duration) const
+{
+  tf2::TimePoint latest_time;
+  // TODO(anyone): This is incorrect, but better than nothing.  Really we want the latest time for
+  // any of the frames
+  getLatestCommonTime(
+    lookupFrameNumber(reference_frame),
+    lookupFrameNumber(moving_frame),
+    latest_time,
+    0);
+
+  auto time_seconds = tf2::timeToSec(time);
+  auto duration_seconds = std::chrono::duration<double>(duration).count();
+
+  auto end_time = std::min(time_seconds + duration_seconds * 0.5 , tf2::timeToSec(latest_time));
+  std::cout << end_time <<" latest " << tf2::timeToSec(latest_time) << " input " << time_seconds << std::endl;
+  auto start_time = end_time - duration_seconds;
+  std::cout << start_time << " start time" << std::endl;
+
+  tf2::Transform start, end;
+  TimePoint time_out;
+  lookupTransformImpl(moving_frame, reference_frame,  tf2::timeFromSec(start_time), start, time_out);
+  lookupTransformImpl(moving_frame, reference_frame,  tf2::timeFromSec(end_time), end, time_out);
+
+  auto temp = start.getBasis().inverse() * end.getBasis();
+  tf2::Quaternion quat_temp;
+  temp.getRotation(quat_temp);
+  auto o = start.getBasis() * quat_temp.getAxis();
+  auto ang = quat_temp.getAngle();
+
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    tf2::timeFromSec(start_time + duration_seconds * 0.5).time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
+    tf2::timeFromSec(start_time + duration_seconds * 0.5).time_since_epoch());
+  geometry_msgs::msg::VelocityStamped velocity;
+  velocity.header.stamp.sec = static_cast<int32_t>(s.count());
+  velocity.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  velocity.header.frame_id = reference_frame;
+  velocity.body_frame_id = moving_frame;
+  velocity.velocity.linear.x =  (end.getOrigin().getX() - start.getOrigin().getX()) / duration_seconds;
+  velocity.velocity.linear.y =  (end.getOrigin().getY() - start.getOrigin().getY()) / duration_seconds;
+  velocity.velocity.linear.z =  (end.getOrigin().getZ() - start.getOrigin().getZ()) / duration_seconds;
+  velocity.velocity.angular.x =  o.x() * ang / duration_seconds;
+  velocity.velocity.angular.y =  o.y() * ang / duration_seconds;
+  velocity.velocity.angular.z =  o.z() * ang / duration_seconds;
+  return velocity;
+}
 
 geometry_msgs::msg::TransformStamped
 BufferCore::lookupTransform(
