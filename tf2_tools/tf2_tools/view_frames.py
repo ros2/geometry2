@@ -1,22 +1,23 @@
-# Copyright (c) 2008, Willow Garage, Inc.
-# All rights reserved.
+# Copyright (c) 2008 Willow Garage Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of the Willow Garage, Inc. nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#
+#    * Neither the name of the Willow Garage, Inc. nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
 # LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 # CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 # SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -32,11 +33,11 @@ import subprocess
 import sys
 import time
 
-import yaml
-
 import rclpy
 from tf2_msgs.srv import FrameGraph
 import tf2_ros
+
+import yaml
 
 
 def main():
@@ -48,13 +49,14 @@ def main():
     parser.add_argument(
         '--wait-time', '-t', type=float, default=5.0,
         help='Listen to the /tf topic for this many seconds before rendering the frame tree')
-    parser.add_argument('-o','--output', help='Output filename')
+    parser.add_argument('-o', '--output', help='Output filename')
     parsed_args = parser.parse_args(args=args_without_ros[1:])
 
     node = rclpy.create_node('view_frames')
 
     buf = tf2_ros.Buffer(node=node)
     listener = tf2_ros.TransformListener(buf, node, spin_thread=False)
+    listener  # To quiet a flake8 warning
 
     executor = rclpy.executors.SingleThreadedExecutor()
     executor.add_node(node)
@@ -82,10 +84,9 @@ def main():
     except Exception as e:
         node.get_logger().error('Service call failed %r' % (e,))
     else:
-        node.get_logger().info(
-            'Result:'+ str(result) )
+        node.get_logger().info('Result:' + str(result))
         data = yaml.safe_load(result.frame_yaml)
-        
+
         if parsed_args.output is not None:
             frames_gv = '{:s}.gv'.format(parsed_args.output)
             frames_pdf = '{:s}.pdf'.format(parsed_args.output)
@@ -93,10 +94,10 @@ def main():
             datetime = time.strftime('%Y-%m-%d_%H.%M.%S')
             frames_gv = 'frames_{:s}.gv'.format(datetime)
             frames_pdf = 'frames_{:s}.pdf'.format(datetime)
-        
+
         with open(frames_gv, 'w') as f:
             f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
-        
+
         cmd = ['dot', '-Tpdf', frames_gv, '-o', frames_pdf]
         subprocess.Popen(cmd).communicate()
     finally:
@@ -105,27 +106,29 @@ def main():
         rclpy.shutdown()
         return ret
 
+
 def generate_dot(data, recorded_time):
     if len(data) == 0:
         return 'digraph G { "No tf data received" }'
 
     dot = 'digraph G {\n'
     for el in data:
-        map = data[el]
-        dot += '"'+map['parent']+'" -> "'+str(el)+'"'
+        data_map = data[el]
+        dot += '"' + data_map['parent'] + '" -> "' + str(el)+'"'
         dot += '[label=" '
-        dot += 'Broadcaster: '+map['broadcaster']+'\\n'
-        dot += 'Average rate: '+str(map['rate'])+'\\n'
-        dot += 'Buffer length: '+str(map['buffer_length'])+'\\n'
-        dot += 'Most recent transform: '+str(map['most_recent_transform'])+'\\n'
-        dot += 'Oldest transform: '+str(map['oldest_transform'])+'\\n'
+        dot += 'Broadcaster: ' + data_map['broadcaster'] + '\\n'
+        dot += 'Average rate: ' + str(data_map['rate']) + '\\n'
+        dot += 'Buffer length: ' + str(data_map['buffer_length']) + '\\n'
+        dot += 'Most recent transform: ' + str(data_map['most_recent_transform']) + '\\n'
+        dot += 'Oldest transform: ' + str(data_map['oldest_transform']) + '\\n'
         dot += '"];\n'
-        if not map['parent'] in data:
-            root = map['parent']
+        if not data_map['parent'] in data:
+            root = data_map['parent']
     dot += 'edge [style=invis];\n'
     dot += ' subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";\n'
-    dot += '"Recorded at time: '+str(recorded_time[0]+recorded_time[1]/1e9)+'"[ shape=plaintext ] ;\n'
-    dot += '}->"'+root+'";\n}'
+    dot += '"Recorded at time: ' + str(recorded_time[0] + recorded_time[1] / 1e9) + \
+        '"[ shape=plaintext ] ;\n'
+    dot += '}->"' + root + '";\n}'
     return dot
 
 
