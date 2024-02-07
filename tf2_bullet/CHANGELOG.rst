@@ -2,8 +2,8 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.36.0 (2024-02-07)
+-------------------
 * Removed obsolete headers (`#645 <https://github.com/ros2/geometry2/issues/645>`_)
 * Contributors: Alejandro Hernández Cordero
 
