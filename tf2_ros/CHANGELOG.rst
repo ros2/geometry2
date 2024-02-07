@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Enable intra-process (`#649 <https://github.com/ros2/geometry2/issues/649>`_) (`#642 <https://github.com/ros2/geometry2/issues/642>`_)
+* Contributors: Patrick Roncagliolo
+
 0.35.1 (2024-01-24)
 -------------------
 

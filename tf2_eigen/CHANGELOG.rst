@@ -2,6 +2,12 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removed obsolete headers (`#645 <https://github.com/ros2/geometry2/issues/645>`_)
+* normalize quaternions on tf2_eigen (`#644 <https://github.com/ros2/geometry2/issues/644>`_)
+* Contributors: Alejandro Hernández Cordero, Paul Gesel
+
 0.35.1 (2024-01-24)
 -------------------
 

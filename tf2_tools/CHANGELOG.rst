@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add in tests for tf2_tools. (`#647 <https://github.com/ros2/geometry2/issues/647>`_)
+* Contributors: Chris Lalancette
+
 0.35.1 (2024-01-24)
 -------------------
 
