@@ -66,15 +66,6 @@ public:
         rclcpp::QosPolicyKind::Depth,
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
-      /*
-        This flag disables intra-process communication while publishing to
-        /tf_static topic, when the StaticTransformBroadcaster is constructed
-        using an existing node handle which happens to be a component
-        (in rclcpp terminology).
-        Required until rclcpp intra-process communication supports
-        transient_local QoS durability.
-      */
-      options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
       return options;
     } ())
     : StaticTransformBroadcaster(
@@ -96,15 +87,6 @@ public:
         rclcpp::QosPolicyKind::Depth,
         rclcpp::QosPolicyKind::History,
         rclcpp::QosPolicyKind::Reliability};
-      /*
-        This flag disables intra-process communication while publishing to
-        /tf_static topic, when the StaticTransformBroadcaster is constructed
-        using an existing node handle which happens to be a component
-        (in rclcpp terminology).
-        Required until rclcpp intra-process communication supports
-        transient_local QoS durability.
-      */
-      options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
       return options;
     } ())
   {

@@ -61,14 +61,6 @@ get_default_transform_listener_sub_options()
     rclcpp::QosPolicyKind::Durability,
     rclcpp::QosPolicyKind::History,
     rclcpp::QosPolicyKind::Reliability};
-  /*
-    This flag disables intra-process communication while subscribing to
-    /tf topic, when the TransformListener is constructed using an existing
-    node handle which happens to be a component (in rclcpp terminology).
-    Required until rclcpp intra-process communication supports
-    transient_local QoS durability.
-  */
-  options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
   return options;
 }
 
@@ -81,14 +73,6 @@ get_default_transform_listener_static_sub_options()
     rclcpp::QosPolicyKind::Depth,
     rclcpp::QosPolicyKind::History,
     rclcpp::QosPolicyKind::Reliability};
-  /*
-    This flag disables intra-process communication while subscribing to
-    /tf_static topic, when the TransformListener is constructed using an existing
-    node handle which happens to be a component (in rclcpp terminology).
-    Required until rclcpp intra-process communication supports
-    transient_local QoS durability.
-  */
-  options.use_intra_process_comm = rclcpp::IntraProcessSetting::Disable;
   return options;
 }
 }  // namespace detail
