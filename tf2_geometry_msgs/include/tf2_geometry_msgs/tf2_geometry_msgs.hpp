@@ -1332,32 +1332,47 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   double duration)
 {
+  tf2::Vector3 twist_rot(t_in.velocity.angular.x,
+                        t_in.velocity.angular.y,
+                        t_in.velocity.angular.z);
+  tf2::Vector3 twist_vel(t_in.velocity.linear.x,
+                        t_in.velocity.linear.y,
+                        t_in.velocity.linear.z);
+  tf2::Transform transform_temp;
+
+  transform_temp.setOrigin(tf2::Vector3(
+    transform.transform.translation.x,
+    transform.transform.translation.y,
+    transform.transform.translation.z));
+  transform_temp.setRotation(tf2::Quaternion(
+    transform.transform.rotation.x,
+    transform.transform.rotation.y,
+    transform.transform.rotation.z,
+    transform.transform.rotation.w));
+
+  // tf2::Transform start, end;
+  // TimePoint time_out;
+  // lookupTransformImpl(
+  //     observation_frame, tracking_frame, tf2::timeFromSec(
+  //       start_time), start, time_out);
+
+  // tf::StampedTransform transform;
+  // lookupTransform(target_frame,msg_in.header.frame_id,  msg_in.header.stamp, transform);
+
+  tf2::Vector3 out_rot = transform_temp.getBasis() * twist_rot;
+  tf2::Vector3 out_vel = transform_temp.getBasis() * twist_vel + transform_temp.getOrigin().cross(out_rot);
+
+  // geometry_msgs::TwistStamped interframe_twist;
+  // lookupVelocity(target_frame, msg_in.header.frame_id, msg_in.header.stamp, ros::Duration(0.1), interframe_twist); //\todo get rid of hard coded number
+
+  t_out.header = t_in.header;
+  t_out.velocity.linear.x =  out_vel.x() + t_in.velocity.linear.x;
+  t_out.velocity.linear.y =  out_vel.y() + t_in.velocity.linear.y;
+  t_out.velocity.linear.z =  out_vel.z() + t_in.velocity.linear.z;
+  t_out.velocity.angular.x =  out_rot.x() + t_in.velocity.angular.x;
+  t_out.velocity.angular.y =  out_rot.y() + t_in.velocity.angular.y;
+  t_out.velocity.angular.z =  out_rot.z() + t_in.velocity.angular.z;
 }
-
-// /** \brief Convert a tf2 Vector3 type to its equivalent geometry_msgs representation.
-//  * This function is a specialization of the toMsg template defined in tf2/convert.h.
-//  * \param in A tf2 Vector3 object.
-//  * \return The Vector3 converted to a geometry_msgs message type.
-//  */
-// inline
-// geometry_msgs::msg::Point32 & toMsg(const tf2::Vector3 & in, geometry_msgs::msg::Point32 & out)
-// {
-//   out.x = static_cast<float>(in.getX());
-//   out.y = static_cast<float>(in.getY());
-//   out.z = static_cast<float>(in.getZ());
-//   return out;
-// }
-
-// /** \brief Convert a Vector3 message to its equivalent tf2 representation.
-//  * This function is a specialization of the fromMsg template defined in tf2/convert.h.
-//  * \param in A Vector3 message type.
-//  * \param out The Vector3 converted to a tf2 type.
-//  */
-// inline
-// void fromMsg(const geometry_msgs::msg::Point32 & in, tf2::Vector3 & out)
-// {
-//   out = tf2::Vector3(in.x, in.y, in.z);
-// }
 
 /**********************/
 /*** WrenchStamped ****/

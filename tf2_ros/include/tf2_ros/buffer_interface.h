@@ -226,7 +226,7 @@ public:
     // do the transform
     tf2::doTransform(
       in, out,
-      lookupVelocity(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout),
+      lookupTransform(target_frame, tf2::getFrameId(in), tf2::getTimestamp(in), timeout),
       duration);
     return out;
   }
