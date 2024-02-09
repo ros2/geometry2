@@ -158,7 +158,7 @@ public:
     const std::string & fixed_frame) const override;
 
   geometry_msgs::msg::VelocityStamped lookupVelocity(
-    const std::string& tracking_frame, const std::string& observation_frame,
+    const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
 
   /** \brief Lookup the velocity of the moving_frame in the reference_frame

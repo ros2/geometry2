@@ -229,9 +229,9 @@ TEST(test_buffer, velocity_transform)
 
   output =
     buffer.lookupVelocity(
-      "bar", "foo",
-      "bar", {0, 0, 0}, "bar",
-      tf2_time, tf2::durationFromSec(0.1));
+    "bar", "foo",
+    "bar", {0, 0, 0}, "bar",
+    tf2_time, tf2::durationFromSec(0.1));
 }
 
 
@@ -248,14 +248,14 @@ TEST(test_buffer, test_twist)
   std::cout << "seconds " << rclcpp_time.seconds() << std::endl;
 
   float vel = 0.3;
-  for (int i = -10; i < 5; ++i)
-  {
+  for (int i = -10; i < 5; ++i) {
     geometry_msgs::msg::TransformStamped transform;
     transform.header.frame_id = "PARENT";
-    if (i < 0)
-    {
-      transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(std::fabs(i), 0));
-      std::cout << "seconds " << (rclcpp_time - rclcpp::Duration(std::fabs(i), 0)).seconds() << std::endl;
+    if (i < 0) {
+      transform.header.stamp =
+        builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(std::fabs(i), 0));
+      std::cout << "seconds " <<
+        (rclcpp_time - rclcpp::Duration(std::fabs(i), 0)).seconds() << std::endl;
 
     } else {
       transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time + rclcpp::Duration(i, 0));
@@ -275,7 +275,9 @@ TEST(test_buffer, test_twist)
   auto tw0 = buffer.lookupVelocity("THISFRAME", "PARENT", tf2_time, tf2::durationFromSec(4.001));
   std::cout << "tw0 : " << tw0.velocity.linear.x << std::endl;
 
-  auto tw1 = buffer.lookupVelocity("THISFRAME", "PARENT", "PARENT", {0, 0, 0}, "THISFRAME", tf2_time, tf2::durationFromSec(4.001));
+  auto tw1 = buffer.lookupVelocity(
+    "THISFRAME", "PARENT", "PARENT", {0, 0, 0}, "THISFRAME",
+    tf2_time, tf2::durationFromSec(4.001));
   std::cout << "tw1 : " << tw1.velocity.linear.x << std::endl;
 }
 
