@@ -21,13 +21,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   add_compile_options(-Wno-cast-function-type)
 endif()
 
-# Figure out Python3 debug/release before anything else can find_package it
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-  find_package(python_cmake_module REQUIRED)
-  find_package(PythonExtra REQUIRED)
-  # Force FindPython3 to use the debug interpretter where ROS 2 expects it
-  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 find_package(ament_cmake REQUIRED)
@@ -41,7 +34,7 @@ python3_add_library(_tf2_py src/tf2_py.cpp)
 
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   # python3_add_library should really take care of this for us, but it doesn't
-  set_property(TARGET _tf2_py PROPERTY SUFFIX "_d.pyd")
+  set_target_properties(_tf2_py PROPERTIES DEBUG_POSTFIX "_d")
 endif()
 
 # Set output directories to import module from the build directory

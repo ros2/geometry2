@@ -10,13 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
 
-# Figure out Python3 debug/release before anything else can find_package it
-if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-  find_package(python_cmake_module REQUIRED)
-  find_package(PythonExtra REQUIRED)
-  # Force FindPython3 to use the debug interpretter where ROS 2 expects it
-  set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 find_package(eigen3_cmake_module REQUIRED)
