@@ -112,6 +112,27 @@ TEST(TimeCache, RepeatabilityReverseInsertOrder)
   }
 }
 
+TEST(TimeCache, RepeatedElements)
+{
+  constexpr uint64_t runs = 100;
+
+  tf2::TimeCache cache;
+  EXPECT_EQ(cache.getListLength(), 0);
+
+  tf2::TransformStorage stor;
+  setIdentity(stor);
+  stor.frame_id_ = tf2::CompactFrameID(0);
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(0));
+
+  // Attempt to insert the same element 100 times
+  for (uint64_t i = 1; i < runs; ++i) {
+    cache.insertData(stor);
+  }
+
+  // Even after 100 insertions, there should be one unique element in the internal list
+  EXPECT_EQ(cache.getListLength(), 1);
+}
+
 TEST(TimeCache, ZeroAtFront)
 {
   uint64_t runs = 100;
