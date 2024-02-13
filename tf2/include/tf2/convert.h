@@ -59,12 +59,6 @@ void doTransform(
   const T & data_in, T & data_out,
   const geometry_msgs::msg::TransformStamped & transform);
 
-template<class T>
-void doTransform(
-  const T & data_in, T & data_out,
-  const geometry_msgs::msg::TransformStamped & transform,
-  double duration);
-
 /**\brief Get the timestamp from data
  * \param[in] t The data input.
  * \return The timestamp associated with the data.

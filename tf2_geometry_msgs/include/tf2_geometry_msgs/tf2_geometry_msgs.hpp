@@ -1329,8 +1329,7 @@ inline
 void doTransform(
   const geometry_msgs::msg::VelocityStamped & t_in,
   geometry_msgs::msg::VelocityStamped & t_out,
-  const geometry_msgs::msg::TransformStamped & transform,
-  double duration)
+  const geometry_msgs::msg::TransformStamped & transform)
 {
   tf2::Vector3 twist_rot(t_in.velocity.angular.x,
                         t_in.velocity.angular.y,

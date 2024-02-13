@@ -260,7 +260,7 @@ class TestBufferClient(unittest.TestCase):
 
         self.assertEqual(LookupException, type(ex.exception))
 
-    def test_twist(self):
+    def test_velocity(self):
         buffer_core = BufferCore()
 
         vel = 3
