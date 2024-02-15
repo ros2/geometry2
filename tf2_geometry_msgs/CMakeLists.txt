@@ -15,6 +15,8 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   find_package(PythonExtra REQUIRED)
   # Force FindPython3 to use the debug interpretter where ROS 2 expects it
   set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
+elseif(NOT Python3_EXECUTABLE)
+  find_program(Python3_EXECUTABLE python3)
 endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
