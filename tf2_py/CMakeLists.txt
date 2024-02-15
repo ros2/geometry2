@@ -26,7 +26,16 @@ if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   find_package(PythonExtra REQUIRED)
   # Force FindPython3 to use the debug interpretter where ROS 2 expects it
   set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE_DEBUG}")
-elseif(NOT Python3_EXECUTABLE)
+elseif(NOT WIN32 AND NOT Python3_EXECUTABLE)
+  # We expect that Python dependencies are met for whatever Python interpreter
+  # is invoked by the "python3" executable, however this may not be the latest
+  # Python version installed on the system. The default behavior of
+  # find_package(Python3) is to use the latest version (e.x. python3.12), so we
+  # specifically look for a "python3" executable and if found, instruct
+  # find_package(Python3) to use that.
+  # On Windows, the find_package(Python3) logic is different and doesn't
+  # appear to prefer specific versions (e.x. python3.12) over plain
+  # "python.exe" so this extra logic is unnecessary there.
   find_program(Python3_EXECUTABLE python3)
 endif()
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
