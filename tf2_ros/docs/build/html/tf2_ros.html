@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tf2_ros Python API &mdash; tf2_ros 3.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Tools" href="cli_tools.html" />
+    <link rel="prev" title="Overview" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            tf2_ros
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">tf2_ros Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2.TransformException"><code class="docutils literal notranslate"><span class="pre">tf2.TransformException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2.ConnectivityException"><code class="docutils literal notranslate"><span class="pre">tf2.ConnectivityException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2.LookupException"><code class="docutils literal notranslate"><span class="pre">tf2.LookupException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2.ExtrapolationException"><code class="docutils literal notranslate"><span class="pre">tf2.ExtrapolationException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2.InvalidArgumentException"><code class="docutils literal notranslate"><span class="pre">tf2.InvalidArgumentException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.buffer_interface.TypeException"><code class="docutils literal notranslate"><span class="pre">TypeException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.buffer_interface.NotImplementedException"><code class="docutils literal notranslate"><span class="pre">NotImplementedException</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bufferinterface">BufferInterface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface"><code class="docutils literal notranslate"><span class="pre">BufferInterface</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.can_transform"><code class="docutils literal notranslate"><span class="pre">BufferInterface.can_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.can_transform_full"><code class="docutils literal notranslate"><span class="pre">BufferInterface.can_transform_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.lookup_transform"><code class="docutils literal notranslate"><span class="pre">BufferInterface.lookup_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.lookup_transform_full"><code class="docutils literal notranslate"><span class="pre">BufferInterface.lookup_transform_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.transform"><code class="docutils literal notranslate"><span class="pre">BufferInterface.transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface.transform_full"><code class="docutils literal notranslate"><span class="pre">BufferInterface.transform_full()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#buffer">Buffer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.buffer.Buffer"><code class="docutils literal notranslate"><span class="pre">Buffer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.can_transform"><code class="docutils literal notranslate"><span class="pre">Buffer.can_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.can_transform_full"><code class="docutils literal notranslate"><span class="pre">Buffer.can_transform_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.lookup_transform"><code class="docutils literal notranslate"><span class="pre">Buffer.lookup_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.lookup_transform_async"><code class="docutils literal notranslate"><span class="pre">Buffer.lookup_transform_async()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.lookup_transform_full"><code class="docutils literal notranslate"><span class="pre">Buffer.lookup_transform_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.lookup_transform_full_async"><code class="docutils literal notranslate"><span class="pre">Buffer.lookup_transform_full_async()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.set_transform"><code class="docutils literal notranslate"><span class="pre">Buffer.set_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.set_transform_static"><code class="docutils literal notranslate"><span class="pre">Buffer.set_transform_static()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.time_jump_callback"><code class="docutils literal notranslate"><span class="pre">Buffer.time_jump_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.wait_for_transform_async"><code class="docutils literal notranslate"><span class="pre">Buffer.wait_for_transform_async()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer.Buffer.wait_for_transform_full_async"><code class="docutils literal notranslate"><span class="pre">Buffer.wait_for_transform_full_async()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bufferclient">BufferClient</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient"><code class="docutils literal notranslate"><span class="pre">BufferClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient.can_transform"><code class="docutils literal notranslate"><span class="pre">BufferClient.can_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient.can_transform_full"><code class="docutils literal notranslate"><span class="pre">BufferClient.can_transform_full()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient.destroy"><code class="docutils literal notranslate"><span class="pre">BufferClient.destroy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient.lookup_transform"><code class="docutils literal notranslate"><span class="pre">BufferClient.lookup_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.buffer_client.BufferClient.lookup_transform_full"><code class="docutils literal notranslate"><span class="pre">BufferClient.lookup_transform_full()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#transformbroadcaster">TransformBroadcaster</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.transform_broadcaster.TransformBroadcaster"><code class="docutils literal notranslate"><span class="pre">TransformBroadcaster</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.transform_broadcaster.TransformBroadcaster.__init__"><code class="docutils literal notranslate"><span class="pre">TransformBroadcaster.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.transform_broadcaster.TransformBroadcaster.sendTransform"><code class="docutils literal notranslate"><span class="pre">TransformBroadcaster.sendTransform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#transformlistener">TransformListener</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tf2_ros.transform_listener.TransformListener"><code class="docutils literal notranslate"><span class="pre">TransformListener</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.transform_listener.TransformListener.callback"><code class="docutils literal notranslate"><span class="pre">TransformListener.callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.transform_listener.TransformListener.static_callback"><code class="docutils literal notranslate"><span class="pre">TransformListener.static_callback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tf2_ros.transform_listener.TransformListener.unregister"><code class="docutils literal notranslate"><span class="pre">TransformListener.unregister()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html">Command Line Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html#frame-poses">Frame Poses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_tools.html#tf-tree-introspection">TF tree introspection</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tf2_ros</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">tf2_ros Python API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tf2_ros.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tf2-ros-python-api">
+<h1>tf2_ros Python API<a class="headerlink" href="#tf2-ros-python-api" title="Permalink to this heading"></a></h1>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2.TransformException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2.</span></span><span class="sig-name descname"><span class="pre">TransformException</span></span><a class="headerlink" href="#tf2.TransformException" title="Permalink to this definition"></a></dt>
+<dd><p>base class for tf exceptions.  Because <a class="reference internal" href="#tf2.TransformException" title="tf2.TransformException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">tf2.TransformException</span></code></a> is the
+base class for other exceptions, you can catch all tf exceptions
+by writing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># do some tf2 work</span>
+<span class="k">except</span> <span class="n">tf2</span><span class="o">.</span><span class="n">TransformException</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="s2">&quot;some tf2 exception happened&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2.ConnectivityException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2.</span></span><span class="sig-name descname"><span class="pre">ConnectivityException</span></span><a class="headerlink" href="#tf2.ConnectivityException" title="Permalink to this definition"></a></dt>
+<dd><p>subclass of <code class="xref py py-exc docutils literal notranslate"><span class="pre">TransformException</span></code>.
+Raised when that the fixed_frame tree is not connected between the frames requested.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2.LookupException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2.</span></span><span class="sig-name descname"><span class="pre">LookupException</span></span><a class="headerlink" href="#tf2.LookupException" title="Permalink to this definition"></a></dt>
+<dd><p>subclass of <code class="xref py py-exc docutils literal notranslate"><span class="pre">TransformException</span></code>.
+Raised when a tf method has attempted to access a frame, but
+the frame is not in the graph.
+The most common reason for this is that the frame is not
+being published, or a parent frame was not set correctly
+causing the tree to be broken.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2.ExtrapolationException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2.</span></span><span class="sig-name descname"><span class="pre">ExtrapolationException</span></span><a class="headerlink" href="#tf2.ExtrapolationException" title="Permalink to this definition"></a></dt>
+<dd><p>subclass of <code class="xref py py-exc docutils literal notranslate"><span class="pre">TransformException</span></code>
+Raised when a tf method would have required extrapolation beyond current limits.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2.InvalidArgumentException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2.</span></span><span class="sig-name descname"><span class="pre">InvalidArgumentException</span></span><a class="headerlink" href="#tf2.InvalidArgumentException" title="Permalink to this definition"></a></dt>
+<dd><p>subclass of <code class="xref py py-exc docutils literal notranslate"><span class="pre">TransformException</span></code>.
+Raised when the arguments to the method are called improperly formed.  An example of why this might be raised is if an argument is nan.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.TypeException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.buffer_interface.</span></span><span class="sig-name descname"><span class="pre">TypeException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errstr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.buffer_interface.TypeException" title="Permalink to this definition"></a></dt>
+<dd><p>Raised when an unexpected type is received while registering a transform
+in <a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface" title="tf2_ros.buffer_interface.BufferInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">tf2_ros.buffer_interface.BufferInterface</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.NotImplementedException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.buffer_interface.</span></span><span class="sig-name descname"><span class="pre">NotImplementedException</span></span><a class="headerlink" href="#tf2_ros.buffer_interface.NotImplementedException" title="Permalink to this definition"></a></dt>
+<dd><p>Raised when can_transform or lookup_transform is not implemented in a
+subclass of <a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface" title="tf2_ros.buffer_interface.BufferInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">tf2_ros.buffer_interface.BufferInterface</span></code></a>.</p>
+</dd></dl>
+
+</section>
+<section id="bufferinterface">
+<h2>BufferInterface<a class="headerlink" href="#bufferinterface" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.buffer_interface.</span></span><span class="sig-name descname"><span class="pre">BufferInterface</span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract interface for wrapping the Python bindings for the tf2 library in
+a ROS-based convenience API.
+Implementations include :class:tf2_ros.buffer.Buffer and
+:class:tf2_ros.buffer_client.BufferClient.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.can_transform">
+<span class="sig-name descname"><span class="pre">can_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.can_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible.</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.can_transform_full">
+<span class="sig-name descname"><span class="pre">can_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.can_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible (advanced API).</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.lookup_transform">
+<span class="sig-name descname"><span class="pre">lookup_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.lookup_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame.</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.lookup_transform_full">
+<span class="sig-name descname"><span class="pre">lookup_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.lookup_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame using the advanced API.</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_stamped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PointStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseWithCovarianceStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Vector3Stamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PointCloud2</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PyKDLType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformableObjectType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PointStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseWithCovarianceStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Vector3Stamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PointCloud2</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PyKDLType</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transform an input into the target frame.</p>
+<p>The input must be a known transformable type (by way of the tf2 data type conversion interface).</p>
+<p>If new_type is not None, the type specified must have a valid conversion from the input type,
+else the function will raise an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object_stamped</strong> – The timestamped object to transform.</p></li>
+<li><p><strong>target_frame</strong> – Name of the frame to transform the input into.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>new_type</strong> – Type to convert the object to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed, timestamped output, possibly converted to a new type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_interface.BufferInterface.transform_full">
+<span class="sig-name descname"><span class="pre">transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_stamped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PointStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseWithCovarianceStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Vector3Stamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PointCloud2</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PyKDLType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformableObjectType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PointStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PoseWithCovarianceStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Vector3Stamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PointCloud2</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PyKDLType</span></span></span><a class="headerlink" href="#tf2_ros.buffer_interface.BufferInterface.transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Transform an input into the target frame (advanced API).</p>
+<p>The input must be a known transformable type (by way of the tf2 data type conversion interface).</p>
+<p>If new_type is not None, the type specified must have a valid conversion from the input type,
+else the function will raise an exception.</p>
+<p>This function follows the advanced API, which allows tranforming between different time points,
+as well as specifying a frame to be considered fixed in time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object_stamped</strong> – The timestamped object to transform.</p></li>
+<li><p><strong>target_frame</strong> – Name of the frame to transform the input into.</p></li>
+<li><p><strong>target_time</strong> – Time to transform the input into.</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>new_type</strong> – Type to convert the object to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed, timestamped output, possibly converted to a new type.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="buffer">
+<h2>Buffer<a class="headerlink" href="#buffer" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.buffer.</span></span><span class="sig-name descname"><span class="pre">Buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.buffer.Buffer" title="Permalink to this definition"></a></dt>
+<dd><p>Standard implementation of the <code class="xref py py-class docutils literal notranslate"><span class="pre">tf2_ros.BufferInterface</span></code> abstract data type.</p>
+<p>Inherits from <a class="reference internal" href="#tf2_ros.buffer_interface.BufferInterface" title="tf2_ros.buffer_interface.BufferInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">tf2_ros.buffer_interface.BufferInterface</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">tf2.BufferCore</span></code>.</p>
+<p>Stores known frames and offers a ROS service, “tf_frames”, which responds to client requests
+with a response containing a <code class="xref py py-class docutils literal notranslate"><span class="pre">tf2_msgs.FrameGraph</span></code> representing the relationship of
+known frames.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_time</strong> – Duration object describing how long to retain past information in BufferCore.</p></li>
+<li><p><strong>node</strong> – Create a tf2_frames service that returns all frames as a yaml document.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.can_transform">
+<span class="sig-name descname"><span class="pre">can_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_debug_tuple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.can_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>return_debug_type</strong> – If true, return a tuple representing debug information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.can_transform_full">
+<span class="sig-name descname"><span class="pre">can_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_debug_tuple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.can_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible (advanced API).</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>return_debug_type</strong> – If true, return a tuple representing debug information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.lookup_transform">
+<span class="sig-name descname"><span class="pre">lookup_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.lookup_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.lookup_transform_async">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lookup_transform_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.lookup_transform_async" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame asyncronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.lookup_transform_full">
+<span class="sig-name descname"><span class="pre">lookup_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.lookup_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame using the advanced API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.lookup_transform_full_async">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lookup_transform_full_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.lookup_transform_full_async" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame using the advanced API asyncronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.set_transform">
+<span class="sig-name descname"><span class="pre">set_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformStamped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.set_transform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.set_transform_static">
+<span class="sig-name descname"><span class="pre">set_transform_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformStamped</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">authority</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.set_transform_static" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.time_jump_callback">
+<span class="sig-name descname"><span class="pre">time_jump_callback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.buffer.Buffer.time_jump_callback" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.wait_for_transform_async">
+<span class="sig-name descname"><span class="pre">wait_for_transform_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Future</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.wait_for_transform_async" title="Permalink to this definition"></a></dt>
+<dd><p>Wait for a transform from the source frame to the target frame to become possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A future that becomes true when the transform is available.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer.Buffer.wait_for_transform_full_async">
+<span class="sig-name descname"><span class="pre">wait_for_transform_full_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Future</span></span></span><a class="headerlink" href="#tf2_ros.buffer.Buffer.wait_for_transform_full_async" title="Permalink to this definition"></a></dt>
+<dd><p>Wait for a transform from the source frame to the target frame to become possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to (0 will get the latest).</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated (0 will get the latest).</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A future that becomes true when the transform is available.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="bufferclient">
+<h2>BufferClient<a class="headerlink" href="#bufferclient" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.buffer_client.</span></span><span class="sig-name descname"><span class="pre">BufferClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=2000000000)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient" title="Permalink to this definition"></a></dt>
+<dd><p>Action client-based implementation of BufferInterface.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> – The ROS2 node.</p></li>
+<li><p><strong>ns</strong> – The namespace in which to look for a BufferServer.</p></li>
+<li><p><strong>check_frequency</strong> – How frequently to check for updates to known transforms.</p></li>
+<li><p><strong>timeout_padding</strong> – A constant timeout to add to blocking calls.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient.can_transform">
+<span class="sig-name descname"><span class="pre">can_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient.can_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform. (0 will get the latest)</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>return_debug_type</strong> – If true, return a tuple representing debug information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient.can_transform_full">
+<span class="sig-name descname"><span class="pre">can_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient.can_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a transform from the source frame to the target frame is possible (advanced API).</p>
+<p>Must be implemented by a subclass of BufferInterface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to. (0 will get the latest)</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated. (0 will get the latest)</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+<li><p><strong>return_debug_type</strong> – If true, return a tuple representing debug information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the transform is possible, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient.destroy" title="Permalink to this definition"></a></dt>
+<dd><p>Cleanup resources associated with this BufferClient.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient.lookup_transform">
+<span class="sig-name descname"><span class="pre">lookup_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient.lookup_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>time</strong> – The time at which to get the transform (0 will get the latest).</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.buffer_client.BufferClient.lookup_transform_full">
+<span class="sig-name descname"><span class="pre">lookup_transform_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Duration</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Duration(nanoseconds=0)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TransformStamped</span></span></span><a class="headerlink" href="#tf2_ros.buffer_client.BufferClient.lookup_transform_full" title="Permalink to this definition"></a></dt>
+<dd><p>Get the transform from the source frame to the target frame using the advanced API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_frame</strong> – Name of the frame to transform into.</p></li>
+<li><p><strong>target_time</strong> – The time to transform to. (0 will get the latest)</p></li>
+<li><p><strong>source_frame</strong> – Name of the input frame.</p></li>
+<li><p><strong>source_time</strong> – The time at which source_frame will be evaluated. (0 will get the latest)</p></li>
+<li><p><strong>fixed_frame</strong> – Name of the frame to consider constant in time.</p></li>
+<li><p><strong>timeout</strong> – Time to wait for the target frame to become available.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transform between the frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="transformbroadcaster">
+<h2>TransformBroadcaster<a class="headerlink" href="#transformbroadcaster" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tf2_ros.transform_broadcaster.TransformBroadcaster">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.transform_broadcaster.</span></span><span class="sig-name descname"><span class="pre">TransformBroadcaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QoSProfile</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.transform_broadcaster.TransformBroadcaster" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="#tf2_ros.transform_broadcaster.TransformBroadcaster" title="tf2_ros.transform_broadcaster.TransformBroadcaster"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformBroadcaster</span></code></a> is a convenient way to send transformation updates on the <code class="docutils literal notranslate"><span class="pre">&quot;/tf&quot;</span></code> message topic.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tf2_ros.transform_broadcaster.TransformBroadcaster.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.transform_broadcaster.TransformBroadcaster.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> – The ROS2 node.</p></li>
+<li><p><strong>qos</strong> – A QoSProfile or a history depth to apply to the publisher.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.transform_broadcaster.TransformBroadcaster.sendTransform">
+<span class="sig-name descname"><span class="pre">sendTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TransformStamped</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TransformStamped</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.transform_broadcaster.TransformBroadcaster.sendTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Send a transform, or a list of transforms, to the Buffer associated with this TransformBroadcaster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transform</strong> – A transform or list of transforms to send.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="transformlistener">
+<h2>TransformListener<a class="headerlink" href="#transformlistener" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="tf2_ros.transform_listener.TransformListener">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tf2_ros.transform_listener.</span></span><span class="sig-name descname"><span class="pre">TransformListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#tf2_ros.buffer.Buffer" title="tf2_ros.buffer.Buffer"><span class="pre">Buffer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QoSProfile</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_qos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QoSProfile</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tf2_ros.transform_listener.TransformListener" title="Permalink to this definition"></a></dt>
+<dd><p><a class="reference internal" href="#tf2_ros.transform_listener.TransformListener" title="tf2_ros.transform_listener.TransformListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformListener</span></code></a> is a convenient way to listen for coordinate frame transformation info.
+This class takes an object that instantiates the <code class="xref py py-class docutils literal notranslate"><span class="pre">BufferInterface</span></code> interface, to which
+it propagates changes to the tf frame graph.</p>
+<p>Constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buffer</strong> – The buffer to propagate changes to when tf info updates.</p></li>
+<li><p><strong>node</strong> – The ROS2 node.</p></li>
+<li><p><strong>spin_thread</strong> – Whether to create a dedidcated thread to spin this node.</p></li>
+<li><p><strong>qos</strong> – A QoSProfile or a history depth to apply to subscribers.</p></li>
+<li><p><strong>static_qos</strong> – A QoSProfile or a history depth to apply to tf_static subscribers.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.transform_listener.TransformListener.callback">
+<span class="sig-name descname"><span class="pre">callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TFMessage</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.transform_listener.TransformListener.callback" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.transform_listener.TransformListener.static_callback">
+<span class="sig-name descname"><span class="pre">static_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TFMessage</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.transform_listener.TransformListener.static_callback" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tf2_ros.transform_listener.TransformListener.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tf2_ros.transform_listener.TransformListener.unregister" title="Permalink to this definition"></a></dt>
+<dd><p>Unregisters all tf subscribers.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli_tools.html" class="btn btn-neutral float-right" title="Command Line Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2008-2024, Open Source Robotics Foundation, Inc..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
