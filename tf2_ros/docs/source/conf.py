@@ -193,6 +193,27 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_use_modindex = True
 
+# -- Options for manual page output ------------------------------------------
+
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+man_pages = [
+    (master_doc, 'tf2_ros', 'tf2_ros Documentation',
+     [copyright], 1)
+]
+
+# -- Options for Texinfo output ----------------------------------------------
+
+# Grouping the document tree into Texinfo files. List of tuples
+# (source start file, target name, title, author,
+#  dir menu entry, description, category)
+texinfo_documents = [
+    (master_doc, 'tf2_ros', 'tf2_ros Documentation',
+     copyright, 'tf2_ros', 'ROS 2 ',
+     'Miscellaneous'),
+]
+
+
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {

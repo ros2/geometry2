@@ -88,8 +88,9 @@ Classes and Exceptions
     :maxdepth: 2
 
     self
-    tf2_ros
     cli_tools
+    tf2_ros <generated/index>
+
 
 
 Indices and tables
