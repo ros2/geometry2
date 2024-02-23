@@ -8,6 +8,8 @@ settings:
     python_source: 'tf2_ros'
     always_run_doxygen: false
     always_run_sphinx_apidoc: false
+    enable_breathe: false
+    enable_exhale: false
 
 builders:
   - doxygen: {

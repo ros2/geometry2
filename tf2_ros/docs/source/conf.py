@@ -22,7 +22,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.imgmath', 'sphinx_rtd_theme']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.imgmath', 'sphinx_rtd_theme', 'breathe', 'exhale']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -212,6 +212,19 @@ texinfo_documents = [
      copyright, 'tf2_ros', 'ROS 2 ',
      'Miscellaneous'),
 ]
+
+# Configuration for breathe to link doxygen
+breathe_projects = {'tf2_ros': './../docs_output/tf2_ros/generated/doxygen/xml'}
+breathe_default_project = 'tf2_ros'
+
+# Exhale configuration
+exhale_args = {
+    # Required arguments
+    "containmentFolder":     "./api",
+    "rootFileName":          "index.rst",
+    "doxygenStripFromPath":  "..",
+    "rootFileTitle":         "tf2_ros API",
+    }
 
 
 
