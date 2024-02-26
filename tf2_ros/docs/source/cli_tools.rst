@@ -45,7 +45,7 @@ The expected output looks something like this:
     - Rotation: in Quaternion [0.000, 0.000, -0.046, 0.999]
             in RPY [0.000, -0.000, -0.092]
 
-2. RVIZ2
+2. RViz2
 ^^^^^^^^
 Run `rviz2` with `tf` enabled and begin viewing frames to see transforms
 
@@ -115,7 +115,6 @@ The output should look something like this:
 
 Each of these frames can be published by a different broadcaster.
 
-
 3 TF Manipulation
 -----------------
 
@@ -131,11 +130,9 @@ Publish a static coordinate transform to tf2 using an x/y/z offset in meters and
 Static_transform_publisher can also publish a static coordinate transform to tf2 using an x/y/z offset in meters and quaternion.
 Unlike in tf, there is no period argument, and a latched topic is used.
 
-
 .. code-block:: bash
 
   ros2 run tf2_ros static_transform_publisher [--x X] [--y Y] [--z Z] [--qx QX] [--qy QY] [--qz QZ] [--qw QW] --frame_id Frame --child_frame_id Child_Frame
-
 
 Static_transform_publisher is designed both as a command-line tool for manual use, as well as for use within roslaunch files for setting static transforms. For example:
 
