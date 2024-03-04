@@ -50,6 +50,7 @@
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
 #include "tf2/visibility_control.h"
+#include "rcutils/logging_macros.h"
 
 namespace tf2
 {
