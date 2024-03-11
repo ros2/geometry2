@@ -74,13 +74,14 @@ public:
    * \param clock A clock to use for time and sleeping
    * \param cache_time How long to keep a history of transforms
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
+   * \param  qos If passed change the quality of service of the frames_server_ service
    */
-  template<typename NodeT = rclcpp::Node::SharedPtr, typename AllocatorT = std::allocator<void>>
+  template<typename NodeT = rclcpp::Node::SharedPtr>
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
-    NodeT && node = std::move(rclcpp::Node::SharedPtr()),
-    const rclcpp::QoS & qos = rclcpp::QoS(100))
+    NodeT && node = rclcpp::Node::SharedPtr(),
+    const rclcpp::QoS & qos = rclcpp::ServicesQoS())
   : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
   {
     node_logging_interface_ = rclcpp::node_interfaces::get_node_logging_interface(node);
