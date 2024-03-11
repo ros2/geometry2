@@ -161,10 +161,11 @@ public:
    * \param node The ros2 node to use for logging and clock operations
    * \param buffer_timeout The timeout duration after requesting transforms from the buffer.
    */
-  template<typename TimeRepT = int64_t, typename TimeT = std::nano>
+  template<typename NodeT = rclcpp::Node::SharedPtr,
+    typename TimeRepT = int64_t, typename TimeT = std::nano>
   MessageFilter(
     BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    const NodeT & node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(
@@ -216,10 +217,11 @@ public:
    * \param node The ros2 node to use for logging and clock operations
    * \param buffer_timeout The timeout duration after requesting transforms from the buffer.
    */
-  template<class F, typename TimeRepT = int64_t, typename TimeT = std::nano>
+  template<class F, typename NodeT = rclcpp::Node::SharedPtr,
+    typename TimeRepT = int64_t, typename TimeT = std::nano>
   MessageFilter(
     F & f, BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    const NodeT & node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(
