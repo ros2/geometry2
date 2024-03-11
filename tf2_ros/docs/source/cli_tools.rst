@@ -88,6 +88,10 @@ If a specific node is having trouble its exact data can be queried using the fol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `rqt_tf_tree <https://github.com/ros-visualization/rqt_tf_tree/tree/master>`_  provides a GUI to inspect tf tree during runtime.
 
+  A simple tree from the tutorial in 1. tf2_echo looks like:
+
+   .. image:: images/rqt_tf_tree.png
+
 2. tf2_monitor
 ^^^^^^^^^^^^^^
 tf2_monitor can give you a lot of detailed information about a specific transformation you care about. The monitor will break down the chain between two frames into individual transforms, and provide statistics about timing, broadcasters, etc.
