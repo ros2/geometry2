@@ -76,7 +76,7 @@ public:
    * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
    */
   TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent() = 0;
+  virtual P_TimeAndFrameID getOldestTimeAndParent() = 0;
 
   /// Debugging information methods
   /** @brief Get the length of the stored list */
@@ -128,7 +128,7 @@ public:
   virtual tf2::CompactFrameID getParent(
     tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
   TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent();
+  virtual P_TimeAndFrameID getOldestTimeAndParent();
 
   /// Debugging information methods
   TF2_PUBLIC
@@ -175,7 +175,7 @@ public:
   virtual CompactFrameID getParent(
     TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
   TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent();
+  virtual P_TimeAndFrameID getOldestTimeAndParent();
 
   /// Debugging information methods
   TF2_PUBLIC

@@ -67,7 +67,7 @@ tf2::CompactFrameID tf2::StaticCache::getParent(
   return storage_.frame_id_;
 }
 
-tf2::P_TimeAndFrameID tf2::StaticCache::getLatestTimeAndParent()
+tf2::P_TimeAndFrameID tf2::StaticCache::getOldestTimeAndParent()
 {
   return std::make_pair(TimePoint(), storage_.frame_id_);
 }

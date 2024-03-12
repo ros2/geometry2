@@ -145,18 +145,18 @@ uint8_t TimeCache::findClosest(
     }
   }
 
-  TimePoint latest_time = (*storage_.begin()).stamp_;
-  TimePoint earliest_time = (*(storage_.rbegin())).stamp_;
+  const TimePoint oldest_time = getOldestTimestamp();
+  const TimePoint earliest_time = getLatestTimestamp();
 
-  if (target_time == latest_time) {
+  if (target_time == oldest_time) {
     one = &(*storage_.begin());
     return 1;
   } else if (target_time == earliest_time) {
     one = &(*storage_.rbegin());
     return 1;
   } else {   // Catch cases that would require extrapolation
-    if (target_time > latest_time) {
-      cache::createExtrapolationException2(target_time, latest_time, error_str, error_code);
+    if (target_time > oldest_time) {
+      cache::createExtrapolationException2(target_time, oldest_time, error_str, error_code);
       return 0;
     } else {
       if (target_time < earliest_time) {
@@ -280,7 +280,7 @@ unsigned int TimeCache::getListLength()
   return (unsigned int)storage_.size();
 }
 
-P_TimeAndFrameID TimeCache::getLatestTimeAndParent()
+P_TimeAndFrameID TimeCache::getOldestTimeAndParent()
 {
   if (storage_.empty()) {
     return std::make_pair(TimePoint(), 0);
@@ -296,7 +296,7 @@ TimePoint TimeCache::getLatestTimestamp()
   if (storage_.empty()) {
     return TimePoint();
   }
-  return storage_.front().stamp_;
+  return storage_.back().stamp_;
 }
 
 TimePoint TimeCache::getOldestTimestamp()
@@ -305,7 +305,7 @@ TimePoint TimeCache::getOldestTimestamp()
   if (storage_.empty()) {
     return TimePoint();
   }
-  return storage_.back().stamp_;
+  return storage_.front().stamp_;
 }
 
 void TimeCache::pruneList()
