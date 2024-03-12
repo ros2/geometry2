@@ -310,7 +310,7 @@ TimePoint TimeCache::getOldestTimestamp()
 
 void TimeCache::pruneList()
 {
-  TimePoint latest_time = storage_.begin()->stamp_;
+  const TimePoint latest_time = getLatestTimestamp();
 
   while (!storage_.empty() && storage_.back().stamp_ + max_storage_time_ < latest_time) {
     storage_.pop_back();
