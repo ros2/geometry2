@@ -249,10 +249,9 @@ bool TimeCache::insertData(const TransformStorage & new_data)
 {
   const TimePoint latest_time = getLatestTimestamp();
 
-  if (storage_it != storage_.end()) {
-    if (storage_it->stamp_ > new_data.stamp_ + max_storage_time_) {
-      return false;
-    }
+  // Avoid inserting data in the past that already exceeds the max_storage_time_
+  if (!storage_.empty() && new_data.stamp_ < latest_time - max_storage_time_) {
+    return false;
   }
 
   while (storage_it != storage_.end()) {
