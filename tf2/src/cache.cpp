@@ -247,7 +247,7 @@ CompactFrameID TimeCache::getParent(
 
 bool TimeCache::insertData(const TransformStorage & new_data)
 {
-  L_TransformStorage::iterator storage_it = storage_.begin();
+  const TimePoint latest_time = getLatestTimestamp();
 
   if (storage_it != storage_.end()) {
     if (storage_it->stamp_ > new_data.stamp_ + max_storage_time_) {
