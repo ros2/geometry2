@@ -80,7 +80,7 @@ public:
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
-    NodeT && node = rclcpp::Node::SharedPtr(),
+    NodeT && node = NodeT(),
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
   : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
   {
