@@ -84,8 +84,6 @@ public:
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
   : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
   {
-    node_logging_interface_ = rclcpp::node_interfaces::get_node_logging_interface(node);
-
     if (nullptr == clock_) {
       throw std::invalid_argument("clock must be a valid instance");
     }
@@ -103,6 +101,8 @@ public:
     jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
 
     if (node) {
+      node_logging_interface_ = rclcpp::node_interfaces::get_node_logging_interface(node);
+
       frames_server_ = rclcpp::create_service<tf2_msgs::srv::FrameGraph>(
         rclcpp::node_interfaces::get_node_base_interface(node),
         rclcpp::node_interfaces::get_node_services_interface(node),
