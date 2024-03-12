@@ -254,12 +254,11 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     return false;
   }
 
-  while (storage_it != storage_.end()) {
-    if (storage_it->stamp_ <= new_data.stamp_) {
-      break;
-    }
-    storage_it++;
-  }
+  auto storage_it = std::find_if(
+    storage_.begin(), storage_.end(), [&](const auto & transfrom) {
+      return transfrom.stamp_ <= new_data.stamp_;
+    });
+
   // Insert elements only if not already present
   if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
     storage_.insert(storage_it, new_data);
