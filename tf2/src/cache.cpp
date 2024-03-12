@@ -254,14 +254,15 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     return false;
   }
 
-  auto storage_it = std::find_if(
+  // Find the oldest element in the list before the incoming stamp.
+  auto last_transform_pos = std::find_if(
     storage_.begin(), storage_.end(), [&](const auto & transfrom) {
       return transfrom.stamp_ <= new_data.stamp_;
     });
 
   // Insert elements only if not already present
   if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
-    storage_.insert(storage_it, new_data);
+    storage_.insert(last_transform_pos, new_data);
   }
 
   pruneList();
