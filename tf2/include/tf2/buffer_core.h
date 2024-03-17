@@ -46,11 +46,13 @@
 
 #include "LinearMath/Transform.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rcutils/logging_macros.h"
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
 #include "tf2/visibility_control.h"
-#include "rcutils/logging_macros.h"
+
+using std::literals::chrono_literals::operator""ms;
 
 namespace tf2
 {
@@ -167,7 +169,8 @@ public:
   TF2_PUBLIC
   bool canTransform(
     const std::string & target_frame, const std::string & source_frame,
-    const TimePoint & time, std::string * error_msg = nullptr) const override;
+    const TimePoint & time, std::string * error_msg = nullptr,
+    std::chrono::milliseconds warning_interval = 5000ms) const override;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -182,7 +185,8 @@ public:
   bool canTransform(
     const std::string & target_frame, const TimePoint & target_time,
     const std::string & source_frame, const TimePoint & source_time,
-    const std::string & fixed_frame, std::string * error_msg = nullptr) const override;
+    const std::string & fixed_frame, std::string * error_msg = nullptr,
+    std::chrono::milliseconds warning_interval = 5000ms) const override;
 
   /** \brief Get all frames that exist in the system.
    */
@@ -390,7 +394,8 @@ private:
   CompactFrameID validateFrameId(
     const char * function_name_arg,
     const std::string & frame_id,
-    std::string * error_msg) const;
+    std::string * error_msg,
+    std::chrono::milliseconds warning_interval) const;
 
   /** \brief Validate a frame ID format and look it up its compact ID.
     *   Raise an exception for invalid cases.
