@@ -180,8 +180,10 @@ bool BufferClient::canTransform(
   const std::string & source_frame,
   const tf2::TimePoint & time,
   const tf2::Duration timeout,
-  std::string * errstr) const
+  std::string * errstr,
+  std::chrono::milliseconds warning_interval) const
 {
+  (void)warning_interval;
   try {
     lookupTransform(target_frame, source_frame, time, timeout);
     return true;
@@ -205,8 +207,10 @@ bool BufferClient::canTransform(
   const tf2::TimePoint & source_time,
   const std::string & fixed_frame,
   const tf2::Duration timeout,
-  std::string * errstr) const
+  std::string * errstr,
+  std::chrono::milliseconds warning_interval) const
 {
+  (void)warning_interval;
   try {
     lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame, timeout);
     return true;

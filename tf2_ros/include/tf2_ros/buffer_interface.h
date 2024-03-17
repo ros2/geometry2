@@ -47,6 +47,8 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+using std::literals::chrono_literals::operator""ms;
+
 namespace tf2_ros
 {
 
@@ -174,7 +176,8 @@ public:
   canTransform(
     const std::string & target_frame, const std::string & source_frame,
     const tf2::TimePoint & time, const tf2::Duration timeout,
-    std::string * errstr = NULL) const = 0;
+    std::string * errstr = NULL,
+    std::chrono::milliseconds warning_interval = 5000ms) const = 0;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -192,7 +195,8 @@ public:
     const std::string & target_frame, const tf2::TimePoint & target_time,
     const std::string & source_frame, const tf2::TimePoint & source_time,
     const std::string & fixed_frame, const tf2::Duration timeout,
-    std::string * errstr = NULL) const = 0;
+    std::string * errstr = NULL,
+    std::chrono::milliseconds warning_interval = 5000ms) const = 0;
 
   /** \brief Transform an input into the target frame.
    * This function is templated and can take as input any valid mathematical object that tf knows
