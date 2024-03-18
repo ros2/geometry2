@@ -77,6 +77,7 @@ public:
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
   template<typename NodeT = rclcpp::Node::SharedPtr>
+  TF2_ROS_PUBLIC
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
