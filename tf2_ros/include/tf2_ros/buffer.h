@@ -77,7 +77,6 @@ public:
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
   template<typename NodeT = rclcpp::Node::SharedPtr>
-  TF2_ROS_PUBLIC
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
@@ -313,10 +312,12 @@ private:
     TransformStampedFuture future,
     TransformReadyCallback callback);
 
+  TF2_ROS_PUBLIC
   bool getFrames(
     const tf2_msgs::srv::FrameGraph::Request::SharedPtr req,
     tf2_msgs::srv::FrameGraph::Response::SharedPtr res);
 
+  TF2_ROS_PUBLIC
   void onTimeJump(const rcl_time_jump_t & jump);
 
   // conditionally error if dedicated_thread unset.
