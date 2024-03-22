@@ -35,7 +35,7 @@ List of exceptions thrown in this library:
 - tf2::TimeoutException
 - tf2::TransformException
 
-For more information, see the tf2 tutorials: http://wiki.ros.org/tf2/Tutorials
+For more information, see the tf2 tutorials: https://docs.ros.org/en/rolling/Tutorials/Intermediate/Tf2/Tf2-Main.html#
 
 Or, get an <A HREF="http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions">overview</A> of data type conversion methods in geometry_experimental packages.
 */

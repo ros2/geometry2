@@ -1,44 +1,76 @@
-tf2_ros Overview
-================
+Overview
+========
 
-This is the Python API reference for the tf2_ros package.
+This package contains the ROS 2 bindings for the tf2 library, for both Python and C++.
 
-To broadcast transforms using ROS:
-- Call :meth:`rospy.init` to initialize a node.
-- Construct a :class:`tf2_ros.TransformBroadcaster`.
-- Pass a :class:`geometry_msgs.TransformStamped` message to :meth:`tf2_ros.TransformBroadcaster.sendTransform`.
+1.1 Broadcasting Transforms
+---------------------------
+  * :class:`tf2_ros::TransformBroadcaster()` constructor of
+    (:ref:`exhale_class_classtf2__ros_1_1_transform_broadcaster`)
+  * :class:`tf2_ros::TransformBroadcaster::sendTransform` to send transforms
 
-    - Alternatively, pass a vector of :class:`geometry_msgs.TransformStamped` messages.
+Similarly static transforms can be sent by:
 
-To listen for transforms using ROS:
-- Construct an instance of a class that implements :class:`tf2_ros.BufferInterface`.
+  * :class:`tf2_ros::StaticTransformBroadcaster()`, constructor of
+    (:ref:`exhale_class_classtf2__ros_1_1_static_transform_broadcaster`)
+  * :class:`tf2_ros::StaticTransformBroadcaster::sendTransform` to send static transforms
 
-    - :class:`tf2_ros.Buffer` is the standard implementation which offers a tf2_frames service that can respond to requests with a :class:`tf2_msgs.FrameGraph`.
-    - :class:`tf2_ros.BufferClient` uses an :class:`actionlib.SimpleActionClient` to wait for the requested transform to become available.
+1.2 Using Published Transforms
+------------------------------
+For most purposes using tf2_ros will be done using tf2_ros::Buffer (:ref:`exhale_class_classtf2__ros_1_1_buffer`). It's main public API is defined by tf2_ros::BufferInterface (:ref:`exhale_class_classtf2__ros_1_1_buffer_interface`). Typically it will be populated using a tf2_ros::TransformListener (:ref:`exhale_class_classtf2__ros_1_1_transform_listener`) which subscribes to the appropriate topics.
 
-- Pass the :class:`tf2_ros.Buffer` to the constructor of :class:`tf2_ros.TransformListener`.
-    - Optionally, pass a :class:`ros.NodeHandle` (otherwise TransformListener will connect to the node for the process).
-    - Optionally, specify if the TransformListener runs in its own thread or not.
+  * :meth:`tf2_ros::Buffer::transform` is the main method for applying transforms.
+  * :meth:`canTransform` allows to know if a transform is available
+  * :meth:`lookupTransform` is a lower level method which returns the transform between two coordinate frames. This method is the core functionality of the tf2 library.
+  * :meth:`getFrames` is a service method providing the frames in the graph as a yaml tree
 
-- Use :meth:`tf2_ros.BufferInterface.transform` to apply a transform on the tf server to an input frame.
-    - Or, check if a transform is available with :meth:`tf2_ros.BufferInterface.can_transform`.
-    - Then, call :meth:`tf2_ros.BufferInterface.lookup_transform` to get the transform between two frames.
+1.3 Filtering Transforms
+------------------------
 
-For more information, see the tf2 tutorials: http://wiki.ros.org/tf2/Tutorials
+tf2_ros provides a feature which allows to pass only the messages once there is transform data available. This follows the pattern from the message_filters package. Here is a brief list of functions that the user is most likely to use.
 
-Or, get an `overview`_ of data type conversion methods in geometry_experimental packages.
+  * :class:`tf2_ros::MessageFilter()` constructor of (:ref:`exhale_class_classtf2__ros_1_1_message_filter`)
 
-See http://wiki.ros.org/tf2/Tutorials for more detailed usage.
+  * :meth:`connectInput()` allows to connect filters together
 
-.. _overview: http://wiki.ros.org/tf2/Tutorials/Migration/DataConversions
+  * :meth:`setTargetFrame()` set the frame you want to be able to transform to before getting a message callback
 
-Classes and Exceptions
-======================
+  * :meth:`setTargetFrames()` set the frames you want to be able to transform to before getting a message callback
+
+  * :meth:`setTolerance()` specifies the time tolerance for the transform data
+
+  * :meth:`clear()` flushes the message queue
+
+  * :meth:`setQueueSize()` creates a maximum number of messages in the queue
+
+1.4 Exceptions
+--------------
+
+Here is the list of exceptions that can be thrown by tf2_ros and are inherited from tf2.
+
+  * tf2::ConnectivityException
+
+  * tf2::LookupException
+
+  * tf2::ExtrapolationException
+
+  * tf2::InvalidArgumentException
+
+  * tf2::TimeoutException
+
+  * tf2::TransformException
+
+Tree
+====
 
 .. toctree::
     :maxdepth: 2
 
-    tf2_ros
+    self
+    cli_tools
+    tf2_ros2
+    api/index
+
 
 
 Indices and tables

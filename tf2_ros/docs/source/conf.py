@@ -22,7 +22,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.imgmath']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.imgmath', 'sphinx_rtd_theme', 'breathe', 'exhale']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -91,7 +91,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -192,6 +192,40 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+# -- Options for manual page output ------------------------------------------
+
+# One entry per manual page. List of tuples
+# (source start file, name, description, authors, manual section).
+man_pages = [
+    (master_doc, 'tf2_ros', 'tf2_ros Documentation',
+     [copyright], 1)
+]
+
+# -- Options for Texinfo output ----------------------------------------------
+
+# Grouping the document tree into Texinfo files. List of tuples
+# (source start file, target name, title, author,
+#  dir menu entry, description, category)
+texinfo_documents = [
+    (master_doc, 'tf2_ros', 'tf2_ros Documentation',
+     copyright, 'tf2_ros', 'ROS 2 ',
+     'Miscellaneous'),
+]
+
+# Configuration for breathe to link doxygen
+breathe_projects = {'tf2_ros': './../docs_output/tf2_ros/generated/doxygen/xml'}
+breathe_default_project = 'tf2_ros'
+
+# Exhale configuration
+exhale_args = {
+    # Required arguments
+    "containmentFolder":     "./api",
+    "rootFileName":          "index.rst",
+    "doxygenStripFromPath":  "..",
+    "rootFileTitle":         "tf2_ros API",
+    }
+
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
