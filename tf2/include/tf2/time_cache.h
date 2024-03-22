@@ -104,10 +104,6 @@ constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::second
 class TimeCache : public TimeCacheInterface
 {
 public:
-  /// Number of nano-seconds to not interpolate below.
-  TF2_PUBLIC
-  static const int MIN_INTERPOLATION_DISTANCE = 5;
-
   /// Maximum length of linked list, to make sure not to be able to use unlimited memory.
   TF2_PUBLIC
   static const unsigned int MAX_LENGTH_LINKED_LIST = 1000000;
