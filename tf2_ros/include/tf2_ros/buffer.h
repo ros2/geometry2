@@ -32,7 +32,6 @@
 #ifndef TF2_ROS__BUFFER_H_
 #define TF2_ROS__BUFFER_H_
 
-#include <chrono>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -49,8 +48,6 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"
 #include "rclcpp/rclcpp.hpp"
-
-using std::literals::chrono_literals::operator""ms;
 
 namespace tf2_ros
 {
@@ -159,13 +156,11 @@ public:
   canTransform(
     const std::string & target_frame, const std::string & source_frame,
     const tf2::TimePoint & target_time, const tf2::Duration timeout,
-    std::string * errstr = NULL,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    std::string * errstr = NULL) const override;
 
   /** \brief Test if a transform is possible
    * \sa canTransform(const std::string&, const std::string&,
-   *                  const tf2::TimePoint&, const tf2::Duration, std::string*
-   *                  std::chrono::milliseconds*)
+   *                  const tf2::TimePoint&, const tf2::Duration, std::string*)
    */
   TF2_ROS_PUBLIC
   bool
@@ -173,11 +168,9 @@ public:
     const std::string & target_frame, const std::string & source_frame,
     const rclcpp::Time & time,
     const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
-    std::string * errstr = NULL,
-    std::chrono::milliseconds warning_interval = 5000ms) const
+    std::string * errstr = NULL) const
   {
-    return canTransform(
-      target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr, warning_interval);
+    return canTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr);
   }
 
   /** \brief Test if a transform is possible
@@ -196,15 +189,13 @@ public:
     const std::string & target_frame, const tf2::TimePoint & target_time,
     const std::string & source_frame, const tf2::TimePoint & source_time,
     const std::string & fixed_frame, const tf2::Duration timeout,
-    std::string * errstr = NULL,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    std::string * errstr = NULL) const override;
 
   /** \brief Test if a transform is possible
    * \sa
    *   canTransform(const std::string&, const tf2::TimePoint&,
    *                const std::string&, const tf2::TimePoint&,
-   *                const std::string&, const tf2::Duration, std::string*
-   *                std::chrono::milliseconds*)
+   *                const std::string&, const tf2::Duration, std::string*)
    */
   TF2_ROS_PUBLIC
   bool
@@ -213,14 +204,13 @@ public:
     const std::string & source_frame, const rclcpp::Time & source_time,
     const std::string & fixed_frame,
     const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
-    std::string * errstr = NULL,
-    std::chrono::milliseconds warning_interval = 5000ms) const
+    std::string * errstr = NULL) const
   {
     return canTransform(
       target_frame, fromRclcpp(target_time),
       source_frame, fromRclcpp(source_time),
       fixed_frame, fromRclcpp(timeout),
-      errstr, warning_interval);
+      errstr);
   }
 
   /** \brief Wait for a transform between two frames to become available.

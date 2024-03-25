@@ -82,14 +82,14 @@ void fillOrWarnMessageForInvalidFrame(
   const char * function_name_arg,
   const std::string & frame_id,
   std::string * error_msg,
-  const char * rationale,
-  std::chrono::milliseconds warning_interval)
+  const char * rationale)
 {
   std::string s = "Invalid frame ID \"" + frame_id +
     "\" passed to " + function_name_arg + " - " + rationale;
   if (error_msg != nullptr) {
     *error_msg = s;
   } else {
+    std::chrono::milliseconds warning_interval = 2500ms;
     RCUTILS_LOG_WARN_THROTTLE(RCUTILS_STEADY_TIME, warning_interval.count(), "%s", s.c_str());
   }
 }
@@ -99,27 +99,24 @@ void fillOrWarnMessageForInvalidFrame(
 CompactFrameID BufferCore::validateFrameId(
   const char * function_name_arg,
   const std::string & frame_id,
-  std::string * error_msg,
-  std::chrono::milliseconds warning_interval) const
+  std::string * error_msg) const
 {
   if (frame_id.empty()) {
     fillOrWarnMessageForInvalidFrame(
-      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot be empty",
-      warning_interval);
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot be empty");
     return 0;
   }
 
   if (startsWithSlash(frame_id)) {
     fillOrWarnMessageForInvalidFrame(
-      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot start with a '/'",
-      warning_interval);
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot start with a '/'");
     return 0;
   }
 
   CompactFrameID id = lookupFrameNumber(frame_id);
   if (id == 0) {
     fillOrWarnMessageForInvalidFrame(
-      function_name_arg, frame_id, error_msg, "frame does not exist", warning_interval);
+      function_name_arg, frame_id, error_msg, "frame does not exist");
   }
   return id;
 }
@@ -763,8 +760,7 @@ bool BufferCore::canTransformInternal(
 
 bool BufferCore::canTransform(
   const std::string & target_frame, const std::string & source_frame,
-  const TimePoint & time, std::string * error_msg,
-  std::chrono::milliseconds warning_interval) const
+  const TimePoint & time, std::string * error_msg) const
 {
   // Short circuit if target_frame == source_frame
   if (target_frame == source_frame) {
@@ -772,12 +768,12 @@ bool BufferCore::canTransform(
   }
 
   CompactFrameID target_id = validateFrameId(
-    "canTransform argument target_frame", target_frame, error_msg, warning_interval);
+    "canTransform argument target_frame", target_frame, error_msg);
   if (target_id == 0) {
     return false;
   }
   CompactFrameID source_id = validateFrameId(
-    "canTransform argument source_frame", source_frame, error_msg, warning_interval);
+    "canTransform argument source_frame", source_frame, error_msg);
   if (source_id == 0) {
     return false;
   }
@@ -788,21 +784,20 @@ bool BufferCore::canTransform(
 bool BufferCore::canTransform(
   const std::string & target_frame, const TimePoint & target_time,
   const std::string & source_frame, const TimePoint & source_time,
-  const std::string & fixed_frame, std::string * error_msg,
-  std::chrono::milliseconds warning_interval) const
+  const std::string & fixed_frame, std::string * error_msg) const
 {
   CompactFrameID target_id = validateFrameId(
-    "canTransform argument target_frame", target_frame, error_msg, warning_interval);
+    "canTransform argument target_frame", target_frame, error_msg);
   if (target_id == 0) {
     return false;
   }
   CompactFrameID source_id = validateFrameId(
-    "canTransform argument source_frame", source_frame, error_msg, warning_interval);
+    "canTransform argument source_frame", source_frame, error_msg);
   if (source_id == 0) {
     return false;
   }
   CompactFrameID fixed_id = validateFrameId(
-    "canTransform argument fixed_frame", fixed_frame, error_msg, warning_interval);
+    "canTransform argument fixed_frame", fixed_frame, error_msg);
   if (fixed_id == 0) {
     return false;
   }

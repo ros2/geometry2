@@ -38,7 +38,6 @@
 #ifndef TF2_ROS__BUFFER_CLIENT_H_
 #define TF2_ROS__BUFFER_CLIENT_H_
 
-#include <chrono>
 #include <stdexcept>
 #include <string>
 
@@ -49,8 +48,6 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "tf2_msgs/action/lookup_transform.hpp"
-
-using std::literals::chrono_literals::operator""ms;
 
 namespace tf2_ros
 {
@@ -217,8 +214,7 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & time,
     const tf2::Duration timeout = tf2::durationFromSec(0.0),
-    std::string * errstr = nullptr,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    std::string * errstr = nullptr) const override;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -239,8 +235,7 @@ public:
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame,
     const tf2::Duration timeout = tf2::durationFromSec(0.0),
-    std::string * errstr = nullptr,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    std::string * errstr = nullptr) const override;
 
   /** \brief Block until the action server is ready to respond to requests.
    * \param timeout Time to wait for the server.

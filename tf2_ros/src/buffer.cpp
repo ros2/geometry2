@@ -32,7 +32,6 @@
 
 #include "tf2_ros/buffer.h"
 
-#include <chrono>
 #include <exception>
 #include <limits>
 #include <memory>
@@ -140,8 +139,7 @@ void conditionally_append_timeout_info(
 bool
 Buffer::canTransform(
   const std::string & target_frame, const std::string & source_frame,
-  const tf2::TimePoint & time, const tf2::Duration timeout, std::string * errstr,
-  std::chrono::milliseconds warning_interval) const
+  const tf2::TimePoint & time, const tf2::Duration timeout, std::string * errstr) const
 {
   if (timeout != tf2::durationFromSec(0.0) && !checkAndErrorDedicatedThreadPresent(errstr)) {
     return false;
@@ -154,14 +152,14 @@ Buffer::canTransform(
   while (clock_->now() < start_time + rclcpp_timeout &&
     !canTransform(
       target_frame, source_frame, time,
-      tf2::Duration(std::chrono::nanoseconds::zero()), errstr, warning_interval) &&
+      tf2::Duration(std::chrono::nanoseconds::zero()), errstr) &&
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
     // TODO(sloretz) sleep using clock_->sleep_for when implemented
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-  bool retval = canTransform(target_frame, source_frame, time, errstr, warning_interval);
+  bool retval = canTransform(target_frame, source_frame, time, errstr);
   rclcpp::Time current_time = clock_->now();
   conditionally_append_timeout_info(errstr, start_time, current_time, rclcpp_timeout);
   return retval;
@@ -171,8 +169,7 @@ bool
 Buffer::canTransform(
   const std::string & target_frame, const tf2::TimePoint & target_time,
   const std::string & source_frame, const tf2::TimePoint & source_time,
-  const std::string & fixed_frame, const tf2::Duration timeout, std::string * errstr,
-  std::chrono::milliseconds warning_interval) const
+  const std::string & fixed_frame, const tf2::Duration timeout, std::string * errstr) const
 {
   if (timeout != tf2::durationFromSec(0.0) && !checkAndErrorDedicatedThreadPresent(errstr)) {
     return false;
@@ -185,7 +182,7 @@ Buffer::canTransform(
   while (clock_->now() < start_time + rclcpp_timeout &&
     !canTransform(
       target_frame, target_time, source_frame, source_time, fixed_frame,
-      tf2::Duration(std::chrono::nanoseconds::zero()), errstr, warning_interval) &&
+      tf2::Duration(std::chrono::nanoseconds::zero()), errstr) &&
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
@@ -194,7 +191,7 @@ Buffer::canTransform(
   }
   bool retval = canTransform(
     target_frame, target_time,
-    source_frame, source_time, fixed_frame, errstr, warning_interval);
+    source_frame, source_time, fixed_frame, errstr);
   rclcpp::Time current_time = clock_->now();
   conditionally_append_timeout_info(errstr, start_time, current_time, rclcpp_timeout);
   return retval;

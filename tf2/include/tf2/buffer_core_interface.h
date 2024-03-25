@@ -28,7 +28,6 @@
 #ifndef TF2__BUFFER_CORE_INTERFACE_H_
 #define TF2__BUFFER_CORE_INTERFACE_H_
 
-#include <chrono>
 #include <string>
 #include <vector>
 
@@ -36,8 +35,6 @@
 
 #include "tf2/time.h"
 #include "tf2/visibility_control.h"
-
-using std::literals::chrono_literals::operator""ms;
 
 namespace tf2
 {
@@ -110,8 +107,7 @@ public:
     const std::string & target_frame,
     const std::string & source_frame,
     const tf2::TimePoint & time,
-    std::string * error_msg,
-    std::chrono::milliseconds warning_interval = 5000ms) const = 0;
+    std::string * error_msg) const = 0;
 
   /**
    * \brief Test if a transform is possible.
@@ -132,8 +128,7 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame,
-    std::string * error_msg,
-    std::chrono::milliseconds warning_interval = 5000ms) const = 0;
+    std::string * error_msg) const = 0;
 
   /**
    * \brief Get all frames that exist in the system.

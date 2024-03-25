@@ -169,8 +169,7 @@ public:
   TF2_PUBLIC
   bool canTransform(
     const std::string & target_frame, const std::string & source_frame,
-    const TimePoint & time, std::string * error_msg = nullptr,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    const TimePoint & time, std::string * error_msg = nullptr) const override;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -185,8 +184,7 @@ public:
   bool canTransform(
     const std::string & target_frame, const TimePoint & target_time,
     const std::string & source_frame, const TimePoint & source_time,
-    const std::string & fixed_frame, std::string * error_msg = nullptr,
-    std::chrono::milliseconds warning_interval = 5000ms) const override;
+    const std::string & fixed_frame, std::string * error_msg = nullptr) const override;
 
   /** \brief Get all frames that exist in the system.
    */
@@ -394,8 +392,7 @@ private:
   CompactFrameID validateFrameId(
     const char * function_name_arg,
     const std::string & frame_id,
-    std::string * error_msg,
-    std::chrono::milliseconds warning_interval) const;
+    std::string * error_msg) const;
 
   /** \brief Validate a frame ID format and look it up its compact ID.
     *   Raise an exception for invalid cases.
