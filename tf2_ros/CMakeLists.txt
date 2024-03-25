@@ -203,6 +203,14 @@ if(BUILD_TESTING)
     #   rclcpp::rclcpp
   )
 
+  ament_add_gtest(${PROJECT_NAME}_test_velocity test/velocity_test.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_velocity
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   ${builtin_interfaces_TARGETS}
+    #   rclcpp::rclcpp
+  )
+
   ament_add_gtest(${PROJECT_NAME}_test_listener test/listener_unittest.cpp)
   target_link_libraries(${PROJECT_NAME}_test_listener
     ${PROJECT_NAME}

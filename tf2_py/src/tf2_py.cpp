@@ -627,51 +627,71 @@ static PyObject * lookupTransformFullCore(PyObject * self, PyObject * args, PyOb
   // TODO(anyone): Create a converter that will actually return a python message
   return Py_BuildValue("O&", transform_converter, &transform);
 }
-/*
-static PyObject *lookupTwistCore(PyObject *self, PyObject *args, PyObject *kw)
+
+static PyObject * lookupVelocityCore(PyObject * self, PyObject * args, PyObject * kw)
 {
-  tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
-  char *tracking_frame, *observation_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  char * tracking_frame, * observation_frame;
+  tf2::TimePoint time;
   tf2::Duration averaging_interval;
-  static const char *keywords[] = { "tracking_frame", "observation_frame", "time", "averaging_interval", nullptr };
+  static const char * keywords[] =
+  {"tracking_frame", "observation_frame", "time", "averaging_interval", nullptr};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kw, "ssO&O&", (char**)keywords, &tracking_frame, &observation_frame, rostime_converter, &time, rosduration_converter, &averaging_interval))
+  if (!PyArg_ParseTupleAndKeywords(
+      args, kw, "ssO&O&", (char **)keywords, &tracking_frame,
+      &observation_frame, rostime_converter, &time, rosduration_converter, &averaging_interval))
+  {
     return nullptr;
-  geometry_msgs::msg::Twist twist;
-  WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, time, averaging_interval));
+  }
+  geometry_msgs::msg::VelocityStamped velocity_stamped;
+  WRAP(
+    velocity_stamped =
+    bc->lookupVelocity(tracking_frame, observation_frame, time, averaging_interval));
 
-  return Py_BuildValue("(ddd)(ddd)",
-      twist.linear.x, twist.linear.y, twist.linear.z,
-      twist.angular.x, twist.angular.y, twist.angular.z);
+  return Py_BuildValue(
+    "(ddd)(ddd)",
+    velocity_stamped.velocity.linear.x, velocity_stamped.velocity.linear.y,
+    velocity_stamped.velocity.linear.z,
+    velocity_stamped.velocity.angular.x, velocity_stamped.velocity.angular.y,
+    velocity_stamped.velocity.angular.z);
 }
 
-static PyObject *lookupTwistFullCore(PyObject *self, PyObject *args)
+static PyObject * lookupVelocityFullCore(PyObject * self, PyObject * args)
 {
-  tf2::BufferCore *bc = ((buffer_core_t*)self)->bc;
-  char *tracking_frame, *observation_frame, *reference_frame, *reference_point_frame;
-  builtin_interfaces::msg::Time time;
+  tf2::BufferCore * bc = ((buffer_core_t *)self)->bc;
+  char * tracking_frame, * observation_frame, * reference_frame, * reference_point_frame;
+  tf2::TimePoint time;
   tf2::Duration averaging_interval;
   double px, py, pz;
 
-  if (!PyArg_ParseTuple(args, "sss(ddd)sO&O&",
-                        &tracking_frame,
-                        &observation_frame,
-                        &reference_frame,
-                        &px, &py, &pz,
-                        &reference_point_frame,
-                        rostime_converter, &time,
-                        rosduration_converter, &averaging_interval))
+  if (!PyArg_ParseTuple(
+      args, "sss(ddd)sO&O&",
+      &tracking_frame,
+      &observation_frame,
+      &reference_frame,
+      &px, &py, &pz,
+      &reference_point_frame,
+      rostime_converter, &time,
+      rosduration_converter, &averaging_interval))
+  {
     return nullptr;
-  geometry_msgs::msg::Twist twist;
-  tf::Point pt(px, py, pz);
-  WRAP(twist = bc->lookupTwist(tracking_frame, observation_frame, reference_frame, pt, reference_point_frame, time, averaging_interval));
+  }
+  geometry_msgs::msg::VelocityStamped velocity_stamped;
+  tf2::Vector3 pt(px, py, pz);
+  WRAP(
+    velocity_stamped =
+    bc->lookupVelocity(
+      tracking_frame, observation_frame, reference_frame, pt,
+      reference_point_frame, time, averaging_interval));
 
-  return Py_BuildValue("(ddd)(ddd)",
-      twist.linear.x, twist.linear.y, twist.linear.z,
-      twist.angular.x, twist.angular.y, twist.angular.z);
+  return Py_BuildValue(
+    "(ddd)(ddd)",
+    velocity_stamped.velocity.linear.x, velocity_stamped.velocity.linear.y,
+    velocity_stamped.velocity.linear.z,
+    velocity_stamped.velocity.angular.x, velocity_stamped.velocity.angular.y,
+    velocity_stamped.velocity.angular.z);
 }
-*/
+
 static inline int checkTranslationType(PyObject * o)
 {
   PyTypeObject * translation_type =
@@ -1058,8 +1078,8 @@ static struct PyMethodDef buffer_core_methods[] =
     nullptr},
   {"lookup_transform_full_core", (PyCFunction)lookupTransformFullCore, METH_VARARGS | METH_KEYWORDS,
     nullptr},
-  // {"lookupTwistCore", (PyCFunction)lookupTwistCore, METH_VARARGS | METH_KEYWORDS},
-  // {"lookupTwistFullCore", lookupTwistFullCore, METH_VARARGS},
+  {"lookupVelocityCore", (PyCFunction)lookupVelocityCore, METH_VARARGS | METH_KEYWORDS, nullptr},
+  {"lookupVelocityFullCore", lookupVelocityFullCore, METH_VARARGS, nullptr},
   {nullptr, nullptr, 0, nullptr}
 };
 
