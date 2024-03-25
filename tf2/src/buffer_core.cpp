@@ -952,7 +952,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
       break;
     }
 
-    P_TimeAndFrameID latest = cache->getLatestTimeAndParent();
+    P_TimeAndFrameID latest = cache->getOldestTimeAndParent();
 
     if (latest.second == 0) {
       // Just break out here... there may still be a path from source -> target
@@ -1001,7 +1001,7 @@ tf2::TF2Error BufferCore::getLatestCommonTime(
       break;
     }
 
-    P_TimeAndFrameID latest = cache->getLatestTimeAndParent();
+    P_TimeAndFrameID latest = cache->getOldestTimeAndParent();
 
     if (latest.second == 0) {
       break;
