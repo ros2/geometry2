@@ -89,7 +89,8 @@ void fillOrWarnMessageForInvalidFrame(
   if (error_msg != nullptr) {
     *error_msg = s;
   } else {
-    RCUTILS_LOG_WARN("%s", s.c_str());
+    std::chrono::milliseconds warning_interval = 2500ms;
+    RCUTILS_LOG_WARN_THROTTLE(RCUTILS_STEADY_TIME, warning_interval.count(), "%s", s.c_str());
   }
 }
 
