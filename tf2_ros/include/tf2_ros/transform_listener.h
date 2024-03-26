@@ -199,6 +199,9 @@ private:
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
       executor_->add_callback_group(callback_group_, node_base_interface_);
       dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
+      while (!executor_->is_spinning()) {
+        std::this_thread::sleep_for(std::chrono::microseconds(10));
+      }
       // Tell the buffer we have a dedicated thread to enable timeouts
       buffer_.setUsingDedicatedThread(true);
     } else {
