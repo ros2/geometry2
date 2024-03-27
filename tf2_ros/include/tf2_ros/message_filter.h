@@ -50,6 +50,8 @@
 #include "message_filters/connection.h"
 #include "message_filters/message_traits.h"
 #include "message_filters/simple_filter.h"
+#include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_clock_interface.hpp"
 #include "tf2/buffer_core_interface.h"
 #include "tf2/time.h"
 #include "tf2_ros/async_buffer_interface.h"
@@ -161,15 +163,17 @@ public:
    * \param node The ros2 node to use for logging and clock operations
    * \param buffer_timeout The timeout duration after requesting transforms from the buffer.
    */
-  template<typename TimeRepT = int64_t, typename TimeT = std::nano>
+  template<typename NodeT = rclcpp::Node::SharedPtr,
+    typename TimeRepT = int64_t, typename TimeT = std::nano>
   MessageFilter(
     BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    NodeT && node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(
-      buffer, target_frame, queue_size, node->get_node_logging_interface(),
-      node->get_node_clock_interface(), buffer_timeout)
+      buffer, target_frame, queue_size,
+      rclcpp::node_interfaces::get_node_logging_interface(node),
+      rclcpp::node_interfaces::get_node_clock_interface(node), buffer_timeout)
   {
     static_assert(
       std::is_base_of<tf2::BufferCoreInterface, BufferT>::value,
@@ -216,15 +220,17 @@ public:
    * \param node The ros2 node to use for logging and clock operations
    * \param buffer_timeout The timeout duration after requesting transforms from the buffer.
    */
-  template<class F, typename TimeRepT = int64_t, typename TimeT = std::nano>
+  template<class F, typename NodeT = rclcpp::Node::SharedPtr,
+    typename TimeRepT = int64_t, typename TimeT = std::nano>
   MessageFilter(
     F & f, BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    NodeT && node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(
-      f, buffer, target_frame, queue_size, node->get_node_logging_interface(),
-      node->get_node_clock_interface(), buffer_timeout)
+      f, buffer, target_frame, queue_size,
+      rclcpp::node_interfaces::get_node_logging_interface(node),
+      rclcpp::node_interfaces::get_node_clock_interface(node), buffer_timeout)
   {
   }
 
