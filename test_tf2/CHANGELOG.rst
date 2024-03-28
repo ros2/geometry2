@@ -2,8 +2,8 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.36.1 (2024-03-28)
+-------------------
 * Adding addition BUILD_TESTING requirement (`#660 <https://github.com/ros2/geometry2/issues/660>`_)
 * Contributors: Lucas Wendland
 

@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.36.1 (2024-03-28)
+-------------------
 * Nacho/minor fixes tf2 cache (`#658 <https://github.com/ros2/geometry2/issues/658>`_)
 * Removing console_bridge (`#655 <https://github.com/ros2/geometry2/issues/655>`_)
 * Contributors: Ignacio Vizzo, Lucas Wendland
