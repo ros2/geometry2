@@ -2,6 +2,9 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.0 (2024-02-07)
 -------------------
 * Add in tests for tf2_tools. (`#647 <https://github.com/ros2/geometry2/issues/647>`_)
