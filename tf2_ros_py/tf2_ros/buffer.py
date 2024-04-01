@@ -285,18 +285,6 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
             return core_result
         return core_result[0]
 
-    def _wait_for_transform_async(self, target_Frame, source_frame, time, callback):
-        fut = rclpy.task.Future()
-        if self.can_transform_core(target_frame, source_frame, time)[0]:
-            # Short cut, the transform is available
-            fut.set_result(True)
-            return fut
-
-        self._new_data_callbacks.append(callback)
-        fut.add_done_callback(lambda _: self._remove_callback(callback))
-
-        return fut
-
     def wait_for_transform_async(
         self,
         target_frame: str,
@@ -311,14 +299,23 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param time: The time at which to get the transform (0 will get the latest).
         :return: A future that becomes true when the transform is available.
         """
+        fut = rclpy.task.Future()
+        if self.can_transform_core(target_frame, source_frame, time)[0]:
+            # Short cut, the transform is available
+            fut.set_result(self.lookup_transform(target_frame, source_frame, time))
+            return fut
+
         def _on_new_data():
             try:
                 if self.can_transform_core(target_frame, source_frame, time)[0]:
-                    fut.set_result(True)
+                    fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             except BaseException as e:
                 fut.set_exception(e)
 
-        return _wait_for_transform_async(self, target_frame, source_frame, time, _on_new_data)
+        self._new_data_callbacks.append(_on_new_data)
+        fut.add_done_callback(lambda _: self._remove_callback(_on_new_data))
+
+        return fut
 
     def wait_for_transform_full_async(
         self,
@@ -341,13 +338,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fut = rclpy.task.Future()
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
             # Short cut, the transform is available
-            fut.set_result(True)
+            fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             return fut
 
         def _on_new_data():
             try:
                 if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
-                    fut.set_result(True)
+                    fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             except BaseException as e:
                 fut.set_exception(e)
 
