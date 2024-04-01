@@ -1,0 +1,25 @@
+<package format="2">
+  <name>tf2_kdl_py</name>
+  <version>0.36.1</version>
+  <description>
+    PyKDL binding for tf2
+  </description>
+
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
+  <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
+
+  <license>Apache-2.0</license>
+
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>python_orocos_kdl_vendor</exec_depend>
+  <exec_depend>tf2_ros_py</exec_depend>
+
+  <test_depend>builtin_interfaces</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>rclpy</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+
+</package>

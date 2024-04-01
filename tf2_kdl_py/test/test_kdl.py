@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Copyright 2008 Willow Garage, Inc.
 #
 # Redistribution and use in source and binary forms, with or without
