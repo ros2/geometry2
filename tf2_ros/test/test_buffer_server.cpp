@@ -175,7 +175,7 @@ TEST_F(TestBufferServer, lookup_transform_available)
   transform.rotation.w = 1.0;
   setTransform("test_target_link", "test_source_link", transform);
 
-  auto spin_result = executor_.spin_until_future_complete(
+  auto spin_result = executor_.spin_until_complete(
     result_ready_future, std::chrono::seconds(3));
   ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
 
@@ -192,7 +192,7 @@ TEST_F(TestBufferServer, lookup_transform_timeout)
     "test_target_link", "test_source_link", std::chrono::seconds(1));
 
   auto start_time = std::chrono::system_clock::now();
-  auto spin_result = executor_.spin_until_future_complete(
+  auto spin_result = executor_.spin_until_complete(
     result_ready_future, std::chrono::seconds(3));
   ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
   auto end_time = std::chrono::system_clock::now();
@@ -213,7 +213,7 @@ TEST_F(TestBufferServer, lookup_transform_delayed)
     "test_target_link", "test_source_link", std::chrono::seconds(5));
 
   // Expect executor to timeout since transform is not available yet
-  auto spin_result = executor_.spin_until_future_complete(
+  auto spin_result = executor_.spin_until_complete(
     result_ready_future, std::chrono::seconds(1));
   EXPECT_EQ(spin_result, rclcpp::FutureReturnCode::TIMEOUT);
 
@@ -228,7 +228,7 @@ TEST_F(TestBufferServer, lookup_transform_delayed)
   setTransform("test_target_link", "test_source_link", transform);
 
   // Wait some more
-  spin_result = executor_.spin_until_future_complete(
+  spin_result = executor_.spin_until_complete(
     result_ready_future, std::chrono::seconds(3));
   ASSERT_EQ(spin_result, rclcpp::FutureReturnCode::SUCCESS);
 

@@ -75,7 +75,7 @@ def main():
         node.get_logger().info('service not available, waiting again...')
 
     future = cli.call_async(req)
-    rclpy.spin_until_future_complete(node, future)
+    rclpy.spin_until_complete(node, future)
 
     ret = 1
     try:
