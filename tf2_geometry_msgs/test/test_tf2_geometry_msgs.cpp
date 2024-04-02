@@ -636,7 +636,7 @@ TEST(TfGeometry, Velocity)
 
   geometry_msgs::msg::TransformStamped trafo;
 
-  tf2::doTransform(v1, res, trafo, 0.1);
+  tf2::doTransform(v1, res, trafo);
 }
 
 int main(int argc, char ** argv)
