@@ -187,7 +187,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: The transform between the frames.
         """
         self.can_transform_full(target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
-        return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
+        return self.lookup_transform_full_core(
+          target_frame, target_time, source_frame, source_time, fixed_frame)
 
     async def lookup_transform_full_async(
         self,
@@ -208,7 +209,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: The transform between the frames.
         """
         await self.wait_for_transform_full_async(target_frame, target_time, source_frame, source_time, fixed_frame)
-        return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
+        return self.lookup_transform_full_core(
+            target_frame, target_time, source_frame, source_time, fixed_frame)
 
     def can_transform(
         self,
@@ -338,13 +340,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fut = rclpy.task.Future()
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
             # Short cut, the transform is available
-            fut.set_result(self.lookup_transform_full_core(target_frame, source_frame, time))
+            fut.set_result(self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame))
             return fut
 
         def _on_new_data():
             try:
                 if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
-                    fut.set_result(self.lookup_transform_full_core(target_frame, source_frame, time))
+                    fut.set_result(self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame))
             except BaseException as e:
                 fut.set_exception(e)
 
