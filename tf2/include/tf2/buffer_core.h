@@ -52,8 +52,6 @@
 #include "tf2/transform_storage.h"
 #include "tf2/visibility_control.h"
 
-using std::literals::chrono_literals::operator""ms;
-
 namespace tf2
 {
 
