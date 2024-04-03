@@ -40,7 +40,8 @@ static const double EPS = 1e-3;
 
 TEST(TfBullet, Transform)
 {
-  tf2::Stamped<btTransform> v1(btTransform(btQuaternion(1,0,0,0), btVector3(1,2,3)), tf2::timeFromSec(2.0), "A");
+  tf2::Stamped<btTransform> v1(btTransform(btQuaternion(1, 0, 0, 0), btVector3(1, 2, 3)),
+    tf2::timeFromSec(2.0), "A");
 
   // simple api
   btTransform v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
@@ -49,8 +50,9 @@ TEST(TfBullet, Transform)
   EXPECT_NEAR(v_simple.getOrigin().getZ(), 27, EPS);
 
   // advanced api
-  btTransform v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-					       "B", tf2::durationFromSec(3.0));
+  btTransform v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "B", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.getOrigin().getX(), -9, EPS);
   EXPECT_NEAR(v_advanced.getOrigin().getY(), 18, EPS);
   EXPECT_NEAR(v_advanced.getOrigin().getZ(), 27, EPS);
@@ -58,7 +60,7 @@ TEST(TfBullet, Transform)
 
 TEST(TfBullet, Vector)
 {
-  tf2::Stamped<btVector3>  v1(btVector3(1,2,3), tf2::timeFromSec(2.0), "A");
+  tf2::Stamped<btVector3> v1(btVector3(1, 2, 3), tf2::timeFromSec(2.0), "A");
 
   // simple api
   btVector3 v_simple = tf_buffer->transform(v1, "B", tf2::durationFromSec(2.0));
@@ -67,14 +69,16 @@ TEST(TfBullet, Vector)
   EXPECT_NEAR(v_simple.getZ(), 27, EPS);
 
   // advanced api
-  btVector3 v_advanced = tf_buffer->transform(v1, "B", tf2::timeFromSec(2.0),
-  					     "B", tf2::durationFromSec(3.0));
+  btVector3 v_advanced = tf_buffer->transform(
+    v1, "B", tf2::timeFromSec(2.0),
+    "B", tf2::durationFromSec(3.0));
   EXPECT_NEAR(v_advanced.getX(), -9, EPS);
   EXPECT_NEAR(v_advanced.getY(), 18, EPS);
   EXPECT_NEAR(v_advanced.getZ(), 27, EPS);
 }
 
-int main(int argc, char **argv){
+int main(int argc, char ** argv)
+{
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
 

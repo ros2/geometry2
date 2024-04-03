@@ -53,7 +53,7 @@ TEST(tf2_ros_test_listener, transform_listener)
   executor.add_node(node);
   // Start spinning in a thread
   std::thread spin_thread = std::thread([&executor] () {
-      executor.spin();
+        executor.spin();
   });
 
   geometry_msgs::msg::TransformStamped ts;
