@@ -228,7 +228,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param time: The time at which to get the transform (0 will get the latest).
         :param timeout: Time to wait for the target frame to become available.
         :param return_debug_type: If true, return a tuple representing debug information.
-        :return: True if the transform is possible, false otherwise.
+        :return: The information of the transform being waited on.
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
@@ -269,7 +269,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :param return_debug_type: If true, return a tuple representing debug information.
-        :return: True if the transform is possible, false otherwise.
+        :return: The information of the transform being waited on.
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
