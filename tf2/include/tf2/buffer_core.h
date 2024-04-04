@@ -46,11 +46,11 @@
 
 #include "LinearMath/Transform.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rcutils/logging_macros.h"
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
 #include "tf2/visibility_control.h"
-#include "rcutils/logging_macros.h"
 
 namespace tf2
 {
