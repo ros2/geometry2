@@ -34,7 +34,7 @@ from geometry_msgs.msg import Quaternion, TransformStamped
 import PyKDL
 import rclpy
 import tf2_ros
-import tf2_kdl  # noqa(F401)
+import tf2_kdl_py  # noqa(F401)
 
 
 class KDLConversions(unittest.TestCase):
