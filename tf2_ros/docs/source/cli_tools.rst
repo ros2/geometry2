@@ -8,11 +8,17 @@ Frame Poses
 
 1. tf2_echo
 ^^^^^^^^^^^
-tf2_echo is the simplest tool to look at the numeric values of a specific transform. tf2_echo takes two arguments: the reference frame and the target frame. The output of tf2_echo is the target frame represented in the reference frame. E.g. to get the transformation from turtle1 to turtle2, set up the turtlesim example with:
+tf2_echo is the simplest tool to look at the numeric values of a specific transform. tf2_echo takes two arguments: the source frame and the target frame. The output of tf2_echo is the target frame in comparison to the source frame. E.g. to get the transformation from turtle1 to turtle2, set up the turtlesim example with:
 
 .. code-block:: bash
 
    git clone https://github.com/ros/geometry_tutorials.git -b ros2
+
+Then build and source in each terminal:
+
+.. code-block:: bash
+
+   colcon build && . install/setup.zsh
 
 Then:
 
