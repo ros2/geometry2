@@ -113,7 +113,7 @@ TEST(TfEigen, ConvertAffine3dStamped)
 TEST(TfEigen, ConvertAffine3d)
 {
   const Eigen::Affine3d v(
-  Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
+    Eigen::Translation3d(1, 2, 3) * Eigen::AngleAxis<double>(1, Eigen::Vector3d::UnitX()));
 
   Eigen::Affine3d v1;
   geometry_msgs::msg::Pose p1;
