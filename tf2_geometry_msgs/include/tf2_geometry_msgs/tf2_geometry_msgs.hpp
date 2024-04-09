@@ -1359,10 +1359,13 @@ void doTransform(
   // lookupTransform(target_frame,msg_in.header.frame_id,  msg_in.header.stamp, transform);
 
   tf2::Vector3 out_rot = transform_temp.getBasis() * twist_rot;
-  tf2::Vector3 out_vel = transform_temp.getBasis() * twist_vel + transform_temp.getOrigin().cross(out_rot);
+  tf2::Vector3 out_vel = transform_temp.getBasis() * twist_vel + \
+    transform_temp.getOrigin().cross(out_rot);
 
   // geometry_msgs::TwistStamped interframe_twist;
-  // lookupVelocity(target_frame, msg_in.header.frame_id, msg_in.header.stamp, ros::Duration(0.1), interframe_twist); //\todo get rid of hard coded number
+  // lookupVelocity(target_frame, msg_in.header.frame_id, msg_in.header.stamp,
+  //   ros::Duration(0.1), interframe_twist);
+  // \todo get rid of hard coded number
 
   t_out.header = t_in.header;
   t_out.velocity.linear.x =  out_vel.x() + t_in.velocity.linear.x;
