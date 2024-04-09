@@ -1368,12 +1368,12 @@ void doTransform(
   // \todo get rid of hard coded number
 
   t_out.header = t_in.header;
-  t_out.velocity.linear.x =  out_vel.x() + t_in.velocity.linear.x;
-  t_out.velocity.linear.y =  out_vel.y() + t_in.velocity.linear.y;
-  t_out.velocity.linear.z =  out_vel.z() + t_in.velocity.linear.z;
-  t_out.velocity.angular.x =  out_rot.x() + t_in.velocity.angular.x;
-  t_out.velocity.angular.y =  out_rot.y() + t_in.velocity.angular.y;
-  t_out.velocity.angular.z =  out_rot.z() + t_in.velocity.angular.z;
+  t_out.velocity.linear.x = out_vel.x() + t_in.velocity.linear.x;
+  t_out.velocity.linear.y = out_vel.y() + t_in.velocity.linear.y;
+  t_out.velocity.linear.z = out_vel.z() + t_in.velocity.linear.z;
+  t_out.velocity.angular.x = out_rot.x() + t_in.velocity.angular.x;
+  t_out.velocity.angular.y = out_rot.y() + t_in.velocity.angular.y;
+  t_out.velocity.angular.z = out_rot.z() + t_in.velocity.angular.z;
 }
 
 /**********************/
