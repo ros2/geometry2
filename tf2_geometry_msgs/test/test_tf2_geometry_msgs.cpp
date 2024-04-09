@@ -633,7 +633,6 @@ TEST(TfGeometry, Velocity)
   v1.header.frame_id = "world";
   v1.body_frame_id = "base_link";
 
-
   geometry_msgs::msg::TransformStamped trafo;
 
   tf2::doTransform(v1, res, trafo);
