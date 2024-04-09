@@ -187,7 +187,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: The transform between the frames.
         """
         self.can_transform_full(target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
-        return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
+        return self.lookup_transform_full_core(
+          target_frame, target_time, source_frame, source_time, fixed_frame)
 
     async def lookup_transform_full_async(
         self,
@@ -208,7 +209,8 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :return: The transform between the frames.
         """
         await self.wait_for_transform_full_async(target_frame, target_time, source_frame, source_time, fixed_frame)
-        return self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)
+        return self.lookup_transform_full_core(
+            target_frame, target_time, source_frame, source_time, fixed_frame)
 
     def can_transform(
         self,
@@ -226,7 +228,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param time: The time at which to get the transform (0 will get the latest).
         :param timeout: Time to wait for the target frame to become available.
         :param return_debug_type: If true, return a tuple representing debug information.
-        :return: True if the transform is possible, false otherwise.
+        :return: The information of the transform being waited on.
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
@@ -267,7 +269,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :param return_debug_type: If true, return a tuple representing debug information.
-        :return: True if the transform is possible, false otherwise.
+        :return: The information of the transform being waited on.
         """
         clock = rclpy.clock.Clock()
         if timeout != Duration():
@@ -302,13 +304,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fut = rclpy.task.Future()
         if self.can_transform_core(target_frame, source_frame, time)[0]:
             # Short cut, the transform is available
-            fut.set_result(True)
+            fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             return fut
 
         def _on_new_data():
             try:
                 if self.can_transform_core(target_frame, source_frame, time)[0]:
-                    fut.set_result(True)
+                    fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             except BaseException as e:
                 fut.set_exception(e)
 
@@ -338,13 +340,13 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fut = rclpy.task.Future()
         if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
             # Short cut, the transform is available
-            fut.set_result(True)
+            fut.set_result(self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame))
             return fut
 
         def _on_new_data():
             try:
                 if self.can_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame)[0]:
-                    fut.set_result(True)
+                    fut.set_result(self.lookup_transform_full_core(target_frame, target_time, source_frame, source_time, fixed_frame))
             except BaseException as e:
                 fut.set_exception(e)
 

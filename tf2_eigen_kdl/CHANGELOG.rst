@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.1 (2024-03-28)
+-------------------
+* Fix installation directory of .dll files in tf2_eigen_kdl (`#657 <https://github.com/ros2/geometry2/issues/657>`_)
+* Contributors: Silvio Traversaro
+
 0.36.0 (2024-02-07)
 -------------------
 

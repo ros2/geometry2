@@ -36,6 +36,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <unordered_map>
 
 #include "tf2_ros/async_buffer_interface.h"
@@ -47,6 +48,10 @@
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"
+#include "rclcpp/node_interfaces/get_node_base_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_services_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
+#include "rclcpp/node_interfaces/node_logging_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 namespace tf2_ros
@@ -69,11 +74,43 @@ public:
    * \param clock A clock to use for time and sleeping
    * \param cache_time How long to keep a history of transforms
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
+   * \param  qos If passed change the quality of service of the frames_server_ service
    */
-  TF2_ROS_PUBLIC Buffer(
+  template<typename NodeT = rclcpp::Node::SharedPtr>
+  Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
-    rclcpp::Node::SharedPtr node = rclcpp::Node::SharedPtr());
+    NodeT && node = NodeT(),
+    const rclcpp::QoS & qos = rclcpp::ServicesQoS())
+  : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
+  {
+    if (nullptr == clock_) {
+      throw std::invalid_argument("clock must be a valid instance");
+    }
+
+    auto post_jump_cb = [this](const rcl_time_jump_t & jump_info) {onTimeJump(jump_info);};
+
+    rcl_jump_threshold_t jump_threshold;
+    // Disable forward jump callbacks
+    jump_threshold.min_forward.nanoseconds = 0;
+    // Anything backwards is a jump
+    jump_threshold.min_backward.nanoseconds = -1;
+    // Callback if the clock changes too
+    jump_threshold.on_clock_change = true;
+
+    jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
+
+    if (node) {
+      node_logging_interface_ = rclcpp::node_interfaces::get_node_logging_interface(node);
+
+      frames_server_ = rclcpp::create_service<tf2_msgs::srv::FrameGraph>(
+        rclcpp::node_interfaces::get_node_base_interface(node),
+        rclcpp::node_interfaces::get_node_services_interface(node),
+        "tf2_frames", std::bind(
+          &Buffer::getFrames, this, std::placeholders::_1,
+          std::placeholders::_2), qos, nullptr);
+    }
+  }
 
   /** \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed
@@ -275,10 +312,12 @@ private:
     TransformStampedFuture future,
     TransformReadyCallback callback);
 
+  TF2_ROS_PUBLIC
   bool getFrames(
     const tf2_msgs::srv::FrameGraph::Request::SharedPtr req,
     tf2_msgs::srv::FrameGraph::Response::SharedPtr res);
 
+  TF2_ROS_PUBLIC
   void onTimeJump(const rcl_time_jump_t & jump);
 
   // conditionally error if dedicated_thread unset.
@@ -293,8 +332,8 @@ private:
   /// \brief A clock to use for time and sleeping
   rclcpp::Clock::SharedPtr clock_;
 
-  /// \brief A node to advertise the view_frames service
-  rclcpp::Node::SharedPtr node_;
+  /// \brief A node logging interface to access the buffer node's logger
+  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
 
   /// \brief Interface for creating timers
   CreateTimerInterface::SharedPtr timer_interface_;

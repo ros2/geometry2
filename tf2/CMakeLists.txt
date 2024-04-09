@@ -12,8 +12,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake_ros REQUIRED)
-find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
-find_package(console_bridge REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(rcutils REQUIRED)
@@ -30,7 +28,6 @@ target_link_libraries(tf2 PUBLIC
   ${geometry_msgs_TARGETS})
 target_link_libraries(tf2 PRIVATE
   ${builtin_interfaces_TARGETS}
-  console_bridge::console_bridge
   rcutils::rcutils)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
@@ -112,7 +109,7 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-ament_export_dependencies(console_bridge geometry_msgs rcutils rosidl_runtime_cpp)
+ament_export_dependencies(geometry_msgs rcutils rosidl_runtime_cpp)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")

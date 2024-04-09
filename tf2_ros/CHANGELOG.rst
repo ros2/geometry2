@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.1 (2024-03-28)
+-------------------
+* Adding NodeInterfaces to Buffer (`#656 <https://github.com/ros2/geometry2/issues/656>`_)
+* Reformat some code to make uncrustify happier. (`#654 <https://github.com/ros2/geometry2/issues/654>`_)
+* Contributors: Chris Lalancette, Lucas Wendland
+
 0.36.0 (2024-02-07)
 -------------------
 * Enable intra-process (`#649 <https://github.com/ros2/geometry2/issues/649>`_) (`#642 <https://github.com/ros2/geometry2/issues/642>`_)
