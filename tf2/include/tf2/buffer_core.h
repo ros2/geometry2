@@ -158,6 +158,7 @@ public:
     const std::string & source_frame, const TimePoint & source_time,
     const std::string & fixed_frame) const override;
 
+  TF2_PUBLIC
   geometry_msgs::msg::VelocityStamped lookupVelocity(
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
@@ -172,6 +173,7 @@ public:
    * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
    * TransformReference::MaxDepthException
    */
+  TF2_PUBLIC
   geometry_msgs::msg::VelocityStamped lookupVelocity(
     const std::string & tracking_frame, const std::string & observation_frame,
     const std::string & reference_frame, const tf2::Vector3 & reference_point,
