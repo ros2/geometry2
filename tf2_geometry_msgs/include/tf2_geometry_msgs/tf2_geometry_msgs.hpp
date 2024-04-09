@@ -1332,11 +1332,11 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   tf2::Vector3 twist_rot(t_in.velocity.angular.x,
-                        t_in.velocity.angular.y,
-                        t_in.velocity.angular.z);
+    t_in.velocity.angular.y,
+    t_in.velocity.angular.z);
   tf2::Vector3 twist_vel(t_in.velocity.linear.x,
-                        t_in.velocity.linear.y,
-                        t_in.velocity.linear.z);
+    t_in.velocity.linear.y,
+    t_in.velocity.linear.z);
   tf2::Transform transform_temp;
 
   transform_temp.setOrigin(tf2::Vector3(
