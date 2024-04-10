@@ -51,18 +51,20 @@
 class Notification
 {
 public:
-  Notification(int expected_count) :
-    count_(0), expected_count_(expected_count), failure_count_(0)
+  Notification(int expected_count)
+  : count_(0), expected_count_(expected_count), failure_count_(0)
   {
   }
 
-  void notify(const geometry_msgs::msg::PointStamped::ConstSharedPtr& message)
+  void notify(const geometry_msgs::msg::PointStamped::ConstSharedPtr & message)
   {
     (void)message;
     ++count_;
   }
 
-  void failure(const geometry_msgs::msg::PointStamped::ConstSharedPtr& message, tf2_ros::filter_failure_reasons::FilterFailureReason reason)
+  void failure(
+    const geometry_msgs::msg::PointStamped::ConstSharedPtr & message,
+    tf2_ros::filter_failure_reasons::FilterFailureReason reason)
   {
     (void)message;
     (void)reason;
@@ -88,7 +90,8 @@ TEST(MessageFilter, noTransforms)
   Notification n(1);
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
   msg->header.frame_id = "frame2";
   filter.add(msg);
@@ -110,7 +113,8 @@ TEST(MessageFilter, noTransformsSameFrame)
   Notification n(1);
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
   msg->header.frame_id = "frame1";
   filter.add(msg);
@@ -118,7 +122,11 @@ TEST(MessageFilter, noTransformsSameFrame)
   EXPECT_EQ(1, n.count_);
 }
 
-geometry_msgs::msg::TransformStamped createTransform(tf2::Quaternion q, tf2::Vector3 v, builtin_interfaces::msg::Time stamp, const std::string& frame1, const std::string& frame2)
+geometry_msgs::msg::TransformStamped createTransform(
+  tf2::Quaternion q, tf2::Vector3 v,
+  builtin_interfaces::msg::Time stamp,
+  const std::string & frame1,
+  const std::string & frame2)
 {
   geometry_msgs::msg::TransformStamped t;
   t.header.frame_id = frame1;
@@ -150,9 +158,13 @@ TEST(MessageFilter, preexistingTransforms)
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame2"), "me");
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
@@ -178,7 +190,8 @@ TEST(MessageFilter, postTransforms)
 
   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
@@ -186,7 +199,10 @@ TEST(MessageFilter, postTransforms)
 
   EXPECT_EQ(0, n.count_);
 
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.count_);
 }
@@ -204,21 +220,26 @@ TEST(MessageFilter, concurrentTransforms)
 
   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
   tf2_ros::Buffer buffer(clock);
   for (int i = 0; i < 50; i++) {
     buffer.setCreateTimerInterface(create_timer_interface);
-    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", buffer_size, node);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", buffer_size,
+      node);
     Notification n(1);
     filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
-    std::thread t([&](){
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
-    });
+    std::thread t([&]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        buffer.setTransform(
+          createTransform(
+            tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3),
+            stamp, "frame1", "frame2"), "me");
+      });
     for (int j = 0; j < messages; j++) {
       filter.add(msg);
     }
@@ -286,9 +307,13 @@ TEST(MessageFilter, setTargetFrame)
   filter.setTargetFrame("frame1000");
 
   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1000", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1000", "frame2"), "me");
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
@@ -317,16 +342,23 @@ TEST(MessageFilter, multipleTargetFrames)
   filter.setTargetFrames(target_frames);
 
   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame3"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame3"), "me");
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame3";
   filter.add(msg);
 
   EXPECT_EQ(0, n.count_); // frame1->frame3 exists, frame2->frame3 does not (yet)
 
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.count_); // frame2->frame3 now exists
 }
@@ -349,23 +381,32 @@ TEST(MessageFilter, tolerance)
   filter.setTolerance(offset);
 
   builtin_interfaces::msg::Time stamp = rclcpp::Time(1, 0);
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame2"), "me");
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
   filter.add(msg);
 
   EXPECT_EQ(0, n.count_); //No return due to lack of space for offset
 
-  double time_stamp = (stamp.sec + stamp.nanosec/1e9) + tf2::durationToSec(offset)*1.1;
-  builtin_interfaces::msg::Time stamp_transform = rclcpp::Time(static_cast<int32_t>((int)time_stamp), static_cast<uint32_t>((time_stamp - (int)time_stamp)*1e9));
+  double time_stamp = (stamp.sec + stamp.nanosec / 1e9) + tf2::durationToSec(offset) * 1.1;
+  builtin_interfaces::msg::Time stamp_transform = rclcpp::Time(
+    static_cast<int32_t>((int)time_stamp),
+    static_cast<uint32_t>((time_stamp - (int)time_stamp) * 1e9));
 
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp_transform, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3),
+      stamp_transform, "frame1", "frame2"), "me");
 
   EXPECT_EQ(1, n.count_); // Now have data for the message published earlier
 
-  time_stamp = (stamp.sec + stamp.nanosec/1e9) + tf2::durationToSec(offset);
+  time_stamp = (stamp.sec + stamp.nanosec / 1e9) + tf2::durationToSec(offset);
 
   msg->header.stamp = rclcpp::Time(static_cast<int64_t>(time_stamp));
   filter.add(msg);
@@ -470,9 +511,13 @@ TEST(MessageFilter, checkStampPrecisionLoss)
 
   // Use a large timestamp to trigger potential precision loss if converted to a double somewhere
   builtin_interfaces::msg::Time stamp(rclcpp::Time(1000000000, 000000001));
-  buffer.setTransform(createTransform(tf2::Quaternion(0,0,0,1), tf2::Vector3(1,2,3), stamp, "frame1", "frame2"), "me");
+  buffer.setTransform(
+    createTransform(
+      tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
+      "frame1", "frame2"), "me");
 
-  std::shared_ptr<geometry_msgs::msg::PointStamped> msg = std::make_shared<geometry_msgs::msg::PointStamped>();
+  std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
+    std::make_shared<geometry_msgs::msg::PointStamped>();
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
@@ -481,7 +526,7 @@ TEST(MessageFilter, checkStampPrecisionLoss)
   EXPECT_EQ(1, n.count_);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   rclcpp::init(argc, argv);
