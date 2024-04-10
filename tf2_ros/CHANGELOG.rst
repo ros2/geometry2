@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.2 (2024-04-10)
+-------------------
+* Compile fix for upcomming changes to rclcpp::Executor (`#668 <https://github.com/ros2/geometry2/issues/668>`_)
+* Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)
+  Co-authored-by: Tully Foote <tullyfoote@intrinsic.ai>
+* Contributors: Alejandro Hernández Cordero, jmachowinski
+
 0.36.1 (2024-03-28)
 -------------------
 * Adding NodeInterfaces to Buffer (`#656 <https://github.com/ros2/geometry2/issues/656>`_)

@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.2 (2024-04-10)
+-------------------
+* Transform Data Callback Python (`#664 <https://github.com/ros2/geometry2/issues/664>`_)
+* Contributors: Lucas Wendland
+
 0.36.1 (2024-03-28)
 -------------------
 

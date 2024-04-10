@@ -2,6 +2,12 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.2 (2024-04-10)
+-------------------
+* Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)
+  Co-authored-by: Tully Foote <tullyfoote@intrinsic.ai>
+* Contributors: Alejandro Hernández Cordero
+
 0.36.1 (2024-03-28)
 -------------------
 

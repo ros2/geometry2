@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.2 (2024-04-10)
+-------------------
+* Compile fix for upcomming changes to rclcpp::Executor (`#668 <https://github.com/ros2/geometry2/issues/668>`_)
+* Contributors: jmachowinski
+
 0.36.1 (2024-03-28)
 -------------------
 * Adding addition BUILD_TESTING requirement (`#660 <https://github.com/ros2/geometry2/issues/660>`_)
