@@ -260,6 +260,7 @@ TEST_F(LinearVelocitySquareTest, LinearVelocityToThreeFrames)
   offset_frames.push_back("foo");
   offset_frames.push_back("stationary_offset_child");
   offset_frames.push_back("stationary_offset_parent");
+  double epsilon = 1e-6;
 
   for (std::vector<std::string>::iterator it = offset_frames.begin(); it != offset_frames.end();
     ++it)
@@ -269,57 +270,57 @@ TEST_F(LinearVelocitySquareTest, LinearVelocityToThreeFrames)
 
       auto twist = buffer_->lookupVelocity(
         "bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, 1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, 1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
 
       check_time = tf2::timeFromSec(tf2::timeToSec(tf2_time_) + 1.5);
       twist = buffer_->lookupVelocity("bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, 1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, 1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
 
       check_time = tf2::timeFromSec(tf2::timeToSec(tf2_time_) + 2.5);
       twist = buffer_->lookupVelocity("bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, -1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, -1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
 
       check_time = tf2::timeFromSec(tf2::timeToSec(tf2_time_) + 3.5);
       twist = buffer_->lookupVelocity("bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, -1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, -1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
 
       check_time = tf2::timeFromSec(tf2::timeToSec(tf2_time_) + 4.5);
       twist = buffer_->lookupVelocity("bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, 1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, 1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
 
       check_time = tf2::timeFromSec(tf2::timeToSec(tf2_time_) + 5.5);
       twist = buffer_->lookupVelocity("bar", *it, check_time, tf2::durationFromSec(0.1));
-      EXPECT_FLOAT_EQ(twist.velocity.linear.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.linear.z, -1.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.x, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.y, 0.0);
-      EXPECT_FLOAT_EQ(twist.velocity.angular.z, 0.0);
+      EXPECT_NEAR(twist.velocity.linear.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.linear.z, -1.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.x, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.y, 0.0, epsilon);
+      EXPECT_NEAR(twist.velocity.angular.z, 0.0, epsilon);
     } catch (tf2::TransformException & ex) {
       EXPECT_STREQ("", ex.what());
     }

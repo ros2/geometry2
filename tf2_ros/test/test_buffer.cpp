@@ -196,7 +196,8 @@ TEST(test_buffer, velocity_transform)
 
   geometry_msgs::msg::TransformStamped transform;
   transform.header.frame_id = "foo";
-  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(0, 1e+9));
+  transform.header.stamp = builtin_interfaces::msg::Time(
+    rclcpp_time - rclcpp::Duration(0, static_cast<uint32_t>(1e+9)));
   transform.child_frame_id = "bar";
   transform.transform.translation.x = 0;
   transform.transform.translation.y = 0;
@@ -209,7 +210,8 @@ TEST(test_buffer, velocity_transform)
   EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
 
   transform.header.frame_id = "foo";
-  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time + rclcpp::Duration(0, 1e+9));
+  transform.header.stamp = builtin_interfaces::msg::Time(
+    rclcpp_time + rclcpp::Duration(0, static_cast<uint32_t>(1e+9)));
   transform.child_frame_id = "bar";
   transform.transform.translation.x = 2.0;
   transform.transform.translation.y = 0;
@@ -253,13 +255,14 @@ TEST(test_buffer, test_twist)
   rclcpp::Time rclcpp_time = clock->now();
   tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
 
-  float vel = 0.3;
+  float vel = 0.3f;
   for (int i = -10; i < 5; ++i) {
     geometry_msgs::msg::TransformStamped transform;
     transform.header.frame_id = "PARENT";
     if (i < 0) {
       transform.header.stamp =
-        builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(std::fabs(i), 0));
+        builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(
+          static_cast<int32_t>(std::fabs(i)), 0));
     } else {
       transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time + rclcpp::Duration(i, 0));
     }
