@@ -214,17 +214,17 @@ texinfo_documents = [
 ]
 
 # Configuration for breathe to link doxygen
-breathe_projects = {'tf2_ros': './../docs_output/tf2_ros/generated/doxygen/xml'}
-breathe_default_project = 'tf2_ros'
+# breathe_projects = {'tf2_ros': './generated/doxygen/xml'}
+# breathe_default_project = 'tf2_ros'
 
-# Exhale configuration
-exhale_args = {
-    # Required arguments
-    "containmentFolder":     "./api",
-    "rootFileName":          "index.rst",
-    "doxygenStripFromPath":  "..",
-    "rootFileTitle":         "tf2_ros API",
-    }
+# # Exhale configuration
+# exhale_args = {
+#     # Required arguments
+#     "containmentFolder":     "./api",
+#     "rootFileName":          "index.rst",
+#     "doxygenStripFromPath":  ".",
+#     "rootFileTitle":         "tf2_ros API",
+#     }
 
 
 
