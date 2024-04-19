@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.31.5 (2023-09-08)
 -------------------
 * Fix invalid timer handle exception (`#613 <https://github.com/ros2/geometry2/issues/613>`_)
