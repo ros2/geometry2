@@ -2,8 +2,8 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.31.6 (2024-04-19)
+-------------------
 * Fix constantly increasing memory in std::list (`#649 <https://github.com/ros2/geometry2/issues/649>`_)
 * Contributors: Ignacio Vizzo <ignaciovizzo@gmail.com>
 
