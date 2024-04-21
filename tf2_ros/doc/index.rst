@@ -69,7 +69,8 @@ Tree
     self
     cli_tools
     tf2_ros2
-    api/index
+    C++ API Docs <generated/index>
+    Python Modules <modules>
 
 
 
