@@ -6,7 +6,7 @@ PROJECT_BRIEF          = "This package contains the ROS bindings for the tf2 lib
 
 INPUT                  = ../include ./mainpage.dox
 RECURSIVE              = YES
-OUTPUT_DIRECTORY       = docs_output
+OUTPUT_DIRECTORY       = doc_output
 
 EXTRACT_ALL            = YES
 SORT_MEMBER_DOCS       = NO
