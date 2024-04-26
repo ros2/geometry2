@@ -258,7 +258,7 @@ public:
    */
   TF2_ROS_PUBLIC
   explicit StaticTransformListener(tf2::BufferCore & buffer, bool spin_thread = true)
-  : TransformListener(buffer, spin_thread)
+  : TransformListener(buffer, spin_thread, true)
   {
   }
 
