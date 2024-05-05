@@ -67,7 +67,7 @@ def main():
     while (time.time() - start_time) < parsed_args.wait_time:
         rclpy.spin_once(node, timeout_sec=0.1)
 
-    node.get_logger().info('Generating graph in frames.pdf file...')
+    node.get_logger().info('Generating graph...')
 
     cli = node.create_client(FrameGraph, 'tf2_frames')
     req = FrameGraph.Request()
@@ -95,6 +95,7 @@ def main():
             frames_gv = 'frames_{:s}.gv'.format(datetime)
             frames_pdf = 'frames_{:s}.pdf'.format(datetime)
 
+        node.get_logger().info(f'Exporting graph in {frames_pdf} file...')
         with open(frames_gv, 'w') as f:
             f.write(generate_dot(data, node.get_clock().now().seconds_nanoseconds()))
 
