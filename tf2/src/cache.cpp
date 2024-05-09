@@ -241,8 +241,19 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     }
     storage_it++;
   }
+
+  // Search only along data with same timestamp (sorted), and check if this exact
+  // data is already present.
+  bool already_present = false;
+  while (storage_it != storage_.end() && storage_it->stamp_ == new_data.stamp_) {
+    if (*storage_it == new_data) {
+      already_present = true;
+      break;
+    }
+    storage_it++;
+  }
   // Insert elements only if not already present
-  if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
+  if (!already_present) {
     storage_.insert(storage_it, new_data);
   }
 
