@@ -142,7 +142,8 @@ protected:
   // timestamp will be in reverse order of insertion.
   // @warning Portions of this contract may change based upon implementation.
   TF2_PUBLIC
-  std::list<TransformStorage> getAllItems() const {
+  std::list<TransformStorage> getAllItems() const
+  {
     // TODO(eric.cousineau): Unclear why, deferring this definition to source
     // file appears to cause a linker error, at least for cache_unittest.
     return storage_;
