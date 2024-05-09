@@ -68,20 +68,6 @@ void setIdentity(tf2::TransformStorage & stor)
   stor.rotation_.setValue(0.0, 0.0, 0.0, 1.0);
 }
 
-namespace tf2
-{
-
-class InternalTestAccess
-{
-public:
-  static const std::list<tf2::TransformStorage> & getAllItems(const tf2::TimeCache & cache)
-  {
-    return cache.storage_;
-  }
-};
-
-}  // namespace tf2
-
 // Shorthand for making incomplete but unique transforms.
 tf2::TransformStorage makeItem(uint32_t nanosec, uint32_t frame_id)
 {
@@ -118,11 +104,10 @@ std::string listToMakeItemStrings(const std::list<tf2::TransformStorage> & stora
 // Tests the behavior of sorting and pruning relevant to the implementation for
 // performance concerns. Certain details may change as the implementation
 // evolves.
-TEST(TimeCache, ImplSortedDescendingUniqueEntries)
+TEST(TimeCache, GetAllItems)
 {
   tf2::Duration max_storage_time(std::chrono::nanoseconds(10));
   tf2::TimeCache cache(max_storage_time);
-  const std::list<tf2::TransformStorage> & storage = tf2::InternalTestAccess::getAllItems(cache);
 
   const auto item_a = makeItem(0, 0);
   const auto item_b = makeItem(10, 1);
@@ -160,6 +145,7 @@ TEST(TimeCache, ImplSortedDescendingUniqueEntries)
     item_d,
     item_a};
 
+  const std::list<tf2::TransformStorage> storage = cache.getAllItems();
   EXPECT_EQ(storage, storage_expected)
     << "storage: " << listToMakeItemStrings(storage) << "\n"
     << "storage_expected: " << listToMakeItemStrings(storage_expected) << "\n";
@@ -173,8 +159,9 @@ TEST(TimeCache, ImplSortedDescendingUniqueEntries)
   cache.insertData(item_b);
   cache.insertData(item_a);
 
-  EXPECT_EQ(storage, storage_expected)
-    << "storage: " << listToMakeItemStrings(storage) << "\n"
+  const std::list<tf2::TransformStorage> storage_repeat = cache.getAllItems();
+  EXPECT_EQ(storage_repeat, storage_expected)
+    << "storage_repeat: " << listToMakeItemStrings(storage_repeat) << "\n"
     << "storage_expected: " << listToMakeItemStrings(storage_expected) << "\n";
 
   // Insert newer data, and expect stale data to be pruned, even if newly inserted.
@@ -195,8 +182,9 @@ TEST(TimeCache, ImplSortedDescendingUniqueEntries)
     item_j,
     item_c};
   // item_a, item_d, and item_i are pruned.
-  EXPECT_EQ(storage, storage_expected_new)
-    << "storage: " << listToMakeItemStrings(storage) << "\n"
+  const std::list<tf2::TransformStorage> storage_new = cache.getAllItems();
+  EXPECT_EQ(storage_new, storage_expected_new)
+    << "storage_new: " << listToMakeItemStrings(storage_new) << "\n"
     << "storage_expected_new: " << listToMakeItemStrings(storage_expected_new) << "\n";
 }
 
