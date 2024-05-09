@@ -137,9 +137,10 @@ public:
   TF2_PUBLIC
   virtual TimePoint getOldestTimestamp();
 
-  /// Retrieve a copy of all items, sorted in order. Any items with the same
-  /// timestamp will be in reverse order of insertion.
-  /// @warning Portions of this contract may change based upon implementation.
+protected:
+  // Retrieve a copy of all items, sorted in order. Any items with the same
+  // timestamp will be in reverse order of insertion.
+  // @warning Portions of this contract may change based upon implementation.
   TF2_PUBLIC
   std::list<TransformStorage> getAllItems() const {
     // TODO(eric.cousineau): Unclear why, deferring this definition to source

@@ -68,6 +68,13 @@ void setIdentity(tf2::TransformStorage & stor)
   stor.rotation_.setValue(0.0, 0.0, 0.0, 1.0);
 }
 
+class TimeCacheInternal : public tf2::TimeCache
+{
+public:
+  using tf2::TimeCache::TimeCache;
+  using tf2::TimeCache::getAllItems;
+};
+
 // Shorthand for making incomplete but unique transforms.
 tf2::TransformStorage makeItem(uint32_t nanosec, uint32_t frame_id)
 {
@@ -107,7 +114,7 @@ std::string listToMakeItemStrings(const std::list<tf2::TransformStorage> & stora
 TEST(TimeCache, GetAllItems)
 {
   tf2::Duration max_storage_time(std::chrono::nanoseconds(10));
-  tf2::TimeCache cache(max_storage_time);
+  TimeCacheInternal cache(max_storage_time);
 
   const auto item_a = makeItem(0, 0);
   const auto item_b = makeItem(10, 1);
