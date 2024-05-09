@@ -97,11 +97,6 @@ using TimeCacheInterfacePtr = std::shared_ptr<TimeCacheInterface>;
 /// default value of 10 seconds storage
 constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::seconds(10);
 
-namespace impl
-{
-class TestFriend;
-}  // namespace impl
-
 /** \brief A class to keep a sorted linked list in time (newest first, oldest
  * last).
  * This builds and maintains a list of timestamped
@@ -161,7 +156,8 @@ private:
 
   void pruneList();
 
-  friend class impl::TestFriend;
+  // Internal access for testing only.
+  friend class InternalTestAccess;
 };
 
 class StaticCache : public TimeCacheInterface

@@ -70,19 +70,16 @@ void setIdentity(tf2::TransformStorage & stor)
 
 namespace tf2
 {
-namespace impl
-{
 
-class TestFriend
+class InternalTestAccess
 {
 public:
-  static const std::list<tf2::TransformStorage> & getList(const tf2::TimeCache & cache)
+  static const std::list<tf2::TransformStorage> & getAllItems(const tf2::TimeCache & cache)
   {
     return cache.storage_;
   }
 };
 
-}  // namespace impl
 }  // namespace tf2
 
 // Shorthand for making incomplete but unique transforms.
@@ -125,7 +122,7 @@ TEST(TimeCache, ImplSortedDescendingUniqueEntries)
 {
   tf2::Duration max_storage_time(std::chrono::nanoseconds(10));
   tf2::TimeCache cache(max_storage_time);
-  const std::list<tf2::TransformStorage> & storage = tf2::impl::TestFriend::getList(cache);
+  const std::list<tf2::TransformStorage> & storage = tf2::InternalTestAccess::getAllItems(cache);
 
   const auto item_a = makeItem(0, 0);
   const auto item_b = makeItem(10, 1);
