@@ -31,6 +31,7 @@
 #include <chrono>
 #include <cmath>
 #include <stdexcept>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -67,6 +68,141 @@ void setIdentity(tf2::TransformStorage & stor)
   stor.rotation_.setValue(0.0, 0.0, 0.0, 1.0);
 }
 
+namespace tf2
+{
+namespace impl
+{
+
+class TestFriend
+{
+public:
+  static const std::list<tf2::TransformStorage> & getList(const tf2::TimeCache & cache)
+  {
+    return cache.storage_;
+  }
+};
+
+}  // namespace impl
+}  // namespace tf2
+
+// Shorthand for making incomplete but unique transforms.
+tf2::TransformStorage makeItem(uint32_t nanosec, uint32_t frame_id)
+{
+  tf2::TransformStorage stor{};
+  stor.frame_id_ = frame_id;
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(nanosec));
+  // Initialize remaining elements.
+  stor.child_frame_id_ = 0;
+  setIdentity(stor);
+  return stor;
+}
+
+std::string toMakeItemString(const tf2::TransformStorage & item)
+{
+  std::stringstream out;
+  const uint32_t nanosec = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    item.stamp_.time_since_epoch()).count();
+  out << "makeItem(" << nanosec << ", " << item.frame_id_ << ")";
+  return out.str();
+}
+
+// Reformat list for ease of debugging pursuant to this test point.
+std::string listToMakeItemStrings(const std::list<tf2::TransformStorage> & storage)
+{
+  std::stringstream out;
+  out << "{\n";
+  for (auto & item : storage) {
+    out << "  " << toMakeItemString(item) << ",\n";
+  }
+  out << "}";
+  return out.str();
+}
+
+// Tests the behavior of sorting and pruning relevant to the implementation for
+// performance concerns. Certain details may change as the implementation
+// evolves.
+TEST(TimeCache, ImplSortedDescendingUniqueEntries)
+{
+  tf2::Duration max_storage_time(std::chrono::nanoseconds(10));
+  tf2::TimeCache cache(max_storage_time);
+  const std::list<tf2::TransformStorage> & storage = tf2::impl::TestFriend::getList(cache);
+
+  const auto item_a = makeItem(0, 0);
+  const auto item_b = makeItem(10, 1);
+  const auto item_c = makeItem(5, 2);
+  const auto item_d = makeItem(3, 3);
+  // Same timestamp, different id.
+  const auto item_e = makeItem(8, 4);
+  const auto item_f = makeItem(8, 5);
+  const auto item_g = makeItem(8, 6);
+
+  // Insert in order.
+  cache.insertData(item_a);
+  cache.insertData(item_b);
+  cache.insertData(item_c);
+  cache.insertData(item_d);
+  cache.insertData(item_e);
+  cache.insertData(item_f);
+  cache.insertData(item_g);
+
+  // Note that the difference between the oldest and newest timestamp is exactly equal
+  // to the max storage duration.
+  EXPECT_EQ(
+      cache.getLatestTimestamp() - cache.getOldestTimestamp(),
+      max_storage_time);
+
+  // Expect that storage is descending.
+  const std::list<tf2::TransformStorage> & storage_expected{
+    item_b,
+    // Same timestamps have effectively reversed insertion order.
+    item_g,
+    item_f,
+    item_e,
+    // Remaining are in descending order.
+    item_c,
+    item_d,
+    item_a};
+
+  EXPECT_EQ(storage, storage_expected)
+    << "storage: " << listToMakeItemStrings(storage) << "\n"
+    << "storage_expected: " << listToMakeItemStrings(storage_expected) << "\n";
+
+  // Insert repeated, in reverse. Nothing should change.
+  cache.insertData(item_g);
+  cache.insertData(item_f);
+  cache.insertData(item_e);
+  cache.insertData(item_d);
+  cache.insertData(item_c);
+  cache.insertData(item_b);
+  cache.insertData(item_a);
+
+  EXPECT_EQ(storage, storage_expected)
+    << "storage: " << listToMakeItemStrings(storage) << "\n"
+    << "storage_expected: " << listToMakeItemStrings(storage_expected) << "\n";
+
+  // Insert newer data, and expect stale data to be pruned, even if newly inserted.
+  const auto item_h = makeItem(15, 7);
+  const auto item_i = makeItem(0, 8);  // This will be dropped.
+  const auto item_j = makeItem(5, 9);
+
+  cache.insertData(item_h);
+  cache.insertData(item_i);
+  cache.insertData(item_j);
+
+  const std::list<tf2::TransformStorage> & storage_expected_new{
+    item_h,
+    item_b,
+    item_g,
+    item_f,
+    item_e,
+    item_j,
+    item_c};
+  // item_a, item_d, and item_i are pruned.
+  EXPECT_EQ(storage, storage_expected_new)
+    << "storage: " << listToMakeItemStrings(storage) << "\n"
+    << "storage_expected_new: " << listToMakeItemStrings(storage_expected_new) << "\n";
+}
+
 TEST(TimeCache, Repeatability)
 {
   unsigned int runs = 100;
@@ -82,6 +218,7 @@ TEST(TimeCache, Repeatability)
 
     cache.insertData(stor);
   }
+  EXPECT_EQ(cache.getListLength(), runs - 1);
 
   for (uint64_t i = 1; i < runs; i++) {
     cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor);
@@ -105,6 +242,7 @@ TEST(TimeCache, RepeatabilityReverseInsertOrder)
 
     cache.insertData(stor);
   }
+  EXPECT_EQ(cache.getListLength(), runs);
   for (uint64_t i = 1; i < runs; i++) {
     cache.getData(tf2::TimePoint(std::chrono::nanoseconds(i)), stor);
     EXPECT_EQ(stor.frame_id_, i);
@@ -330,8 +468,11 @@ TEST(TimeCache, DuplicateEntries)
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(1));
 
   cache.insertData(stor);
+  EXPECT_EQ(cache.getListLength(), 1);
 
   cache.insertData(stor);
+  // Exact repeated element, should not grow in length.
+  EXPECT_EQ(cache.getListLength(), 1);
 
   cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor);
 

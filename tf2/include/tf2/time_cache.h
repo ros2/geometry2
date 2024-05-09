@@ -97,16 +97,24 @@ using TimeCacheInterfacePtr = std::shared_ptr<TimeCacheInterface>;
 /// default value of 10 seconds storage
 constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::seconds(10);
 
-/** \brief A class to keep a sorted linked list in time
+namespace impl
+{
+class TestFriend;
+}  // namespace impl
+
+/** \brief A class to keep a sorted linked list in time (newest first, oldest
+ * last).
  * This builds and maintains a list of timestamped
  * data.  And provides lookup functions to get
  * data out as a function of time. */
 class TimeCache : public TimeCacheInterface
 {
 public:
+  // TODO(eric.cousineau): This appears to be unused / irrelevant?
   /// Maximum length of linked list, to make sure not to be able to use unlimited memory.
   TF2_PUBLIC
   static const unsigned int MAX_LENGTH_LINKED_LIST = 1000000;
+
   TF2_PUBLIC
   explicit TimeCache(tf2::Duration max_storage_time = TIMECACHE_DEFAULT_MAX_STORAGE_TIME);
 
@@ -152,6 +160,8 @@ private:
     tf2::TimePoint time, tf2::TransformStorage & output);
 
   void pruneList();
+
+  friend class impl::TestFriend;
 };
 
 class StaticCache : public TimeCacheInterface
