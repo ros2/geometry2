@@ -105,11 +105,6 @@ constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::second
 class TimeCache : public TimeCacheInterface
 {
 public:
-  // TODO(eric.cousineau): This appears to be unused / irrelevant?
-  /// Maximum length of linked list, to make sure not to be able to use unlimited memory.
-  TF2_PUBLIC
-  static const unsigned int MAX_LENGTH_LINKED_LIST = 1000000;
-
   TF2_PUBLIC
   explicit TimeCache(tf2::Duration max_storage_time = TIMECACHE_DEFAULT_MAX_STORAGE_TIME);
 
@@ -138,16 +133,10 @@ public:
   virtual TimePoint getOldestTimestamp();
 
 protected:
-  // Retrieve a copy of all items, sorted in order. Any items with the same
-  // timestamp will be in reverse order of insertion.
-  // @warning Portions of this contract may change based upon implementation.
+  // Return a reference to the internal list of tf2 frames, which are sorted in timestamp order.
+  // Any items with the same timestamp will be in reverse order of insertion.
   TF2_PUBLIC
-  std::list<TransformStorage> getAllItems() const
-  {
-    // TODO(eric.cousineau): Unclear why, deferring this definition to source
-    // file appears to cause a linker error, at least for cache_unittest.
-    return storage_;
-  }
+  const std::list<TransformStorage> & getAllItems() const;
 
 private:
   typedef std::list<TransformStorage> L_TransformStorage;
