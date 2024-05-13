@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.2 (2024-04-10)
 -------------------
 * Transform Data Callback Python (`#664 <https://github.com/ros2/geometry2/issues/664>`_)

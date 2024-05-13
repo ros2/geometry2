@@ -2,6 +2,9 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.2 (2024-04-10)
 -------------------
 * Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)
