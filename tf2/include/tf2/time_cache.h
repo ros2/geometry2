@@ -133,7 +133,8 @@ public:
   virtual TimePoint getOldestTimestamp();
 
 protected:
-  // Return a reference to the internal list of tf2 frames, which are sorted in timestamp order.
+  // (Internal) Return a reference to the internal list of tf2 frames, which
+  // are sorted in timestamp order.
   // Any items with the same timestamp will be in reverse order of insertion.
   TF2_PUBLIC
   const std::list<TransformStorage> & getAllItems() const;
