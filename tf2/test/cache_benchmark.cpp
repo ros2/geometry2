@@ -28,6 +28,7 @@
 
 #include <benchmark/benchmark.h>
 
+#include <chrono>
 #include <tuple>
 #include <vector>
 
