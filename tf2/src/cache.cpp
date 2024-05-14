@@ -255,7 +255,7 @@ bool TimeCache::insertData(const TransformStorage & new_data)
   }
 
   // Find the oldest element in the list before the incoming stamp.
-  auto last_transform_pos = std::find_if(
+  auto insertion_pos = std::find_if(
     storage_.begin(), storage_.end(), [&](const auto & transfrom) {
       return transfrom.stamp_ <= new_data.stamp_;
     });
@@ -263,17 +263,18 @@ bool TimeCache::insertData(const TransformStorage & new_data)
   bool should_insert = true;
   // Search along all data with same timestamp (sorted), and only insert if we
   // did not find the exact same data.
-  while (last_transform_pos != storage_.end() && last_transform_pos->stamp_ == new_data.stamp_) {
-    if (*last_transform_pos == new_data) {
+  auto maybe_same_pos = insertion_pos;
+  while (maybe_same_pos != storage_.end() && maybe_same_pos->stamp_ == new_data.stamp_) {
+    if (*maybe_same_pos == new_data) {
       should_insert = false;
       break;
     }
-    last_transform_pos++;
+    maybe_same_pos++;
   }
 
   // Insert elements only if not already present
   if (should_insert) {
-    storage_.insert(last_transform_pos, new_data);
+    storage_.insert(insertion_pos, new_data);
   }
 
   pruneList();
