@@ -260,8 +260,19 @@ bool TimeCache::insertData(const TransformStorage & new_data)
       return transfrom.stamp_ <= new_data.stamp_;
     });
 
+  bool should_insert = true;
+  // Search along all data with same timestamp (sorted), and only insert if we
+  // did not find the exact same data.
+  while (last_transform_pos != storage_.end() && last_transform_pos->stamp_ == new_data.stamp_) {
+    if (*last_transform_pos == new_data) {
+      should_insert = false;
+      break;
+    }
+    last_transform_pos++;
+  }
+
   // Insert elements only if not already present
-  if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
+  if (should_insert) {
     storage_.insert(last_transform_pos, new_data);
   }
 
@@ -311,9 +322,8 @@ void TimeCache::pruneList()
 {
   const TimePoint latest_time = getLatestTimestamp();
 
-  storage_.remove_if(
-    [&](const auto & transform) {
-      return transform.stamp_ < latest_time - max_storage_time_;
-    });
+  while (!storage_.empty() && storage_.back().stamp_ + max_storage_time_ < latest_time) {
+    storage_.pop_back();
+  }
 }
 }  // namespace tf2
