@@ -95,13 +95,15 @@ using TimeCacheInterfacePtr = std::shared_ptr<TimeCacheInterface>;
 /// default value of 10 seconds storage
 constexpr tf2::Duration TIMECACHE_DEFAULT_MAX_STORAGE_TIME = std::chrono::seconds(10);
 
-/** \brief A class to keep a sorted linked list in time
+/** \brief A class to keep a sorted linked list in time (newest first, oldest
+ * last).
  * This builds and maintains a list of timestamped
  * data.  And provides lookup functions to get
  * data out as a function of time. */
 class TimeCache : public TimeCacheInterface
 {
 public:
+<<<<<<< HEAD
   /// Number of nano-seconds to not interpolate below.
   TF2_PUBLIC
   static const int MIN_INTERPOLATION_DISTANCE = 5;
@@ -109,6 +111,8 @@ public:
   /// Maximum length of linked list, to make sure not to be able to use unlimited memory.
   TF2_PUBLIC
   static const unsigned int MAX_LENGTH_LINKED_LIST = 1000000;
+=======
+>>>>>>> a17a2bf8 ([cache_unittest] Add direct implementation testing on ordering, pruning (#678))
   TF2_PUBLIC
   explicit TimeCache(tf2::Duration max_storage_time = TIMECACHE_DEFAULT_MAX_STORAGE_TIME);
 
@@ -134,6 +138,13 @@ public:
   virtual TimePoint getLatestTimestamp();
   TF2_PUBLIC
   virtual TimePoint getOldestTimestamp();
+
+protected:
+  // (Internal) Return a reference to the internal list of tf2 frames, which
+  // are sorted in timestamp order.
+  // Any items with the same timestamp will be in reverse order of insertion.
+  TF2_PUBLIC
+  const std::list<TransformStorage> & getAllItems() const;
 
 private:
   typedef std::list<TransformStorage> L_TransformStorage;
