@@ -250,6 +250,10 @@ bool TimeCache::insertData(const TransformStorage & new_data)
 {
   const TimePoint latest_time = getLatestTimestamp();
 
+  // Always prune data. This (a) ensures we trim data we should not access, and
+  // (b) ensures we don't waste time iterating over items to be removed.
+  pruneList();
+
   // Avoid inserting data in the past that already exceeds the max_storage_time_
   if (!storage_.empty() && new_data.stamp_ < latest_time - max_storage_time_) {
     return false;
@@ -278,7 +282,6 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     storage_.insert(insertion_pos, new_data);
   }
 
-  pruneList();
   return true;
 }
 
