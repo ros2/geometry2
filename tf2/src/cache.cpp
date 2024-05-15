@@ -256,8 +256,8 @@ bool TimeCache::insertData(const TransformStorage & new_data)
 
   // Find the oldest element in the list before the incoming stamp.
   auto insertion_pos = std::find_if(
-    storage_.begin(), storage_.end(), [&](const auto & transfrom) {
-      return transfrom.stamp_ <= new_data.stamp_;
+    storage_.begin(), storage_.end(), [&](const auto & transform) {
+      return transform.stamp_ <= new_data.stamp_;
     });
 
   bool should_insert = true;
