@@ -54,7 +54,7 @@ static void benchmark_insertion(benchmark::State & state)
   }
 
   // Insert data to cache
-  auto insert_data = [&example_items, dt](
+  auto insert_data = [=, &example_items](
     tf2::TimeCache & cache,
     tf2::TimePoint timestamp,
     int step,
