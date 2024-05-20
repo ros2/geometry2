@@ -184,8 +184,6 @@ TEST(test_buffer, can_transform_valid_transform)
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
 }
 
-<<<<<<< HEAD
-=======
 TEST(test_buffer, velocity_transform)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
@@ -337,7 +335,6 @@ TEST(test_buffer, can_transform_without_dedicated_thread)
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
 }
 
->>>>>>> 62322b8f (Enable Twist interpolator (#646))
 TEST(test_buffer, wait_for_transform_valid)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
