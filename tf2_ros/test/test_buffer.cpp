@@ -261,7 +261,8 @@ TEST(test_buffer, test_twist)
     transform.header.frame_id = "PARENT";
     if (i < 0) {
       transform.header.stamp =
-        builtin_interfaces::msg::Time(rclcpp_time - rclcpp::Duration(
+        builtin_interfaces::msg::Time(
+        rclcpp_time - rclcpp::Duration(
           static_cast<int32_t>(std::fabs(i)), 0));
     } else {
       transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time + rclcpp::Duration(i, 0));

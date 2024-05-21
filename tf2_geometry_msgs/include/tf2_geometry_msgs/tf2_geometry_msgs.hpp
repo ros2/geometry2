@@ -1339,15 +1339,17 @@ void doTransform(
     t_in.velocity.linear.z);
   tf2::Transform transform_temp;
 
-  transform_temp.setOrigin(tf2::Vector3(
-    transform.transform.translation.x,
-    transform.transform.translation.y,
-    transform.transform.translation.z));
-  transform_temp.setRotation(tf2::Quaternion(
-    transform.transform.rotation.x,
-    transform.transform.rotation.y,
-    transform.transform.rotation.z,
-    transform.transform.rotation.w));
+  transform_temp.setOrigin(
+    tf2::Vector3(
+      transform.transform.translation.x,
+      transform.transform.translation.y,
+      transform.transform.translation.z));
+  transform_temp.setRotation(
+    tf2::Quaternion(
+      transform.transform.rotation.x,
+      transform.transform.rotation.y,
+      transform.transform.rotation.z,
+      transform.transform.rotation.w));
 
   // tf2::Transform start, end;
   // TimePoint time_out;
