@@ -6,18 +6,18 @@ This package contains the ROS 2 bindings for the tf2 library, for both Python an
 1.1 Broadcasting Transforms
 ---------------------------
   * :class:`tf2_ros::TransformBroadcaster()` constructor of
-    (:ref:`exhale_class_classtf2__ros_1_1_transform_broadcaster`)
+    (:ref:`exhale_class_classtf2__ros_1_1TransformBroadcaster`)
   * :class:`tf2_ros::TransformBroadcaster::sendTransform` to send transforms
 
 Similarly static transforms can be sent by:
 
   * :class:`tf2_ros::StaticTransformBroadcaster()`, constructor of
-    (:ref:`exhale_class_classtf2__ros_1_1_static_transform_broadcaster`)
+    (:ref:`exhale_class_classtf2__ros_1_1StaticTransformBroadcaster`)
   * :class:`tf2_ros::StaticTransformBroadcaster::sendTransform` to send static transforms
 
 1.2 Using Published Transforms
 ------------------------------
-For most purposes using tf2_ros will be done using tf2_ros::Buffer (:ref:`exhale_class_classtf2__ros_1_1_buffer`). It's main public API is defined by tf2_ros::BufferInterface (:ref:`exhale_class_classtf2__ros_1_1_buffer_interface`). Typically it will be populated using a tf2_ros::TransformListener (:ref:`exhale_class_classtf2__ros_1_1_transform_listener`) which subscribes to the appropriate topics.
+For most purposes using tf2_ros will be done using tf2_ros::Buffer (:ref:`exhale_class_classtf2__ros_1_1Buffer`). It's main public API is defined by tf2_ros::BufferInterface (:ref:`exhale_class_classtf2__ros_1_1BufferInterface`). Typically it will be populated using a tf2_ros::TransformListener (:ref:`exhale_class_classtf2__ros_1_1TransformListener`) which subscribes to the appropriate topics.
 
   * :meth:`tf2_ros::Buffer::transform` is the main method for applying transforms.
   * :meth:`canTransform` allows to know if a transform is available
@@ -29,8 +29,7 @@ For most purposes using tf2_ros will be done using tf2_ros::Buffer (:ref:`exhale
 
 ``tf2_ros`` provides a feature which allows to pass only the messages once there is transform data available. This follows the pattern from the ``message_filters`` package. Here is a brief list of functions that the user is most likely to use.
 
-  * :class:`tf2_ros::MessageFilter()` constructor of (:ref:`exhale_class_classtf2__ros_1_1_message_filter`)
-
+  * :class:`tf2_ros::MessageFilter()` constructor of (:ref:`exhale_class_classtf2__ros_1_1MessageFilter`)
   * :meth:`connectInput()` allows to connect filters together
 
   * :meth:`setTargetFrame()` set the frame you want to be able to transform to before getting a message callback
