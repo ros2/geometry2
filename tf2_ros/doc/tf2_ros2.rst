@@ -39,7 +39,7 @@ Exceptions
 .. exception:: tf2.InvalidArgumentException
 
    subclass of :exc:`TransformException`.
-   Raised when the arguments to the method are called improperly formed.  An example of why this might be raised is if an argument is nan.
+   Raised when the arguments to the method are called improperly formed. An example of why this might be raised is if an argument is nan.
 
 .. autoexception:: tf2_ros.buffer_interface.TypeException
 

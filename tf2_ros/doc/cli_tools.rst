@@ -8,7 +8,7 @@ Frame Poses
 
 1. tf2_echo
 ^^^^^^^^^^^
-tf2_echo is the simplest tool to look at the numeric values of a specific transform. tf2_echo takes two arguments: the source frame and the target frame. The output of tf2_echo is the target frame in comparison to the source frame. E.g. to get the transformation from turtle1 to turtle2, set up the turtlesim example with:
+``tf2_echo`` is the simplest tool to look at the numeric values of a specific transform. ``tf2_echo`` takes two arguments: the source frame and the target frame. The output of ``tf2_echo`` is the target frame in comparison to the source frame. E.g. to get the transformation from turtle1 to turtle2, set up the turtlesim example with:
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ Also in a separate terminal, begin controlling the robot:
 
   ros2 run turtlesim turtle_teleop_key
 
-Now using tf2_echo to take a look at the different transformations occuring between two frames
+Now using tf2_echo to take a look at the different transformations occurring between two frames
 
 .. code-block:: bash
 
@@ -94,13 +94,13 @@ If a specific node is having trouble its exact data can be queried using the fol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 `rqt_tf_tree <https://github.com/ros-visualization/rqt_tf_tree/tree/master>`_  provides a GUI to inspect tf tree during runtime.
 
-  A simple tree from the tutorial in 1. tf2_echo looks like:
+  A simple tree from the tutorial in 1. shows that ``tf2_echo`` looks like:
 
    .. image:: images/rqt_tf_tree.png
 
 2. tf2_monitor
 ^^^^^^^^^^^^^^
-tf2_monitor can give you a lot of detailed information about a specific transformation you care about. The monitor will break down the chain between two frames into individual transforms, and provide statistics about timing, broadcasters, etc.
+``tf2_monitor`` can give you a lot of detailed information about a specific transformation you care about. The monitor will break down the chain between two frames into individual transforms, and provide statistics about timing, broadcasters, etc.
 
 E.g. you want more information about the transformation between the frame "turtle1" and the frame "turtle2", simply type:
 
@@ -137,14 +137,14 @@ Publish a static coordinate transform to tf2 using an x/y/z offset in meters and
 
   ros2 run tf2_ros static_transform_publisher [--x X] [--y Y] [--z Z] [--yaw Yaw] [--pitch Pitch] [--roll Roll] --frame_id Frame --child_frame_id Child_Frame
 
-Static_transform_publisher can also publish a static coordinate transform to tf2 using an x/y/z offset in meters and quaternion.
+``static_transform_publisher`` can also publish a static coordinate transform to tf2 using an x/y/z offset in meters and quaternion.
 Unlike in tf, there is no period argument, and a latched topic is used.
 
 .. code-block:: bash
 
   ros2 run tf2_ros static_transform_publisher [--x X] [--y Y] [--z Z] [--qx QX] [--qy QY] [--qz QZ] [--qw QW] --frame_id Frame --child_frame_id Child_Frame
 
-Static_transform_publisher is designed both as a command-line tool for manual use, as well as for use within roslaunch files for setting static transforms. For example:
+``static_transform_publisher`` is designed both as a command-line tool for manual use, as well as for use within roslaunch files for setting static transforms. For example:
 
 .. code-block:: yaml
 

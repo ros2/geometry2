@@ -27,7 +27,7 @@ For most purposes using tf2_ros will be done using tf2_ros::Buffer (:ref:`exhale
 1.3 Filtering Transforms
 ------------------------
 
-tf2_ros provides a feature which allows to pass only the messages once there is transform data available. This follows the pattern from the message_filters package. Here is a brief list of functions that the user is most likely to use.
+``tf2_ros`` provides a feature which allows to pass only the messages once there is transform data available. This follows the pattern from the ``message_filters`` package. Here is a brief list of functions that the user is most likely to use.
 
   * :class:`tf2_ros::MessageFilter()` constructor of (:ref:`exhale_class_classtf2__ros_1_1_message_filter`)
 
@@ -46,7 +46,7 @@ tf2_ros provides a feature which allows to pass only the messages once there is 
 1.4 Exceptions
 --------------
 
-Here is the list of exceptions that can be thrown by tf2_ros and are inherited from tf2.
+Here is the list of exceptions that can be thrown by ``tf2_ros`` and are inherited from tf2.
 
   * tf2::ConnectivityException
 
@@ -71,7 +71,6 @@ Tree
     tf2_ros2
     C++ API Docs <generated/index>
     Python Modules <modules>
-
 
 
 Indices and tables
