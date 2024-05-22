@@ -248,10 +248,17 @@ CompactFrameID TimeCache::getParent(
 
 bool TimeCache::insertData(const TransformStorage & new_data)
 {
+  // In order to minimize the number of times we iterate over this data, we:
+  // (1) Prune all old data first, regardless if new_data is added,
+  // (2) We use find_if to scan from newest to oldest, and stop at the first
+  //     point where the timestamp is equal or older to new_data's.
+  // (3) From this point, we scan with more expensive full equality checks to
+  //     ensure we do not reinsert the same exact data.
+  // (4) If we the data is not duplicated, then we simply insert new_data at
+  //     the point found in (2).
   const TimePoint latest_time = getLatestTimestamp();
 
-  // Always prune data. This (a) ensures we trim data we should not access, and
-  // (b) ensures we don't waste time iterating over items to be removed.
+  // (1) Always prune data.
   pruneList();
 
   // Avoid inserting data in the past that already exceeds the max_storage_time_
@@ -259,15 +266,16 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     return false;
   }
 
-  // Find the oldest element in the list before the incoming stamp.
+  // (2) Find the oldest element in the list before the incoming stamp.
   auto insertion_pos = std::find_if(
     storage_.begin(), storage_.end(), [&](const auto & transform) {
       return transform.stamp_ <= new_data.stamp_;
     });
 
   bool should_insert = true;
-  // Search along all data with same timestamp (sorted), and only insert if we
-  // did not find the exact same data.
+
+  // (3) Search along all data with same timestamp (sorted), and see if we have
+  // an exact duplicate.
   auto maybe_same_pos = insertion_pos;
   while (maybe_same_pos != storage_.end() && maybe_same_pos->stamp_ == new_data.stamp_) {
     if (*maybe_same_pos == new_data) {
@@ -277,7 +285,7 @@ bool TimeCache::insertData(const TransformStorage & new_data)
     maybe_same_pos++;
   }
 
-  // Insert elements only if not already present
+  // (4) Insert elements only if not already present
   if (should_insert) {
     storage_.insert(insertion_pos, new_data);
   }
