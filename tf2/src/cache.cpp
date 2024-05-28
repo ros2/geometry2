@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <list>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -286,6 +287,11 @@ TimePoint TimeCache::getOldestTimestamp()
     return TimePoint();
   }
   return storage_.back().stamp_;
+}
+
+const std::list<TransformStorage> & TimeCache::getAllItems() const
+{
+  return storage_;
 }
 
 void TimeCache::pruneList()
