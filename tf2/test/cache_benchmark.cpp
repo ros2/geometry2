@@ -88,10 +88,10 @@ static void benchmark_insertion(benchmark::State & state)
     state.ResumeTiming();
 
     insert_data(
-        cache,
-        fill_timestamp,
-        fill_timestep,
-        target_timestamp);
+      cache,
+      fill_timestamp,
+      fill_timestep,
+      target_timestamp);
   }
 }
 
