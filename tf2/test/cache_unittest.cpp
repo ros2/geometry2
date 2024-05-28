@@ -137,8 +137,8 @@ TEST(TimeCache, GetAllItems)
   // Note that the difference between the oldest and newest timestamp is exactly equal
   // to the max storage duration.
   EXPECT_EQ(
-      cache.getLatestTimestamp() - cache.getOldestTimestamp(),
-      max_storage_time);
+    cache.getLatestTimestamp() - cache.getOldestTimestamp(),
+    max_storage_time);
 
   // Expect that storage is descending.
   const std::list<tf2::TransformStorage> & storage_expected{
