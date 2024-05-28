@@ -90,7 +90,7 @@ tf2::TransformStorage makeItem(uint32_t nanosec, uint32_t frame_id)
 std::string toMakeItemString(const tf2::TransformStorage & item)
 {
   std::stringstream out;
-  std::chrono::duration nanosec = std::chrono::duration_cast<std::chrono::nanoseconds>(
+  auto nanosec = std::chrono::duration_cast<std::chrono::nanoseconds>(
     item.stamp_.time_since_epoch());
   out << "makeItem(" << nanosec.count() << ", " << item.frame_id_ << ")";
   return out.str();
@@ -137,8 +137,8 @@ TEST(TimeCache, GetAllItems)
   // Note that the difference between the oldest and newest timestamp is exactly equal
   // to the max storage duration.
   EXPECT_EQ(
-      cache.getLatestTimestamp() - cache.getOldestTimestamp(),
-      max_storage_time);
+    cache.getLatestTimestamp() - cache.getOldestTimestamp(),
+    max_storage_time);
 
   // Expect that storage is descending.
   const std::list<tf2::TransformStorage> & storage_expected{
