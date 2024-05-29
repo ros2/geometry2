@@ -2,6 +2,68 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.31.7 (2024-05-29)
+-------------------
+* [TimeCache] Improve performance for insertData() and pruneList() (backport `#680 <https://github.com/ros2/geometry2/issues/680>`_) (`#694 <https://github.com/ros2/geometry2/issues/694>`_)
+  * Nacho/minor fixes tf2 cache (`#658 <https://github.com/ros2/geometry2/issues/658>`_)
+  * Remove unused parameter
+  * Make use of API function to improve redability
+  ```cpp
+  TimePoint TimeCache::getLatestTimestamp()
+  {
+  return storage\_.front().stamp\_;
+  }
+  ```
+  And std::list<T>::front() is(gcclib):
+  ```cpp
+  reference
+  front() _GLIBCXX_NOEXCEPT
+  { return *begin(); }
+  ```
+  * Same argument as 321bd225afb5c
+  ```cpp
+  TimePoint TimeCache::getLatestTimestamp()
+  {
+  // empty list case
+  // ...
+  return storage\_.front().stamp\_;
+  }
+  ```
+  and std::list<T>::front():
+  ```cpp
+  reference
+  front() _GLIBCXX_NOEXCEPT
+  { return *begin(); }
+  ```
+  * Improve readbility by relying on STL functions
+  By now reading to this block I can tell that we are preventing to
+  inserting a new element in the list, that has a timestamp that is
+  actually older than the max_storage_time\_ we allow for
+  * Remove hardcoded algorithmg for STL one
+  The intent of the code is now more clear, instead of relying on raw
+  loops, we "find if" there is any element in the list that has a stamp
+  older than the incoming one. With this we find the position in the list
+  where we should insert the current timestamp: `storage_it`
+  * Remove to better express what this pointer is represetngin
+  * Replace raw loop for STL algorithm
+  Remove if any element is older thant the max_storage_time\_ allowed,
+  relative to the latest(sooner) time seems clear npw
+  * [TimeCache] Improve performance for insertData() and pruneList() (`#680 <https://github.com/ros2/geometry2/issues/680>`_)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+  * Don't break ABI
+  ---------
+  Co-authored-by: Ignacio Vizzo <ignacio@dexory.com>
+  Co-authored-by: Eric Cousineau <eric.cousineau@tri.global>
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Add cache_benchmark (backport `#679 <https://github.com/ros2/geometry2/issues/679>`_) (`#692 <https://github.com/ros2/geometry2/issues/692>`_)
+  Co-authored-by: Eric Cousineau <eric.cousineau@tri.global>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* [cache_unittest] Add direct implementation testing on ordering, pruning (backport `#678 <https://github.com/ros2/geometry2/issues/678>`_) (`#689 <https://github.com/ros2/geometry2/issues/689>`_)
+  Co-authored-by: Eric Cousineau <eric.cousineau@tri.global>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.31.6 (2024-04-19)
 -------------------
 * Fix constantly increasing memory in std::list (`#649 <https://github.com/ros2/geometry2/issues/649>`_)
