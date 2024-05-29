@@ -2,6 +2,9 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.7 (2024-05-29)
+-------------------
+
 0.25.6 (2024-02-16)
 -------------------
 * When finding Python3, use python3 executable as a hint (`#650 <https://github.com/ros2/geometry2/issues/650>`_)
