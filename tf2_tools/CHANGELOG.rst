@@ -2,8 +2,8 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.37.1 (2024-05-29)
+-------------------
 * [view_frames] log filenames after it's been determined (`#674 <https://github.com/ros2/geometry2/issues/674>`_)
 * Contributors: Mikael Arguedas
 
