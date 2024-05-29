@@ -248,26 +248,48 @@ CompactFrameID TimeCache::getParent(
 
 bool TimeCache::insertData(const TransformStorage & new_data)
 {
-  L_TransformStorage::iterator storage_it = storage_.begin();
+  // In order to minimize the number of times we iterate over this data, we:
+  // (1) Prune all old data first, regardless if new_data is added,
+  // (2) We use find_if to scan from newest to oldest, and stop at the first
+  //     point where the timestamp is equal or older to new_data's.
+  // (3) From this point, we scan with more expensive full equality checks to
+  //     ensure we do not reinsert the same exact data.
+  // (4) If we the data is not duplicated, then we simply insert new_data at
+  //     the point found in (2).
+  const TimePoint latest_time = getLatestTimestamp();
 
-  if (storage_it != storage_.end()) {
-    if (storage_it->stamp_ > new_data.stamp_ + max_storage_time_) {
-      return false;
-    }
+  // (1) Always prune data.
+  pruneList();
+
+  // Avoid inserting data in the past that already exceeds the max_storage_time_
+  if (!storage_.empty() && new_data.stamp_ < latest_time - max_storage_time_) {
+    return false;
   }
 
-  while (storage_it != storage_.end()) {
-    if (storage_it->stamp_ <= new_data.stamp_) {
+  // (2) Find the oldest element in the list before the incoming stamp.
+  auto insertion_pos = std::find_if(
+    storage_.begin(), storage_.end(), [&](const auto & transform) {
+      return transform.stamp_ <= new_data.stamp_;
+    });
+
+  bool should_insert = true;
+
+  // (3) Search along all data with same timestamp (sorted), and see if we have
+  // an exact duplicate.
+  auto maybe_same_pos = insertion_pos;
+  while (maybe_same_pos != storage_.end() && maybe_same_pos->stamp_ == new_data.stamp_) {
+    if (*maybe_same_pos == new_data) {
+      should_insert = false;
       break;
     }
-    storage_it++;
-  }
-  // Insert elements only if not already present
-  if (std::find(storage_.begin(), storage_.end(), new_data) == storage_.end()) {
-    storage_.insert(storage_it, new_data);
+    maybe_same_pos++;
   }
 
-  pruneList();
+  // (4) Insert elements only if not already present
+  if (should_insert) {
+    storage_.insert(insertion_pos, new_data);
+  }
+
   return true;
 }
 
@@ -316,7 +338,7 @@ const std::list<TransformStorage> & TimeCache::getAllItems() const
 
 void TimeCache::pruneList()
 {
-  TimePoint latest_time = storage_.begin()->stamp_;
+  const TimePoint latest_time = getLatestTimestamp();
 
   while (!storage_.empty() && storage_.back().stamp_ + max_storage_time_ < latest_time) {
     storage_.pop_back();
