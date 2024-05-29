@@ -2,6 +2,23 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.37.1 (2024-05-29)
+-------------------
+* [TimeCache] Improve performance for insertData() and pruneList() (`#680 <https://github.com/ros2/geometry2/issues/680>`_)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Removed warning (`#682 <https://github.com/ros2/geometry2/issues/682>`_)
+* Add cache_benchmark (`#679 <https://github.com/ros2/geometry2/issues/679>`_)
+  * Add cache_benchmark
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* [cache_unittest] Add direct implementation testing on ordering, pruning (`#678 <https://github.com/ros2/geometry2/issues/678>`_)
+  * [cache_unittest] Add direct implementation testing on ordering, pruning
+  * do getAllItems() approach
+  * Return a reference instead.
+  * mark getAllItems as internal
+  * Fix warning on Windows.
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Eric Cousineau
+
 0.37.0 (2024-04-26)
 -------------------
 

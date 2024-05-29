@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.37.1 (2024-05-29)
+-------------------
+* Cli tools documentation (`#653 <https://github.com/ros2/geometry2/issues/653>`_)
+* Contributors: Lucas Wendland
+
 0.37.0 (2024-04-26)
 -------------------
 
