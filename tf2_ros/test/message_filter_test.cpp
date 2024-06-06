@@ -127,8 +127,10 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
     node->get_node_base_interface(),
     node->get_node_timers_interface());
 
+  rclcpp::QoS default_qos =
+    rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
-  sub.subscribe(node, "point");
+  sub.subscribe(node, "point", default_qos);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
