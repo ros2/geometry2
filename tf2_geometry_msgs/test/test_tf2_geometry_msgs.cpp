@@ -458,6 +458,23 @@ TEST(TfGeometry, Polygon)
     EXPECT_NEAR(res.points[0].z, 27, EPS);
   }
 
+  // non-stamped by reference
+  {
+    geometry_msgs::msg::Polygon res;
+    geometry_msgs::msg::Point32 p;
+    res.x = 1;
+    res.y = 2;
+    res.z = 3;
+    v1.points.push_back(p);
+
+    geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
+
+    tf2::doTransform(res, res, t);
+    EXPECT_NEAR(res.points[0].x, 11, EPS);
+    EXPECT_NEAR(res.points[0].y, 18, EPS);
+    EXPECT_NEAR(res.points[0].z, 27, EPS);
+  }
+
   // stamped
   {
     geometry_msgs::msg::PolygonStamped v1, res;
