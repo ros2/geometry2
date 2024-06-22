@@ -462,10 +462,10 @@ TEST(TfGeometry, Polygon)
   {
     geometry_msgs::msg::Polygon res;
     geometry_msgs::msg::Point32 p;
-    res.x = 1;
-    res.y = 2;
-    res.z = 3;
-    v1.points.push_back(p);
+    p.x = 1;
+    p.y = 2;
+    p.z = 3;
+    res.points.push_back(p);
 
     geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
 
