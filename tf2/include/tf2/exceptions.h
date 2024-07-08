@@ -40,13 +40,6 @@
 namespace tf2
 {
 
-// TODO(clalancette): We can remove these workarounds when we remove the
-// deprecated TF2Error enums.
-#if defined(_WIN32)
-#pragma push_macro("NO_ERROR")
-#undef NO_ERROR
-#endif
-
 enum class TF2Error : std::uint8_t
 {
   // While the TF2_ prefix here is a bit redundant, it also prevents us from
@@ -62,10 +55,6 @@ enum class TF2Error : std::uint8_t
   TF2_FORWARD_EXTRAPOLATION_ERROR = 8,
   TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR = 9,
 };
-
-#if defined(_WIN32)
-#pragma pop_macro("NO_ERROR")
-#endif
 
 /** \brief A base class for all tf2 exceptions
  * This inherits from ros::exception
