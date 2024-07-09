@@ -73,6 +73,7 @@ class TestBroadcasterAndListener:
 
     @classmethod
     def teardown_class(cls):
+        cls.executor.remove_node(cls.node)
         cls.node.destroy_node()
         rclpy.shutdown()
 

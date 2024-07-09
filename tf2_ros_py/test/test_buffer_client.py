@@ -112,6 +112,8 @@ class TestBufferClient:
 
     @classmethod
     def teardown_class(cls):
+        cls.executor.remove_node(cls.node)
+        cls.executor.shutdown()
         cls.mock_action_server.destroy()
         cls.node.destroy_node()
         rclpy.shutdown(context=cls.context)
