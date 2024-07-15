@@ -33,9 +33,9 @@
 
 #include "gtest/gtest.h"
 
-#include "message_filters/subscriber.h"
-#include "message_filters/simple_filter.h"
-#include "message_filters/message_traits.h"
+#include "message_filters/subscriber.hpp"
+#include "message_filters/simple_filter.hpp"
+#include "message_filters/message_traits.hpp"
 
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/create_timer_ros.h"
