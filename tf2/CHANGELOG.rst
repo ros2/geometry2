@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.2 (2024-07-19)
+-------------------
+
 0.38.1 (2024-07-09)
 -------------------
 * Removed deprecated enuns (`#699 <https://github.com/ros2/geometry2//issues/699>`_)

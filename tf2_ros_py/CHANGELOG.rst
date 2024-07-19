@@ -2,6 +2,13 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.2 (2024-07-19)
+-------------------
+* Switch to using a context manager for the python examples. (`#700 <https://github.com/ros2/geometry2/issues/700>`_)
+  That way we can be sure to always clean up, but use less
+  code doing so.
+* Contributors: Chris Lalancette
+
 0.38.1 (2024-07-09)
 -------------------
 
