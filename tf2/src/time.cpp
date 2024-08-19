@@ -61,7 +61,7 @@ tf2::TimePoint tf2::timeFromSec(double t_sec)
 double tf2::durationToSec(const tf2::Duration & input)
 {
   int64_t count = input.count();
-  return RCUTILS_NS_TO_S(count);
+  return rcutils_nanoseconds_to_seconds(count);
 }
 
 double tf2::timeToSec(const tf2::TimePoint & timepoint)
