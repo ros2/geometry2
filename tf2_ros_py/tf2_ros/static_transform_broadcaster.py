@@ -61,8 +61,8 @@ class StaticTransformBroadcaster:
                 )
         self.pub_tf = node.create_publisher(TFMessage, "/tf_static", qos)
 
-        self.net_message = TFMessage()
-        self._child_frame_ids = set()
+        # Keep a dict of transforms to avoid duplicate child_frame_ids
+        self.transforms = {}
 
     def sendTransform(self, transform: Union[TransformStamped, List[TransformStamped]]) -> None:
         if not isinstance(transform, list):
@@ -72,8 +72,8 @@ class StaticTransformBroadcaster:
                 transform = [transform]
 
         for t_in in transform:
-            if t_in.child_frame_id not in self._child_frame_ids:
-                self._child_frame_ids.add(t_in.child_frame_id)
-                self.net_message.transforms.append(t_in)
+            self.transforms[t_in.child_frame_id] = t_in
 
-        self.pub_tf.publish(self.net_message)
+        net_message = TFMessage()
+        net_message.transforms = list(self.transforms.values())
+        self.pub_tf.publish(net_message)
