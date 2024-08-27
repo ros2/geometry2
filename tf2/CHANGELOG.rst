@@ -2,6 +2,37 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.2 (2024-07-19)
+-------------------
+
+0.38.1 (2024-07-09)
+-------------------
+* Removed deprecated enuns (`#699 <https://github.com/ros2/geometry2//issues/699>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.38.0 (2024-06-17)
+-------------------
+
+0.37.1 (2024-05-29)
+-------------------
+* [TimeCache] Improve performance for insertData() and pruneList() (`#680 <https://github.com/ros2/geometry2/issues/680>`_)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Removed warning (`#682 <https://github.com/ros2/geometry2/issues/682>`_)
+* Add cache_benchmark (`#679 <https://github.com/ros2/geometry2/issues/679>`_)
+  * Add cache_benchmark
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* [cache_unittest] Add direct implementation testing on ordering, pruning (`#678 <https://github.com/ros2/geometry2/issues/678>`_)
+  * [cache_unittest] Add direct implementation testing on ordering, pruning
+  * do getAllItems() approach
+  * Return a reference instead.
+  * mark getAllItems as internal
+  * Fix warning on Windows.
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Eric Cousineau
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)

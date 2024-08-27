@@ -1,6 +1,6 @@
 <package format="2">
   <name>tf2_ros</name>
-  <version>0.36.2</version>
+  <version>0.38.2</version>
   <description>
     This package contains the C++ ROS bindings for the tf2 library
   </description>
@@ -34,5 +34,6 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <rosdoc2>rosdoc2.yaml</rosdoc2>
   </export>
 </package>

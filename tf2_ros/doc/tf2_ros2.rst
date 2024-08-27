@@ -1,4 +1,4 @@
-tf_ros2 Python API
+tf2_ros Python API
 ==================
 
 Exceptions
@@ -14,7 +14,7 @@ Exceptions
             # do some tf2 work
         except tf2.TransformException:
             print "some tf2 exception happened"
-        
+
 
 .. exception:: tf2.ConnectivityException
 
@@ -27,8 +27,8 @@ Exceptions
    Raised when a tf method has attempted to access a frame, but
    the frame is not in the graph.
    The most common reason for this is that the frame is not
-   being published, or a parent frame was not set correctly 
-   causing the tree to be broken.  
+   being published, or a parent frame was not set correctly
+   causing the tree to be broken.
 
 .. exception:: tf2.ExtrapolationException
 
@@ -39,7 +39,7 @@ Exceptions
 .. exception:: tf2.InvalidArgumentException
 
    subclass of :exc:`TransformException`.
-   Raised when the arguments to the method are called improperly formed.  An example of why this might be raised is if an argument is nan. 
+   Raised when the arguments to the method are called improperly formed. An example of why this might be raised is if an argument is nan.
 
 .. autoexception:: tf2_ros.buffer_interface.TypeException
 

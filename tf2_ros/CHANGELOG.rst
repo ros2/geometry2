@@ -2,6 +2,27 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.38.2 (2024-07-19)
+-------------------
+* Updated deprecated message filter headers (`#702 <https://github.com/ros2/geometry2/issues/702>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.38.1 (2024-07-09)
+-------------------
+
+0.38.0 (2024-06-17)
+-------------------
+* Update qos for deprecation (`#695 <https://github.com/ros2/geometry2/issues/695>`_)
+* Contributors: Lucas Wendland
+
+0.37.1 (2024-05-29)
+-------------------
+* Cli tools documentation (`#653 <https://github.com/ros2/geometry2/issues/653>`_)
+* Contributors: Lucas Wendland
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Compile fix for upcomming changes to rclcpp::Executor (`#668 <https://github.com/ros2/geometry2/issues/668>`_)

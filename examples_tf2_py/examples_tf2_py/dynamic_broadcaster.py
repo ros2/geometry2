@@ -16,6 +16,7 @@ import math
 
 from geometry_msgs.msg import TransformStamped
 import rclpy
+from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from sensor_msgs.msg import JointState
@@ -87,20 +88,16 @@ class FakeJointStatePublisher(Node):
 
 
 def main():
-    rclpy.init()
-    nodes = []
-    nodes.append(DynamicFramePublisher())
-    nodes.append(FakeJointStatePublisher())
-
-    from rclpy.executors import SingleThreadedExecutor
-    executor = SingleThreadedExecutor()
-    for node in nodes:
-        executor.add_node(node)
-
     try:
-        executor.spin()
-    except KeyboardInterrupt:
-        pass
+        with rclpy.init():
+            nodes = []
+            nodes.append(DynamicFramePublisher())
+            nodes.append(FakeJointStatePublisher())
 
-    executor.shutdown()
-    rclpy.shutdown()
+            executor = SingleThreadedExecutor()
+            for node in nodes:
+                executor.add_node(node)
+
+            executor.spin()
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
