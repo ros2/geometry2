@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.31.8 (2024-08-29)
+-------------------
+* Enable Twist interpolator (backport `#646 <https://github.com/ros2/geometry2/issues/646>`_) (`#685 <https://github.com/ros2/geometry2/issues/685>`_)
+* Contributors: mergify[bot]
+
 0.31.7 (2024-05-29)
 -------------------
 * [TimeCache] Improve performance for insertData() and pruneList() (backport `#680 <https://github.com/ros2/geometry2/issues/680>`_) (`#694 <https://github.com/ros2/geometry2/issues/694>`_)
