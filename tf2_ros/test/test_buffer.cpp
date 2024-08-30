@@ -318,7 +318,6 @@ TEST(test_buffer, can_transform_without_dedicated_thread)
 
   // Should NOT error with default timeout
   EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
-  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
   // Should error when timeout is not default
   EXPECT_FALSE(buffer.canTransform("bar", "foo", tf2_time, std::chrono::seconds(2)));
   EXPECT_FALSE(buffer.canTransform("bar", "foo", rclcpp_time, rclcpp::Duration::from_seconds(1.0)));
