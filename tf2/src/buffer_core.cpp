@@ -38,6 +38,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 #include "tf2/buffer_core.h"
 #include "tf2/time_cache.h"
 #include "tf2/exceptions.h"
@@ -571,6 +573,123 @@ struct TransformAccum
   tf2::Quaternion result_quat;
   tf2::Vector3 result_vec;
 };
+
+geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
+  const std::string & tracking_frame, const std::string & observation_frame,
+  const TimePoint & time, const tf2::Duration & averaging_interval) const
+{
+  // ref point is origin of tracking_frame, ref_frame = obs_frame
+  return lookupVelocity(
+    tracking_frame, observation_frame, observation_frame, tf2::Vector3(
+      0, 0,
+      0), tracking_frame, time,
+    averaging_interval);
+}
+
+geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
+  const std::string & tracking_frame, const std::string & observation_frame,
+  const std::string & reference_frame, const tf2::Vector3 & reference_point,
+  const std::string & reference_point_frame,
+  const TimePoint & time, const tf2::Duration & averaging_interval) const
+{
+  tf2::TimePoint latest_time;
+  // TODO(anyone): This is incorrect, but better than nothing.  Really we want the latest time for
+  // any of the frames
+  getLatestCommonTime(
+    lookupFrameNumber(observation_frame),
+    lookupFrameNumber(tracking_frame),
+    latest_time,
+    0);
+
+  auto time_seconds = tf2::timeToSec(time);
+  auto averaging_interval_seconds = std::chrono::duration<double>(averaging_interval).count();
+
+  auto end_time =
+    std::min(time_seconds + averaging_interval_seconds * 0.5, tf2::timeToSec(latest_time));
+
+  auto start_time =
+    std::max(0.00001 + averaging_interval_seconds, end_time) - averaging_interval_seconds;
+  // correct for the possiblity that start time was truncated above.
+  auto corrected_averaging_interval = end_time - start_time;
+
+  tf2::Transform start, end;
+  TimePoint time_out;
+  lookupTransformImpl(
+    observation_frame, tracking_frame, tf2::timeFromSec(
+      start_time), start, time_out);
+  lookupTransformImpl(observation_frame, tracking_frame, tf2::timeFromSec(end_time), end, time_out);
+
+  auto temp = start.getBasis().inverse() * end.getBasis();
+  tf2::Quaternion quat_temp;
+  temp.getRotation(quat_temp);
+  auto o = start.getBasis() * quat_temp.getAxis();
+  auto ang = quat_temp.getAngle();
+
+  double delta_x = end.getOrigin().getX() - start.getOrigin().getX();
+  double delta_y = end.getOrigin().getY() - start.getOrigin().getY();
+  double delta_z = end.getOrigin().getZ() - start.getOrigin().getZ();
+
+  tf2::Vector3 twist_vel((delta_x) / corrected_averaging_interval,
+    (delta_y) / corrected_averaging_interval,
+    (delta_z) / corrected_averaging_interval);
+  tf2::Vector3 twist_rot = o * (ang / corrected_averaging_interval);
+
+  // correct for the position of the reference frame
+  tf2::Transform inverse;
+  lookupTransformImpl(
+    reference_frame, tracking_frame, tf2::timeFromSec(
+      time_seconds), inverse, time_out);
+  tf2::Vector3 out_rot = inverse.getBasis() * twist_rot;
+  tf2::Vector3 out_vel = inverse.getBasis() * twist_vel + inverse.getOrigin().cross(out_rot);
+
+  auto transform_point = [this](
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::Vector3 & point_in,
+    double time_transform)
+    {
+      // transform point
+      tf2::Transform transform;
+      tf2::TimePoint time_out;
+      lookupTransformImpl(
+        target_frame, source_frame, tf2::timeFromSec(time_transform), transform, time_out);
+
+      tf2::Vector3 out;
+      out = transform * point_in;
+      return out;
+    };
+
+  // Rereference the twist about a new reference point
+  // Start by computing the original reference point in the reference frame:
+  tf2::Vector3 p = tf2::Vector3(0, 0, 0);
+  tf2::Vector3 rp_orig = transform_point(
+    reference_frame, tracking_frame, p, time_seconds);
+
+  tf2::Vector3 rp_desired = transform_point(
+    reference_frame, reference_point_frame, reference_point, time_seconds);
+
+  tf2::Vector3 delta = rp_desired - rp_orig;
+  out_vel = out_vel + out_rot * delta;
+
+  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5).time_since_epoch());
+  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
+    tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5).time_since_epoch());
+  geometry_msgs::msg::VelocityStamped velocity;
+  velocity.header.stamp.sec = static_cast<int32_t>(s.count());
+  velocity.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  velocity.header.frame_id = reference_frame;
+  velocity.body_frame_id = tracking_frame;
+
+  velocity.velocity.linear.x = out_vel.x();
+  velocity.velocity.linear.y = out_vel.y();
+  velocity.velocity.linear.z = out_vel.z();
+  velocity.velocity.angular.x = out_rot.x();
+  velocity.velocity.angular.y = out_rot.y();
+  velocity.velocity.angular.z = out_rot.z();
+
+  return velocity;
+}
 
 geometry_msgs::msg::TransformStamped
 BufferCore::lookupTransform(

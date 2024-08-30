@@ -184,6 +184,155 @@ TEST(test_buffer, can_transform_valid_transform)
   EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
 }
 
+TEST(test_buffer, velocity_transform)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  // Silence error about dedicated thread's being necessary
+  buffer.setUsingDedicatedThread(true);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(
+    rclcpp_time - rclcpp::Duration(0, static_cast<uint32_t>(1e+9)));
+  transform.child_frame_id = "bar";
+  transform.transform.translation.x = 0;
+  transform.transform.translation.y = 0;
+  transform.transform.translation.z = 0.0;
+  transform.transform.rotation.w = 1.0;
+  transform.transform.rotation.x = 0.0;
+  transform.transform.rotation.y = 0.0;
+  transform.transform.rotation.z = 0.0;
+
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(
+    rclcpp_time + rclcpp::Duration(0, static_cast<uint32_t>(1e+9)));
+  transform.child_frame_id = "bar";
+  transform.transform.translation.x = 2.0;
+  transform.transform.translation.y = 0;
+  transform.transform.translation.z = 0.0;
+  transform.transform.rotation.w = 1.0;
+  transform.transform.rotation.x = 0.0;
+  transform.transform.rotation.y = 0.0;
+  transform.transform.rotation.z = 0.0;
+
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", tf2_time));
+  EXPECT_TRUE(buffer.canTransform("bar", "foo", rclcpp_time));
+
+  geometry_msgs::msg::VelocityStamped output =
+    buffer.lookupVelocity("bar", "foo", tf2_time, tf2::durationFromSec(0.1));
+
+  output =
+    buffer.lookupVelocity(
+    "bar", "foo",
+    "bar", {0, 0, 0}, "bar",
+    tf2_time, tf2::durationFromSec(0.1));
+
+  double epsilon = 1e-6;
+  EXPECT_NEAR(output.velocity.linear.x, 1.0, epsilon);
+  EXPECT_NEAR(output.velocity.linear.y, 0.0, epsilon);
+  EXPECT_NEAR(output.velocity.linear.z, 0.0, epsilon);
+  EXPECT_NEAR(output.velocity.angular.x, 0.0, epsilon);
+  EXPECT_NEAR(output.velocity.angular.y, 0.0, epsilon);
+  EXPECT_NEAR(output.velocity.angular.z, 0.0, epsilon);
+}
+
+
+TEST(test_buffer, test_twist)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  // Silence error about dedicated thread's being necessary
+  buffer.setUsingDedicatedThread(true);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  float vel = 0.3f;
+  for (int i = -10; i < 5; ++i) {
+    geometry_msgs::msg::TransformStamped transform;
+    transform.header.frame_id = "PARENT";
+    if (i < 0) {
+      transform.header.stamp =
+        builtin_interfaces::msg::Time(
+        rclcpp_time - rclcpp::Duration(
+          static_cast<int32_t>(std::fabs(i)), 0));
+    } else {
+      transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time + rclcpp::Duration(i, 0));
+    }
+    transform.child_frame_id = "THISFRAME";
+    transform.transform.translation.x = i * vel;
+    transform.transform.translation.y = 0;
+    transform.transform.translation.z = 0.0;
+    transform.transform.rotation.w = 1.0;
+    transform.transform.rotation.x = 0.0;
+    transform.transform.rotation.y = 0.0;
+    transform.transform.rotation.z = 0.0;
+    EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+  }
+
+  auto tw0 = buffer.lookupVelocity("THISFRAME", "PARENT", tf2_time, tf2::durationFromSec(4.001));
+
+  auto tw1 = buffer.lookupVelocity(
+    "THISFRAME", "PARENT", "PARENT", {0, 0, 0}, "THISFRAME",
+    tf2_time, tf2::durationFromSec(4.001));
+
+  double epsilon = 1e-6;
+  EXPECT_NEAR(tw1.velocity.linear.x, 0.3, epsilon);
+  EXPECT_NEAR(tw1.velocity.linear.y, 0.0, epsilon);
+  EXPECT_NEAR(tw1.velocity.linear.z, 0.0, epsilon);
+  EXPECT_NEAR(tw1.velocity.angular.x, 0.0, epsilon);
+  EXPECT_NEAR(tw1.velocity.angular.y, 0.0, epsilon);
+  EXPECT_NEAR(tw1.velocity.angular.z, 0.0, epsilon);
+}
+
+TEST(test_buffer, can_transform_without_dedicated_thread)
+{
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  buffer.setUsingDedicatedThread(false);
+
+  rclcpp::Time rclcpp_time = clock->now();
+  tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "foo";
+  transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
+  transform.child_frame_id = "bar";
+  transform.transform.translation.x = 42.0;
+  transform.transform.translation.y = -3.14;
+  transform.transform.translation.z = 0.0;
+  transform.transform.rotation.w = 1.0;
+  transform.transform.rotation.x = 0.0;
+  transform.transform.rotation.y = 0.0;
+  transform.transform.rotation.z = 0.0;
+
+  EXPECT_TRUE(buffer.setTransform(transform, "unittest"));
+
+  // Should error when timeout is not default
+  EXPECT_FALSE(buffer.canTransform("bar", "foo", tf2_time, std::chrono::seconds(2)));
+  EXPECT_FALSE(buffer.canTransform("bar", "foo", rclcpp_time, rclcpp::Duration::from_seconds(1.0)));
+
+  auto output = buffer.lookupTransform("foo", "bar", tf2_time);
+  EXPECT_STREQ(transform.child_frame_id.c_str(), output.child_frame_id.c_str());
+  EXPECT_DOUBLE_EQ(transform.transform.translation.x, output.transform.translation.x);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.y, output.transform.translation.y);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.z, output.transform.translation.z);
+
+  auto output_rclcpp = buffer.lookupTransform("foo", "bar", rclcpp_time);
+  EXPECT_STREQ(transform.child_frame_id.c_str(), output_rclcpp.child_frame_id.c_str());
+  EXPECT_DOUBLE_EQ(transform.transform.translation.x, output_rclcpp.transform.translation.x);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.y, output_rclcpp.transform.translation.y);
+  EXPECT_DOUBLE_EQ(transform.transform.translation.z, output_rclcpp.transform.translation.z);
+}
+
 TEST(test_buffer, wait_for_transform_valid)
 {
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);

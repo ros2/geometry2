@@ -46,6 +46,7 @@
 
 #include "LinearMath/Transform.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
@@ -156,6 +157,28 @@ public:
     const std::string & target_frame, const TimePoint & target_time,
     const std::string & source_frame, const TimePoint & source_time,
     const std::string & fixed_frame) const override;
+
+  TF2_PUBLIC
+  geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const TimePoint & time, const tf2::Duration & averaging_interval) const;
+
+  /** \brief Lookup the velocity of the moving_frame in the reference_frame
+   * \param reference_frame The frame in which to track
+   * \param moving_frame The frame to track
+   * \param time The time at which to get the velocity
+   * \param duration The period over which to average
+   * \param velocity The velocity output
+   *
+   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
+   * TransformReference::MaxDepthException
+   */
+  TF2_PUBLIC
+  geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const std::string & reference_frame, const tf2::Vector3 & reference_point,
+    const std::string & reference_point_frame,
+    const TimePoint & time, const tf2::Duration & duration) const;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
