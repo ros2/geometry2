@@ -46,6 +46,8 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_listener.h"
 
+#include <geometry_msgs/msg/velocity_stamped.hpp>
+
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
@@ -623,6 +625,17 @@ TEST(TfGeometry, Wrench)
   EXPECT_NEAR(res.torque.x, -5, EPS);
   EXPECT_NEAR(res.torque.y, -2, EPS);
   EXPECT_NEAR(res.torque.z, 5, EPS);
+}
+
+TEST(TfGeometry, Velocity)
+{
+  geometry_msgs::msg::VelocityStamped v1, res;
+  v1.header.frame_id = "world";
+  v1.body_frame_id = "base_link";
+
+  geometry_msgs::msg::TransformStamped trafo;
+
+  tf2::doTransform(v1, res, trafo);
 }
 
 int main(int argc, char ** argv)

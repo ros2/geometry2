@@ -30,8 +30,10 @@
 
 import unittest
 
+import builtin_interfaces
 from geometry_msgs.msg import TransformStamped
 import rclpy
+from rclpy.duration import Duration
 from rpyutils import add_dll_directories_from_env
 
 # Since Python 3.8, on Windows we should ensure DLL directories are explicitly added
@@ -258,6 +260,31 @@ class TestBufferClient(unittest.TestCase):
             )
 
         self.assertEqual(LookupException, type(ex.exception))
+
+    def test_velocity(self):
+        buffer_core = BufferCore()
+
+        vel = 3
+        for ti in range(5):
+            m = TransformStamped()
+            m.header.frame_id = 'PARENT'
+            m.header.stamp = builtin_interfaces.msg.Time(sec=ti)
+            m.child_frame_id = 'THISFRAME'
+            m.transform.translation.x = float(ti * vel)
+            m.transform.rotation.x = 0.0
+            m.transform.rotation.y = 0.0
+            m.transform.rotation.z = 0.0
+            m.transform.rotation.w = 1.0
+            buffer_core.set_transform(m, 'unittest')
+
+        tw0 = buffer_core.lookupVelocityCore(
+            'THISFRAME', 'PARENT', rclpy.time.Time(seconds=0.0),
+            Duration(seconds=4, nanoseconds=1000000))
+        self.assertAlmostEqual(tw0[0][0], vel, 2)
+        tw1 = buffer_core.lookupVelocityFullCore(
+            'THISFRAME', 'PARENT', 'PARENT', (0, 0, 0), 'THISFRAME',
+            rclpy.time.Time(seconds=0.0), Duration(seconds=4, nanoseconds=1000000))
+        self.assertEqual(tw0, tw1)
 
 
 if __name__ == '__main__':

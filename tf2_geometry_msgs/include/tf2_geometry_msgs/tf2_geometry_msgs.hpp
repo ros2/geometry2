@@ -48,6 +48,7 @@
 #include "geometry_msgs/msg/pose_with_covariance.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "geometry_msgs/msg/polygon_stamped.hpp"
+#include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "geometry_msgs/msg/wrench.hpp"
 #include "geometry_msgs/msg/wrench_stamped.hpp"
 #include "kdl/frames.hpp"
@@ -1311,6 +1312,70 @@ void fromMsg(const geometry_msgs::msg::Pose & in, tf2::Transform & out)
   // w at the end in the constructor
   out.setRotation(
     tf2::Quaternion(in.orientation.x, in.orientation.y, in.orientation.z, in.orientation.w));
+}
+
+/*********************/
+/** VelocityStamped **/
+/*********************/
+
+/** \brief Apply a geometry_msgs TransformStamped to an geometry_msgs VelocityStamped type.
+ * This function is a specialization of the doTransform template defined in tf2/convert.h.
+ * \param t_in The point to transform, as a VelocityStamped message.
+ * \param t_out The transformed point, as a VelocityStamped message.
+ * \param transform The timestamped transform to apply, as a TransformStamped message.
+ */
+template<>
+inline
+void doTransform(
+  const geometry_msgs::msg::VelocityStamped & t_in,
+  geometry_msgs::msg::VelocityStamped & t_out,
+  const geometry_msgs::msg::TransformStamped & transform)
+{
+  tf2::Vector3 twist_rot(t_in.velocity.angular.x,
+    t_in.velocity.angular.y,
+    t_in.velocity.angular.z);
+  tf2::Vector3 twist_vel(t_in.velocity.linear.x,
+    t_in.velocity.linear.y,
+    t_in.velocity.linear.z);
+  tf2::Transform transform_temp;
+
+  transform_temp.setOrigin(
+    tf2::Vector3(
+      transform.transform.translation.x,
+      transform.transform.translation.y,
+      transform.transform.translation.z));
+  transform_temp.setRotation(
+    tf2::Quaternion(
+      transform.transform.rotation.x,
+      transform.transform.rotation.y,
+      transform.transform.rotation.z,
+      transform.transform.rotation.w));
+
+  // tf2::Transform start, end;
+  // TimePoint time_out;
+  // lookupTransformImpl(
+  //     observation_frame, tracking_frame, tf2::timeFromSec(
+  //       start_time), start, time_out);
+
+  // tf::StampedTransform transform;
+  // lookupTransform(target_frame,msg_in.header.frame_id,  msg_in.header.stamp, transform);
+
+  tf2::Vector3 out_rot = transform_temp.getBasis() * twist_rot;
+  tf2::Vector3 out_vel = transform_temp.getBasis() * twist_vel + \
+    transform_temp.getOrigin().cross(out_rot);
+
+  // geometry_msgs::TwistStamped interframe_twist;
+  // lookupVelocity(target_frame, msg_in.header.frame_id, msg_in.header.stamp,
+  //   ros::Duration(0.1), interframe_twist);
+  // \todo get rid of hard coded number
+
+  t_out.header = t_in.header;
+  t_out.velocity.linear.x = out_vel.x() + t_in.velocity.linear.x;
+  t_out.velocity.linear.y = out_vel.y() + t_in.velocity.linear.y;
+  t_out.velocity.linear.z = out_vel.z() + t_in.velocity.linear.z;
+  t_out.velocity.angular.x = out_rot.x() + t_in.velocity.angular.x;
+  t_out.velocity.angular.y = out_rot.y() + t_in.velocity.angular.y;
+  t_out.velocity.angular.z = out_rot.z() + t_in.velocity.angular.z;
 }
 
 /**********************/
