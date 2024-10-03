@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Adding static transform listener (`#673 <https://github.com/ros2/geometry2/issues/673>`_)
+* Contributors: Tom Moore
+
 0.38.2 (2024-07-19)
 -------------------
 * Updated deprecated message filter headers (`#702 <https://github.com/ros2/geometry2/issues/702>`_)

@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.38.2 (2024-07-19)
 -------------------
 * Switch to using a context manager for the python examples. (`#700 <https://github.com/ros2/geometry2/issues/700>`_)
