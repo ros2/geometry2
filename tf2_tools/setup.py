@@ -4,7 +4,7 @@ package_name = 'tf2_tools'
 
 setup(
     name=package_name,
-    version='0.38.2',
+    version='0.39.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',

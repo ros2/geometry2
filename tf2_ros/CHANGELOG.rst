@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.39.0 (2024-10-03)
+-------------------
 * Adding static transform listener (`#673 <https://github.com/ros2/geometry2/issues/673>`_)
 * Contributors: Tom Moore
 
