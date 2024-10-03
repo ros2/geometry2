@@ -14,7 +14,6 @@
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>python_cmake_module</buildtool_depend>
 
   <build_depend>geometry_msgs</build_depend>
 
