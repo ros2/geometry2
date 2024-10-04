@@ -104,7 +104,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
     ) -> FrameGraphSrvResponse:
         return FrameGraph.Response(frame_yaml=self.all_frames_as_yaml())
 
-    def time_jump_callback(time_jump: TimeJump):
+    def time_jump_callback(self, time_jump: TimeJump):
         rclpy.logging.get_logger("tf2_buffer").warning("Detected jump back in time. Clearing tf buffer.")
         self.clear()
 
