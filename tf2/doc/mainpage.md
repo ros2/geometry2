@@ -1,6 +1,3 @@
-/**
-\mainpage
-
 ``tf2`` is the second generation of the tf library.
 
 This library implements the interface defined by `tf2::BufferCore`.
@@ -9,26 +6,26 @@ There is also a Python wrapper with the same API that class this library using C
 
 Some tutorials are available at <A HREF="http://docs.ros.org/en/rolling/Tutorials/Intermediate/Tf2/Tf2-Main.html">https://docs.ros.org/</A>.
 
-\section architecture Architecture
+# Architecture
 
 ``tf2`` is a transform library designed to provide implementation of interface that keeps track of multiple coordinate frames over time.
 ``tf2`` maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform data between any two coordinate frames at any desired point in time.
 The high level goal is to allow developers and users not to have to worry about which coordinate frame any specific data is stored in.
 
-\subsection main-interface Main Interface
+# Main Interface
 
 The main interface is through the `tf2::BufferCore` interface.
 
 It uses the exceptions in tf2/exceptions.h and the `tf2::Stamped` datatype in tf2/transform_datatypes.h.
 
-\subsection conversion-interface Conversion Interface
+# Conversion Interface
 
 tf2 offers a templated conversion interface for external libraries to specify conversions between ``tf2``-specific data types and user-defined data types.
 Various templated functions in ``tf2_ros`` use the conversion interface to apply transformations from the tf server to these custom datatypes.
 
 The conversion interface is defined in tf2/convert.h.
 
-\subsection buffer-core-relations Buffer Core: Record and lookup relations between frames
+# Buffer Core: Record and lookup relations between frames
 
 The ``tf2`` library implements the interface defined by `tf2::BufferCore`.
 This class and all classes derived from it are responsible for providing coordinate transforms between any two frames in a system.
@@ -45,7 +42,7 @@ Therefore, for any given query it can be expected that data is interpolated.
 It should be noted that buffer implicitly limits the maximum cache size of 10s by default as defined by the `tf2::TIMECACHE_DEFAULT_MAX_STORAGE_TIME` and it cannot interpolate outside of the cache history.
 Thus there is a risk of incurring extrapolation limits based on specific system.
 
-\subsubsection buffer-core-methods Buffer Core Methods
+# Buffer Core Methods
 
 The `tf2::BufferCore` class contains useful methods to update the existing tf buffer.
 
@@ -78,7 +75,7 @@ The `tf2::BufferCore` class contains useful methods to update the existing tf bu
 
   - This method allows to see what frames have been cached and is useful for debugging.
 
-\subsection supported-datatypes Supported Datatypes
+# Supported Datatypes
 
 ``tf2`` implements templated datatype support.
 This allows the core packages to have minimal dependencies and there be packages which add support for converting to and from different datatypes as well as transforming those data types.
@@ -88,7 +85,7 @@ However it's recommended to use a fully supported math datatype which best suppo
 
 At it's core ``tf2`` relies on the `tf2::Stamped` data types which can be conveniently correlated to ROS 2 messages which have a `std_msgs::msg::Header`.
 
-\subsubsection data-type-support-packages Data Type Support Packages
+# Data Type Support Packages
 
 These packages provide methods to allow ``tf2`` to work natively with data types of any external library.
 Most are either C++ or Python specific.
@@ -113,7 +110,7 @@ Most are either C++ or Python specific.
 
   - ``tf2`` methods to work with sensor_msgs datatypes natively in C++ or Python.
 
-\subsection coordinate-frame-conventions Coordinate Frame Conventions
+# Coordinate Frame Conventions
 
 An important part of using ``tf2`` is to use standard conventions for coordinate frames.
 There are several sources of conventions for using coordinate frames.
@@ -124,7 +121,7 @@ There are several sources of conventions for using coordinate frames.
 
 - Standard coordinate frames for Humanoid Robots are in <a href=https://www.ros.org/reps/rep-0120.html>REP 120</a>.
 
-\subsection geometry Geometry
+# Geometry
 
 ``tf2`` provides basic geometry data types, such as
 
@@ -138,7 +135,7 @@ There are several sources of conventions for using coordinate frames.
 
 These data types support linear algebra operations between each other.
 
-\subsection high-level-design High level Design
+# High level Design
 
 - A distributed system:
 
@@ -191,5 +188,3 @@ These data types support linear algebra operations between each other.
   And as long as any datatype provides the methods ``msgType toMsg(datatype)`` and ``fromMsg(msgType, datatype)`` it can be automatically converted to any other datatype with the same methods defined and a matching ``msgType``.
   All ``tf2_ros`` interfaces can then be called with native type in and native type out.
   Note, the native type in and out do not need to match.
-
-*/
