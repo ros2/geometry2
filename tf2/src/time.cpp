@@ -34,6 +34,7 @@
 
 #include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
+#include "rcutils/time.h"
 #include "tf2/time.h"
 
 tf2::TimePoint tf2::get_now()
@@ -60,16 +61,7 @@ tf2::TimePoint tf2::timeFromSec(double t_sec)
 double tf2::durationToSec(const tf2::Duration & input)
 {
   int64_t count = input.count();
-
-  // scale the nanoseconds separately for improved accuracy
-  int32_t sec, nsec;
-  nsec = static_cast<int32_t>(count % 1000000000l);
-  sec = static_cast<int32_t>((count - nsec) / 1000000000l);
-
-  double sec_double, nsec_double;
-  nsec_double = 1e-9 * static_cast<double>(nsec);
-  sec_double = static_cast<double>(sec);
-  return sec_double + nsec_double;
+  return rcutils_nanoseconds_to_seconds(count);
 }
 
 double tf2::timeToSec(const tf2::TimePoint & timepoint)
