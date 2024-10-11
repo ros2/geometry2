@@ -46,8 +46,7 @@
 #include "tf2/time.h"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
-#include "tf2_msgs/action/lookup_transform.hpp"
+#include "tf2_msgs/srv/lookup_transform.hpp"
 
 namespace tf2_ros
 {
@@ -104,7 +103,7 @@ public:
   }
 };
 
-/** \brief Action client-based implementation of the tf2_ros::BufferInterface abstract data type.
+/** \brief Service client-based implementation of the tf2_ros::BufferInterface abstract data type.
  *
  * BufferClient uses actions to coordinate waiting for available transforms.
  *
@@ -113,7 +112,7 @@ public:
 class BufferClient : public BufferInterface
 {
 public:
-  using LookupTransformAction = tf2_msgs::action::LookupTransform;
+  using LookupTransformService = tf2_msgs::srv::LookupTransform;
 
   /** \brief BufferClient constructor
    * \param node The node to add the buffer client to
@@ -127,10 +126,16 @@ public:
     const std::string ns,
     const double & check_frequency = 10.0,
     const tf2::Duration & timeout_padding = tf2::durationFromSec(2.0))
-  : check_frequency_(check_frequency),
+  : node_(node),
+    check_frequency_(check_frequency),
     timeout_padding_(timeout_padding)
   {
-    client_ = rclcpp_action::create_client<LookupTransformAction>(node, ns);
+    service_client_ = rclcpp::create_client<LookupTransformService>(
+      node->get_node_base_interface(),
+      node->get_node_services_interface(),
+      ns,
+      rmw_qos_profile_services_default,
+      nullptr);
   }
 
   virtual ~BufferClient() = default;
@@ -244,17 +249,18 @@ public:
   TF2_ROS_PUBLIC
   bool waitForServer(const tf2::Duration & timeout = tf2::durationFromSec(0))
   {
-    return client_->wait_for_action_server(timeout);
+    return service_client_->wait_for_service(timeout);
   }
 
 private:
   geometry_msgs::msg::TransformStamped
-  processGoal(const LookupTransformAction::Goal & goal) const;
+  processRequest(const LookupTransformService::Request::SharedPtr & request) const;
 
   geometry_msgs::msg::TransformStamped
-  processResult(const LookupTransformAction::Result::SharedPtr & result) const;
+  processResponse(const LookupTransformService::Response::SharedPtr & response) const;
 
-  rclcpp_action::Client<LookupTransformAction>::SharedPtr client_;
+  rclcpp::Node::SharedPtr node_;
+  rclcpp::Client<LookupTransformService>::SharedPtr service_client_;
   double check_frequency_;
   tf2::Duration timeout_padding_;
 };
