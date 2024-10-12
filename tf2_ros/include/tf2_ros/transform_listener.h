@@ -90,7 +90,10 @@ public:
    * to it, then it's recommended to use one of the other constructors.
    */
   TF2_ROS_PUBLIC
-  explicit TransformListener(tf2::BufferCore & buffer, bool spin_thread = true);
+  explicit TransformListener(
+    tf2::BufferCore & buffer,
+    bool spin_thread = true,
+    bool static_only = false);
 
   /** \brief NodeInterfaces constructor */
   template<class AllocatorT = std::allocator<void>>
@@ -152,7 +155,8 @@ public:
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
     detail::get_default_transform_listener_sub_options<AllocatorT>(),
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
+    detail::get_default_transform_listener_static_sub_options<AllocatorT>(),
+    bool static_only = false)
   : buffer_(buffer)
   {
     init(
@@ -169,7 +173,8 @@ public:
       qos,
       static_qos,
       options,
-      static_options);
+      static_options,
+      static_only);
   }
 
   TF2_ROS_PUBLIC
@@ -191,7 +196,8 @@ private:
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options)
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options,
+    bool static_only = false)
   {
     auto node_base = node_interfaces.get_node_base_interface();
     auto node_parameters = node_interfaces.get_node_parameters_interface();
@@ -209,14 +215,19 @@ private:
       // Create new callback group for message_subscription of tf and tf_static
       callback_group_ = node_base->create_callback_group(
         rclcpp::CallbackGroupType::MutuallyExclusive, false);
-      // Duplicate to modify option of subscription
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
+
+      if (!static_only) {
+        // Duplicate to modify subscription options
+        rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
+        tf_options.callback_group = callback_group_;
+
+        message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+          node_parameters, node_topics, "/tf", qos, std::move(cb), tf_options);
+      }
+
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_static_options = static_options;
-      tf_options.callback_group = callback_group_;
       tf_static_options.callback_group = callback_group_;
 
-      message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node_parameters, node_topics, "/tf", qos, std::move(cb), tf_options);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
@@ -232,8 +243,10 @@ private:
       // Tell the buffer we have a dedicated thread to enable timeouts
       buffer_.setUsingDedicatedThread(true);
     } else {
-      message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-        node_parameters, node_topics, "/tf", qos, std::move(cb), options);
+      if (!static_only) {
+        message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+          node_parameters, node_topics, "/tf", qos, std::move(cb), options);
+      }
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
@@ -263,6 +276,78 @@ private:
     rclcpp::node_interfaces::NodeParametersInterface,
     rclcpp::node_interfaces::NodeTopicsInterface> node_interfaces_;
 };
+
+/** \brief Convenience class for subscribing to static-only transforms
+ *
+ * While users can achieve the same thing with a normal TransformListener, the number of parameters that must be
+ * provided is unwieldy.
+ */
+class StaticTransformListener : public TransformListener
+{
+public:
+  /** \brief Simplified constructor for a static transform listener
+   * \see the simplified TransformListener documentation
+   */
+  TF2_ROS_PUBLIC
+  explicit StaticTransformListener(tf2::BufferCore & buffer, bool spin_thread = true)
+  : TransformListener(buffer, spin_thread, true)
+  {
+  }
+
+  /** \brief Node constructor */
+  template<class NodeT, class AllocatorT = std::allocator<void>>
+  StaticTransformListener(
+    tf2::BufferCore & buffer,
+    NodeT && node,
+    bool spin_thread = true,
+    const rclcpp::QoS & static_qos = StaticListenerQoS(),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
+    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
+  : TransformListener(
+      buffer,
+      node,
+      spin_thread,
+      rclcpp::QoS(1),
+      static_qos,
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>(),
+      static_options,
+      true)
+  {
+  }
+
+  /** \brief Node interface constructor */
+  template<class AllocatorT = std::allocator<void>>
+  StaticTransformListener(
+    tf2::BufferCore & buffer,
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+    bool spin_thread = true,
+    const rclcpp::QoS & static_qos = StaticListenerQoS(),
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
+    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
+  : TransformListener(
+      buffer,
+      node_base,
+      node_logging,
+      node_parameters,
+      node_topics,
+      spin_thread,
+      rclcpp::QoS(1),
+      static_qos,
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>(),
+      static_options,
+      true)
+  {
+  }
+
+  TF2_ROS_PUBLIC
+  virtual ~StaticTransformListener()
+  {
+  }
+};
+
 }  // namespace tf2_ros
 
 #endif  // TF2_ROS__TRANSFORM_LISTENER_H_
