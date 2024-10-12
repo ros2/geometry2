@@ -122,9 +122,7 @@ uint8_t TimeCache::findClosest(
 
   // No values stored
   if (storage_.empty()) {
-    if (error_code) {
-      *error_code = TF2Error::TF2_NO_DATA_FOR_EXTRAPOLATION_ERROR;
-    }
+    cache::createExtrapolationException1(target_time, TimePoint(), error_str, error_code);
     return 0;
   }
 
