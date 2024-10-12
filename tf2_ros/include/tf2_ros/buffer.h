@@ -49,9 +49,12 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"
 #include "rclcpp/node_interfaces/get_node_base_interface.hpp"
-#include "rclcpp/node_interfaces/get_node_services_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_services_interface.hpp"
+#include "rclcpp/node_interfaces/node_base_interface.hpp"
 #include "rclcpp/node_interfaces/node_logging_interface.hpp"
+#include "rclcpp/node_interfaces/node_services_interface.hpp"
+#include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 namespace tf2_ros
@@ -73,10 +76,27 @@ public:
   /** \brief  Constructor for a Buffer object
    * \param clock A clock to use for time and sleeping
    * \param cache_time How long to keep a history of transforms
+   * \param interfaces Advertise the view_frames service that exposes debugging information from the buffer, based on a set of node interfaces
+   * \param  qos If passed change the quality of service of the frames_server_ service
+   */
+  Buffer(
+    rclcpp::Clock::SharedPtr clock,
+    rclcpp::node_interfaces::NodeInterfaces<
+      rclcpp::node_interfaces::NodeBaseInterface,
+      rclcpp::node_interfaces::NodeLoggingInterface,
+      rclcpp::node_interfaces::NodeServicesInterface
+    > node_interfaces,
+    tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
+    const rclcpp::QoS & qos = rclcpp::ServicesQoS());
+
+  /** \brief  Constructor for a Buffer object
+   * \param clock A clock to use for time and sleeping
+   * \param cache_time How long to keep a history of transforms
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
   template<typename NodeT = rclcpp::Node::SharedPtr>
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NoteT")]]
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
@@ -84,32 +104,7 @@ public:
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
   : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
   {
-    if (nullptr == clock_) {
-      throw std::invalid_argument("clock must be a valid instance");
-    }
-
-    auto post_jump_cb = [this](const rcl_time_jump_t & jump_info) {onTimeJump(jump_info);};
-
-    rcl_jump_threshold_t jump_threshold;
-    // Disable forward jump callbacks
-    jump_threshold.min_forward.nanoseconds = 0;
-    // Anything backwards is a jump
-    jump_threshold.min_backward.nanoseconds = -1;
-    // Callback if the clock changes too
-    jump_threshold.on_clock_change = true;
-
-    jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
-
-    if (node) {
-      node_logging_interface_ = rclcpp::node_interfaces::get_node_logging_interface(node);
-
-      frames_server_ = rclcpp::create_service<tf2_msgs::srv::FrameGraph>(
-        rclcpp::node_interfaces::get_node_base_interface(node),
-        rclcpp::node_interfaces::get_node_services_interface(node),
-        "tf2_frames", std::bind(
-          &Buffer::getFrames, this, std::placeholders::_1,
-          std::placeholders::_2), qos, nullptr);
-    }
+    Buffer(clock, *node, cache_time, qos);
   }
 
   /** \brief Get the transform between two frames by frame ID.
@@ -332,7 +327,13 @@ private:
   /// \brief A clock to use for time and sleeping
   rclcpp::Clock::SharedPtr clock_;
 
-  /// \brief A node logging interface to access the buffer node's logger
+  /// \brief A set of interface to access the buffer's node
+  rclcpp::node_interfaces::NodeInterfaces<
+    rclcpp::node_interfaces::NodeBaseInterface,
+    rclcpp::node_interfaces::NodeLoggingInterface,
+    rclcpp::node_interfaces::NodeServicesInterface
+  > node_interfaces_;
+
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
 
   /// \brief Interface for creating timers

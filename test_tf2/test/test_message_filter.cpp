@@ -79,12 +79,10 @@ public:
 TEST(MessageFilter, noTransforms)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -102,12 +100,10 @@ TEST(MessageFilter, noTransforms)
 TEST(MessageFilter, noTransformsSameFrame)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -145,12 +141,10 @@ geometry_msgs::msg::TransformStamped createTransform(
 TEST(MessageFilter, preexistingTransforms)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -176,12 +170,10 @@ TEST(MessageFilter, preexistingTransforms)
 TEST(MessageFilter, postTransforms)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -212,9 +204,7 @@ TEST(MessageFilter, concurrentTransforms)
   const int messages = 30;
   const int buffer_size = messages;
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
@@ -225,7 +215,7 @@ TEST(MessageFilter, concurrentTransforms)
   msg->header.stamp = stamp;
   msg->header.frame_id = "frame2";
 
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   for (int i = 0; i < 50; i++) {
     buffer.setCreateTimerInterface(create_timer_interface);
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", buffer_size,
@@ -294,12 +284,10 @@ TEST(MessageFilter, concurrentTransforms)
 TEST(MessageFilter, setTargetFrame)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -325,12 +313,10 @@ TEST(MessageFilter, setTargetFrame)
 TEST(MessageFilter, multipleTargetFrames)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "", 10, node);
   Notification n(1);
@@ -366,12 +352,10 @@ TEST(MessageFilter, multipleTargetFrames)
 TEST(MessageFilter, tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);
@@ -497,12 +481,10 @@ TEST(MessageFilter, tolerance)
 TEST(MessageFilter, checkStampPrecisionLoss)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "frame1", 10, node);
   Notification n(1);

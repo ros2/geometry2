@@ -64,8 +64,11 @@ TEST(tf2_test_transform_broadcaster, transform_broadcaster_rclcpp_node)
   // Construct tf broadcaster from node interfaces
   {
     tf2_ros::TransformBroadcaster tfb(
+      rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeParametersInterface,
+        rclcpp::node_interfaces::NodeTopicsInterface>(
       node->get_node_parameters_interface(),
-      node->get_node_topics_interface());
+      node->get_node_topics_interface()));
   }
 }
 
@@ -84,8 +87,11 @@ TEST(tf2_test_transform_broadcaster, transform_broadcaster_custom_rclcpp_node)
   // Construct tf broadcaster from node interfaces
   {
     tf2_ros::TransformBroadcaster tfb(
+      rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeParametersInterface,
+        rclcpp::node_interfaces::NodeTopicsInterface>(
       node->get_node_parameters_interface(),
-      node->get_node_topics_interface());
+      node->get_node_topics_interface()));
   }
 }
 

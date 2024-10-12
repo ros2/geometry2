@@ -58,63 +58,66 @@ TEST(tf2_ros_message_filter, construction_and_destruction)
 {
   auto node = rclcpp::Node::make_shared("test_message_filter_node");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
 
   // Node constructor with defaults
   {
-    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, *node);
   }
 
   // Node constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer, "map", 10, node, std::chrono::milliseconds(100));
+      buffer, "map", 10, *node, std::chrono::milliseconds(100));
   }
 
   // Node interface constructor with defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
-  }
+      buffer, "map", 10, rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeLoggingInterface,
+        rclcpp::node_interfaces::NodeClockInterface>(
+        node->get_node_logging_interface(), node->get_node_clock_interface()));
+   }
 
   // Node interface constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      buffer,
-      "map",
-      10,
-      node->get_node_logging_interface(),
-      node->get_node_clock_interface(),
+      buffer, "map", 10, rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeLoggingInterface,
+        rclcpp::node_interfaces::NodeClockInterface>(
+        node->get_node_logging_interface(), node->get_node_clock_interface()),
       std::chrono::seconds(42));
   }
 
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
   // Filter + node constructor with defaults
   {
-    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, buffer, "map", 10, node);
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, buffer, "map", 10, *node);
   }
 
   // Filter + node constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      sub, buffer, "map", 10, node, std::chrono::hours(1));
+      sub, buffer, "map", 10, *node, std::chrono::hours(1));
   }
 
   // Filter + node interface constructor with defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      sub, buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+      sub, buffer, "map", 10, rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeLoggingInterface,
+        rclcpp::node_interfaces::NodeClockInterface>(
+        node->get_node_logging_interface(), node->get_node_clock_interface()));
   }
 
   // Filter + node interface constructor no defaults
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
-      sub,
-      buffer,
-      "map",
-      10,
-      node->get_node_logging_interface(),
-      node->get_node_clock_interface(),
+      sub, buffer, "map", 10, rclcpp::node_interfaces::NodeInterfaces<
+        rclcpp::node_interfaces::NodeLoggingInterface,
+        rclcpp::node_interfaces::NodeClockInterface>(
+        node->get_node_logging_interface(), node->get_node_clock_interface()),
       std::chrono::microseconds(0));
   }
 }
@@ -123,9 +126,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
 
-  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-    node->get_node_base_interface(),
-    node->get_node_timers_interface());
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
   rclcpp::QoS default_qos =
     rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
@@ -133,10 +134,10 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   sub.subscribe(node, "point", default_qos);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::TransformListener tfl(buffer);
-  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, *node);
   filter.connectInput(sub);
   filter.registerCallback(&filter_callback);
 
@@ -149,7 +150,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   filter.setTolerance(rclcpp::Duration(1, 0));
 
   // Publish static transforms so the frame transformations will always be valid
-  tf2_ros::StaticTransformBroadcaster tfb(node);
+  tf2_ros::StaticTransformBroadcaster tfb(*node);
   geometry_msgs::msg::TransformStamped map_to_odom;
   map_to_odom.header.stamp = rclcpp::Time(0, 0);
   map_to_odom.header.frame_id = "map";
