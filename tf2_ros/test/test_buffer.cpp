@@ -98,9 +98,10 @@ class MockCreateTimerROS final : public tf2_ros::CreateTimerROS
 {
 public:
   MockCreateTimerROS(
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
-    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers)
-  : CreateTimerROS(node_base, node_timers), next_timer_handle_index_(0)
+    rclcpp::node_interfaces::NodeInterfaces<
+      rclcpp::node_interfaces::NodeBaseInterface,
+      rclcpp::node_interfaces::NodeTimersInterface> node_interfaces)
+  : CreateTimerROS(node_interfaces), next_timer_handle_index_(0)
   {
   }
 
@@ -141,13 +142,17 @@ private:
 
 TEST(test_buffer, construct_with_null_clock)
 {
-  EXPECT_THROW(tf2_ros::Buffer(nullptr), std::invalid_argument);
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
+  EXPECT_THROW(tf2_ros::Buffer(nullptr, *node), std::invalid_argument);
 }
 
 TEST(test_buffer, can_transform_valid_transform)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
 
@@ -186,8 +191,10 @@ TEST(test_buffer, can_transform_valid_transform)
 
 TEST(test_buffer, velocity_transform)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
 
@@ -247,8 +254,10 @@ TEST(test_buffer, velocity_transform)
 
 TEST(test_buffer, test_twist)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
 
@@ -294,8 +303,10 @@ TEST(test_buffer, test_twist)
 
 TEST(test_buffer, can_transform_without_dedicated_thread)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   buffer.setUsingDedicatedThread(false);
 
   rclcpp::Time rclcpp_time = clock->now();
@@ -337,8 +348,10 @@ TEST(test_buffer, can_transform_without_dedicated_thread)
 
 TEST(test_buffer, wait_for_transform_valid)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
@@ -398,8 +411,10 @@ TEST(test_buffer, wait_for_transform_valid)
 
 TEST(test_buffer, wait_for_transform_timeout)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
@@ -447,8 +462,10 @@ TEST(test_buffer, wait_for_transform_timeout)
 // Regression test for https://github.com/ros2/geometry2/issues/141
 TEST(test_buffer, wait_for_transform_race)
 {
+  std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("default_node");
+
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *node);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
   auto mock_create_timer = std::make_shared<MockCreateTimer>();
@@ -502,12 +519,10 @@ TEST(test_buffer, timer_ros_wait_for_transform_race)
     "timer_ros_wait_for_transform_race");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
+  tf2_ros::Buffer buffer(clock, *rclcpp_node_);
   // Silence error about dedicated thread's being necessary
   buffer.setUsingDedicatedThread(true);
-  auto mock_create_timer_ros = std::make_shared<MockCreateTimerROS>(
-    rclcpp_node_->get_node_base_interface(),
-    rclcpp_node_->get_node_timers_interface());
+  auto mock_create_timer_ros = std::make_shared<MockCreateTimerROS>(*rclcpp_node_);
   buffer.setCreateTimerInterface(mock_create_timer_ros);
 
   rclcpp::Time rclcpp_time = clock->now();

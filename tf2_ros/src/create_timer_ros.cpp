@@ -42,11 +42,22 @@ namespace tf2_ros
 {
 
 CreateTimerROS::CreateTimerROS(
+  rclcpp::node_interfaces::NodeInterfaces<
+    rclcpp::node_interfaces::NodeBaseInterface,
+    rclcpp::node_interfaces::NodeTimersInterface> node_interfaces,
+  rclcpp::CallbackGroup::SharedPtr callback_group)
+: node_interfaces_(std::move(node_interfaces)), next_timer_handle_index_(0),
+  callback_group_(callback_group)
+{
+}
+
+CreateTimerROS::CreateTimerROS(
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
   rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers,
   rclcpp::CallbackGroup::SharedPtr callback_group)
-: node_base_(node_base), node_timers_(node_timers), next_timer_handle_index_(0),
-  callback_group_(callback_group)
+: CreateTimerROS(rclcpp::node_interfaces::NodeInterfaces<
+      rclcpp::node_interfaces::NodeBaseInterface,
+      rclcpp::node_interfaces::NodeTimersInterface>(node_base, node_timers), callback_group)
 {
 }
 
@@ -59,8 +70,8 @@ CreateTimerROS::createTimer(
   std::lock_guard<std::mutex> lock(timers_map_mutex_);
   auto timer_handle_index = next_timer_handle_index_++;
   auto timer = rclcpp::create_timer<std::function<void()>>(
-    node_base_,
-    node_timers_,
+    node_interfaces_.get_node_base_interface(),
+    node_interfaces_.get_node_timers_interface(),
     clock,
     period,
     std::bind(&CreateTimerROS::timerCallback, this, timer_handle_index, callback),

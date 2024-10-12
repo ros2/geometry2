@@ -55,7 +55,7 @@ public:
   std::shared_ptr<tf2_ros::TransformListener> tfl_;
 
   explicit echoListener(rclcpp::Clock::SharedPtr clock)
-  : buffer_(clock)
+  : buffer_(clock, *std::make_shared<rclcpp::Node>("default_node"))
   {
     tfl_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
   }

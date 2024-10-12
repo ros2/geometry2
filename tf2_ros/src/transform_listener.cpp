@@ -58,10 +58,7 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread,
   options.start_parameter_services(false);
   optional_default_node_ = rclcpp::Node::make_shared("_", options);
   init(
-    optional_default_node_->get_node_base_interface(),
-    optional_default_node_->get_node_logging_interface(),
-    optional_default_node_->get_node_parameters_interface(),
-    optional_default_node_->get_node_topics_interface(),
+    *optional_default_node_,
     spin_thread, DynamicListenerQoS(), StaticListenerQoS(),
     detail::get_default_transform_listener_sub_options(),
     detail::get_default_transform_listener_static_sub_options(),
@@ -90,7 +87,7 @@ void TransformListener::subscription_callback(
       // /\todo Use error reporting
       std::string temp = ex.what();
       RCLCPP_ERROR(
-        node_logging_interface_->get_logger(),
+        node_interfaces_.get_node_logging_interface()->get_logger(),
         "Failure to set received transform from %s to %s with error: %s\n",
         msg_in.transforms[i].child_frame_id.c_str(),
         msg_in.transforms[i].header.frame_id.c_str(), temp.c_str());

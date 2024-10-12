@@ -50,8 +50,8 @@ public:
   void init_tf_listener()
   {
     rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-    tf2_ros::Buffer buffer(clock);
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(buffer, shared_from_this(), false);
+    tf2_ros::Buffer buffer(clock, *this);
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(buffer, *shared_from_this(), false);
   }
 
   void init_static_tf_listener()
@@ -76,8 +76,8 @@ public:
   void init_tf_listener()
   {
     rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-    tf2_ros::Buffer buffer(clock);
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(buffer, shared_from_this(), false);
+    tf2_ros::Buffer buffer(clock, *this);
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(buffer, *shared_from_this(), false);
   }
 
   void init_static_tf_listener()
@@ -97,8 +97,8 @@ TEST(tf2_test_transform_listener, transform_listener_rclcpp_node)
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, false);
+  tf2_ros::Buffer buffer(clock, *node);
+  tf2_ros::TransformListener tfl(buffer, *node, false);
 }
 
 TEST(tf2_test_transform_listener, transform_listener_custom_rclcpp_node)
@@ -106,8 +106,8 @@ TEST(tf2_test_transform_listener, transform_listener_custom_rclcpp_node)
   auto node = std::make_shared<NodeWrapper>("tf2_ros_message_filter");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, false);
+  tf2_ros::Buffer buffer(clock, *node);
+  tf2_ros::TransformListener tfl(buffer, *node, false);
 }
 
 TEST(tf2_test_transform_listener, transform_listener_as_member)
