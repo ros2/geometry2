@@ -43,7 +43,7 @@ public:
 
   void init_tf_broadcaster()
   {
-    tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(shared_from_this());
+    tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(*this);
   }
 
 private:
