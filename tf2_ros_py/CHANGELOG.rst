@@ -2,6 +2,12 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.1 (2024-10-15)
+-------------------
+* Add configurable TF topics (`#709 <https://github.com/ros2/geometry2//issues/709>`_)
+* Fix the time_jump_callback signature. (`#711 <https://github.com/ros2/geometry2//issues/711>`_)
+* Contributors: Chris Lalancette, Ryan
+
 0.39.0 (2024-10-03)
 -------------------
 

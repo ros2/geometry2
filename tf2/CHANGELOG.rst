@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.1 (2024-10-15)
+-------------------
+* Error String Filled (`#715 <https://github.com/ros2/geometry2//issues/715>`_)
+* Contributors: Lucas Wendland
+
 0.39.0 (2024-10-03)
 -------------------
 

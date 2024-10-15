@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.1 (2024-10-15)
+-------------------
+* Add configurable TF topics (`#709 <https://github.com/ros2/geometry2//issues/709>`_)
+* Contributors: Ryan
+
 0.39.0 (2024-10-03)
 -------------------
 

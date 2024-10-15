@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.1 (2024-10-15)
+-------------------
+* Remove use of python_cmake_module (`#651 <https://github.com/ros2/geometry2//issues/651>`_)
+* Contributors: Chris Lalancette
+
 0.39.0 (2024-10-03)
 -------------------
 
