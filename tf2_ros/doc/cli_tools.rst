@@ -73,6 +73,13 @@ In the current working folder, you should now have a file called "frames_$(data)
 
 .. image:: images/view_frames.png
 
+
+If you need to view the frames from non-standard topics, you can override them like so:
+
+.. code-block:: bash
+
+   ros2 run tf2_tools view_frames --tf_topic=/foo  --tf_static_topic=bar
+
 Fields
 ~~~~~~
   * Recorded at time: shows the absolute timestamp when this graph was generated.

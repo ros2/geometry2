@@ -40,12 +40,15 @@ from tf2_ros.buffer import Buffer
 from tf2_msgs.msg import TFMessage
 from threading import Thread
 
+DEFAULT_TF_TOPIC = '/tf'
+DEFAULT_STATIC_TF_TOPIC = '/tf_static'
 
 class TransformListener:
     """
     :class:`TransformListener` is a convenient way to listen for coordinate frame transformation info.
     This class takes an object that instantiates the :class:`BufferInterface` interface, to which
-    it propagates changes to the tf frame graph.
+    it propagates changes to the tf frame graph. It listens to both static and dynamic
+    transforms.
     """
     def __init__(
         self,
@@ -54,7 +57,9 @@ class TransformListener:
         *,
         spin_thread: bool = False,
         qos: Optional[Union[QoSProfile, int]] = None,
-        static_qos: Optional[Union[QoSProfile, int]] = None
+        static_qos: Optional[Union[QoSProfile, int]] = None,
+        tf_topic: str = DEFAULT_TF_TOPIC,
+        tf_static_topic: str = DEFAULT_STATIC_TF_TOPIC
     ) -> None:
         """
         Constructor.
@@ -64,6 +69,8 @@ class TransformListener:
         :param spin_thread: Whether to create a dedidcated thread to spin this node.
         :param qos: A QoSProfile or a history depth to apply to subscribers.
         :param static_qos: A QoSProfile or a history depth to apply to tf_static subscribers.
+        :param tf_topic: Which topic to listen to for dynamic transforms.
+        :param tf_static_topic: Which topic to listen to for static transforms.
         """
         if qos is None:
             qos = QoSProfile(
@@ -83,9 +90,9 @@ class TransformListener:
         # from another callback in the same group.
         self.group = ReentrantCallbackGroup()
         self.tf_sub = node.create_subscription(
-            TFMessage, '/tf', self.callback, qos, callback_group=self.group)
+            TFMessage, tf_topic, self.callback, qos, callback_group=self.group)
         self.tf_static_sub = node.create_subscription(
-            TFMessage, '/tf_static', self.static_callback, static_qos, callback_group=self.group)
+            TFMessage, tf_static_topic, self.static_callback, static_qos, callback_group=self.group)
 
         if spin_thread:
             self.executor = SingleThreadedExecutor()
