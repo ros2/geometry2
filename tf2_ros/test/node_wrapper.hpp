@@ -55,6 +55,9 @@ public:
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr
   get_node_parameters_interface() {return this->node->get_node_parameters_interface();}
 
+  rclcpp::node_interfaces::NodeServicesInterface::SharedPtr
+  get_node_services_interface() {return this->node->get_node_services_interface();}
+
 private:
   rclcpp::Node::SharedPtr node;
 };
