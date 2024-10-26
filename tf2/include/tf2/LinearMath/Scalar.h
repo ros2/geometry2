@@ -13,12 +13,11 @@ subject to the following restrictions:
 */
 
 
-
-#ifndef TF2_SCALAR_H
-#define TF2_SCALAR_H
+#ifndef TF2__LINEARMATH__SCALAR_H_
+#define TF2__LINEARMATH__SCALAR_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/Scalar.hpp instead
 
 #include <tf2/LinearMath/Scalar.hpp>
 
-#endif //TF2SIMD___SCALAR_H
+#endif  // TF2__LINEARMATH__SCALAR_H_

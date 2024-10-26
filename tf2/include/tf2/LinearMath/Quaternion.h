@@ -13,12 +13,11 @@ subject to the following restrictions:
 */
 
 
-
-#ifndef TF2_QUATERNION_H_
-#define TF2_QUATERNION_H_
+#ifndef TF2__LINEARMATH__QUATERNION_H_
+#define TF2__LINEARMATH__QUATERNION_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/Quaternion.hpp instead
 
 #include <tf2/LinearMath/Quaternion.hpp>
 
-#endif
+#endif  // TF2__LINEARMATH__QUATERNION_H_

@@ -13,12 +13,11 @@ subject to the following restrictions:
 */
 
 
-
-#ifndef tf2_Transform_H
-#define tf2_Transform_H
+#ifndef TF2__LINEARMATH__TRANSFORM_H_
+#define TF2__LINEARMATH__TRANSFORM_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/Transform.hpp instead
 
 #include <tf2/LinearMath/Transform.hpp>
 
-#endif
+#endif  // TF2__LINEARMATH__TRANSFORM_H_

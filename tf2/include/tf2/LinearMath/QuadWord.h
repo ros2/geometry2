@@ -13,11 +13,11 @@ subject to the following restrictions:
 */
 
 
-#ifndef TF2SIMD_QUADWORD_H
-#define TF2SIMD_QUADWORD_H
+#ifndef TF2__LINEARMATH__QUADWORD_H_
+#define TF2__LINEARMATH__QUADWORD_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/QuadWord.hpp instead
 
 #include <tf2/LinearMath/QuadWord.hpp>
 
-#endif //TF2SIMD_QUADWORD_H
+#endif  // TF2__LINEARMATH__QUADWORD_H_

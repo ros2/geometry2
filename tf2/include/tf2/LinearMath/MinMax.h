@@ -13,12 +13,11 @@ subject to the following restrictions:
 */
 
 
-
-#ifndef GEN_MINMAX_H
-#define GEN_MINMAX_H
+#ifndef TF2__LINEARMATH__MINMAX_H_
+#define TF2__LINEARMATH__MINMAX_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/MinMax.hpp instead
 
 #include <tf2/LinearMath/MinMax.hpp>
 
-#endif
+#endif  // TF2__LINEARMATH__MINMAX_H_

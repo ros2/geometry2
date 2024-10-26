@@ -13,11 +13,11 @@ subject to the following restrictions:
 */
 
 
-#ifndef	TF2_MATRIX3x3_H
-#define TF2_MATRIX3x3_H
+#ifndef TF2__LINEARMATH__MATRIX3X3_H_
+#define TF2__LINEARMATH__MATRIX3X3_H_
 
 #warning This header is obsolete, please include tf2/LinearMath/Matrix3x3.hpp instead
 
 #include <tf2/LinearMath/Matrix3x3.hpp>
 
-#endif //TF2_MATRIX3x3_H
+#endif  // TF2__LINEARMATH__MATRIX3X3_H_
