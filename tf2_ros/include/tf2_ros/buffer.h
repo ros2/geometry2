@@ -43,8 +43,8 @@
 #include "tf2_ros/buffer_interface.h"
 #include "tf2_ros/create_timer_interface.h"
 #include "tf2_ros/visibility_control.h"
-#include "tf2/buffer_core.h"
-#include "tf2/time.h"
+#include "tf2/buffer_core.hpp"
+#include "tf2/time.hpp"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"

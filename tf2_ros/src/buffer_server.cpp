@@ -35,7 +35,7 @@
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
 
-#include <tf2/exceptions.h>
+#include <tf2/exceptions.hpp>
 
 #include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
 #include <tf2_ros/buffer_server.h>

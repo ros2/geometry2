@@ -50,8 +50,8 @@
 #include "message_filters/connection.hpp"
 #include "message_filters/message_traits.hpp"
 #include "message_filters/simple_filter.hpp"
-#include "tf2/buffer_core_interface.h"
-#include "tf2/time.h"
+#include "tf2/buffer_core_interface.hpp"
+#include "tf2/time.hpp"
 #include "tf2_ros/async_buffer_interface.h"
 #include "tf2_ros/buffer.h"
 

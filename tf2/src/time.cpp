@@ -34,7 +34,7 @@
 
 #include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 tf2::TimePoint tf2::get_now()
 {

@@ -31,7 +31,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 #include <tf2_eigen_kdl/tf2_eigen_kdl.hpp>
-#include <tf2/convert.h>
+#include <tf2/convert.hpp>
 #include <gtest/gtest.h>
 
 using Vector6d = Eigen::Matrix<double, 6, 1>;

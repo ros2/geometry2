@@ -55,7 +55,7 @@
 
 #include "kdl/frames.hpp"
 
-#include "tf2/impl/convert.h"
+#include "tf2/impl/convert.hpp"
 
 #include "tf2_eigen_kdl/visibility_control.h"
 

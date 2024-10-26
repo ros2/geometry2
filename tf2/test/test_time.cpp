@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <chrono>
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 using namespace std::literals::chrono_literals;
 
