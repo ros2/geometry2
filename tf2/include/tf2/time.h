@@ -29,39 +29,6 @@
 #ifndef TF2__TIME_H_
 #define TF2__TIME_H_
 
-#include <chrono>
-#include <cmath>
-#include <string>
-
-#include "tf2/visibility_control.h"
-
-namespace tf2
-{
-using Duration = std::chrono::nanoseconds;
-using TimePoint = std::chrono::time_point<std::chrono::system_clock, Duration>;
-
-using IDuration = std::chrono::duration<int, std::nano>;
-// This is the zero time in ROS
-static const TimePoint TimePointZero = TimePoint(IDuration::zero());
-
-TF2_PUBLIC
-TimePoint get_now();
-
-TF2_PUBLIC
-Duration durationFromSec(double t_sec);
-
-TF2_PUBLIC
-TimePoint timeFromSec(double t_sec);
-
-TF2_PUBLIC
-double durationToSec(const tf2::Duration & input);
-
-TF2_PUBLIC
-double timeToSec(const TimePoint & timepoint);
-
-TF2_PUBLIC
-std::string displayTimePoint(const TimePoint & stamp);
-
-}  // namespace tf2
+#include <tf2/time.hpp>
 
 #endif  // TF2__TIME_H_

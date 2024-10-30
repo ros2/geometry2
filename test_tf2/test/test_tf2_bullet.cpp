@@ -33,7 +33,7 @@
 #include <tf2_ros/buffer.h>
 #include <rclcpp/rclcpp.hpp>
 #include <gtest/gtest.h>
-#include <tf2/convert.h>
+#include <tf2/convert.hpp>
 
 std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
 static const double EPS = 1e-3;

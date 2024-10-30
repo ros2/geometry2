@@ -38,11 +38,11 @@
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
-#include "tf2/buffer_core.h"
-#include "tf2/convert.h"
-#include "tf2/LinearMath/Vector3.h"
-#include "tf2/exceptions.h"
-#include "tf2/time.h"
+#include "tf2/buffer_core.hpp"
+#include "tf2/convert.hpp"
+#include "tf2/LinearMath/Vector3.hpp"
+#include "tf2/exceptions.hpp"
+#include "tf2/time.hpp"
 
 TEST(tf2, setTransformFail)
 {

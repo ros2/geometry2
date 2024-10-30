@@ -1,7 +1,7 @@
 #include <Python.h>
 
-#include <tf2/buffer_core.h>
-#include <tf2/exceptions.h>
+#include <tf2/buffer_core.hpp>
+#include <tf2/exceptions.hpp>
 
 #include <string>
 #include <vector>

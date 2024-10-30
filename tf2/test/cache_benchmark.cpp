@@ -32,7 +32,7 @@
 #include <tuple>
 #include <vector>
 
-#include "tf2/time_cache.h"
+#include "tf2/time_cache.hpp"
 
 // Simulates 5 transforms, 10s worth of data at 200 Hz in a buffer that is
 // completely full.

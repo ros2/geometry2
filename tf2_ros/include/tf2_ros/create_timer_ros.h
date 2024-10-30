@@ -35,7 +35,7 @@
 
 #include "tf2_ros/create_timer_interface.h"
 #include "tf2_ros/visibility_control.h"
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 
