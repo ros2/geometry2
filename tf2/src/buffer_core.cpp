@@ -40,13 +40,13 @@
 
 #include <iostream>
 
-#include "tf2/buffer_core.h"
-#include "tf2/time_cache.h"
-#include "tf2/exceptions.h"
+#include "tf2/buffer_core.hpp"
+#include "tf2/time_cache.hpp"
+#include "tf2/exceptions.hpp"
 
-#include "tf2/LinearMath/Quaternion.h"
-#include "tf2/LinearMath/Transform.h"
-#include "tf2/LinearMath/Vector3.h"
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2/LinearMath/Transform.hpp"
+#include "tf2/LinearMath/Vector3.hpp"
 
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform.hpp"

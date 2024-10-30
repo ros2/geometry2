@@ -49,8 +49,8 @@
 
 #include "tf2_ros/buffer_interface.h"
 
-#include "tf2/convert.h"
-#include "tf2/time.h"
+#include "tf2/convert.hpp"
+#include "tf2/time.hpp"
 #include "sensor_msgs/msg/point_cloud2.hpp"
 #include "sensor_msgs/point_cloud2_iterator.hpp"
 
