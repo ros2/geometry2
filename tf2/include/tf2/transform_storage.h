@@ -1,4 +1,3 @@
-
 // Copyright 2010, Willow Garage, Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -34,4 +33,3 @@
 #include <tf2/transform_storage.hpp>
 
 #endif  // TF2__TRANSFORM_STORAGE_H_
-
