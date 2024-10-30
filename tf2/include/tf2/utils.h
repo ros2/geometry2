@@ -18,4 +18,3 @@
 #include <tf2/utils.hpp>
 
 #endif  // TF2__UTILS_H_
-

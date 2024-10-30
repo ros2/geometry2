@@ -19,4 +19,3 @@
 #include <tf2/impl/utils.hpp>
 
 #endif  // TF2__IMPL__UTILS_H_
-

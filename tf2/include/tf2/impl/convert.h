@@ -32,4 +32,3 @@
 #include <tf2/impl/convert.hpp>
 
 #endif  // TF2__IMPL__CONVERT_H_
-
