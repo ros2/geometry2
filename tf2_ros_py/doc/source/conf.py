@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'tf2_ros_py'
-copyright = '2023, Open Source Robotics Foundation, Inc.'
+copyright = '2023, Open Source Robotics Foundation, Inc.'  # noqa: A001
 author = 'Open Source Robotics Foundation, Inc.'
 
 # The full version, including alpha/beta/rc tags

@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Willow Garage, Inc. All rights reserved.
+# Copyright (c) 2024 Open Source Robotics Foundation, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -26,13 +26,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Author: Eitan Marder-Eppstein
+from ament_pep257.main import main
+import pytest
 
-from tf2_py import *  # noqa: F401, F403
 
-from .buffer import *  # noqa: F401, F403
-from .buffer_client import *  # noqa: F401, F403
-from .buffer_interface import *  # noqa: F401, F403
-from .static_transform_broadcaster import *  # noqa: F401, F403
-from .transform_broadcaster import *  # noqa: F401, F403
-from .transform_listener import *  # noqa: F401, F403
+@pytest.mark.linter
+@pytest.mark.pep257
+def test_pep257():
+    assert main(argv=['.', 'test']) == 0, 'Found code style errors / warnings'

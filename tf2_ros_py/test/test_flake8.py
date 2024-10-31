@@ -1,4 +1,4 @@
-# Copyright (c) 2009 Willow Garage, Inc. All rights reserved.
+# Copyright (c) 2024 Open Source Robotics Foundation, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -26,13 +26,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Author: Eitan Marder-Eppstein
+from ament_flake8.main import main_with_errors
+import pytest
 
-from tf2_py import *  # noqa: F401, F403
 
-from .buffer import *  # noqa: F401, F403
-from .buffer_client import *  # noqa: F401, F403
-from .buffer_interface import *  # noqa: F401, F403
-from .static_transform_broadcaster import *  # noqa: F401, F403
-from .transform_broadcaster import *  # noqa: F401, F403
-from .transform_listener import *  # noqa: F401, F403
+@pytest.mark.flake8
+@pytest.mark.linter
+def test_flake8():
+    rc, errors = main_with_errors(argv=[])
+    assert rc == 0, \
+        'Found %d code style errors / warnings:\n' % len(errors) + \
+        '\n'.join(errors)

@@ -1,22 +1,23 @@
-# Copyright (c) 2008, Willow Garage, Inc.
-# All rights reserved.
+# Copyright (c) 2008 Willow Garage, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of the Willow Garage, Inc. nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#
+#    * Neither the name of the copyright holder nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
 # LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 # CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
 # SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
@@ -26,27 +27,26 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # author: Wim Meeussen
+
+from copy import deepcopy
+from typing import Any
+from typing import Callable
 from typing import Optional
+from typing import Tuple
 from typing import TypeVar
 from typing import Union
-from typing import Callable
-from typing import Tuple
-from typing import Any
 
-import rclpy
-import tf2_py as tf2
-import tf2_ros
-from copy import deepcopy
-from std_msgs.msg import Header
-from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import Vector3Stamped
-from sensor_msgs.msg import PointCloud2
-
-from rclpy.time import Time
 from rclpy.duration import Duration
+from rclpy.time import Time
+from sensor_msgs.msg import PointCloud2
+from std_msgs.msg import Header
+import tf2_ros
+
 
 MsgStamped = Union[
     PointStamped,
@@ -55,18 +55,19 @@ MsgStamped = Union[
     Vector3Stamped,
     PointCloud2
     ]
-PyKDLType = TypeVar("PyKDLType")
+PyKDLType = TypeVar('PyKDLType')
 TransformableObject = Union[MsgStamped, PyKDLType]
-TransformableObjectType = TypeVar("TransformableObjectType")
+TransformableObjectType = TypeVar('TransformableObjectType')
 
 
 class BufferInterface:
     """
-    Abstract interface for wrapping the Python bindings for the tf2 library in
-    a ROS-based convenience API.
+    Abstract interface for wrapping the Python tf2 library in a ROS convenience API.
+
     Implementations include :class:tf2_ros.buffer.Buffer and
     :class:tf2_ros.buffer_client.BufferClient.
     """
+
     def __init__(self) -> None:
         self.registration = tf2_ros.TransformRegistration()
 
@@ -81,10 +82,11 @@ class BufferInterface:
         """
         Transform an input into the target frame.
 
-        The input must be a known transformable type (by way of the tf2 data type conversion interface).
+        The input must be a known transformable type (by way of the tf2 data type conversion
+        interface).
 
-        If new_type is not None, the type specified must have a valid conversion from the input type,
-        else the function will raise an exception.
+        If new_type is not None, the type specified must have a valid conversion from the input
+        type, else the function will raise an exception.
 
         :param object_stamped: The timestamped object to transform.
         :param target_frame: Name of the frame to transform the input into.
@@ -93,9 +95,12 @@ class BufferInterface:
         :return: The transformed, timestamped output, possibly converted to a new type.
         """
         do_transform = self.registration.get(type(object_stamped))
-        res = do_transform(object_stamped, self.lookup_transform(target_frame, object_stamped.header.frame_id,
-                                                                 object_stamped.header.stamp, timeout))
-        if new_type == None:
+        res = do_transform(
+            object_stamped,
+            self.lookup_transform(
+                target_frame, object_stamped.header.frame_id,
+                object_stamped.header.stamp, timeout))
+        if new_type is None:
             return res
 
         return convert(res, new_type)
@@ -113,13 +118,14 @@ class BufferInterface:
         """
         Transform an input into the target frame (advanced API).
 
-        The input must be a known transformable type (by way of the tf2 data type conversion interface).
+        The input must be a known transformable type (by way of the tf2 data type conversion
+        interface).
 
-        If new_type is not None, the type specified must have a valid conversion from the input type,
-        else the function will raise an exception.
+        If new_type is not None, the type specified must have a valid conversion from the input
+        type, else the function will raise an exception.
 
-        This function follows the advanced API, which allows tranforming between different time points,
-        as well as specifying a frame to be considered fixed in time.
+        This function follows the advanced API, which allows tranforming between different time
+        points, as well as specifying a frame to be considered fixed in time.
 
         :param object_stamped: The timestamped object to transform.
         :param target_frame: Name of the frame to transform the input into.
@@ -130,10 +136,11 @@ class BufferInterface:
         :return: The transformed, timestamped output, possibly converted to a new type.
         """
         do_transform = self.registration.get(type(object_stamped))
-        res = do_transform(object_stamped, self.lookup_transform_full(target_frame, target_time,
-                                                                     object_stamped.header.frame_id, object_stamped.header.stamp,
-                                                                     fixed_frame, timeout))
-        if new_type == None:
+        res = do_transform(object_stamped, self.lookup_transform_full(
+            target_frame, target_time,
+            object_stamped.header.frame_id, object_stamped.header.stamp,
+            fixed_frame, timeout))
+        if new_type is None:
             return res
 
         return convert(res, new_type)
@@ -175,7 +182,7 @@ class BufferInterface:
         :param target_frame: Name of the frame to transform into.
         :param target_time: The time to transform to (0 will get the latest).
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated (0 will get the latest).
+        :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
@@ -221,7 +228,7 @@ class BufferInterface:
         :param target_frame: Name of the frame to transform into.
         :param target_time: The time to transform to (0 will get the latest).
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated (0 will get the latest).
+        :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :return: True if the transform is possible, false otherwise.
@@ -238,21 +245,26 @@ def Stamped(
     return obj
 
 
-
 class TypeException(Exception):
     """
+    The TypeException class.
+
     Raised when an unexpected type is received while registering a transform
     in :class:`tf2_ros.buffer_interface.BufferInterface`.
     """
+
     def __init__(self, errstr: str) -> None:
         self.errstr = errstr
 
 
 class NotImplementedException(Exception):
     """
+    The NotImplementedException class.
+
     Raised when can_transform or lookup_transform is not implemented in a
     subclass of :class:`tf2_ros.buffer_interface.BufferInterface`.
     """
+
     def __init__(self) -> None:
         self.errstr = 'CanTransform or LookupTransform not implemented'
 
@@ -274,7 +286,7 @@ class TransformRegistration():
         self,
         key: TransformableObjectType
     ) -> Callable[[TransformableObject, TransformStamped], TransformableObject]:
-        if not key in TransformRegistration.__type_map:
+        if key not in TransformRegistration.__type_map:
             raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return TransformRegistration.__type_map[key]
@@ -310,7 +322,7 @@ class ConvertRegistration():
         self,
         key: TransformableObjectType
     ) -> Callable[[MsgStamped], TransformableObject]:
-        if not key in ConvertRegistration.__from_msg_map:
+        if key not in ConvertRegistration.__from_msg_map:
             raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return ConvertRegistration.__from_msg_map[key]
@@ -319,7 +331,7 @@ class ConvertRegistration():
         self,
         key: TransformableObjectType
     ) -> Callable[[TransformableObject], MsgStamped]:
-        if not key in ConvertRegistration.__to_msg_map:
+        if key not in ConvertRegistration.__to_msg_map:
             raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return ConvertRegistration.__to_msg_map[key]
@@ -328,20 +340,20 @@ class ConvertRegistration():
         self,
         key: Tuple[TransformableObjectType, TransformableObjectType]
     ) -> Callable[[Any], TransformableObject]:
-        if not key in ConvertRegistration.__convert_map:
-            raise TypeException("Type %s is not loaded or supported" % str(key))
+        if key not in ConvertRegistration.__convert_map:
+            raise TypeException('Type %s is not loaded or supported' % str(key))
         else:
             return ConvertRegistration.__convert_map[key]
 
 
 def convert(a: TransformableObject, b_type: TransformableObjectType) -> TransformableObject:
     c = ConvertRegistration()
-    #check if an efficient conversion function between the types exists
+    # check if an efficient conversion function between the types exists
     try:
         f = c.get_convert((type(a), b_type))
         return f(a)
     except TypeException:
-        if type(a) == b_type:
+        if isinstance(a, b_type):
             return deepcopy(a)
 
         f_to = c.get_to_msg(type(a))
