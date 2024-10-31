@@ -23,6 +23,7 @@
   <exec_depend>tf2_msgs</exec_depend>
   <exec_depend>tf2_py</exec_depend>
 
+  <test_depend>ament_xmllint</test_depend>
   <test_depend>python3-pytest</test_depend>
   <test_depend>sensor_msgs</test_depend>
 
