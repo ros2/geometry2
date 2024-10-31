@@ -1,4 +1,3 @@
-
 // Copyright 2008, Willow Garage, Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,4 +34,3 @@
 #include <tf2/convert.hpp>
 
 #endif  // TF2__CONVERT_H_
-

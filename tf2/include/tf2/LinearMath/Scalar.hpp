@@ -3,8 +3,8 @@ Copyright (c) 2003-2009 Erwin Coumans  http://bullet.googlecode.com
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it freely,
+Permission is granted to anyone to use this software for any purpose, 
+including commercial applications, and to alter it and redistribute it freely, 
 subject to the following restrictions:
 
 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
@@ -79,7 +79,7 @@ subject to the following restrictions:
 		#define tf2Unlikely(_c) _c
 
 #else
-
+	
 #if defined	(__CELLOS_LV2__)
 		#define TF2SIMD_FORCE_INLINE inline
 		#define ATTRIBUTE_ALIGNED16(a) a __attribute__ ((aligned (16)))
@@ -121,7 +121,7 @@ subject to the following restrictions:
 
 		#define tf2Likely(_c)   __builtin_expect((_c), 1)
 		#define tf2Unlikely(_c) __builtin_expect((_c), 0)
-
+		
 
 #else
 	//non-windows systems
@@ -173,7 +173,7 @@ typedef double tf2Scalar;
 
 
 
-
+		
 TF2SIMD_FORCE_INLINE tf2Scalar tf2Sqrt(tf2Scalar x) { return sqrt(x); }
 TF2SIMD_FORCE_INLINE tf2Scalar tf2Fabs(tf2Scalar x) { return fabs(x); }
 TF2SIMD_FORCE_INLINE tf2Scalar tf2Cos(tf2Scalar x) { return cos(x); }
@@ -202,7 +202,7 @@ TF2SIMD_FORCE_INLINE tf2Scalar tf2Fmod(tf2Scalar x,tf2Scalar y) { return fmod(x,
 #define TF2SIMD_EPSILON      DBL_EPSILON
 #define TF2SIMD_INFINITY     DBL_MAX
 
-TF2SIMD_FORCE_INLINE tf2Scalar tf2Atan2Fast(tf2Scalar y, tf2Scalar x)
+TF2SIMD_FORCE_INLINE tf2Scalar tf2Atan2Fast(tf2Scalar y, tf2Scalar x) 
 {
 	tf2Scalar coeff_1 = TF2SIMD_PI / 4.0f;
 	tf2Scalar coeff_2 = 3.0f * coeff_1;
@@ -260,20 +260,20 @@ TF2SIMD_FORCE_INLINE bool tf2MachineIsLittleEndian()
 
 ///tf2Select avoids branches, which makes performance much better for consoles like Playstation 3 and XBox 360
 ///Thanks Phil Knight. See also http://www.cellperformance.com/articles/2006/04/more_techniques_for_eliminatin_1.html
-TF2SIMD_FORCE_INLINE unsigned tf2Select(unsigned condition, unsigned valueIfConditionNonZero, unsigned valueIfConditionZero)
+TF2SIMD_FORCE_INLINE unsigned tf2Select(unsigned condition, unsigned valueIfConditionNonZero, unsigned valueIfConditionZero) 
 {
     // Set testNz to 0xFFFFFFFF if condition is nonzero, 0x00000000 if condition is zero
     // Rely on positive value or'ed with its negative having sign bit on
-    // and zero value or'ed with its negative (which is still zero) having sign bit off
+    // and zero value or'ed with its negative (which is still zero) having sign bit off 
     // Use arithmetic shift right, shifting the sign bit through all 32 bits
     unsigned testNz = (unsigned)(((int)condition | -(int)condition) >> 31);
     unsigned testEqz = ~testNz;
-    return ((valueIfConditionNonZero & testNz) | (valueIfConditionZero & testEqz));
+    return ((valueIfConditionNonZero & testNz) | (valueIfConditionZero & testEqz)); 
 }
 TF2SIMD_FORCE_INLINE int tf2Select(unsigned condition, int valueIfConditionNonZero, int valueIfConditionZero)
 {
     unsigned testNz = (unsigned)(((int)condition | -(int)condition) >> 31);
-    unsigned testEqz = ~testNz;
+    unsigned testEqz = ~testNz; 
     return static_cast<int>((valueIfConditionNonZero & testNz) | (valueIfConditionZero & testEqz));
 }
 TF2SIMD_FORCE_INLINE float tf2Select(unsigned condition, float valueIfConditionNonZero, float valueIfConditionZero)
@@ -281,7 +281,7 @@ TF2SIMD_FORCE_INLINE float tf2Select(unsigned condition, float valueIfConditionN
 #ifdef TF2_HAVE_NATIVE_FSEL
     return (float)tf2Fsel((tf2Scalar)condition - tf2Scalar(1.0f), valueIfConditionNonZero, valueIfConditionZero);
 #else
-    return (condition != 0) ? valueIfConditionNonZero : valueIfConditionZero;
+    return (condition != 0) ? valueIfConditionNonZero : valueIfConditionZero; 
 #endif
 }
 
@@ -316,9 +316,9 @@ TF2SIMD_FORCE_INLINE unsigned short tf2SwapEndian(short val)
 
 ///tf2SwapFloat uses using char pointers to swap the endianness
 ////tf2SwapFloat/tf2SwapDouble will NOT return a float, because the machine might 'correct' invalid floating point values
-///Not all values of sign/exponent/mantissa are valid floating point numbers according to IEEE 754.
-///When a floating point unit is faced with an invalid value, it may actually change the value, or worse, throw an exception.
-///In most systems, running user mode code, you wouldn't get an exception, but instead the hardware/os/runtime will 'fix' the number for you.
+///Not all values of sign/exponent/mantissa are valid floating point numbers according to IEEE 754. 
+///When a floating point unit is faced with an invalid value, it may actually change the value, or worse, throw an exception. 
+///In most systems, running user mode code, you wouldn't get an exception, but instead the hardware/os/runtime will 'fix' the number for you. 
 ///so instead of returning a float/double, we return integer/long long integer
 TF2SIMD_FORCE_INLINE unsigned int  tf2SwapEndianFloat(float d)
 {
@@ -334,7 +334,7 @@ TF2SIMD_FORCE_INLINE unsigned int  tf2SwapEndianFloat(float d)
 }
 
 // unswap using char pointers
-TF2SIMD_FORCE_INLINE float tf2UnswapEndianFloat(unsigned int a)
+TF2SIMD_FORCE_INLINE float tf2UnswapEndianFloat(unsigned int a) 
 {
     float d = 0.0f;
     unsigned char *src = (unsigned char *)&a;
@@ -366,7 +366,7 @@ TF2SIMD_FORCE_INLINE void  tf2SwapEndianDouble(double d, unsigned char* dst)
 }
 
 // unswap using char pointers
-TF2SIMD_FORCE_INLINE double tf2UnswapEndianDouble(const unsigned char *src)
+TF2SIMD_FORCE_INLINE double tf2UnswapEndianDouble(const unsigned char *src) 
 {
     double d = 0.0;
     unsigned char *dst = (unsigned char *)&d;
@@ -384,7 +384,7 @@ TF2SIMD_FORCE_INLINE double tf2UnswapEndianDouble(const unsigned char *src)
 }
 
 // returns normalized value in range [-TF2SIMD_PI, TF2SIMD_PI]
-TF2SIMD_FORCE_INLINE tf2Scalar tf2NormalizeAngle(tf2Scalar angleInRadians)
+TF2SIMD_FORCE_INLINE tf2Scalar tf2NormalizeAngle(tf2Scalar angleInRadians) 
 {
 	angleInRadians = tf2Fmod(angleInRadians, TF2SIMD_2_PI);
 	if(angleInRadians < -TF2SIMD_PI)

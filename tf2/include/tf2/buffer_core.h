@@ -1,4 +1,3 @@
-
 // Copyright 2008, Willow Garage, Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -36,4 +35,3 @@
 #include <tf2/buffer_core.hpp>
 
 #endif  // TF2__BUFFER_CORE_H_
-

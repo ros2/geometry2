@@ -3,8 +3,8 @@ Copyright (c) 2003-2006 Gino van den Bergen / Erwin Coumans  http://continuousph
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it freely,
+Permission is granted to anyone to use this software for any purpose, 
+including commercial applications, and to alter it and redistribute it freely, 
 subject to the following restrictions:
 
 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
@@ -13,7 +13,7 @@ subject to the following restrictions:
 */
 
 
-#ifndef TF2__LINEARMATH__MATRIX3X3_HPP_
+#ifndef	TF2__LINEARMATH__MATRIX3X3_HPP_
 #define TF2__LINEARMATH__MATRIX3X3_HPP_
 
 #include "Vector3.hpp"
@@ -25,7 +25,7 @@ namespace tf2
 {
 
 
-#define Matrix3x3Data	Matrix3x3DoubleData
+#define Matrix3x3Data	Matrix3x3DoubleData 
 
 
 /**@brief The Matrix3x3 class implements a 3x3 rotation matrix, to perform linear algebra in combination with Quaternion, Transform and Vector3.
@@ -48,7 +48,7 @@ public:
 	/*
 	template <typename tf2Scalar>
 	Matrix3x3(const tf2Scalar& yaw, const tf2Scalar& pitch, const tf2Scalar& roll)
-	{
+	{ 
 	setEulerYPR(yaw, pitch, roll);
 	}
 	*/
@@ -57,9 +57,9 @@ public:
 	Matrix3x3(const tf2Scalar& xx, const tf2Scalar& xy, const tf2Scalar& xz,
 		const tf2Scalar& yx, const tf2Scalar& yy, const tf2Scalar& yz,
 		const tf2Scalar& zx, const tf2Scalar& zy, const tf2Scalar& zz)
-	{
-		setValue(xx, xy, xz,
-			yx, yy, yz,
+	{ 
+		setValue(xx, xy, xz, 
+			yx, yy, yz, 
 			zx, zy, zz);
 	}
 	/** @brief Copy constructor */
@@ -81,7 +81,7 @@ public:
 	}
 
 
-	/** @brief Get a column of the matrix as a vector
+	/** @brief Get a column of the matrix as a vector 
 	*  @param i Column number 0 indexed */
 	TF2SIMD_FORCE_INLINE Vector3 getColumn(int i) const
 	{
@@ -89,7 +89,7 @@ public:
 	}
 
 
-	/** @brief Get a row of the matrix as a vector
+	/** @brief Get a row of the matrix as a vector 
 	*  @param i Row number 0 indexed */
 	TF2SIMD_FORCE_INLINE const Vector3& getRow(int i) const
 	{
@@ -97,29 +97,29 @@ public:
 		return m_el[i];
 	}
 
-	/** @brief Get a mutable reference to a row of the matrix as a vector
+	/** @brief Get a mutable reference to a row of the matrix as a vector 
 	*  @param i Row number 0 indexed */
 	TF2SIMD_FORCE_INLINE Vector3&  operator[](int i)
-	{
+	{ 
 		tf2FullAssert(0 <= i && i < 3);
-		return m_el[i];
+		return m_el[i]; 
 	}
 
-	/** @brief Get a const reference to a row of the matrix as a vector
+	/** @brief Get a const reference to a row of the matrix as a vector 
 	*  @param i Row number 0 indexed */
 	TF2SIMD_FORCE_INLINE const Vector3& operator[](int i) const
 	{
 		tf2FullAssert(0 <= i && i < 3);
-		return m_el[i];
+		return m_el[i]; 
 	}
 
 	/** @brief Multiply by the target matrix on the right
-	*  @param m Rotation matrix to be applied
+	*  @param m Rotation matrix to be applied 
 	* Equivilant to this = this * m */
         TF2_PUBLIC
-	Matrix3x3& operator*=(const Matrix3x3& m);
+	Matrix3x3& operator*=(const Matrix3x3& m); 
 
-	/** @brief Set from a carray of tf2Scalars
+	/** @brief Set from a carray of tf2Scalars 
 	*  @param m A pointer to the beginning of an array of 9 tf2Scalars */
         TF2_PUBLIC
 	void setFromOpenGLSubMatrix(const tf2Scalar *m)
@@ -140,8 +140,8 @@ public:
 	*  @param zy Bottom Middle
 	*  @param zz Bottom Right*/
         TF2_PUBLIC
-	void setValue(const tf2Scalar& xx, const tf2Scalar& xy, const tf2Scalar& xz,
-		const tf2Scalar& yx, const tf2Scalar& yy, const tf2Scalar& yz,
+	void setValue(const tf2Scalar& xx, const tf2Scalar& xy, const tf2Scalar& xz, 
+		const tf2Scalar& yx, const tf2Scalar& yy, const tf2Scalar& yz, 
 		const tf2Scalar& zx, const tf2Scalar& zy, const tf2Scalar& zz)
 	{
 		m_el[0].setValue(xx,xy,xz);
@@ -150,9 +150,9 @@ public:
 	}
 
 	/** @brief Set the matrix from a quaternion
-	*  @param q The Quaternion to match */
+	*  @param q The Quaternion to match */  
         TF2_PUBLIC
-	void setRotation(const Quaternion& q)
+	void setRotation(const Quaternion& q) 
 	{
 		tf2Scalar d = q.length2();
 		tf2FullAssert(d != tf2Scalar(0.0));
@@ -170,26 +170,26 @@ public:
 	* @param eulerZ Yaw aboud Z axis
 	* @param eulerY Pitch around Y axis
 	* @param eulerX Roll about X axis
-	*
+	* 
 	* These angles are used to produce a rotation matrix. The euler
-	* angles are applied in ZYX order. I.e a vector is first rotated
+	* angles are applied in ZYX order. I.e a vector is first rotated 
 	* about X then Y and then Z
 	**/
         TF2_PUBLIC
-	void setEulerYPR(tf2Scalar eulerZ, tf2Scalar eulerY,tf2Scalar eulerX)  {
-		tf2Scalar ci ( tf2Cos(eulerX));
-		tf2Scalar cj ( tf2Cos(eulerY));
-		tf2Scalar ch ( tf2Cos(eulerZ));
-		tf2Scalar si ( tf2Sin(eulerX));
-		tf2Scalar sj ( tf2Sin(eulerY));
-		tf2Scalar sh ( tf2Sin(eulerZ));
-		tf2Scalar cc = ci * ch;
-		tf2Scalar cs = ci * sh;
-		tf2Scalar sc = si * ch;
+	void setEulerYPR(tf2Scalar eulerZ, tf2Scalar eulerY,tf2Scalar eulerX)  { 
+		tf2Scalar ci ( tf2Cos(eulerX)); 
+		tf2Scalar cj ( tf2Cos(eulerY)); 
+		tf2Scalar ch ( tf2Cos(eulerZ)); 
+		tf2Scalar si ( tf2Sin(eulerX)); 
+		tf2Scalar sj ( tf2Sin(eulerY)); 
+		tf2Scalar sh ( tf2Sin(eulerZ)); 
+		tf2Scalar cc = ci * ch; 
+		tf2Scalar cs = ci * sh; 
+		tf2Scalar sc = si * ch; 
 		tf2Scalar ss = si * sh;
 
 		setValue(cj * ch, sj * sc - cs, sj * cc + ss,
-			cj * sh, sj * ss + cc, sj * cs - sc,
+			cj * sh, sj * ss + cc, sj * cs - sc, 
 			-sj,      cj * si,      cj * ci);
 	}
 
@@ -197,51 +197,51 @@ public:
 	 * @param roll Roll about X axis
          * @param pitch Pitch around Y axis
          * @param yaw Yaw aboud Z axis
-         *
+         * 
 	 **/
         TF2_PUBLIC
-	void setRPY(tf2Scalar roll, tf2Scalar pitch,tf2Scalar yaw) {
+	void setRPY(tf2Scalar roll, tf2Scalar pitch,tf2Scalar yaw) { 
                setEulerYPR(yaw, pitch, roll);
 	}
 
 	/**@brief Set the matrix to the identity */
         TF2_PUBLIC
 	void setIdentity()
-	{
-		setValue(tf2Scalar(1.0), tf2Scalar(0.0), tf2Scalar(0.0),
-			tf2Scalar(0.0), tf2Scalar(1.0), tf2Scalar(0.0),
-			tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(1.0));
+	{ 
+		setValue(tf2Scalar(1.0), tf2Scalar(0.0), tf2Scalar(0.0), 
+			tf2Scalar(0.0), tf2Scalar(1.0), tf2Scalar(0.0), 
+			tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(1.0)); 
 	}
 
         TF2_PUBLIC
 	static const Matrix3x3&	getIdentity()
 	{
-		static const Matrix3x3 identityMatrix(tf2Scalar(1.0), tf2Scalar(0.0), tf2Scalar(0.0),
-			tf2Scalar(0.0), tf2Scalar(1.0), tf2Scalar(0.0),
+		static const Matrix3x3 identityMatrix(tf2Scalar(1.0), tf2Scalar(0.0), tf2Scalar(0.0), 
+			tf2Scalar(0.0), tf2Scalar(1.0), tf2Scalar(0.0), 
 			tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(1.0));
 		return identityMatrix;
 	}
 
-	/**@brief Fill the values of the matrix into a 9 element array
+	/**@brief Fill the values of the matrix into a 9 element array 
 	* @param m The array to be filled */
         TF2_PUBLIC
-	void getOpenGLSubMatrix(tf2Scalar *m) const
+	void getOpenGLSubMatrix(tf2Scalar *m) const 
 	{
-		m[0]  = tf2Scalar(m_el[0].x());
+		m[0]  = tf2Scalar(m_el[0].x()); 
 		m[1]  = tf2Scalar(m_el[1].x());
 		m[2]  = tf2Scalar(m_el[2].x());
-		m[3]  = tf2Scalar(0.0);
+		m[3]  = tf2Scalar(0.0); 
 		m[4]  = tf2Scalar(m_el[0].y());
 		m[5]  = tf2Scalar(m_el[1].y());
 		m[6]  = tf2Scalar(m_el[2].y());
-		m[7]  = tf2Scalar(0.0);
-		m[8]  = tf2Scalar(m_el[0].z());
+		m[7]  = tf2Scalar(0.0); 
+		m[8]  = tf2Scalar(m_el[0].z()); 
 		m[9]  = tf2Scalar(m_el[1].z());
 		m[10] = tf2Scalar(m_el[2].z());
-		m[11] = tf2Scalar(0.0);
+		m[11] = tf2Scalar(0.0); 
 	}
 
-	/**@brief Get the matrix represented as a quaternion
+	/**@brief Get the matrix represented as a quaternion 
 	* @param q The quaternion which will be set */
         TF2_PUBLIC
 	void getRotation(Quaternion& q) const
@@ -249,7 +249,7 @@ public:
 		tf2Scalar trace = m_el[0].x() + m_el[1].y() + m_el[2].z();
 		tf2Scalar temp[4];
 
-		if (trace > tf2Scalar(0.0))
+		if (trace > tf2Scalar(0.0)) 
 		{
 			tf2Scalar s = tf2Sqrt(trace + tf2Scalar(1.0));
 			temp[3]=(s * tf2Scalar(0.5));
@@ -258,13 +258,13 @@ public:
 			temp[0]=((m_el[2].y() - m_el[1].z()) * s);
 			temp[1]=((m_el[0].z() - m_el[2].x()) * s);
 			temp[2]=((m_el[1].x() - m_el[0].y()) * s);
-		}
-		else
+		} 
+		else 
 		{
-			int i = m_el[0].x() < m_el[1].y() ?
+			int i = m_el[0].x() < m_el[1].y() ? 
 				(m_el[1].y() < m_el[2].z() ? 2 : 1) :
-				(m_el[0].x() < m_el[2].z() ? 2 : 0);
-			int j = (i + 1) % 3;
+				(m_el[0].x() < m_el[2].z() ? 2 : 0); 
+			int j = (i + 1) % 3;  
 			int k = (i + 2) % 3;
 
 			tf2Scalar s = tf2Sqrt(m_el[i][i] - m_el[j][j] - m_el[k][k] + tf2Scalar(1.0));
@@ -281,7 +281,7 @@ public:
 	/**@brief Get the matrix represented as euler angles around YXZ, roundtrip with setEulerYPR
 	* @param yaw Yaw around Z axis
 	* @param pitch Pitch around Y axis
-	* @param roll around X axis */
+	* @param roll around X axis */	
         TF2_PUBLIC
 	void getEulerYPR(tf2Scalar& yaw, tf2Scalar& pitch, tf2Scalar& roll, unsigned int solution_number = 1) const
 	{
@@ -302,7 +302,7 @@ public:
 		{
 			euler_out.yaw = 0;
 			euler_out2.yaw = 0;
-
+	
 			// From difference of angles formula
 			tf2Scalar delta = tf2Atan2(m_el[2].y(),m_el[2].z());
 			if (m_el[2].x() < 0)  //gimbal locked down
@@ -325,43 +325,43 @@ public:
 			euler_out.pitch = - tf2Asin(m_el[2].x());
 			euler_out2.pitch = TF2SIMD_PI - euler_out.pitch;
 
-			euler_out.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out.pitch),
+			euler_out.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out.pitch), 
 				m_el[2].z()/tf2Cos(euler_out.pitch));
-			euler_out2.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out2.pitch),
+			euler_out2.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out2.pitch), 
 				m_el[2].z()/tf2Cos(euler_out2.pitch));
 
-			euler_out.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out.pitch),
+			euler_out.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out.pitch), 
 				m_el[0].x()/tf2Cos(euler_out.pitch));
-			euler_out2.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out2.pitch),
+			euler_out2.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out2.pitch), 
 				m_el[0].x()/tf2Cos(euler_out2.pitch));
 		}
 
 		if (solution_number == 1)
-		{
-			yaw = euler_out.yaw;
+		{ 
+			yaw = euler_out.yaw; 
 			pitch = euler_out.pitch;
 			roll = euler_out.roll;
 		}
 		else
-		{
-			yaw = euler_out2.yaw;
+		{ 
+			yaw = euler_out2.yaw; 
 			pitch = euler_out2.pitch;
 			roll = euler_out2.roll;
 		}
 	}
 
 	/**@brief Get the matrix represented as roll pitch and yaw about fixed axes XYZ
-	* @param roll around X axis
+	* @param roll around X axis 
 	* @param pitch Pitch around Y axis
 	* @param yaw Yaw around Z axis
-	* @param solution_number Which solution of two possible solutions ( 1 or 2) are possible values*/
+	* @param solution_number Which solution of two possible solutions ( 1 or 2) are possible values*/	
         TF2_PUBLIC
 	void getRPY(tf2Scalar& roll, tf2Scalar& pitch, tf2Scalar& yaw, unsigned int solution_number = 1) const
 	{
 	getEulerYPR(yaw, pitch, roll, solution_number);
 	}
 
-	/**@brief Create a scaled copy of the matrix
+	/**@brief Create a scaled copy of the matrix 
 	* @param s Scaling vector The elements of the vector will scale each column */
 
         TF2_PUBLIC
@@ -386,22 +386,22 @@ public:
 	Matrix3x3 transpose() const;
 	/**@brief Return the inverse of the matrix */
         TF2_PUBLIC
-	Matrix3x3 inverse() const;
+	Matrix3x3 inverse() const; 
 
         TF2_PUBLIC
 	Matrix3x3 transposeTimes(const Matrix3x3& m) const;
         TF2_PUBLIC
 	Matrix3x3 timesTranspose(const Matrix3x3& m) const;
 
-	TF2SIMD_FORCE_INLINE tf2Scalar tdotx(const Vector3& v) const
+	TF2SIMD_FORCE_INLINE tf2Scalar tdotx(const Vector3& v) const 
 	{
 		return m_el[0].x() * v.x() + m_el[1].x() * v.y() + m_el[2].x() * v.z();
 	}
-	TF2SIMD_FORCE_INLINE tf2Scalar tdoty(const Vector3& v) const
+	TF2SIMD_FORCE_INLINE tf2Scalar tdoty(const Vector3& v) const 
 	{
 		return m_el[0].y() * v.x() + m_el[1].y() * v.y() + m_el[2].y() * v.z();
 	}
-	TF2SIMD_FORCE_INLINE tf2Scalar tdotz(const Vector3& v) const
+	TF2SIMD_FORCE_INLINE tf2Scalar tdotz(const Vector3& v) const 
 	{
 		return m_el[0].z() * v.x() + m_el[1].z() * v.y() + m_el[2].z() * v.z();
 	}
@@ -409,12 +409,12 @@ public:
 
 	/**@brief diagonalizes this matrix by the Jacobi method.
 	* @param rot stores the rotation from the coordinate system in which the matrix is diagonal to the original
-	* coordinate system, i.e., old_this = rot * new_this * rot^T.
+	* coordinate system, i.e., old_this = rot * new_this * rot^T. 
 	* @param threshold See iteration
-	* @param iteration The iteration stops when all off-diagonal elements are less than the threshold multiplied
-	* by the sum of the absolute values of the diagonal, or when maxSteps have been executed.
-	*
-	* Note that this matrix is assumed to be symmetric.
+	* @param iteration The iteration stops when all off-diagonal elements are less than the threshold multiplied 
+	* by the sum of the absolute values of the diagonal, or when maxSteps have been executed. 
+	* 
+	* Note that this matrix is assumed to be symmetric. 
 	*/
         TF2_PUBLIC
 	void diagonalize(Matrix3x3& rot, tf2Scalar threshold, int maxSteps)
@@ -453,7 +453,7 @@ public:
 				step = 1;
 			}
 
-			// compute Jacobi rotation J which leads to a zero for element [p][q]
+			// compute Jacobi rotation J which leads to a zero for element [p][q] 
 			tf2Scalar mpq = m_el[p][q];
 			tf2Scalar theta = (m_el[q][q] - m_el[p][p]) / (2 * mpq);
 			tf2Scalar theta2 = theta * theta;
@@ -498,7 +498,7 @@ public:
 
 
 
-	/**@brief Calculate the matrix cofactor
+	/**@brief Calculate the matrix cofactor 
 	* @param r1 The first row to use for calculating the cofactor
 	* @param c1 The first column to use for calculating the cofactor
 	* @param r1 The second row to use for calculating the cofactor
@@ -506,7 +506,7 @@ public:
 	* See http://en.wikipedia.org/wiki/Cofactor_(linear_algebra) for more details
 	*/
         TF2_PUBLIC
-	tf2Scalar cofac(int r1, int c1, int r2, int c2) const
+	tf2Scalar cofac(int r1, int c1, int r2, int c2) const 
 	{
 		return m_el[r1][c1] * m_el[r2][c2] - m_el[r1][c2] * m_el[r2][c1];
 	}
@@ -529,7 +529,7 @@ public:
 };
 
 
-TF2SIMD_FORCE_INLINE Matrix3x3&
+TF2SIMD_FORCE_INLINE Matrix3x3& 
 Matrix3x3::operator*=(const Matrix3x3& m)
 {
 	setValue(m.tdotx(m_el[0]), m.tdoty(m_el[0]), m.tdotz(m_el[0]),
@@ -538,14 +538,14 @@ Matrix3x3::operator*=(const Matrix3x3& m)
 	return *this;
 }
 
-TF2SIMD_FORCE_INLINE tf2Scalar
+TF2SIMD_FORCE_INLINE tf2Scalar 
 Matrix3x3::determinant() const
-{
+{ 
 	return tf2Triple((*this)[0], (*this)[1], (*this)[2]);
 }
 
 
-TF2SIMD_FORCE_INLINE Matrix3x3
+TF2SIMD_FORCE_INLINE Matrix3x3 
 Matrix3x3::absolute() const
 {
 	return Matrix3x3(
@@ -554,23 +554,23 @@ Matrix3x3::absolute() const
 		tf2Fabs(m_el[2].x()), tf2Fabs(m_el[2].y()), tf2Fabs(m_el[2].z()));
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
-Matrix3x3::transpose() const
+TF2SIMD_FORCE_INLINE Matrix3x3 
+Matrix3x3::transpose() const 
 {
 	return Matrix3x3(m_el[0].x(), m_el[1].x(), m_el[2].x(),
 		m_el[0].y(), m_el[1].y(), m_el[2].y(),
 		m_el[0].z(), m_el[1].z(), m_el[2].z());
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
-Matrix3x3::adjoint() const
+TF2SIMD_FORCE_INLINE Matrix3x3 
+Matrix3x3::adjoint() const 
 {
 	return Matrix3x3(cofac(1, 1, 2, 2), cofac(0, 2, 2, 1), cofac(0, 1, 1, 2),
 		cofac(1, 2, 2, 0), cofac(0, 0, 2, 2), cofac(0, 2, 1, 0),
 		cofac(1, 0, 2, 1), cofac(0, 1, 2, 0), cofac(0, 0, 1, 1));
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
+TF2SIMD_FORCE_INLINE Matrix3x3 
 Matrix3x3::inverse() const
 {
 	Vector3 co(cofac(1, 1, 2, 2), cofac(1, 2, 2, 0), cofac(1, 0, 2, 1));
@@ -582,7 +582,7 @@ Matrix3x3::inverse() const
 		co.z() * s, cofac(0, 1, 2, 0) * s, cofac(0, 0, 1, 1) * s);
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
+TF2SIMD_FORCE_INLINE Matrix3x3 
 Matrix3x3::transposeTimes(const Matrix3x3& m) const
 {
 	return Matrix3x3(
@@ -597,7 +597,7 @@ Matrix3x3::transposeTimes(const Matrix3x3& m) const
 		m_el[0].z() * m[0].z() + m_el[1].z() * m[1].z() + m_el[2].z() * m[2].z());
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
+TF2SIMD_FORCE_INLINE Matrix3x3 
 Matrix3x3::timesTranspose(const Matrix3x3& m) const
 {
 	return Matrix3x3(
@@ -607,8 +607,8 @@ Matrix3x3::timesTranspose(const Matrix3x3& m) const
 
 }
 
-TF2SIMD_FORCE_INLINE Vector3
-operator*(const Matrix3x3& m, const Vector3& v)
+TF2SIMD_FORCE_INLINE Vector3 
+operator*(const Matrix3x3& m, const Vector3& v) 
 {
 	return Vector3(m[0].dot(v), m[1].dot(v), m[2].dot(v));
 }
@@ -620,7 +620,7 @@ operator*(const Vector3& v, const Matrix3x3& m)
 	return Vector3(m.tdotx(v), m.tdoty(v), m.tdotz(v));
 }
 
-TF2SIMD_FORCE_INLINE Matrix3x3
+TF2SIMD_FORCE_INLINE Matrix3x3 
 operator*(const Matrix3x3& m1, const Matrix3x3& m2)
 {
 	return Matrix3x3(
@@ -666,7 +666,7 @@ struct	Matrix3x3DoubleData
 };
 
 
-
+	
 
 TF2SIMD_FORCE_INLINE	void	Matrix3x3::serialize(struct	Matrix3x3Data& dataOut) const
 {

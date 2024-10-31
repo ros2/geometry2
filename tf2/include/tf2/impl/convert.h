@@ -1,4 +1,3 @@
-
 // Copyright 2013, Open Source Robotics Foundation, Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -33,4 +32,3 @@
 #include <tf2/impl/convert.hpp>
 
 #endif  // TF2__IMPL__CONVERT_H_
-
