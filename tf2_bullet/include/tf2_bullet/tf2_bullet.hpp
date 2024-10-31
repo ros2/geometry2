@@ -33,7 +33,7 @@
 
 #include <iostream>
 
-#include "tf2/convert.h"
+#include "tf2/convert.hpp"
 #include "LinearMath/btQuaternion.h"
 #include "LinearMath/btScalar.h"
 #include "LinearMath/btTransform.h"

@@ -37,7 +37,7 @@
 
 #include "tf2_ros/static_transform_broadcaster_node.hpp"
 
-#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2/LinearMath/Vector3.h"
 
 #include "rclcpp/rclcpp.hpp"

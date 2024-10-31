@@ -30,9 +30,10 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <tf2_eigen_kdl/tf2_eigen_kdl.hpp>
-#include <tf2/convert.h>
 #include <gtest/gtest.h>
+
+#include <tf2_eigen_kdl/tf2_eigen_kdl.hpp>
+#include <tf2/convert.hpp>
 
 using Vector6d = Eigen::Matrix<double, 6, 1>;
 

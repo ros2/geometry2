@@ -35,8 +35,6 @@
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
 
-#include <tf2/exceptions.h>
-
 #include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
 #include <tf2_ros/buffer_server.h>
 
@@ -44,6 +42,8 @@
 #include <list>
 #include <memory>
 #include <string>
+
+#include <tf2/exceptions.hpp>
 
 namespace tf2_ros
 {
