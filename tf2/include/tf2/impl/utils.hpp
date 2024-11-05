@@ -17,7 +17,7 @@
 
 #include <tf2/convert.hpp>
 #include <tf2/transform_datatypes.hpp>
-#include <tf2/LinearMath/Quaternion.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 

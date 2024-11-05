@@ -46,7 +46,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/buffer_core.hpp>
 #include <tf2/exceptions.hpp>
-#include <tf2/LinearMath/Quaternion.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 #include <tf2/time.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tf2_ros/buffer_interface.h>

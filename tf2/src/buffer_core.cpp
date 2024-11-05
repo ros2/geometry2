@@ -44,9 +44,9 @@
 #include "tf2/time_cache.hpp"
 #include "tf2/exceptions.hpp"
 
-#include "tf2/LinearMath/Quaternion.hpp"
-#include "tf2/LinearMath/Transform.hpp"
-#include "tf2/LinearMath/Vector3.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Transform.h"
+#include "tf2/LinearMath/Vector3.h"
 
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform.hpp"

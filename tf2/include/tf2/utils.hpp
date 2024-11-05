@@ -15,8 +15,8 @@
 #ifndef TF2__UTILS_HPP_
 #define TF2__UTILS_HPP_
 
-#include <tf2/LinearMath/Transform.hpp>
-#include <tf2/LinearMath/Quaternion.hpp>
+#include <tf2/LinearMath/Transform.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <tf2/impl/utils.hpp>
 #include <tf2/visibility_control.hpp>
 

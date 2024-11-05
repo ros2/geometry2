@@ -40,7 +40,7 @@
 
 #include "tf2/buffer_core.hpp"
 #include "tf2/convert.hpp"
-#include "tf2/LinearMath/Vector3.hpp"
+#include "tf2/LinearMath/Vector3.h"
 #include "tf2/exceptions.hpp"
 #include "tf2/time.hpp"
 
