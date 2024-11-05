@@ -39,7 +39,7 @@
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
 #include <tf2/convert.hpp>
-#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_eigen/tf2_eigen.hpp>

@@ -37,7 +37,7 @@
 #include <vector>
 
 #include "tf2/time_cache.hpp"
-#include "tf2/LinearMath/Quaternion.h"
+#include "tf2/LinearMath/Quaternion.hpp"
 
 std::vector<double> values;
 unsigned int step = 0;
