@@ -20,7 +20,7 @@ subject to the following restrictions:
 
 #include "Vector3.hpp"
 #include "QuadWord.hpp"
-#include "tf2/visibility_control.hpp"
+#include "tf2/visibility_control.h"
 
 namespace tf2
 {

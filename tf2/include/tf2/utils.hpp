@@ -18,7 +18,7 @@
 #include <tf2/LinearMath/Transform.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2/impl/utils.hpp>
-#include <tf2/visibility_control.hpp>
+#include <tf2/visibility_control.h>
 
 namespace tf2
 {
