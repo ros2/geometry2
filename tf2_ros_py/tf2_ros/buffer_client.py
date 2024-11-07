@@ -39,33 +39,32 @@ from typing import TypeVar
 from geometry_msgs.msg import TransformStamped
 
 from rclpy.node import Node
-from rclpy.action.client import ActionClient
 from rclpy.duration import Duration
 from rclpy.time import Time
 from rclpy.clock import Clock
 from time import sleep
-
 import builtin_interfaces.msg
 import tf2_py as tf2
 import tf2_ros
 import threading
 import warnings
+from rclpy.callback_groups import ReentrantCallbackGroup
 
-from tf2_msgs.action import LookupTransform
+from tf2_msgs.srv import LookupTransform
 
 # Used for documentation purposes only
-LookupTransformGoal = TypeVar('LookupTransformGoal')
-LookupTransformResult = TypeVar('LookupTransformResult')
+LookupTransformRequest = TypeVar('LookupTransformRequest')
+LookupTransformResponse = TypeVar('LookupTransformResponse')
 
 
 class BufferClient(tf2_ros.BufferInterface):
     """
-    Action client-based implementation of BufferInterface.
+    Service client-based implementation of BufferInterface.
     """
     def __init__(
         self,
         node: Node,
-        ns: str,
+        ns: str = "tf2_buffer_server",
         check_frequency: float = 10.0,
         timeout_padding: Duration = Duration(seconds=2.0)
     ) -> None:
@@ -79,7 +78,7 @@ class BufferClient(tf2_ros.BufferInterface):
         """
         tf2_ros.BufferInterface.__init__(self)
         self.node = node
-        self.action_client = ActionClient(node, LookupTransform, action_name=ns)
+        self.service_client = node.create_client(LookupTransform, ns, callback_group=ReentrantCallbackGroup())
         self.check_frequency = check_frequency
         self.timeout_padding = timeout_padding
 
@@ -110,14 +109,14 @@ class BufferClient(tf2_ros.BufferInterface):
         else:
             raise TypeError('Must pass a rclpy.time.Time object.')
 
-        goal = LookupTransform.Goal()
-        goal.target_frame = target_frame
-        goal.source_frame = source_frame
-        goal.source_time = source_time.to_msg()
-        goal.timeout = timeout.to_msg()
-        goal.advanced = False
+        request = LookupTransform.Request()
+        request.target_frame = target_frame
+        request.source_frame = source_frame
+        request.source_time = source_time.to_msg()
+        request.timeout = timeout.to_msg()
+        request.advanced = False
 
-        return self.__process_goal(goal)
+        return self.__process_request(request)
 
     # lookup, advanced api
     def lookup_transform_full(
@@ -140,16 +139,16 @@ class BufferClient(tf2_ros.BufferInterface):
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
-        goal = LookupTransform.Goal()
-        goal.target_frame = target_frame
-        goal.source_frame = source_frame
-        goal.source_time = source_time.to_msg()
-        goal.timeout = timeout.to_msg()
-        goal.target_time = target_time.to_msg()
-        goal.fixed_frame = fixed_frame
-        goal.advanced = True
+        request = LookupTransform.Request()
+        request.target_frame = target_frame
+        request.source_frame = source_frame
+        request.source_time = source_time.to_msg()
+        request.timeout = timeout.to_msg()
+        request.target_time = target_time.to_msg()
+        request.fixed_frame = fixed_frame
+        request.advanced = True
 
-        return self.__process_goal(goal)
+        return self.__process_request(request)
 
     # can, simple api
     def can_transform(
@@ -205,27 +204,25 @@ class BufferClient(tf2_ros.BufferInterface):
         except tf2.TransformException:
             return False
 
-    def __process_goal(self, goal: LookupTransformGoal) -> TransformStamped:
-        # TODO(sloretz) why is this an action client? Service seems more appropriate.
-        if not self.action_client.server_is_ready():
+    def __process_request(self, request: LookupTransformRequest) -> TransformStamped:
+        if not self.service_client.wait_for_service(timeout_sec=1.0):
             raise tf2.TimeoutException("The BufferServer is not ready.")
-
         event = threading.Event()
 
         def unblock(future):
             nonlocal event
             event.set()
 
-        send_goal_future = self.action_client.send_goal_async(goal)
-        send_goal_future.add_done_callback(unblock)
+        future = self.service_client.call_async(request)
+        future.add_done_callback(unblock)
 
         def unblock_by_timeout():
-            nonlocal send_goal_future, goal, event
+            nonlocal future, request, event
             clock = Clock()
             start_time = clock.now()
-            timeout = Duration.from_msg(goal.timeout)
+            timeout = Duration.from_msg(request.timeout)
             timeout_padding = self.timeout_padding
-            while not send_goal_future.done() and not event.is_set():
+            while not future.done() and not event.is_set():
                 if clock.now() > start_time + timeout + timeout_padding:
                     break
                 # TODO(Anyone): We can't use Rate here because it would never expire
@@ -242,39 +239,33 @@ class BufferClient(tf2_ros.BufferInterface):
         event.wait()
 
         # This shouldn't happen, but could in rare cases where the server hangs
-        if not send_goal_future.done():
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
+        if not future.done():
+            raise tf2.TimeoutException("The LookupTransform request sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
 
-        # Raises if future was given an exception
-        goal_handle = send_goal_future.result()
+        response = future.result()
+        
+        return self.__process_response(response)
 
-        if not goal_handle.accepted:
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with accepted status. Something is likely wrong with the server.")
+    def __process_response(self, response: LookupTransform.Response) -> TransformStamped:
+        if response == None or response.error == None:
+            raise tf2.TransformException("The BufferServer returned None for response or response.error!  Something is likely wrong with the server.")
+        if response.error.error != response.error.NO_ERROR:
+            if response.error.error == response.error.LOOKUP_ERROR:
+                raise tf2.LookupException(response.error.error_string)
+            if response.error.error == response.error.CONNECTIVITY_ERROR:
+                raise tf2.ConnectivityException(response.error.error_string)
+            if response.error.error == response.error.EXTRAPOLATION_ERROR:
+                raise tf2.ExtrapolationException(response.error.error_string)
+            if response.error.error == response.error.INVALID_ARGUMENT_ERROR:
+                raise tf2.InvalidArgumentException(response.error.error_string)
+            if response.error.error == response.error.TIMEOUT_ERROR:
+                raise tf2.TimeoutException(response.error.error_string)
 
-        response = self.action_client._get_result(goal_handle)
+            raise tf2.TransformException(response.error.error_string)
 
-        return self.__process_result(response.result)
-
-    def __process_result(self, result: LookupTransformResult) -> TransformStamped:
-        if result == None or result.error == None:
-            raise tf2.TransformException("The BufferServer returned None for result or result.error!  Something is likely wrong with the server.")
-        if result.error.error != result.error.NO_ERROR:
-            if result.error.error == result.error.LOOKUP_ERROR:
-                raise tf2.LookupException(result.error.error_string)
-            if result.error.error == result.error.CONNECTIVITY_ERROR:
-                raise tf2.ConnectivityException(result.error.error_string)
-            if result.error.error == result.error.EXTRAPOLATION_ERROR:
-                raise tf2.ExtrapolationException(result.error.error_string)
-            if result.error.error == result.error.INVALID_ARGUMENT_ERROR:
-                raise tf2.InvalidArgumentException(result.error.error_string)
-            if result.error.error == result.error.TIMEOUT_ERROR:
-                raise tf2.TimeoutException(result.error.error_string)
-
-            raise tf2.TransformException(result.error.error_string)
-
-        return result.transform
+        return response.transform
 
     def destroy(self) -> None:
         """Cleanup resources associated with this BufferClient."""
 
-        self.action_client.destroy()
+        self.service_client.destroy()

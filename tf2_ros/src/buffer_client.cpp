@@ -51,15 +51,15 @@ geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
   const tf2::TimePoint & time,
   const tf2::Duration timeout) const
 {
-  // populate the goal message
-  LookupTransformAction::Goal goal;
-  goal.target_frame = target_frame;
-  goal.source_frame = source_frame;
-  goal.source_time = tf2_ros::toMsg(time);
-  goal.timeout = tf2_ros::toMsg(timeout);
-  goal.advanced = false;
+  // populate the request
+  LookupTransformService::Request::SharedPtr request;
+  request->target_frame = target_frame;
+  request->source_frame = source_frame;
+  request->source_time = tf2_ros::toMsg(time);
+  request->timeout = tf2_ros::toMsg(timeout);
+  request->advanced = false;
 
-  return processGoal(goal);
+  return processRequest(request);
 }
 
 geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
@@ -70,109 +70,71 @@ geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
   const std::string & fixed_frame,
   const tf2::Duration timeout) const
 {
-  // populate the goal message
-  LookupTransformAction::Goal goal;
-  goal.target_frame = target_frame;
-  goal.source_frame = source_frame;
-  goal.source_time = tf2_ros::toMsg(source_time);
-  goal.timeout = tf2_ros::toMsg(timeout);
-  goal.target_time = tf2_ros::toMsg(target_time);
-  goal.fixed_frame = fixed_frame;
-  goal.advanced = true;
+  // populate the request
+  LookupTransformService::Request::SharedPtr request;
+  request->target_frame = target_frame;
+  request->source_frame = source_frame;
+  request->source_time = tf2_ros::toMsg(source_time);
+  request->timeout = tf2_ros::toMsg(timeout);
+  request->target_time = tf2_ros::toMsg(target_time);
+  request->fixed_frame = fixed_frame;
+  request->advanced = true;
 
-  return processGoal(goal);
+  return processRequest(request);
 }
 
-geometry_msgs::msg::TransformStamped BufferClient::processGoal(
-  const LookupTransformAction::Goal & goal) const
+geometry_msgs::msg::TransformStamped BufferClient::processRequest(
+  const LookupTransformService::Request::SharedPtr & request) const
 {
-  if (!client_->wait_for_action_server(tf2_ros::fromMsg(goal.timeout))) {
-    throw tf2::ConnectivityException("Failed find available action server");
+  if (!service_client_->wait_for_service(tf2_ros::fromMsg(request->timeout))) {
+    throw tf2::ConnectivityException("Failed find available service server");
   }
 
-  auto goal_handle_future = client_->async_send_goal(goal);
+  auto response_future = service_client_->async_send_request(request);
 
-  const std::chrono::milliseconds period(static_cast<int>((1.0 / check_frequency_) * 1000));
-  bool ready = false;
-  bool timed_out = false;
-  tf2::TimePoint start_time = tf2::get_now();
-  while (rclcpp::ok() && !ready && !timed_out) {
-    ready = (std::future_status::ready == goal_handle_future.wait_for(period));
-    timed_out = tf2::get_now() > start_time + tf2_ros::fromMsg(goal.timeout) + timeout_padding_;
-  }
-
-  if (timed_out) {
+  // Wait for the result
+  if (rclcpp::spin_until_future_complete(
+      node_->get_node_base_interface(),
+      response_future, tf2_ros::fromMsg(request->timeout)) == rclcpp::FutureReturnCode::SUCCESS)
+  {
+    return processResponse(response_future.get());
+  } else {
     throw tf2::TimeoutException(
-            "Did not receive the goal response for the goal sent to "
-            "the action server. Something is likely wrong with the server.");
+            "Did not receive the response for the request sent to "
+            "the service server. Something is likely wrong with the server.");
   }
-
-  auto goal_handle = goal_handle_future.get();
-  if (!goal_handle) {
-    throw GoalRejectedException("Goal rejected by action server");
-  }
-
-  auto result_future = client_->async_get_result(goal_handle);
-
-  ready = false;
-  while (rclcpp::ok() && !ready && !timed_out) {
-    ready = (std::future_status::ready == result_future.wait_for(period));
-    timed_out = tf2::get_now() > start_time + tf2_ros::fromMsg(goal.timeout) + timeout_padding_;
-  }
-
-  if (timed_out) {
-    throw tf2::TimeoutException(
-            "Did not receive the result for the goal sent to "
-            "the action server. Something is likely wrong with the server.");
-  }
-
-  auto wrapped_result = result_future.get();
-
-  switch (wrapped_result.code) {
-    case rclcpp_action::ResultCode::SUCCEEDED:
-      break;
-    case rclcpp_action::ResultCode::ABORTED:
-      throw GoalAbortedException("LookupTransform action was aborted");
-    case rclcpp_action::ResultCode::CANCELED:
-      throw GoalCanceledException("LookupTransform action was canceled");
-    default:
-      throw UnexpectedResultCodeException("Unexpected result code returned from server");
-  }
-
-  // process the result for errors and return it
-  return processResult(wrapped_result.result);
 }
 
-geometry_msgs::msg::TransformStamped BufferClient::processResult(
-  const LookupTransformAction::Result::SharedPtr & result) const
+geometry_msgs::msg::TransformStamped BufferClient::processResponse(
+  const LookupTransformService::Response::SharedPtr & response) const
 {
   // if there's no error, then we'll just return the transform
-  if (result->error.error != result->error.NO_ERROR) {
+  if (response->error.error != response->error.NO_ERROR) {
     // otherwise, we'll have to throw the appropriate exception
-    if (result->error.error == result->error.LOOKUP_ERROR) {
-      throw tf2::LookupException(result->error.error_string);
+    if (response->error.error == response->error.LOOKUP_ERROR) {
+      throw tf2::LookupException(response->error.error_string);
     }
 
-    if (result->error.error == result->error.CONNECTIVITY_ERROR) {
-      throw tf2::ConnectivityException(result->error.error_string);
+    if (response->error.error == response->error.CONNECTIVITY_ERROR) {
+      throw tf2::ConnectivityException(response->error.error_string);
     }
 
-    if (result->error.error == result->error.EXTRAPOLATION_ERROR) {
-      throw tf2::ExtrapolationException(result->error.error_string);
+    if (response->error.error == response->error.EXTRAPOLATION_ERROR) {
+      throw tf2::ExtrapolationException(response->error.error_string);
     }
 
-    if (result->error.error == result->error.INVALID_ARGUMENT_ERROR) {
-      throw tf2::InvalidArgumentException(result->error.error_string);
+    if (response->error.error == response->error.INVALID_ARGUMENT_ERROR) {
+      throw tf2::InvalidArgumentException(response->error.error_string);
     }
 
-    if (result->error.error == result->error.TIMEOUT_ERROR) {
-      throw tf2::TimeoutException(result->error.error_string);
+    if (response->error.error == response->error.TIMEOUT_ERROR) {
+      throw tf2::TimeoutException(response->error.error_string);
     }
 
-    throw tf2::TransformException(result->error.error_string);
+    throw tf2::TransformException(response->error.error_string);
   }
 
-  return result->transform;
+  return response->transform;
 }
 
 bool BufferClient::canTransform(

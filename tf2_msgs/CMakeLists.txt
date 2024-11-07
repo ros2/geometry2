@@ -19,7 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TF2Error.msg"
   "msg/TFMessage.msg"
   "srv/FrameGraph.srv"
-  "action/LookupTransform.action"
+  "srv/LookupTransform.srv"
   DEPENDENCIES builtin_interfaces geometry_msgs
   ADD_LINTER_TESTS
 )
