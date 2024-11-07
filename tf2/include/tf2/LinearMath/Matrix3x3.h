@@ -15,8 +15,13 @@ subject to the following restrictions:
 
 #ifndef TF2__LINEARMATH__MATRIX3X3_H_
 #define TF2__LINEARMATH__MATRIX3X3_H_
-
-#warning This header is obsolete, please include tf2/LinearMath/Matrix3x3.hpp instead
+ 
+# define MATRIX_HEADER_DEPERCATION This header is obsolete, please include "tf2/LinearMath/Matrix3x3.hpp" instead
+  # ifdef _MSC_VER
+    # pragma message(MATRIX_HEADER_DEPERCATION)
+  # else
+    # warning MATRIX_HEADER_DEPERCATION
+  # endif
 
 #include <tf2/LinearMath/Matrix3x3.hpp>
 

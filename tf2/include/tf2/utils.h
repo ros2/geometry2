@@ -15,7 +15,12 @@
 #ifndef TF2__UTILS_H_
 #define TF2__UTILS_H_
 
-#warning This header is obsolete, please include tf2/utils.hpp instead
+# define UTILS_HEADER_DEPERCATION This header is obsolete, please include "tf2/utils.hpp" instead
+  # ifdef _MSC_VER
+    # pragma message(UTILS_HEADER_DEPERCATION)
+  # else
+    # warning UTILS_HEADER_DEPERCATION
+  # endif
 
 #include <tf2/utils.hpp>
 

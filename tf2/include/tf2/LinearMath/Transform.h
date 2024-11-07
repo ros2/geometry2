@@ -16,7 +16,12 @@ subject to the following restrictions:
 #ifndef TF2__LINEARMATH__TRANSFORM_H_
 #define TF2__LINEARMATH__TRANSFORM_H_
 
-#warning This header is obsolete, please include tf2/LinearMath/Transform.hpp instead
+# define TRANSFORM_HEADER_DEPERCATION This header is obsolete, please include "tf2/LinearMath/Transform.hpp" instead
+  # ifdef _MSC_VER
+    # pragma message(TRANSFORM_HEADER_DEPERCATION)
+  # else
+    # warning TRANSFORM_HEADER_DEPERCATION
+  # endif
 
 #include <tf2/LinearMath/Transform.hpp>
 

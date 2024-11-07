@@ -16,7 +16,12 @@ subject to the following restrictions:
 #ifndef TF2__LINEARMATH__QUADWORD_H_
 #define TF2__LINEARMATH__QUADWORD_H_
 
-#warning This header is obsolete, please include tf2/LinearMath/QuadWord.hpp instead
+# define QUAD_HEADER_DEPERCATION This header is obsolete, please include "tf2/LinearMath/QuadWord.hpp" instead
+  # ifdef _MSC_VER
+    # pragma message(QUAD_HEADER_DEPERCATION)
+  # else
+    # warning QUAD_HEADER_DEPERCATION
+  # endif
 
 #include <tf2/LinearMath/QuadWord.hpp>
 
