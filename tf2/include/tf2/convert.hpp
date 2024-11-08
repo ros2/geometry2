@@ -40,7 +40,7 @@
 #include "tf2/exceptions.hpp"
 #include "tf2/impl/convert.hpp"
 #include "tf2/transform_datatypes.hpp"
-#include "tf2/visibility_control.hpp"
+#include "tf2/visibility_control.h"
 
 namespace tf2
 {
