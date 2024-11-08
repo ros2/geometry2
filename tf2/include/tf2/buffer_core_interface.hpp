@@ -34,7 +34,7 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
 #include "tf2/time.hpp"
-#include "tf2/visibility_control.hpp"
+#include "tf2/visibility_control.h"
 
 namespace tf2
 {

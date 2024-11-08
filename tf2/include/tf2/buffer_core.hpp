@@ -50,7 +50,7 @@
 #include "tf2/buffer_core_interface.hpp"
 #include "tf2/exceptions.hpp"
 #include "tf2/transform_storage.hpp"
-#include "tf2/visibility_control.hpp"
+#include "tf2/visibility_control.h"
 
 namespace tf2
 {
