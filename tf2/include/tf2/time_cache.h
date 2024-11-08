@@ -30,7 +30,8 @@
 #ifndef TF2__TIME_CACHE_H_
 #define TF2__TIME_CACHE_H_
 
-# define TIME_CACHE_HEADER_DEPERCATION This header is obsolete, please include "tf2/time_cache.hpp" instead
+# define TIME_CACHE_HEADER_DEPERCATION This header is obsolete, \
+  please include "tf2/time_cache.hpp" instead
   # ifdef _MSC_VER
     # pragma message(TIME_CACHE_HEADER_DEPERCATION)
   # else

@@ -15,7 +15,8 @@
 #ifndef TF2__IMPL__UTILS_H_
 #define TF2__IMPL__UTILS_H_
 
-# define UTILS_HEADER_DEPERCATION This header is obsolete, please include "tf2/impl/utils.hpp" instead
+# define UTILS_HEADER_DEPERCATION This header is obsolete, \
+  please include "tf2/impl/utils.hpp" instead
   # ifdef _MSC_VER
     # pragma message(UTILS_HEADER_DEPERCATION)
   # else

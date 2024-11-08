@@ -31,7 +31,8 @@
 #ifndef TF2__TRANSFORM_DATATYPES_H_
 #define TF2__TRANSFORM_DATATYPES_H_
 
-# define TRANSFORM_DATATYPES_HEADER_DEPERCATION This header is obsolete, please include "tf2/transform_datatypes.hpp" instead
+# define TRANSFORM_DATATYPES_HEADER_DEPERCATION This header is obsolete, \
+  please include "tf2/transform_datatypes.hpp" instead
   # ifdef _MSC_VER
     # pragma message(TRANSFORM_DATATYPES_HEADER_DEPERCATION)
   # else
