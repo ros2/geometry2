@@ -33,7 +33,7 @@
 #include "tf2/LinearMath/Vector3.hpp"
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2/time.hpp"
-#include "tf2/visibility_control.hpp"
+#include "tf2/visibility_control.h"
 
 namespace tf2
 {
