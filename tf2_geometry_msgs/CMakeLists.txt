@@ -76,6 +76,7 @@ endif()
 install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
 install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
+ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(
   "geometry_msgs"
