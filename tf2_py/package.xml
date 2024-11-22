@@ -16,6 +16,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>geometry_msgs</build_depend>
+  <build_depend>python3-dev</build_depend>
 
   <depend>tf2</depend>
 
