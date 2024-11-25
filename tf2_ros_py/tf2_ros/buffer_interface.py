@@ -32,6 +32,7 @@ from typing import Union
 from typing import Callable
 from typing import Tuple
 from typing import Any
+from typing import get_args
 
 import rclpy
 import tf2_py as tf2
@@ -39,10 +40,12 @@ import tf2_ros
 from copy import deepcopy
 from std_msgs.msg import Header
 from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TwistStamped
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from geometry_msgs.msg import Vector3Stamped
+from geometry_msgs.msg import WrenchStamped
 from sensor_msgs.msg import PointCloud2
 
 from rclpy.time import Time
@@ -53,10 +56,13 @@ MsgStamped = Union[
     PoseStamped,
     PoseWithCovarianceStamped,
     Vector3Stamped,
-    PointCloud2
+    PointCloud2,
+    TwistStamped,
+    WrenchStamped
     ]
 PyKDLType = TypeVar("PyKDLType")
-TransformableObject = Union[MsgStamped, PyKDLType]
+StampedPyKDLType = TypeVar("StampedPyKDLType")
+TransformableObject = Union[MsgStamped, PyKDLType, StampedPyKDLType]
 TransformableObjectType = TypeVar("TransformableObjectType")
 
 
@@ -67,6 +73,7 @@ class BufferInterface:
     Implementations include :class:tf2_ros.buffer.Buffer and
     :class:tf2_ros.buffer_client.BufferClient.
     """
+
     def __init__(self) -> None:
         self.registration = tf2_ros.TransformRegistration()
 
@@ -229,16 +236,6 @@ class BufferInterface:
         raise NotImplementedException()
 
 
-def Stamped(
-    obj: TransformableObject,
-    stamp: Time,
-    frame_id: str
-) -> TransformableObject:
-    obj.header = Header(frame_id=frame_id, stamp=stamp)
-    return obj
-
-
-
 class TypeException(Exception):
     """
     Raised when an unexpected type is received while registering a transform
@@ -343,7 +340,9 @@ def convert(a: TransformableObject, b_type: TransformableObjectType) -> Transfor
     except TypeException:
         if type(a) == b_type:
             return deepcopy(a)
-
-        f_to = c.get_to_msg(type(a))
-        f_from = c.get_from_msg(b_type)
-        return f_from(f_to(a))
+        if b_type in get_args(MsgStamped):
+            f_to = c.get_to_msg(type(a))
+            return f_to(a)
+        else:
+            f_from = c.get_from_msg(type(a))
+            return f_from(a)

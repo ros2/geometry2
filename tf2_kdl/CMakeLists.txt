@@ -19,9 +19,6 @@ find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-ament_python_install_package(${PROJECT_NAME}
-     PACKAGE_DIR src/${PROJECT_NAME})
-
 add_library(tf2_kdl INTERFACE)
 target_link_libraries(tf2_kdl INTERFACE
   ${builtin_interfaces_TARGETS}
@@ -36,11 +33,6 @@ target_include_directories(tf2_kdl INTERFACE
 install(TARGETS tf2_kdl EXPORT export_tf2_kdl)
 
 install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
-
-# TODO(ahcorde): Port python once https://github.com/ros2/orocos_kinematics_dynamics/pull/4 is merged
-# install(PROGRAMS scripts/test.py
-#     DESTINATION lib/${PROJECT_NAME}
-# )
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
