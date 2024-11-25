@@ -1556,7 +1556,6 @@ void BufferCore::_chainAsVector(
 
   output.clear();  // empty vector
 
-  std::stringstream mstream;
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   TransformAccum accum;
