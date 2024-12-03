@@ -74,10 +74,10 @@ static void benchmark_insertion(benchmark::State & state)
   // First, fill the cache with max storage amount (the limit).
   tf2::TimeCache fill_cache(max_storage_time);
   const auto [fill_timestamp, fill_timestep] = insert_data(
-      fill_cache,
-      tf2::TimePointZero,
-      0,
-      tf2::TimePointZero + max_storage_time);
+    fill_cache,
+    tf2::TimePointZero,
+    0,
+    tf2::TimePointZero + max_storage_time);
 
   // Now profile adding new data to the copied cache.
   const tf2::TimePoint target_timestamp = fill_timestamp + max_storage_time;
@@ -88,10 +88,10 @@ static void benchmark_insertion(benchmark::State & state)
     state.ResumeTiming();
 
     insert_data(
-        cache,
-        fill_timestamp,
-        fill_timestep,
-        target_timestamp);
+      cache,
+      fill_timestamp,
+      fill_timestep,
+      target_timestamp);
   }
 }
 
