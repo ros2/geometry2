@@ -40,6 +40,8 @@
 #include "geometry_msgs/msg/point_stamped.hpp"
 #include "tf2_ros/buffer_interface.h"
 
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+
 #if (BT_BULLET_VERSION <= 282)
 // Suppress compilation warning on older versions of Bullet.
 // TODO(mjcarroll): Remove this when all platforms have the fix upstream.
@@ -86,7 +88,7 @@ void doTransform(
   t_out =
     tf2::Stamped<btVector3>(
     transformToBullet(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+    tf2::fromMsg(transform.header.stamp), transform.header.frame_id);
 }
 
 /** \brief Convert a stamped Bullet Vector3 type to a PointStamped message.
@@ -98,7 +100,7 @@ inline
 geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3> & in)
 {
   geometry_msgs::msg::PointStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point.x = in[0];
   msg.point.y = in[1];
@@ -114,7 +116,7 @@ geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<btVector3> & in)
 inline
 void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped<btVector3> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   out[0] = static_cast<float>(msg.point.x);
   out[1] = static_cast<float>(msg.point.y);
@@ -137,7 +139,7 @@ void doTransform(
   t_out =
     tf2::Stamped<btTransform>(
     transformToBullet(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp), transform.header.frame_id);
+    tf2::fromMsg(transform.header.stamp), transform.header.frame_id);
 }
 
 

@@ -39,8 +39,7 @@
 #include "geometry_msgs/msg/twist.hpp"
 
 #include "tf2/convert.h"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/buffer_interface.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 namespace tf2
 {
@@ -247,7 +246,7 @@ void doTransform(
 {
   t_out = tf2::Stamped<Eigen::Vector3d>(
     transformToEigen(transform) * t_in,
-    tf2_ros::fromMsg(transform.header.stamp),
+    tf2::fromMsg(transform.header.stamp),
     transform.header.frame_id);
 }
 
@@ -260,7 +259,7 @@ inline
 geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<Eigen::Vector3d> & in)
 {
   geometry_msgs::msg::PointStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point = toMsg(static_cast<const Eigen::Vector3d &>(in));
   return msg;
@@ -274,7 +273,7 @@ geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<Eigen::Vector3d> & in)
 inline
 void fromMsg(const geometry_msgs::msg::PointStamped & msg, tf2::Stamped<Eigen::Vector3d> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   fromMsg(msg.point, static_cast<Eigen::Vector3d &>(out));
 }
@@ -366,7 +365,7 @@ inline
 geometry_msgs::msg::QuaternionStamped toMsg(const Stamped<Eigen::Quaterniond> & in)
 {
   geometry_msgs::msg::QuaternionStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.quaternion = toMsg(static_cast<const Eigen::Quaterniond &>(in));
   return msg;
@@ -381,7 +380,7 @@ inline
 void fromMsg(const geometry_msgs::msg::QuaternionStamped & msg, Stamped<Eigen::Quaterniond> & out)
 {
   out.frame_id_ = msg.header.frame_id;
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2::fromMsg(msg.header.stamp);
   fromMsg(msg.quaternion, static_cast<Eigen::Quaterniond &>(out));
 }
 
@@ -399,7 +398,7 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out.frame_id_ = transform.header.frame_id;
-  t_out.stamp_ = tf2_ros::fromMsg(transform.header.stamp);
+  t_out.stamp_ = tf2::fromMsg(transform.header.stamp);
   doTransform(
     static_cast<const Eigen::Quaterniond &>(t_in),
     static_cast<Eigen::Quaterniond &>(t_out), transform);
@@ -551,7 +550,7 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out = tf2::Stamped<Eigen::Affine3d>(
-    transformToEigen(transform) * t_in, tf2_ros::fromMsg(
+    transformToEigen(transform) * t_in, tf2::fromMsg(
       transform.header.stamp), transform.header.frame_id);
 }
 
@@ -572,7 +571,7 @@ void doTransform(
   const geometry_msgs::msg::TransformStamped & transform)
 {
   t_out = tf2::Stamped<Eigen::Isometry3d>(
-    transformToEigen(transform) * t_in, tf2_ros::fromMsg(
+    transformToEigen(transform) * t_in, tf2::fromMsg(
       transform.header.stamp), transform.header.frame_id);
 }
 
@@ -585,7 +584,7 @@ inline
 geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<Eigen::Affine3d> & in)
 {
   geometry_msgs::msg::PoseStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose = toMsg(static_cast<const Eigen::Affine3d &>(in));
   return msg;
@@ -595,7 +594,7 @@ inline
 geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<Eigen::Isometry3d> & in)
 {
   geometry_msgs::msg::PoseStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose = toMsg(static_cast<const Eigen::Isometry3d &>(in));
   return msg;
@@ -609,7 +608,7 @@ geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<Eigen::Isometry3d> & in
 inline
 void fromMsg(const geometry_msgs::msg::PoseStamped & msg, tf2::Stamped<Eigen::Affine3d> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   fromMsg(msg.pose, static_cast<Eigen::Affine3d &>(out));
 }
@@ -617,7 +616,7 @@ void fromMsg(const geometry_msgs::msg::PoseStamped & msg, tf2::Stamped<Eigen::Af
 inline
 void fromMsg(const geometry_msgs::msg::PoseStamped & msg, tf2::Stamped<Eigen::Isometry3d> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(msg.header.stamp);
+  out.stamp_ = tf2::fromMsg(msg.header.stamp);
   out.frame_id_ = msg.header.frame_id;
   fromMsg(msg.pose, static_cast<Eigen::Isometry3d &>(out));
 }

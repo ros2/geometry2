@@ -43,6 +43,8 @@
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
 namespace tf2_ros
 {
 geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
@@ -55,8 +57,8 @@ geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
   LookupTransformAction::Goal goal;
   goal.target_frame = target_frame;
   goal.source_frame = source_frame;
-  goal.source_time = tf2_ros::toMsg(time);
-  goal.timeout = tf2_ros::toMsg(timeout);
+  goal.source_time = tf2::toMsg(time);
+  goal.timeout = tf2::toMsg(timeout);
   goal.advanced = false;
 
   return processGoal(goal);
@@ -74,9 +76,9 @@ geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
   LookupTransformAction::Goal goal;
   goal.target_frame = target_frame;
   goal.source_frame = source_frame;
-  goal.source_time = tf2_ros::toMsg(source_time);
-  goal.timeout = tf2_ros::toMsg(timeout);
-  goal.target_time = tf2_ros::toMsg(target_time);
+  goal.source_time = tf2::toMsg(source_time);
+  goal.timeout = tf2::toMsg(timeout);
+  goal.target_time = tf2::toMsg(target_time);
   goal.fixed_frame = fixed_frame;
   goal.advanced = true;
 
@@ -86,7 +88,7 @@ geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
 geometry_msgs::msg::TransformStamped BufferClient::processGoal(
   const LookupTransformAction::Goal & goal) const
 {
-  if (!client_->wait_for_action_server(tf2_ros::fromMsg(goal.timeout))) {
+  if (!client_->wait_for_action_server(tf2::fromMsg(goal.timeout))) {
     throw tf2::ConnectivityException("Failed find available action server");
   }
 
@@ -98,7 +100,7 @@ geometry_msgs::msg::TransformStamped BufferClient::processGoal(
   tf2::TimePoint start_time = tf2::get_now();
   while (rclcpp::ok() && !ready && !timed_out) {
     ready = (std::future_status::ready == goal_handle_future.wait_for(period));
-    timed_out = tf2::get_now() > start_time + tf2_ros::fromMsg(goal.timeout) + timeout_padding_;
+    timed_out = tf2::get_now() > start_time + tf2::fromMsg(goal.timeout) + timeout_padding_;
   }
 
   if (timed_out) {
@@ -117,7 +119,7 @@ geometry_msgs::msg::TransformStamped BufferClient::processGoal(
   ready = false;
   while (rclcpp::ok() && !ready && !timed_out) {
     ready = (std::future_status::ready == result_future.wait_for(period));
-    timed_out = tf2::get_now() > start_time + tf2_ros::fromMsg(goal.timeout) + timeout_padding_;
+    timed_out = tf2::get_now() > start_time + tf2::fromMsg(goal.timeout) + timeout_padding_;
   }
 
   if (timed_out) {

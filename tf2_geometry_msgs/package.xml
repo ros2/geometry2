@@ -19,10 +19,10 @@
   <depend>geometry_msgs</depend>
   <depend>orocos_kdl_vendor</depend>
   <depend>tf2</depend>
-  <depend>tf2_ros</depend>
 
   <exec_depend>python3-numpy</exec_depend>
-  <exec_depend>tf2_ros_py</exec_depend>
+  <!-- TODO: fixme -->
+  <!-- <exec_depend>tf2_ros_py</exec_depend> -->
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>ament_cmake_pytest</test_depend>

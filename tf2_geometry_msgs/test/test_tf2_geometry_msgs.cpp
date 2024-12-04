@@ -43,12 +43,13 @@
 
 #include "rclcpp/clock.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_listener.h"
 
 #include <geometry_msgs/msg/velocity_stamped.hpp>
 
-std::unique_ptr<tf2_ros::Buffer> tf_buffer = nullptr;
+#include <tf2/buffer_core.h>
+
+
+std::unique_ptr<tf2::BufferCore> tf_buffer = nullptr;
 static const double EPS = 1e-3;
 
 geometry_msgs::msg::TransformStamped generate_stamped_transform()
@@ -61,12 +62,13 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
   t.transform.rotation.x = 1;
   t.transform.rotation.y = 0;
   t.transform.rotation.z = 0;
-  t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+  t.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
   t.header.frame_id = "A";
   t.child_frame_id = "B";
   return t;
 }
 
+#if MAKE_BARE_TRANSFORM_WORK_IN_TEST
 TEST(TfGeometry, Conversions)
 {
   // Quaternion
@@ -211,7 +213,7 @@ TEST(TfGeometry, Frame)
     v1.pose.orientation.x = 1;
     v1.pose.orientation.y = 0;
     v1.pose.orientation.z = 0;
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
 
     // simple api
@@ -292,7 +294,7 @@ TEST(TfGeometry, FrameWithCovariance)
     v1.pose.pose.orientation.x = 1;
     v1.pose.pose.orientation.y = 0;
     v1.pose.pose.orientation.z = 0;
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
     v1.pose.covariance = {
       1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
@@ -362,7 +364,7 @@ TEST(TfGeometry, Vector)
     v1.vector.x = 1;
     v1.vector.y = 2;
     v1.vector.z = 3;
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
 
     // simple api
@@ -420,7 +422,7 @@ TEST(TfGeometry, Point)
     v1.point.x = 1;
     v1.point.y = 2;
     v1.point.z = 3;
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
 
     // simple api
@@ -466,7 +468,7 @@ TEST(TfGeometry, Polygon)
     p.y = 2;
     p.z = 3;
     v1.polygon.points.push_back(p);
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
 
     // simple api
@@ -516,7 +518,7 @@ TEST(TfGeometry, Quaternion)
     q1.quaternion.y = -1 * M_SQRT1_2;
     q1.quaternion.z = 0;
     q1.quaternion.w = M_SQRT1_2;
-    q1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    q1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     q1.header.frame_id = "A";
 
     // simple api
@@ -574,7 +576,7 @@ TEST(TfGeometry, Transform)
     v1.transform.rotation.x = 1;
     v1.transform.rotation.y = 0;
     v1.transform.rotation.z = 0;
-    v1.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+    v1.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
     v1.header.frame_id = "A";
 
     // simple api
@@ -638,18 +640,20 @@ TEST(TfGeometry, Velocity)
   tf2::doTransform(v1, res, trafo);
 }
 
+#endif
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
-
+#if FIX_CLOCK_DEP_IN_TEST
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf_buffer = std::make_unique<tf2_ros::Buffer>(clock);
+  tf_buffer = std::make_unique<tf2::BufferCore>(clock);
   tf_buffer->setUsingDedicatedThread(true);
 
   // populate buffer
   geometry_msgs::msg::TransformStamped t = generate_stamped_transform();
   tf_buffer->setTransform(t, "test");
-
+#endif
   int ret = RUN_ALL_TESTS();
   return ret;
 }

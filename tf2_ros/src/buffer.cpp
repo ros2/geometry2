@@ -40,6 +40,8 @@
 #include <string>
 #include <thread>
 
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+
 namespace tf2_ros
 {
 inline
@@ -57,6 +59,89 @@ to_rclcpp(const tf2::Duration & duration)
 }
 
 geometry_msgs::msg::TransformStamped
+BufferCoreROSConversions::lookupTransform(
+  const std::string & target_frame, const std::string & source_frame,
+  const tf2::TimePoint & time) const
+{
+  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
+    target_frame,
+    source_frame, time);
+
+  geometry_msgs::msg::TransformStamped msg = tf2::toMsg(stamped_transform);
+  msg.child_frame_id = source_frame;
+
+  return msg;
+}
+
+geometry_msgs::msg::TransformStamped
+BufferCoreROSConversions::lookupTransform(
+  const std::string & target_frame, const tf2::TimePoint & target_time,
+  const std::string & source_frame, const tf2::TimePoint & source_time,
+  const std::string & fixed_frame) const
+{
+  return lookupTransform(
+    target_frame,
+    target_time,
+    source_frame,
+    source_time,
+    fixed_frame);
+}
+
+geometry_msgs::msg::VelocityStamped BufferCoreROSConversions::lookupVelocity(
+  const std::string & tracking_frame, const std::string & observation_frame,
+  const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const
+{
+  // ref point is origin of tracking_frame, ref_frame = obs_frame
+  return lookupVelocity(
+    tracking_frame, observation_frame, observation_frame, tf2::Vector3(
+      0, 0,
+      0), tracking_frame, time,
+    averaging_interval);
+}
+
+geometry_msgs::msg::VelocityStamped BufferCoreROSConversions::lookupVelocity(
+  const std::string & tracking_frame, const std::string & observation_frame,
+  const std::string & reference_frame, const tf2::Vector3 & reference_point,
+  const std::string & reference_point_frame,
+  const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const
+{
+  const tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> stamped_velocity = lookupVelocityTf2(
+    tracking_frame, observation_frame, reference_frame,
+    reference_point, reference_point_frame, time, averaging_interval);
+
+  geometry_msgs::msg::VelocityStamped msg;
+  const std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    stamped_velocity.stamp_.time_since_epoch());
+  const std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
+    stamped_velocity.stamp_.time_since_epoch());
+  msg.header.stamp.sec = static_cast<int32_t>(s.count());
+  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  msg.header.frame_id = reference_frame;
+  msg.body_frame_id = tracking_frame;
+
+  msg.velocity.linear.x = stamped_velocity.first.x();
+  msg.velocity.linear.y = stamped_velocity.first.y();
+  msg.velocity.linear.z = stamped_velocity.first.z();
+  msg.velocity.angular.x = stamped_velocity.second.x();
+  msg.velocity.angular.y = stamped_velocity.second.y();
+  msg.velocity.angular.z = stamped_velocity.second.z();
+
+  return msg;
+}
+
+bool BufferCoreROSConversions::setTransform(
+  const geometry_msgs::msg::TransformStamped & transform,
+  const std::string & authority, bool is_static)
+{
+  tf2::Stamped<tf2::Transform> tf2_transform;
+  tf2::fromMsg(transform, tf2_transform);
+
+  return setTransformTf2(
+    tf2_transform, transform.header.frame_id, transform.child_frame_id,
+    tf2_transform.stamp_, authority, is_static);
+}
+
+geometry_msgs::msg::TransformStamped
 Buffer::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const tf2::TimePoint & lookup_time, const tf2::Duration timeout) const
@@ -64,6 +149,7 @@ Buffer::lookupTransform(
   // Pass error string to suppress console spam
   std::string error;
   canTransform(target_frame, source_frame, lookup_time, timeout, &error);
+  
   return lookupTransform(target_frame, source_frame, lookup_time);
 }
 
@@ -89,6 +175,7 @@ Buffer::lookupTransform(
   // Pass error string to suppress console spam
   std::string error;
   canTransform(target_frame, target_time, source_frame, source_time, fixed_frame, timeout, &error);
+  
   return lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame);
 }
 
@@ -206,7 +293,7 @@ Buffer::waitForTransform(
 
       if (result == tf2::TransformAvailable) {
         geometry_msgs::msg::TransformStamped msg_stamped = this->lookupTransform(
-          target_frame, source_frame, time);
+          target_frame, source_frame, time, tf2::Duration(0));
         promise->set_value(msg_stamped);
       } else {
         promise->set_exception(
@@ -222,7 +309,7 @@ Buffer::waitForTransform(
   if (0 == handle) {
     // Immediately transformable
     geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(
-      target_frame, source_frame, time);
+      target_frame, source_frame, time, tf2::Duration(0));
     promise->set_value(msg_stamped);
     callback(future);
   } else if (0xffffffffffffffffULL == handle) {

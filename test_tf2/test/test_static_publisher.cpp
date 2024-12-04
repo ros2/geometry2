@@ -146,7 +146,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
   ts.header.frame_id = "c";
-  ts.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10));
+  ts.header.stamp = tf2::toMsg(tf2::timeFromSec(10));
   ts.child_frame_id = "d";
 
   // make sure listener has populated
@@ -198,7 +198,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
   ts.header.frame_id = "c";
-  ts.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10));
+  ts.header.stamp = tf2::toMsg(tf2::timeFromSec(10));
   ts.child_frame_id = "d";
 
   stb.sendTransform(ts);

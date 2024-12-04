@@ -20,6 +20,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
@@ -41,6 +42,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
   tf2::tf2
+  tf2_geometry_msgs::tf2_geometry_msgs
   ${tf2_msgs_TARGETS})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "TF2_ROS_BUILDING_DLL")
@@ -238,5 +240,6 @@ ament_export_dependencies(
   rclcpp_action
   tf2
   tf2_msgs
+  tf2_geometry_msgs
 )
 ament_package()

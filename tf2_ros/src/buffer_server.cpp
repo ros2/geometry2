@@ -37,7 +37,8 @@
 
 #include <tf2/exceptions.h>
 
-#include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+
 #include <tf2_ros/buffer_server.h>
 
 #include <algorithm>
@@ -161,7 +162,7 @@ void BufferServer::acceptedCB(GoalHandle gh)
   // along with the time that the goal will end
   GoalInfo goal_info;
   goal_info.handle = gh;
-  goal_info.end_time = tf2::get_now() + tf2_ros::fromMsg(gh->get_goal()->timeout);
+  goal_info.end_time = tf2::get_now() + tf2::fromMsg(gh->get_goal()->timeout);
 
   // we can do a quick check here to see if the transform is valid
   // we'll also do this if the end time has been reached
@@ -202,14 +203,14 @@ bool BufferServer::canTransform(GoalHandle gh)
 {
   const auto goal = gh->get_goal();
 
-  tf2::TimePoint source_time_point = tf2_ros::fromMsg(goal->source_time);
+  tf2::TimePoint source_time_point = tf2::fromMsg(goal->source_time);
 
   // check whether we need to used the advanced or simple api
   if (!goal->advanced) {
     return buffer_.canTransform(goal->target_frame, goal->source_frame, source_time_point, nullptr);
   }
 
-  tf2::TimePoint target_time_point = tf2_ros::fromMsg(goal->target_time);
+  tf2::TimePoint target_time_point = tf2::fromMsg(goal->target_time);
   return buffer_.canTransform(
     goal->target_frame, target_time_point,
     goal->source_frame, source_time_point, goal->fixed_frame, nullptr);
@@ -223,12 +224,12 @@ geometry_msgs::msg::TransformStamped BufferServer::lookupTransform(GoalHandle gh
   if (!goal->advanced) {
     return buffer_.lookupTransform(
       goal->target_frame, goal->source_frame,
-      tf2_ros::fromMsg(goal->source_time));
+      tf2::fromMsg(goal->source_time));
   }
 
   return buffer_.lookupTransform(
-    goal->target_frame, tf2_ros::fromMsg(goal->target_time),
-    goal->source_frame, tf2_ros::fromMsg(goal->source_time), goal->fixed_frame);
+    goal->target_frame, tf2::fromMsg(goal->target_time),
+    goal->source_frame, tf2::fromMsg(goal->source_time), goal->fixed_frame);
 }
 
 }  // namespace tf2_ros

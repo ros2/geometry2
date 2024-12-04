@@ -40,7 +40,7 @@
 namespace tf2_ros
 {
 
-TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread, bool static_only)
+TransformListener::TransformListener(tf2_ros::BufferCoreROSConversions & buffer, bool spin_thread, bool static_only)
 : buffer_(buffer)
 {
   rclcpp::NodeOptions options;

@@ -34,6 +34,8 @@
 #include <tf2/convert.h>
 #include <gtest/gtest.h>
 
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
 using Vector6d = Eigen::Matrix<double, 6, 1>;
 
 TEST(TfEigenKdl, TestRotationQuaternion)

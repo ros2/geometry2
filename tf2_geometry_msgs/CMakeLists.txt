@@ -27,6 +27,7 @@ set(Python3_FIND_UNVERSIONED_NAMES FIRST)
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(orocos_kdl REQUIRED)
@@ -42,9 +43,11 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} INTERFACE
   ${geometry_msgs_TARGETS}
+  ${builtin_interfaces_TARGETS}
   orocos-kdl
   tf2::tf2
-  tf2_ros::tf2_ros)
+  #tf2_ros::tf2_ros
+  )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -83,6 +86,7 @@ ament_export_dependencies(
   "orocos_kdl_vendor"
   "orocos_kdl"
   "tf2"
-  "tf2_ros")
+  #"tf2_ros"
+  )
 
 ament_package()

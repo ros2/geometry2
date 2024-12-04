@@ -57,10 +57,81 @@
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2/LinearMath/Transform.h"
 #include "tf2/LinearMath/Vector3.h"
-#include "tf2_ros/buffer_interface.h"
+
+#include "builtin_interfaces/msg/time.hpp"
+#include "builtin_interfaces/msg/duration.hpp"
+
 
 namespace tf2
 {
+
+/**\brief The templated function expected to be able to do a transform
+ *
+ * This is the method which tf2 will use to try to apply a transform for any given datatype.
+ * \param data_in[in] The data to be transformed.
+ * \param data_out[inout] A reference to the output data. Note this can point to data in and the method should be mutation safe.
+ * \param transform[in] The transform to apply to data_in to fill data_out.
+ *
+ * This method needs to be implemented by client library developers
+ */
+template<class T>
+void doTransform(
+  const T & data_in, T & data_out,
+  const geometry_msgs::msg::TransformStamped & transform);
+
+/**\brief Function that converts any type to any type (messages or not).
+ * Matching toMsg and from Msg conversion functions need to exist.
+ * If they don't exist or do not apply (for example, if your two
+ * classes are ROS messages), just write a specialization of the function.
+ * \param a an object to convert from
+ * \param b the object to convert to
+ */
+template<class A, class B>
+void convert(const A & a, B & b)
+{
+  impl::Converter<rosidl_generator_traits::is_message<A>::value,
+    rosidl_generator_traits::is_message<B>::value>::convert(a, b);
+}
+
+
+// TODO: move to the proper place below
+inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
+{
+  std::chrono::nanoseconds ns =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
+  std::chrono::seconds s =
+    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
+  builtin_interfaces::msg::Time time_msg;
+  time_msg.sec = static_cast<int32_t>(s.count());
+  time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  return time_msg;
+}
+
+inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
+{
+  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
+  std::chrono::nanoseconds ns(d);
+  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
+}
+
+inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
+{
+  std::chrono::nanoseconds ns =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(t);
+  std::chrono::seconds s =
+    std::chrono::duration_cast<std::chrono::seconds>(t);
+  builtin_interfaces::msg::Duration duration_msg;
+  duration_msg.sec = static_cast<int32_t>(s.count());
+  duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
+  return duration_msg;
+}
+
+inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
+{
+  int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
+  std::chrono::nanoseconds ns(d);
+  return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
+}
 
 /** \brief Convert a TransformStamped message to a KDL frame.
  * \param t TransformStamped message to convert.
@@ -140,7 +211,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::Vector3Stamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Vector message.
@@ -307,7 +378,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::PointStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Point message.
@@ -380,7 +451,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::PoseStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Pose message.
@@ -508,7 +579,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::PolygonStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a PolygonStamped message.
@@ -753,7 +824,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::PoseWithCovarianceStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Pose message.
@@ -850,7 +921,7 @@ geometry_msgs::msg::PoseWithCovarianceStamped toMsg(
   const tf2::WithCovarianceStamped<tf2::Transform> & in)
 {
   geometry_msgs::msg::PoseWithCovarianceStamped out;
-  out.header.stamp = tf2_ros::toMsg(in.stamp_);
+  out.header.stamp = toMsg(in.stamp_);
   out.header.frame_id = in.frame_id_;
   out.pose.covariance = covarianceNestedToRowMajor(in.cov_mat_);
   out.pose.pose.orientation.x = in.getRotation().getX();
@@ -874,7 +945,7 @@ void fromMsg(
   const geometry_msgs::msg::PoseWithCovarianceStamped & in,
   tf2::WithCovarianceStamped<tf2::Transform> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
+  out.stamp_ = fromMsg(in.header.stamp);
   out.frame_id_ = in.header.frame_id;
   out.cov_mat_ = covarianceRowMajorToNested(in.pose.covariance);
   tf2::Transform tmp;
@@ -952,7 +1023,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::QuaternionStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Quaternion message.
@@ -1022,7 +1093,7 @@ inline
 geometry_msgs::msg::QuaternionStamped toMsg(const tf2::Stamped<tf2::Quaternion> & in)
 {
   geometry_msgs::msg::QuaternionStamped out;
-  out.header.stamp = tf2_ros::toMsg(in.stamp_);
+  out.header.stamp = toMsg(in.stamp_);
   out.header.frame_id = in.frame_id_;
   out.quaternion.w = in.getW();
   out.quaternion.x = in.getX();
@@ -1039,7 +1110,7 @@ geometry_msgs::msg::QuaternionStamped toMsg(const tf2::Stamped<tf2::Quaternion> 
 inline
 void fromMsg(const geometry_msgs::msg::QuaternionStamped & in, tf2::Stamped<tf2::Quaternion> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
+  out.stamp_ = fromMsg(in.header.stamp);
   out.frame_id_ = in.header.frame_id;
   tf2::Quaternion tmp;
   fromMsg(in.quaternion, tmp);
@@ -1133,7 +1204,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::TransformStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Transform message.
@@ -1210,7 +1281,7 @@ void fromMsg(
 inline
 void fromMsg(const geometry_msgs::msg::TransformStamped & in, tf2::Stamped<tf2::Transform> & out)
 {
-  out.stamp_ = tf2_ros::fromMsg(in.header.stamp);
+  out.stamp_ = fromMsg(in.header.stamp);
   out.frame_id_ = in.header.frame_id;
   tf2::Transform tmp;
   fromMsg(in.transform, tmp);
@@ -1226,7 +1297,7 @@ inline
 geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform> & in)
 {
   geometry_msgs::msg::TransformStamped out;
-  out.header.stamp = tf2_ros::toMsg(in.stamp_);
+  out.header.stamp = toMsg(in.stamp_);
   out.header.frame_id = in.frame_id_;
   out.transform.translation.x = in.getOrigin().getX();
   out.transform.translation.y = in.getOrigin().getY();
@@ -1389,7 +1460,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const geometry_msgs::msg::WrenchStamped & t)
 {
-  return tf2_ros::fromMsg(t.header.stamp);
+  return fromMsg(t.header.stamp);
 }
 
 /** \brief Extract a frame ID from the header of a Wrench message.

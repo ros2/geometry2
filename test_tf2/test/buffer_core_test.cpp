@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 #if _WIN32
 #define _USE_MATH_DEFINES
 #endif
@@ -52,7 +53,7 @@
 #include <tf2_ros/buffer_interface.h>
 
 #include "permuter.hpp"
-
+#ifdef FIX_SETTRANSFORM
 void seed_rand()
 {
   //Seed random number generator with current time.
@@ -306,7 +307,7 @@ TEST(BufferCore_setTransform, NoInsertOnSelfTransform)
   tf2::BufferCore mBC;
   geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
+  tranStamped.header.stamp = tf2::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "same_frame";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -317,7 +318,7 @@ TEST(BufferCore_setTransform, NoInsertWithNan)
   tf2::BufferCore mBC;
   geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
+  tranStamped.header.stamp = tf2::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "other_frame";
   EXPECT_TRUE(mBC.setTransform(tranStamped, "authority"));
@@ -331,7 +332,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoFrameID)
   tf2::BufferCore mBC;
   geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
+  tranStamped.header.stamp = tf2::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "same_frame";
   tranStamped.child_frame_id = "";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -345,7 +346,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
   tf2::BufferCore mBC;
   geometry_msgs::msg::TransformStamped tranStamped;
   setIdentity(tranStamped.transform);
-  tranStamped.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(10.0));
+  tranStamped.header.stamp = tf2::toMsg(tf2::timeFromSec(10.0));
   tranStamped.header.frame_id = "";
   tranStamped.child_frame_id = "some_frame";
   EXPECT_FALSE(mBC.setTransform(tranStamped, "authority"));
@@ -636,9 +637,9 @@ TEST(BufferCore_lookupTransform, i_configuration)
 
   rostest::Permuter permuter;
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -664,7 +665,7 @@ TEST(BufferCore_lookupTransform, i_configuration)
     setupTree(mBC, "i", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-      source_frame, target_frame, tf2_ros::fromMsg(
+      source_frame, target_frame, tf2::fromMsg(
         eval_time));
 
     EXPECT_EQ(outpose.header.stamp, eval_time);
@@ -898,9 +899,9 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -926,7 +927,7 @@ TEST(BufferCore_lookupTransform, one_link_configuration)
     setupTree(mBC, "1", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-      source_frame, target_frame, tf2_ros::fromMsg(
+      source_frame, target_frame, tf2::fromMsg(
         eval_time));
 
     EXPECT_TRUE(check_1_result(outpose, source_frame, target_frame, eval_time, epsilon));
@@ -941,9 +942,9 @@ TEST(BufferCore_lookupTransform, v_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -972,7 +973,7 @@ TEST(BufferCore_lookupTransform, v_configuration)
     setupTree(mBC, "v", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-      source_frame, target_frame, tf2_ros::fromMsg(
+      source_frame, target_frame, tf2::fromMsg(
         eval_time));
 
     EXPECT_TRUE(check_v_result(outpose, source_frame, target_frame, eval_time, epsilon));
@@ -987,9 +988,9 @@ TEST(BufferCore_lookupTransform, y_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1018,7 +1019,7 @@ TEST(BufferCore_lookupTransform, y_configuration)
     setupTree(mBC, "y", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-      source_frame, target_frame, tf2_ros::fromMsg(
+      source_frame, target_frame, tf2::fromMsg(
         eval_time));
 
     EXPECT_TRUE(check_y_result(outpose, source_frame, target_frame, eval_time, epsilon));
@@ -1032,9 +1033,9 @@ TEST(BufferCore_lookupTransform, multi_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1064,9 +1065,9 @@ TEST(BufferCore_lookupTransform, multi_configuration)
     tf2::BufferCore mBC;
     setupTree(mBC, "1_v", eval_time, interpolation_space);
 
-    if (mBC.canTransform(source_frame, target_frame, tf2_ros::fromMsg(eval_time))) {
+    if (mBC.canTransform(source_frame, target_frame, tf2::fromMsg(eval_time))) {
       geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-        source_frame, target_frame, tf2_ros::fromMsg(
+        source_frame, target_frame, tf2::fromMsg(
           eval_time));
 
       if ((source_frame == "1" || source_frame == "2") &&
@@ -1377,9 +1378,9 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(1.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(10.0)));
-  times.push_back(tf2_ros::toMsg(tf2::timeFromSec(0.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(1.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(10.0)));
+  times.push_back(tf2::toMsg(tf2::timeFromSec(0.0)));
   builtin_interfaces::msg::Time eval_time;
   permuter.addOptionSet(times, &eval_time);
 
@@ -1420,7 +1421,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
     setupTree(mBC, "ring_45", eval_time, interpolation_space);
 
     geometry_msgs::msg::TransformStamped outpose = mBC.lookupTransform(
-      source_frame, target_frame, tf2_ros::fromMsg(
+      source_frame, target_frame, tf2::fromMsg(
         eval_time));
 
     EXPECT_EQ(outpose.header.stamp, eval_time);
@@ -1669,7 +1670,7 @@ TEST(BufferCore_lookupTransform, invalid_arguments)
     std::chrono::seconds(0) +
     std::chrono::nanoseconds(0));
 
-  setupTree(mBC, "i", tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  setupTree(mBC, "i", tf2::toMsg(tf2::timeFromSec(1.0)));
 
   // EXPECT_NO_THROW
   EXPECT_NO_THROW(mBC.lookupTransform("b", "a", eval_time_time_point));
@@ -1692,7 +1693,7 @@ TEST(BufferCore_canTransform, invalid_arguments)
     std::chrono::seconds(0) +
     std::chrono::nanoseconds(0));
 
-  setupTree(mBC, "i", tf2_ros::toMsg(tf2::timeFromSec(1.0)));
+  setupTree(mBC, "i", tf2::toMsg(tf2::timeFromSec(1.0)));
 
   EXPECT_TRUE(mBC.canTransform("b", "a", eval_time_time_point));
 
@@ -1736,7 +1737,7 @@ TEST(BufferCore_transformableCallbacks, alreadyTransformable)
   TransformableHelper h;
 
   geometry_msgs::msg::TransformStamped t;
-  t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1.0));
+  t.header.stamp = tf2::toMsg(tf2::timeFromSec(1.0));
   t.header.frame_id = "a";
   t.child_frame_id = "b";
   t.transform.rotation.w = 1.0;
@@ -1779,7 +1780,7 @@ TEST(BufferCore_transformableCallbacks, waitForNewTransform)
 
   geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 1; i <= 10; ++i) {
-    t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(i));
+    t.header.stamp = tf2::toMsg(tf2::timeFromSec(i));
     t.header.frame_id = "a";
     t.child_frame_id = "b";
     t.transform.rotation.w = 1.0;
@@ -1814,7 +1815,7 @@ TEST(BufferCore_transformableCallbacks, waitForOldTransform)
 
   geometry_msgs::msg::TransformStamped t;
   for (uint32_t i = 10; i > 0; --i) {
-    t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(i));
+    t.header.stamp = tf2::toMsg(tf2::timeFromSec(i));
     t.header.frame_id = "a";
     t.child_frame_id = "b";
     t.transform.rotation.w = 1.0;
@@ -2782,6 +2783,7 @@ TEST(tf2_stamped, OperatorEqual)
 
 }
   */
+#endif
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);

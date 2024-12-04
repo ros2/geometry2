@@ -92,7 +92,7 @@ TEST(MessageFilter, noTransforms)
 
   std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
     std::make_shared<geometry_msgs::msg::PointStamped>();
-  msg->header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  msg->header.stamp = tf2::toMsg(tf2::timeFromSec(1));
   msg->header.frame_id = "frame2";
   filter.add(msg);
 
@@ -115,7 +115,7 @@ TEST(MessageFilter, noTransformsSameFrame)
 
   std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
     std::make_shared<geometry_msgs::msg::PointStamped>();
-  msg->header.stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  msg->header.stamp = tf2::toMsg(tf2::timeFromSec(1));
   msg->header.frame_id = "frame1";
   filter.add(msg);
 
@@ -157,7 +157,7 @@ TEST(MessageFilter, preexistingTransforms)
 
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
-  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
   buffer.setTransform(
     createTransform(
       tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
@@ -188,7 +188,7 @@ TEST(MessageFilter, postTransforms)
 
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 
-  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
 
   std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
     std::make_shared<geometry_msgs::msg::PointStamped>();
@@ -218,7 +218,7 @@ TEST(MessageFilter, concurrentTransforms)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
 
   std::shared_ptr<geometry_msgs::msg::PointStamped> msg =
     std::make_shared<geometry_msgs::msg::PointStamped>();
@@ -270,7 +270,7 @@ TEST(MessageFilter, concurrentTransforms)
 //   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
 //   // filter.registerFailureCallback(std::bind(&Notification::failure, &n,  std::placeholders::_1,  std::placeholders::_2));
 //
-//   builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+//   builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
 //
 //   for (int i = 0; i < 20; ++i)
 //   {
@@ -306,7 +306,7 @@ TEST(MessageFilter, setTargetFrame)
   filter.registerCallback(std::bind(&Notification::notify, &n, std::placeholders::_1));
   filter.setTargetFrame("frame1000");
 
-  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
   buffer.setTransform(
     createTransform(
       tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,
@@ -341,7 +341,7 @@ TEST(MessageFilter, multipleTargetFrames)
   target_frames.push_back("frame2");
   filter.setTargetFrames(target_frames);
 
-  builtin_interfaces::msg::Time stamp = tf2_ros::toMsg(tf2::timeFromSec(1));
+  builtin_interfaces::msg::Time stamp = tf2::toMsg(tf2::timeFromSec(1));
   buffer.setTransform(
     createTransform(
       tf2::Quaternion(0, 0, 0, 1), tf2::Vector3(1, 2, 3), stamp,

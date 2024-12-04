@@ -47,6 +47,7 @@
 #include "tf2/time.h"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"
 #include "rclcpp/node_interfaces/get_node_base_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_services_interface.hpp"
@@ -57,16 +58,159 @@
 namespace tf2_ros
 {
 
+// Needed for BufferServer - unfortunately introduces virtual inheritance
+class BufferCoreROSConversionsInterface : virtual public tf2::BufferCoreInterface {
+public:
+/**
+   * \brief Get the transform between two frames by frame ID.
+   * \param target_frame The frame to which data should be transformed.
+   * \param source_frame The frame where the data originated.
+   * \param time The time at which the value of the transform is desired (0 will get the latest).
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time) const = 0;
+
+  /**
+   * \brief Get the transform between two frames by frame ID assuming fixed frame.
+   * \param target_frame The frame to which data should be transformed.
+   * \param target_time The time to which the data should be transformed (0 will get the latest).
+   * \param source_frame The frame where the data originated.
+   * \param source_time The time at which the source_frame should be evaluated
+   *   (0 will get the latest).
+   * \param fixed_frame The frame in which to assume the transform is constant in time.
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const tf2::TimePoint & target_time,
+    const std::string & source_frame,
+    const tf2::TimePoint & source_time,
+    const std::string & fixed_frame) const = 0;
+
+  /** \brief Add transform information to the tf data structure
+   * \param transform The transform to store
+   * \param authority The source of the information for this transform
+   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
+   * \return True unless an error occured
+   */
+  TF2_PUBLIC
+  virtual bool setTransform(
+    const geometry_msgs::msg::TransformStamped & transform,
+    const std::string & authority, bool is_static = false) = 0;
+
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const = 0;
+
+  /** \brief Lookup the velocity of the moving_frame in the reference_frame
+   * \param reference_frame The frame in which to track
+   * \param moving_frame The frame to track
+   * \param time The time at which to get the velocity
+   * \param duration The period over which to average
+   * \param velocity The velocity output as a ROS type
+   *
+   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
+   * TransformReference::MaxDepthException
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const std::string & reference_frame, const tf2::Vector3 & reference_point,
+    const std::string & reference_point_frame,
+    const tf2::TimePoint & time, const tf2::Duration & duration) const = 0;
+};
+
+class BufferCoreROSConversions : public tf2::BufferCore, public BufferCoreROSConversionsInterface {
+public:
+  // How does one use a using declaration on a constructor 
+  using BufferCore = tf2::BufferCore;
+  using BufferCore::BufferCore;
+/**
+   * \brief Get the transform between two frames by frame ID.
+   * \param target_frame The frame to which data should be transformed.
+   * \param source_frame The frame where the data originated.
+   * \param time The time at which the value of the transform is desired (0 will get the latest).
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time) const override;
+
+  /**
+   * \brief Get the transform between two frames by frame ID assuming fixed frame.
+   * \param target_frame The frame to which data should be transformed.
+   * \param target_time The time to which the data should be transformed (0 will get the latest).
+   * \param source_frame The frame where the data originated.
+   * \param source_time The time at which the source_frame should be evaluated
+   *   (0 will get the latest).
+   * \param fixed_frame The frame in which to assume the transform is constant in time.
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const tf2::TimePoint & target_time,
+    const std::string & source_frame,
+    const tf2::TimePoint & source_time,
+    const std::string & fixed_frame) const override;
+
+    
+  /** \brief Add transform information to the tf data structure
+   * \param transform The transform to store
+   * \param authority The source of the information for this transform
+   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
+   * \return True unless an error occured
+   */
+  TF2_PUBLIC
+  virtual bool setTransform(
+    const geometry_msgs::msg::TransformStamped & transform,
+    const std::string & authority, bool is_static = false) override;
+
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const override;
+
+  /** \brief Lookup the velocity of the moving_frame in the reference_frame
+   * \param reference_frame The frame in which to track
+   * \param moving_frame The frame to track
+   * \param time The time at which to get the velocity
+   * \param duration The period over which to average
+   * \param velocity The velocity output as a ROS type
+   *
+   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
+   * TransformReference::MaxDepthException
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const std::string & reference_frame, const tf2::Vector3 & reference_point,
+    const std::string & reference_point_frame,
+    const tf2::TimePoint & time, const tf2::Duration & duration) const override;
+};
+
 /** \brief Standard implementation of the tf2_ros::BufferInterface abstract data type.
  *
  * Inherits tf2_ros::BufferInterface and tf2::BufferCore.
  * Stores known frames and offers a ROS service, "tf_frames", which responds to client requests
  * with a response containing a tf2_msgs::FrameGraph representing the relationship of known frames.
  */
-class Buffer : public BufferInterface, public AsyncBufferInterface, public tf2::BufferCore
+class Buffer : public BufferCoreROSConversions, public BufferInterface, public AsyncBufferInterface
 {
 public:
-  using tf2::BufferCore::lookupTransform;
+  using BufferCoreROSConversions::lookupTransform;
   using tf2::BufferCore::canTransform;
   using SharedPtr = std::shared_ptr<tf2_ros::Buffer>;
 
@@ -82,7 +226,7 @@ public:
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
     NodeT && node = NodeT(),
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
-  : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
+  : BufferCoreROSConversions(cache_time), clock_(clock), timer_interface_(nullptr)
   {
     if (nullptr == clock_) {
       throw std::invalid_argument("clock must be a valid instance");

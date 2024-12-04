@@ -48,10 +48,15 @@
 #include "tf2/LinearMath/Transform.h"
 #include "tf2/LinearMath/Vector3.h"
 
-#include "builtin_interfaces/msg/time.hpp"
-#include "geometry_msgs/msg/transform.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-
+#if TF2_ROS_FREE_CORE
+// TODO: TF2 logging helper
+#define RCUTILS_LOG_WARN_THROTTLE(...)
+#define RCUTILS_STEADY_TIME(...)
+#define RCUTILS_LOG_ERROR(...)
+#define RCUTILS_LOG_WARN(...)
+#else
+#include "rcutils/logging_macros.h"
+#endif
 namespace tf2
 {
 
@@ -176,28 +181,6 @@ void BufferCore::clear()
       }
     }
   }
-}
-
-bool BufferCore::setTransform(
-  const geometry_msgs::msg::TransformStamped & transform,
-  const std::string & authority, bool is_static)
-{
-  tf2::Transform tf2_transform(tf2::Quaternion(
-      transform.transform.rotation.x,
-      transform.transform.rotation.y,
-      transform.transform.rotation.z,
-      transform.transform.rotation.w),
-    tf2::Vector3(
-      transform.transform.translation.x,
-      transform.transform.translation.y,
-      transform.transform.translation.z));
-  TimePoint time_point(std::chrono::nanoseconds(transform.header.stamp.nanosec) +
-    std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::seconds(
-        transform.header.stamp.sec)));
-  return setTransformImpl(
-    tf2_transform, transform.header.frame_id, transform.child_frame_id,
-    time_point, authority, is_static);
 }
 
 bool BufferCore::setTransformImpl(
@@ -576,19 +559,21 @@ struct TransformAccum
   tf2::Vector3 result_vec;
 };
 
-geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
+tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf2(
   const std::string & tracking_frame, const std::string & observation_frame,
   const TimePoint & time, const tf2::Duration & averaging_interval) const
 {
   // ref point is origin of tracking_frame, ref_frame = obs_frame
-  return lookupVelocity(
+  return lookupVelocityTf2(
     tracking_frame, observation_frame, observation_frame, tf2::Vector3(
       0, 0,
       0), tracking_frame, time,
     averaging_interval);
 }
 
-geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
+
+
+tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf2(
   const std::string & tracking_frame, const std::string & observation_frame,
   const std::string & reference_frame, const tf2::Vector3 & reference_point,
   const std::string & reference_point_frame,
@@ -673,83 +658,39 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
   tf2::Vector3 delta = rp_desired - rp_orig;
   out_vel = out_vel + out_rot * delta;
 
-  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-    tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5).time_since_epoch());
-  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
-    tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5).time_since_epoch());
-  geometry_msgs::msg::VelocityStamped velocity;
-  velocity.header.stamp.sec = static_cast<int32_t>(s.count());
-  velocity.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  velocity.header.frame_id = reference_frame;
-  velocity.body_frame_id = tracking_frame;
+  const tf2::TimePoint out_time = tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5);
 
-  velocity.velocity.linear.x = out_vel.x();
-  velocity.velocity.linear.y = out_vel.y();
-  velocity.velocity.linear.z = out_vel.z();
-  velocity.velocity.angular.x = out_rot.x();
-  velocity.velocity.angular.y = out_rot.y();
-  velocity.velocity.angular.z = out_rot.z();
-
-  return velocity;
+  return tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>>(
+    {out_vel, out_rot}, out_time,
+    reference_frame);
 }
 
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
+tf2::Stamped<tf2::Transform>
+BufferCore::lookupTransformTf2(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time) const
 {
-  tf2::Transform transform;
-  TimePoint time_out;
-  lookupTransformImpl(target_frame, source_frame, time, transform, time_out);
-  geometry_msgs::msg::TransformStamped msg;
-  msg.transform.translation.x = transform.getOrigin().x();
-  msg.transform.translation.y = transform.getOrigin().y();
-  msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
-  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-    time_out.time_since_epoch());
-  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
-    time_out.time_since_epoch());
-  msg.header.stamp.sec = static_cast<int32_t>(s.count());
-  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  msg.header.frame_id = target_frame;
-  msg.child_frame_id = source_frame;
-
-  return msg;
+  tf2::Stamped<tf2::Transform> stamped_transform;
+  lookupTransformImpl(
+    target_frame, source_frame, time, stamped_transform,
+    stamped_transform.stamp_);
+  stamped_transform.frame_id_ = target_frame;
+  return stamped_transform;
 }
 
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
+tf2::Stamped<tf2::Transform>
+BufferCore::lookupTransformTf2(
   const std::string & target_frame, const TimePoint & target_time,
   const std::string & source_frame, const TimePoint & source_time,
   const std::string & fixed_frame) const
 {
-  tf2::Transform transform;
-  TimePoint time_out;
+  tf2::Stamped<tf2::Transform> stamped_transform;
+
   lookupTransformImpl(
     target_frame, target_time, source_frame, source_time,
-    fixed_frame, transform, time_out);
-  geometry_msgs::msg::TransformStamped msg;
-  msg.transform.translation.x = transform.getOrigin().x();
-  msg.transform.translation.y = transform.getOrigin().y();
-  msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
-  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-    time_out.time_since_epoch());
-  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
-    time_out.time_since_epoch());
-  msg.header.stamp.sec = static_cast<int32_t>(s.count());
-  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  msg.header.frame_id = target_frame;
-  msg.child_frame_id = source_frame;
+    fixed_frame, stamped_transform, stamped_transform.stamp_);
 
-  return msg;
+  return stamped_transform;
 }
 
 void BufferCore::lookupTransformImpl(

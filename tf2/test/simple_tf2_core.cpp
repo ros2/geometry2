@@ -36,7 +36,9 @@
 #include <vector>
 
 #include "builtin_interfaces/msg/time.hpp"
+#ifdef SHOULD_USE_TF2_VER
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#endif
 
 #include "tf2/buffer_core.h"
 #include "tf2/convert.h"
@@ -44,6 +46,7 @@
 #include "tf2/exceptions.h"
 #include "tf2/time.h"
 
+#ifdef SHOULD_USE_TF2_VER
 TEST(tf2, setTransformFail)
 {
   tf2::BufferCore tfc;
@@ -137,13 +140,13 @@ TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
         std::chrono::seconds(
           1))), tf2::LookupException);
 }
-
+#endif
 TEST(tf2_canTransform, Nothing_Exists)
 {
   tf2::BufferCore tfc;
   EXPECT_FALSE(tfc.canTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))));
 }
-
+#ifdef SHOULD_USE_TF2_VER
 TEST(tf2_lookupTransform, LookupException_One_Exists)
 {
   tf2::BufferCore tfc;
@@ -258,7 +261,7 @@ TEST(tf2_clear, LookUp_Static_Transfrom_Fail)
     auto trans = tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2)));
   );
 }
-
+#endif
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();

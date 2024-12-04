@@ -37,13 +37,13 @@
 #include <thread>
 #include <utility>
 
-#include "tf2/buffer_core.h"
 #include "tf2/time.h"
 #include "tf2_ros/visibility_control.h"
 
 #include "tf2_msgs/msg/tf_message.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+#include "tf2_ros/buffer.h"
 #include "tf2_ros/qos.hpp"
 
 namespace tf2_ros
@@ -90,14 +90,14 @@ public:
    */
   TF2_ROS_PUBLIC
   explicit TransformListener(
-    tf2::BufferCore & buffer,
+    tf2_ros::BufferCoreROSConversions & buffer,
     bool spin_thread = true,
     bool static_only = false);
 
   /** \brief Node constructor */
   template<class NodeT, class AllocatorT = std::allocator<void>>
   TransformListener(
-    tf2::BufferCore & buffer,
+    tf2_ros::BufferCoreROSConversions & buffer,
     NodeT && node,
     bool spin_thread = true,
     const rclcpp::QoS & qos = DynamicListenerQoS(),
@@ -124,7 +124,7 @@ public:
   /** \brief Node interface constructor */
   template<class AllocatorT = std::allocator<void>>
   TransformListener(
-    tf2::BufferCore & buffer,
+    tf2_ros::BufferCoreROSConversions & buffer,
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
     rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
     rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
@@ -238,7 +238,7 @@ private:
     message_subscription_tf_ {nullptr};
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr
     message_subscription_tf_static_ {nullptr};
-  tf2::BufferCore & buffer_;
+  tf2_ros::BufferCoreROSConversions & buffer_;
   tf2::TimePoint last_update_;
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_ {nullptr};
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_interface_ {nullptr};
@@ -257,7 +257,7 @@ public:
    * \see the simplified TransformListener documentation
    */
   TF2_ROS_PUBLIC
-  explicit StaticTransformListener(tf2::BufferCore & buffer, bool spin_thread = true)
+  explicit StaticTransformListener(tf2_ros::BufferCoreROSConversions & buffer, bool spin_thread = true)
   : TransformListener(buffer, spin_thread, true)
   {
   }
@@ -265,7 +265,7 @@ public:
   /** \brief Node constructor */
   template<class NodeT, class AllocatorT = std::allocator<void>>
   StaticTransformListener(
-    tf2::BufferCore & buffer,
+    tf2_ros::BufferCoreROSConversions & buffer,
     NodeT && node,
     bool spin_thread = true,
     const rclcpp::QoS & static_qos = StaticListenerQoS(),
@@ -286,7 +286,7 @@ public:
   /** \brief Node interface constructor */
   template<class AllocatorT = std::allocator<void>>
   StaticTransformListener(
-    tf2::BufferCore & buffer,
+    tf2_ros::BufferCoreROSConversions & buffer,
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
     rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
     rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,

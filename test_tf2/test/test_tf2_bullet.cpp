@@ -96,7 +96,7 @@ int main(int argc, char ** argv)
   t.transform.rotation.x = 1;
   t.transform.rotation.y = 0;
   t.transform.rotation.z = 0;
-  t.header.stamp = tf2_ros::toMsg(tf2::timeFromSec(2));
+  t.header.stamp = tf2::toMsg(tf2::timeFromSec(2));
   t.header.frame_id = "A";
   t.child_frame_id = "B";
   tf_buffer->setTransform(t, "test");

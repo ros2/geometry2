@@ -66,7 +66,7 @@ template<>
 inline
 tf2::TimePoint getTimestamp(const sensor_msgs::msg::PointCloud2 & p)
 {
-  return tf2_ros::fromMsg(p.header.stamp);
+  return tf2::fromMsg(p.header.stamp);
 }
 
 // method to extract frame id from object

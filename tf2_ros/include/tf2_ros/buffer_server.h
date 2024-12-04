@@ -45,7 +45,7 @@
 #include <string>
 
 #include "tf2/time.h"
-#include "tf2/buffer_core_interface.h"
+#include "tf2_ros/buffer.h"
 #include "tf2_ros/visibility_control.h"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -56,7 +56,7 @@
 
 namespace tf2_ros
 {
-/** \brief Action server for the action-based implementation of tf2::BufferCoreInterface.
+/** \brief Action server for the action-based implementation of tf2_ros::BufferCoreROSConversionsInterface.
  *
  * Use this class with a tf2_ros::TransformListener in the same process.
  * You can use this class with a tf2_ros::BufferClient in a different process.
@@ -75,7 +75,7 @@ public:
    */
   template<typename NodePtr>
   BufferServer(
-    const tf2::BufferCoreInterface & buffer,
+    const tf2_ros::BufferCoreROSConversionsInterface & buffer,
     NodePtr node,
     const std::string & ns,
     tf2::Duration check_period = tf2::durationFromSec(0.01))
@@ -120,7 +120,7 @@ private:
   TF2_ROS_PUBLIC
   geometry_msgs::msg::TransformStamped lookupTransform(GoalHandle gh);
 
-  const tf2::BufferCoreInterface & buffer_;
+  const tf2_ros::BufferCoreROSConversionsInterface & buffer_;
   rclcpp::Logger logger_;
   rclcpp_action::Server<LookupTransformAction>::SharedPtr server_;
   std::list<GoalInfo> active_goals_;

@@ -19,6 +19,7 @@ endif()
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
   src/tf2_eigen_kdl.cpp
@@ -28,7 +29,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} PUBLIC
   orocos-kdl
-  tf2::tf2)
+  tf2::tf2
+  tf2_geometry_msgs::tf2_geometry_msgs)
 if(TARGET Eigen3::Eigen)
   # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
   target_link_libraries(${PROJECT_NAME} PUBLIC Eigen3::Eigen)
@@ -53,6 +55,7 @@ ament_export_dependencies(
   orocos_kdl_vendor
   orocos_kdl
   tf2
+  tf2_geometry_msgs
 )
 
 # Export old-style CMake variables

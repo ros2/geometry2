@@ -45,9 +45,7 @@
 #include <vector>
 
 #include "LinearMath/Transform.h"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "geometry_msgs/msg/velocity_stamped.hpp"
-#include "rcutils/logging_macros.h"
+
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
@@ -89,7 +87,7 @@ static constexpr Duration BUFFER_CORE_DEFAULT_CACHE_TIME = std::chrono::seconds(
  *
  * All function calls which pass frame ids can potentially throw the exception tf::LookupException
  */
-class BufferCore : public BufferCoreInterface
+class BufferCore : virtual public BufferCoreInterface
 {
 public:
   /************* Constants ***********************/
@@ -111,55 +109,49 @@ public:
   TF2_PUBLIC
   void clear() override;
 
-  /** \brief Add transform information to the tf data structure
-   * \param transform The transform to store
-   * \param authority The source of the information for this transform
-   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
-   * \return True unless an error occured
-   */
-  TF2_PUBLIC
-  bool setTransform(
-    const geometry_msgs::msg::TransformStamped & transform,
-    const std::string & authority, bool is_static = false);
-
   /*********** Accessors *************/
-
-  /** \brief Get the transform between two frames by frame ID.
-   * \param target_frame The frame to which data should be transformed
-   * \param source_frame The frame where the data originated
-   * \param time The time at which the value of the transform is desired. (0 will get the latest)
-   * \return The transform between the frames
+  /**
+   * \brief Get the transform between two frames by frame ID.
+   * \param target_frame The frame to which data should be transformed.
+   * \param source_frame The frame where the data originated.
+   * \param time The time at which the value of the transform is desired (0 will get the latest).
+   * \return The transform between the frames.
    *
    * Possible exceptions tf2::LookupException, tf2::ConnectivityException,
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_PUBLIC
-  geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame, const std::string & source_frame,
-    const TimePoint & time) const override;
+  tf2::Stamped<tf2::Transform>
+  lookupTransformTf2(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time) const override;
 
-  /** \brief Get the transform between two frames by frame ID assuming fixed frame.
-   * \param target_frame The frame to which data should be transformed
-   * \param target_time The time to which the data should be transformed. (0 will get the latest)
-   * \param source_frame The frame where the data originated
-   * \param source_time The time at which the source_frame should be evaluated. (0 will get the latest)
+
+  /**
+   * \brief Get the transform between two frames by frame ID assuming fixed frame.
+   * \param target_frame The frame to which data should be transformed.
+   * \param target_time The time to which the data should be transformed (0 will get the latest).
+   * \param source_frame The frame where the data originated.
+   * \param source_time The time at which the source_frame should be evaluated
+   *   (0 will get the latest).
    * \param fixed_frame The frame in which to assume the transform is constant in time.
-   * \return The transform between the frames
+   * \return The transform between the frames.
    *
    * Possible exceptions tf2::LookupException, tf2::ConnectivityException,
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
-
   TF2_PUBLIC
-  geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame, const TimePoint & target_time,
-    const std::string & source_frame, const TimePoint & source_time,
+  tf2::Stamped<tf2::Transform>
+  lookupTransformTf2(
+    const std::string & target_frame,
+    const tf2::TimePoint & target_time,
+    const std::string & source_frame,
+    const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const override;
 
   TF2_PUBLIC
-  geometry_msgs::msg::VelocityStamped lookupVelocity(
+  tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> lookupVelocityTf2(
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
 
@@ -174,11 +166,18 @@ public:
    * TransformReference::MaxDepthException
    */
   TF2_PUBLIC
-  geometry_msgs::msg::VelocityStamped lookupVelocity(
+  tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> lookupVelocityTf2(
     const std::string & tracking_frame, const std::string & observation_frame,
     const std::string & reference_frame, const tf2::Vector3 & reference_point,
     const std::string & reference_point_frame,
     const TimePoint & time, const tf2::Duration & duration) const;
+
+  bool setTransformTf2(
+    const tf2::Transform & transform_in, const std::string frame_id,
+    const std::string child_frame_id, const TimePoint stamp,
+    const std::string & authority, bool is_static) {
+      return setTransformImpl(transform_in, frame_id, child_frame_id, stamp, authority, is_static);
+    }
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform

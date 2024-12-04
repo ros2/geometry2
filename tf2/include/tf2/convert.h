@@ -35,8 +35,6 @@
 #include <array>
 #include <string>
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rosidl_runtime_cpp/traits.hpp"
 #include "tf2/exceptions.h"
 #include "tf2/impl/convert.h"
 #include "tf2/transform_datatypes.h"
@@ -44,20 +42,6 @@
 
 namespace tf2
 {
-
-/**\brief The templated function expected to be able to do a transform
- *
- * This is the method which tf2 will use to try to apply a transform for any given datatype.
- * \param data_in[in] The data to be transformed.
- * \param data_out[inout] A reference to the output data. Note this can point to data in and the method should be mutation safe.
- * \param transform[in] The transform to apply to data_in to fill data_out.
- *
- * This method needs to be implemented by client library developers
- */
-template<class T>
-void doTransform(
-  const T & data_in, T & data_out,
-  const geometry_msgs::msg::TransformStamped & transform);
 
 /**\brief Get the timestamp from data
  * \param[in] t The data input.
@@ -136,20 +120,6 @@ B toMsg(const A & a);
  */
 template<typename A, typename B>
 void fromMsg(const A & a, B & b);
-
-/**\brief Function that converts any type to any type (messages or not).
- * Matching toMsg and from Msg conversion functions need to exist.
- * If they don't exist or do not apply (for example, if your two
- * classes are ROS messages), just write a specialization of the function.
- * \param a an object to convert from
- * \param b the object to convert to
- */
-template<class A, class B>
-void convert(const A & a, B & b)
-{
-  impl::Converter<rosidl_generator_traits::is_message<A>::value,
-    rosidl_generator_traits::is_message<B>::value>::convert(a, b);
-}
 
 template<class A>
 void convert(const A & a1, A & a2)
