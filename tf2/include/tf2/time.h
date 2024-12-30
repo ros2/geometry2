@@ -29,12 +29,19 @@
 #ifndef TF2__TIME_H_
 #define TF2__TIME_H_
 
-# define TIME_HEADER_DEPERCATION This header is obsolete, please include "tf2/time.hpp" instead
-  # ifdef _MSC_VER
-    # pragma message(TIME_HEADER_DEPERCATION)
-  # else
-    # warning TIME_HEADER_DEPERCATION
-  # endif
+#ifdef __GNUC__
+#define TF2_TIME_H_PRAGMA(X) _Pragma(#X)
+#define TF2_TIME_H_DEPRECATED(MSG) TF2_TIME_H_PRAGMA(GCC warning MSG)
+#elif defined(_MSC_VER)
+#define TF2_TIME_H_STRINGIZE_(MSG) #MSG
+#define TF2_TIME_H_STRINGIZE(MSG) TF2_TIME_H_STRINGIZE_(MSG)
+#define TF2_TIME_H_DEPRECATED(MSG) \
+  __pragma(message(__FILE__ "(" TF2_TIME_H_STRINGIZE(__LINE__) ") : Warning: " MSG))
+#else
+#define TF2_TIME_H_DEPRECATED(MSG)
+#endif
+
+TF2_TIME_H_DEPRECATED("This header is obsolete, please include 'tf2/time.hpp' instead")  // NOLINT
 
 #include <tf2/time.hpp>
 
