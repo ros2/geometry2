@@ -22,6 +22,7 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 
+  <exec_depend>python_orocos_kdl_vendor</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
