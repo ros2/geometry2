@@ -1613,11 +1613,11 @@ void BufferCore::_chainAsVector(
     }
     // Erase all duplicate items from frame_chain
     if (n > 0u) {
-      source_frame_chain.erase(source_frame_chain.begin() + (n - 1u), source_frame_chain.end());
+      source_frame_chain.erase(source_frame_chain.begin() + (n + 1u), source_frame_chain.end());
     }
 
     if (m < target_frame_chain.size()) {
-      for (size_t i = 0u; i <= m; ++i) {
+      for (size_t i = m; i >= 0; --i) {
         source_frame_chain.push_back(target_frame_chain[i]);
       }
     }
