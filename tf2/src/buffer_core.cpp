@@ -1616,7 +1616,7 @@ void BufferCore::_chainAsVector(
     }
 
     int i = m + 1;
-    while(i >= 0) {
+    while (i >= 0) {
       source_frame_chain.push_back(target_frame_chain[i]);
       --i;
     }
