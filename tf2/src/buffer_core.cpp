@@ -1617,7 +1617,7 @@ void BufferCore::_chainAsVector(
     }
 
     if (m < target_frame_chain.size()) {
-      for (size_t i = m; i >= 0; --i) {
+      for (int i = m; i >= 0; --i) {
         source_frame_chain.push_back(target_frame_chain[i]);
       }
     }
