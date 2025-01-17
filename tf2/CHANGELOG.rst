@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.12 (2025-01-17)
+--------------------
+* Fixing Scalar Header Guards (`#755 <https://github.com/ros2/geometry2/issues/755>`_)
+* Contributors: Lucas Wendland
+
 0.25.11 (2025-01-14)
 --------------------
 
