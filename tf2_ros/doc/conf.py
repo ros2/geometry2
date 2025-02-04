@@ -215,9 +215,9 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/': None,
-    'http://docs.opencv.org/3.0-last-rst/': None,
-    'http://docs.scipy.org/doc/numpy': None
+    "python": ('http://docs.python.org/3', None),
+    "opencv": ('http://docs.opencv.org/3.0-last-rst', None),
+    "numpy": ('http://docs.scipy.org/doc/numpy', None)
     }
 
 autoclass_content = "both"
