@@ -93,6 +93,11 @@ if(BUILD_TESTING)
     target_link_libraries(test_cache_unittest tf2)
   endif()
 
+  ament_add_gtest(test_chainAsVector test/chainAsVector.cpp)
+  if(TARGET test_chainAsVector)
+    target_link_libraries(test_chainAsVector tf2)
+  endif()
+
   ament_add_google_benchmark(cache_benchmark test/cache_benchmark.cpp)
   if(TARGET cache_benchmark)
     target_link_libraries(cache_benchmark tf2)
