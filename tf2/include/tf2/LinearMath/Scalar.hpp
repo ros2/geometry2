@@ -14,8 +14,8 @@ subject to the following restrictions:
 
 
 
-#ifndef TF2__LINEARMATH__SCALAR_H_
-#define TF2__LINEARMATH__SCALAR_H_
+#ifndef TF2__LINEARMATH__SCALAR_HPP_
+#define TF2__LINEARMATH__SCALAR_HPP_
 
 #ifdef TF2_MANAGED_CODE
 //Aligned data types not supported in managed code
@@ -414,4 +414,4 @@ struct tf2TypedObject
 		return m_objectType;
 	}
 };
-#endif  // TF2__LINEARMATH__SCALAR_H_
+#endif  // TF2__LINEARMATH__SCALAR_HPP_
