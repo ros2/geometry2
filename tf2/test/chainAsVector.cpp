@@ -46,19 +46,19 @@ TEST(tf2_chainAsVector, ValidChain)
   // Populate buffer with transforms: C -> B -> A (fixed) and D -> A
   geometry_msgs::msg::TransformStamped transform;
 
-  // B -> A
+  // A -> B
   transform.header.stamp.sec = 1;
   transform.header.frame_id = "A";
   transform.child_frame_id = "B";
   transform.transform.rotation.w = 1.0;
   ASSERT_TRUE(buffer.setTransform(transform, "test"));
 
-  // C -> B
+  // B -> C
   transform.header.frame_id = "B";
   transform.child_frame_id = "C";
   ASSERT_TRUE(buffer.setTransform(transform, "test"));
 
-  // D -> A
+  // A -> D
   transform.header.frame_id = "A";
   transform.child_frame_id = "D";
   ASSERT_TRUE(buffer.setTransform(transform, "test"));
@@ -95,7 +95,7 @@ TEST(tf2_chainAsVector, ConnectivityError)
 {
   tf2::BufferCore buffer;
 
-  // Add isolated transform D -> C (no connection to fixed frame A)
+  // Add isolated transform C -> D (no connection to fixed frame A)
   geometry_msgs::msg::TransformStamped transform;
   transform.header.stamp.sec = 1;
   transform.header.frame_id = "C";

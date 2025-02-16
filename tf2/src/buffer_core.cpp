@@ -483,9 +483,12 @@ tf2::TF2Error BufferCore::walkToTopParent(
     }
 
     if (m < reverse_frame_chain.size()) {
-      int i = m + 1;
-      while (i >= 0) {
+      size_t i = m + 1;
+      while (true) {
         frame_chain->push_back(reverse_frame_chain[i]);
+        if(i == 0u) {
+          break;
+        }
         --i;
       }
     }
@@ -1600,26 +1603,29 @@ void BufferCore::_chainAsVector(
         CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
         assert(0);
     }
+  } 
 
-    size_t m = target_frame_chain.size();
-    size_t n = source_frame_chain.size();
-    while (m > 0u && n > 0u) {
-      --m;
-      --n;
-      if (source_frame_chain[n] != target_frame_chain[m]) {
-        break;
-      }
+  size_t m = target_frame_chain.size();
+  size_t n = source_frame_chain.size();
+  while (m > 0u && n > 0u) {
+    --m;
+    --n;
+    if (source_frame_chain[n] != target_frame_chain[m]) {
+      break;
     }
-    // Erase all duplicate items from frame_chain
-    if (n > 0u) {
-      source_frame_chain.erase(source_frame_chain.begin() + (n + 1u), source_frame_chain.end());
-    }
+  }
+  // Erase all duplicate items from frame_chain
+  if (n > 0u) {
+    source_frame_chain.erase(source_frame_chain.begin() + (n + 1u), source_frame_chain.end());
+  }
 
-    int i = m + 1;
-    while (i >= 0) {
-      source_frame_chain.push_back(target_frame_chain[i]);
-      --i;
+  size_t i = m + 1;
+  while (true) {
+    source_frame_chain.push_back(target_frame_chain[i]);
+    if(i == 0u) {
+      break;
     }
+    --i;
   }
 
   // Write each element of source_frame_chain as string
