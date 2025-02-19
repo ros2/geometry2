@@ -339,6 +339,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
   // Short circuit if zero length transform to allow lookups on non existant links
   if (source_id == target_id) {
     f.finalize(Identity, time);
+    updateStaticOnlyHistory(true);
     return tf2::TF2Error::TF2_NO_ERROR;
   }
 
@@ -354,6 +355,8 @@ tf2::TF2Error BufferCore::walkToTopParent(
   CompactFrameID frame = source_id;
   CompactFrameID top_parent = frame;
   uint32_t depth = 0;
+  bool is_static_from_source = true;
+  std::unordered_map<CompactFrameID, bool> cache_type_from_source;
 
   TF2Error error_code = TF2Error::TF2_NO_ERROR;
   TF2Error extrapolation_error_code = TF2Error::TF2_NO_ERROR;
@@ -372,6 +375,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
       break;
     }
 
+    if (hasStaticTFsRequestsOnly() && dynamic_cast<StaticCache *>(cache.get()) == nullptr) {
+      is_static_from_source = false;
+    }
+
     CompactFrameID parent = f.gather(
       cache, time, &extrapolation_error_string,
       &extrapolation_error_code);
@@ -385,6 +392,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
     // Early out... target frame is a direct parent of the source frame
     if (frame == target_id) {
       f.finalize(TargetParentOfSource, time);
+      updateStaticOnlyHistory(is_static_from_source);
       return tf2::TF2Error::TF2_NO_ERROR;
     }
 
@@ -392,6 +400,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
 
     top_parent = frame;
     frame = parent;
+
+    if (hasStaticTFsRequestsOnly()) {
+      cache_type_from_source.insert({frame, is_static_from_source});
+    }
 
     ++depth;
     if (depth > MAX_GRAPH_DEPTH) {
@@ -409,6 +421,8 @@ tf2::TF2Error BufferCore::walkToTopParent(
   frame = target_id;
   depth = 0;
   std::vector<CompactFrameID> reverse_frame_chain;
+  bool is_static_from_target = true;
+  std::unordered_map<CompactFrameID, bool> cache_type_from_target;
 
   while (frame != top_parent) {
     TimeCacheInterfacePtr cache = getFrame(frame);
@@ -418,6 +432,10 @@ tf2::TF2Error BufferCore::walkToTopParent(
 
     if (!cache) {
       break;
+    }
+
+    if (hasStaticTFsRequestsOnly() && dynamic_cast<StaticCache *>(cache.get()) == nullptr) {
+      is_static_from_target = false;
     }
 
     CompactFrameID parent = f.gather(cache, time, error_string, &error_code);
@@ -438,12 +456,17 @@ tf2::TF2Error BufferCore::walkToTopParent(
       if (frame_chain) {
         frame_chain->swap(reverse_frame_chain);
       }
+      updateStaticOnlyHistory(is_static_from_target);
       return tf2::TF2Error::TF2_NO_ERROR;
     }
 
     f.accum(false);
 
     frame = parent;
+
+    if (hasStaticTFsRequestsOnly()) {
+      cache_type_from_target.insert({frame, is_static_from_target});
+    }
 
     ++depth;
     if (depth > MAX_GRAPH_DEPTH) {
@@ -494,6 +517,29 @@ tf2::TF2Error BufferCore::walkToTopParent(
         --i;
         frame_chain->push_back(reverse_frame_chain[i]);
       }
+    }
+  }
+
+  if (hasStaticTFsRequestsOnly()) {
+    if (target_id == top_parent || source_id == top_parent) {
+      // No early common parent, one of frame is TF root
+      updateStaticOnlyHistory(is_static_from_source && is_static_from_target);
+    } else {
+      auto iter_over_caches =
+        [&](
+          const std::unordered_map<CompactFrameID, bool> & cache_type_from_source,
+          const std::unordered_map<CompactFrameID, bool> & cache_type_from_target) -> void {
+        for (const auto & ct1 : cache_type_from_source) {
+          for (const auto & ct2 : cache_type_from_target) {
+            if (ct1.first == ct2.first) {
+              // First common parent
+              updateStaticOnlyHistory(ct1.second && ct2.second);
+              return;
+            }
+          }
+        }
+      };
+      iter_over_caches(cache_type_from_source, cache_type_from_target);
     }
   }
 
@@ -1697,5 +1743,13 @@ void BufferCore::_chainAsVector(
   for (size_t i = 0u; i < source_frame_chain.size(); ++i) {
     output.push_back(lookupFrameString(source_frame_chain[i]));
   }
+}
+
+void BufferCore::updateStaticOnlyHistory(const bool is_static) const
+{
+  if (!only_static_requested_) {
+    return;
+  }
+  only_static_requested_ = is_static;
 }
 }  // namespace tf2

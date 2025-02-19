@@ -254,6 +254,9 @@ public:
   TF2_PUBLIC
   bool isUsingDedicatedThread() const {return using_dedicated_thread_;}
 
+  // Whether only static transforms have been requested till now.
+  TF2_PUBLIC
+  bool hasStaticTFsRequestsOnly() const {return only_static_requested_;}
 
   /* Backwards compatability section for tf::Transformer you should not use these
    */
@@ -348,6 +351,12 @@ private:
 
   /// How long to cache transform history
   tf2::Duration cache_time_;
+
+  // If this is true, only static transforms have been requested till now.
+  mutable bool only_static_requested_{true};
+
+  // A map describing wheter specific lookups are static or dynamic
+  mutable std::unordered_map<uint32_t, bool> map_lookup_is_static_;
 
   typedef uint32_t TransformableCallbackHandle;
 
@@ -465,6 +474,9 @@ private:
   bool canTransformInternal(
     CompactFrameID target_id, CompactFrameID source_id,
     const TimePoint & time, std::string * error_msg) const;
+
+  // Update the history of static transforms
+  void updateStaticOnlyHistory(const bool is_static) const;
 };
 }  // namespace tf2
 

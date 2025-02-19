@@ -30,6 +30,7 @@ add_library(${PROJECT_NAME} SHARED
   src/buffer_server.cpp
   src/transform_broadcaster.cpp
   src/static_transform_broadcaster.cpp
+  src/managed_transform_buffer.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -213,6 +214,14 @@ if(BUILD_TESTING)
 
   ament_add_gtest(${PROJECT_NAME}_test_listener test/listener_unittest.cpp)
   target_link_libraries(${PROJECT_NAME}_test_listener
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   ${builtin_interfaces_TARGETS}
+    #   rclcpp::rclcpp
+  )
+
+  ament_add_gtest(${PROJECT_NAME}_test_managed_transform_buffer test/test_managed_transform_buffer.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_managed_transform_buffer
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
     #   ${builtin_interfaces_TARGETS}
