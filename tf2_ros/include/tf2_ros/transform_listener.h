@@ -105,6 +105,10 @@ public:
   TF2_ROS_PUBLIC
   virtual ~TransformListener();
 
+  /// Callback function for ros message subscriptoin
+  TF2_ROS_PUBLIC
+  virtual void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
+
 private:
   template<class NodeT, class AllocatorT = std::allocator<void>>
   void init(
@@ -153,9 +157,7 @@ private:
         node, "/tf_static", static_qos, std::move(static_cb), static_options);
     }
   }
-  /// Callback function for ros message subscriptoin
-  TF2_ROS_PUBLIC
-  virtual void subscription_callback(tf2_msgs::msg::TFMessage::ConstSharedPtr msg, bool is_static);
+  
 
   // ros::CallbackQueue tf_message_callback_queue_;
   bool spin_thread_{false};
