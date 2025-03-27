@@ -29,7 +29,6 @@
 import PyKDL
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.point_cloud2 import create_cloud, read_points
-import rospy  # noqa(E401)
 import tf2_ros
 
 
