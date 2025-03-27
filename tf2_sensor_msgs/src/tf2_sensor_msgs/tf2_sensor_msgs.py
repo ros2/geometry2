@@ -28,7 +28,7 @@
 
 import PyKDL
 from sensor_msgs.msg import PointCloud2
-from sensor_msgs.point_cloud2 import create_cloud, read_points
+from sensor_msgs_py.point_cloud2 import create_cloud, read_points
 import tf2_ros
 
 
