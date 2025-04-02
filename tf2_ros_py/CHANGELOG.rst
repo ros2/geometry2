@@ -2,6 +2,14 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix external docs mappings  (backport `#757 <https://github.com/ros2/geometry2/issues/757>`_) (`#759 <https://github.com/ros2/geometry2/issues/759>`_)
+  (cherry picked from commit 00e182217b3d0f668adb639923b6cc4e2ddfda59)
+  Co-authored-by: Emmanuel <EmmanuelMess@users.noreply.github.com>
+  Co-authored-by: Christophe Bedard <christophe.bedard@apex.ai>
+* Contributors: mergify[bot]
+
 0.36.8 (2025-01-15)
 -------------------
 

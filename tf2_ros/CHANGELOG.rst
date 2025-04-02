@@ -2,6 +2,17 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix: add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_) (`#763 <https://github.com/ros2/geometry2/issues/763>`_)
+  (cherry picked from commit 4ec4f9684d03a903da951ab6d4d08cbc87de49ee)
+  Co-authored-by: Yuyuan Yuan <az6980522@gmail.com>
+* Fix external docs mappings  (backport `#757 <https://github.com/ros2/geometry2/issues/757>`_) (`#759 <https://github.com/ros2/geometry2/issues/759>`_)
+  (cherry picked from commit 00e182217b3d0f668adb639923b6cc4e2ddfda59)
+  Co-authored-by: Emmanuel <EmmanuelMess@users.noreply.github.com>
+  Co-authored-by: Christophe Bedard <christophe.bedard@apex.ai>
+* Contributors: mergify[bot]
+
 0.36.8 (2025-01-15)
 -------------------
 
