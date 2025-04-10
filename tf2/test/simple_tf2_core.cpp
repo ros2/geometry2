@@ -129,11 +129,11 @@ TEST(tf2, CancelTransformableRequest)
   tf2::TransformableRequestHandle received_request_handle;
   std::string received_source_frame;
   auto cb = [&received_request_handle, &received_source_frame](
-              tf2::TransformableRequestHandle request_handle, const std::string &,
-              const std::string & source_frame, tf2::TimePoint, tf2::TransformableResult) {
-    received_request_handle = request_handle;
-    received_source_frame = source_frame;
-  };
+    tf2::TransformableRequestHandle request_handle, const std::string &,
+    const std::string & source_frame, tf2::TimePoint, tf2::TransformableResult) {
+      received_request_handle = request_handle;
+      received_source_frame = source_frame;
+    };
 
   /* Queue three requests */
   tf2::TransformableRequestHandle alpha_handle =
