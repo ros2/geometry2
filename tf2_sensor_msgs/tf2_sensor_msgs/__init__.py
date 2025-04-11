@@ -26,7 +26,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from .tf2_sensor_msgs import do_transform_cloud, transform_points
+from .tf2_sensor_msgs import do_transform_cloud
+from .tf2_sensor_msgs import transform_points
 
 __all__ = [
     'do_transform_cloud',
