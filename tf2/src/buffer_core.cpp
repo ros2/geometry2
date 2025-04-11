@@ -1347,9 +1347,9 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
   std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
 
-  V_TransformableRequest::iterator remove_it = std::remove_if(
+  V_TransformableRequest::iterator remove_it = std::stable_partition(
     transformable_requests_.begin(), transformable_requests_.end(),
-    [handle](TransformableRequest req) {return handle == req.request_handle;});
+    [handle](TransformableRequest req) {return handle != req.request_handle;});
   for (V_TransformableRequest::iterator it = remove_it; it != transformable_requests_.end(); ++it) {
     transformable_callbacks_.erase(it->cb_handle);
   }

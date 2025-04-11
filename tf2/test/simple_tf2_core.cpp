@@ -115,6 +115,68 @@ TEST(tf2, setTransformValidWithCallback)
   EXPECT_TRUE(transform_available);
 }
 
+TEST(tf2, CancelTransformableRequest)
+{
+  tf2::BufferCore buffer;
+
+  // Input
+  const std::string target_frame = "target";
+  const std::string alpha_frame = "alpha";
+  const std::string beta_frame = "beta";
+  const std::string gamma_frame = "gamma";
+  const tf2::TimePoint time_point = tf2::timeFromSec(1.0);
+
+  tf2::TransformableRequestHandle received_request_handle;
+  std::string received_source_frame;
+  auto cb = [&received_request_handle, &received_source_frame](
+    tf2::TransformableRequestHandle request_handle, const std::string &,
+    const std::string & source_frame, tf2::TimePoint, tf2::TransformableResult) {
+      received_request_handle = request_handle;
+      received_source_frame = source_frame;
+    };
+
+  /* Queue three requests */
+  tf2::TransformableRequestHandle alpha_handle =
+    buffer.addTransformableRequest(cb, target_frame, alpha_frame, time_point);
+  tf2::TransformableRequestHandle beta_handle =
+    buffer.addTransformableRequest(cb, target_frame, beta_frame, time_point);
+  tf2::TransformableRequestHandle gamma_handle =
+    buffer.addTransformableRequest(cb, target_frame, gamma_frame, time_point);
+
+  /* Cancel the first */
+  buffer.cancelTransformableRequest(alpha_handle);
+
+  /* Make sure the remaining two requests are still working.
+       See https://github.com/ros2/geometry2/issues/766 for details. */
+  geometry_msgs::msg::TransformStamped transform_msg;
+  transform_msg.header.frame_id = target_frame;
+  transform_msg.header.stamp = builtin_interfaces::msg::Time();
+  transform_msg.header.stamp.sec = 1;
+  transform_msg.header.stamp.nanosec = 0;
+  transform_msg.transform.rotation.w = 1;
+
+  transform_msg.child_frame_id = alpha_frame;
+  received_source_frame.clear();
+  received_request_handle = 0;
+  EXPECT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+  EXPECT_EQ(received_request_handle, 0);
+  EXPECT_TRUE(received_source_frame.empty()); /* alpha_handle was cancelled */
+
+  transform_msg.child_frame_id = beta_frame;
+  received_source_frame.clear();
+  received_request_handle = 0;
+  EXPECT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+  EXPECT_EQ(received_request_handle, beta_handle);
+  EXPECT_EQ(received_source_frame, beta_frame);
+
+  transform_msg.child_frame_id = gamma_frame;
+  received_source_frame.clear();
+  received_request_handle = 0;
+  EXPECT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+  EXPECT_EQ(received_request_handle, gamma_handle);
+  EXPECT_EQ(received_source_frame, gamma_frame);
+}
+
 TEST(tf2, setTransformInvalidQuaternion)
 {
   tf2::BufferCore tfc;
