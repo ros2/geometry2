@@ -17,6 +17,7 @@ subject to the following restrictions:
 #ifndef TF2__LINEARMATH__QUATERNION_HPP_
 #define TF2__LINEARMATH__QUATERNION_HPP_
 
+#include <cmath>
 
 #include "Vector3.hpp"
 #include "QuadWord.hpp"
