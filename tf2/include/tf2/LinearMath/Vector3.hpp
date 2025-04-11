@@ -139,11 +139,11 @@ public:
 	}
 
   /**@brief Return the distance squared between the ends of this and another vector
-   * This is symantically treating the vector like a point */
+   * This is semantically treating the vector like a point */
 	TF2SIMD_FORCE_INLINE tf2Scalar distance2(const Vector3& v) const;
 
   /**@brief Return the distance between the ends of this and another vector
-   * This is symantically treating the vector like a point */
+   * This is semantically treating the vector like a point */
 	TF2SIMD_FORCE_INLINE tf2Scalar distance(const Vector3& v) const;
 
   /**@brief Normalize this vector 
@@ -336,6 +336,10 @@ public:
 		TF2SIMD_FORCE_INLINE bool fuzzyZero() const 
 		{
 			return length2() < TF2SIMD_EPSILON;
+		}
+
+		TF2SIMD_FORCE_INLINE bool isnan() const {
+			return std::isnan(m_floats[0]) || std::isnan(m_floats[1]) || std::isnan(m_floats[2]);
 		}
 
 		TF2SIMD_FORCE_INLINE	void	serialize(struct	Vector3Data& dataOut) const;

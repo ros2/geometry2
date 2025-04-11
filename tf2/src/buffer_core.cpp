@@ -231,11 +231,7 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
-  if (std::isnan(origin_in.x()) || std::isnan(origin_in.y()) ||
-    std::isnan(origin_in.z()) ||
-    std::isnan(rotation_in.x()) || std::isnan(rotation_in.y()) ||
-    std::isnan(rotation_in.z()) || std::isnan(rotation_in.w()))
-  {
+  if (origin_in.isnan() || rotation_in.isnan()) {
     RCUTILS_LOG_ERROR(
       "TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because"
       " of a nan value in the transform (%f %f %f) (%f %f %f %f)",

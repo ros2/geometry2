@@ -468,6 +468,8 @@ TEST(TimeCache, DuplicateEntries)
 
   cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor);
 
+  EXPECT_TRUE(!(stor.translation_.isnan()));
+  EXPECT_TRUE(!(stor.rotation_.isnan()));
   EXPECT_TRUE(!std::isnan(stor.translation_.x()));
   EXPECT_TRUE(!std::isnan(stor.translation_.y()));
   EXPECT_TRUE(!std::isnan(stor.translation_.z()));

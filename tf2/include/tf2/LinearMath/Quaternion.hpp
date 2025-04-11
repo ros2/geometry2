@@ -161,6 +161,10 @@ public:
 		return tf2Sqrt(length2());
 	}
 
+	TF2SIMD_FORCE_INLINE bool isnan() const {
+		return std::isnan(m_floats[0]) || std::isnan(m_floats[1]) || std::isnan(m_floats[2]) || std::isnan(m_floats[3]);
+	}
+
   /**@brief Normalize the quaternion 
    * Such that x^2 + y^2 + z^2 +w^2 = 1 */
         TF2_PUBLIC
