@@ -82,7 +82,7 @@ tf2::TransformStorage makeItem(uint32_t nanosec, uint32_t frame_id)
   stor.frame_id_ = frame_id;
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(nanosec));
   // Initialize remaining elements.
-  stor.child_frame_id_ = 0;
+  stor.child_frame_id_ = frame_id + 1;
   setIdentity(stor);
   return stor;
 }
@@ -116,14 +116,14 @@ TEST(TimeCache, GetAllItems)
   tf2::Duration max_storage_time(std::chrono::nanoseconds(10));
   TimeCacheInternal cache(max_storage_time);
 
-  const auto item_a = makeItem(0, 0);
-  const auto item_b = makeItem(10, 1);
-  const auto item_c = makeItem(5, 2);
-  const auto item_d = makeItem(3, 3);
+  const auto item_a = makeItem(0, 1);
+  const auto item_b = makeItem(10, 2);
+  const auto item_c = makeItem(5, 3);
+  const auto item_d = makeItem(3, 4);
   // Same timestamp, different id.
-  const auto item_e = makeItem(8, 4);
-  const auto item_f = makeItem(8, 5);
-  const auto item_g = makeItem(8, 6);
+  const auto item_e = makeItem(8, 5);
+  const auto item_f = makeItem(8, 6);
+  const auto item_g = makeItem(8, 7);
 
   // Insert in order.
   cache.insertData(item_a);
@@ -251,7 +251,7 @@ TEST(TimeCache, RepeatedElements)
 
   tf2::TransformStorage stor;
   setIdentity(stor);
-  stor.frame_id_ = tf2::CompactFrameID(0);
+  stor.frame_id_ = tf2::CompactFrameID(1);
   stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(0));
 
   // Attempt to insert the same element 100 times
