@@ -58,13 +58,6 @@ public:
   }
 
   TF2_PUBLIC
-  bool isValid() const
-  {
-    return (frame_id_ != 0) &&
-           (child_frame_id_ != 0);
-  }
-
-  TF2_PUBLIC
   TransformStorage & operator=(const TransformStorage & rhs)
   {
     rotation_ = rhs.rotation_;
@@ -78,9 +71,7 @@ public:
   TF2_PUBLIC
   bool operator==(const TransformStorage & rhs) const
   {
-    return (this->isValid()) &&
-           (rhs.isValid()) &&
-           (this->rotation_ == rhs.rotation_) &&
+    return (this->rotation_ == rhs.rotation_) &&
            (this->translation_ == rhs.translation_) &&
            (this->stamp_ == rhs.stamp_) &&
            (this->frame_id_ == rhs.frame_id_) &&

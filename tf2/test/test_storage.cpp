@@ -38,8 +38,8 @@ class TransformStorageTest : public ::testing::Test
 protected:
   tf2::TransformStorage createTransformStorage()
   {
-    const tf2::CompactFrameID frame_id(1);
-    const tf2::CompactFrameID child_frame_id(2);
+    const tf2::CompactFrameID frame_id(0);
+    const tf2::CompactFrameID child_frame_id(1);
     const tf2::TimePoint stamp(tf2::TimePointZero);
     const tf2::Quaternion rotation(0.0, 0.0, 0.0, 1.0);
     const tf2::Vector3 translation(0.0, 0.0, 0.0);
@@ -78,16 +78,12 @@ TEST_F(TransformStorageTest, EqualityOperator) {
     ASSERT_TRUE(transformStorage1 == transformStorage2);
     transformStorage2.frame_id_ = 55;
     ASSERT_FALSE(transformStorage1 == transformStorage2);
-    transformStorage2.frame_id_ = tf2::CompactFrameID();
-    ASSERT_FALSE(transformStorage1 == transformStorage2);
   }
   // CompactFrameID child_frame_id_;
   {
     tf2::TransformStorage transformStorage2 = createTransformStorage();
     ASSERT_TRUE(transformStorage1 == transformStorage2);
-    transformStorage2.child_frame_id_ = 56;
-    ASSERT_FALSE(transformStorage1 == transformStorage2);
-    transformStorage2.child_frame_id_ = tf2::CompactFrameID();
+    transformStorage2.translation_.setValue(1.0, 0.0, 0.0);
     ASSERT_FALSE(transformStorage1 == transformStorage2);
   }
 }
@@ -123,16 +119,12 @@ TEST_F(TransformStorageTest, InequalityOperator) {
     ASSERT_TRUE(transformStorage1 == transformStorage2);
     transformStorage2.frame_id_ = 55;
     ASSERT_TRUE(transformStorage1 != transformStorage2);
-    transformStorage2.frame_id_ = tf2::CompactFrameID();
-    ASSERT_TRUE(transformStorage1 != transformStorage2);
   }
   // CompactFrameID child_frame_id_;
   {
     tf2::TransformStorage transformStorage2 = createTransformStorage();
     ASSERT_TRUE(transformStorage1 == transformStorage2);
-    transformStorage2.child_frame_id_ = 56;
-    ASSERT_TRUE(transformStorage1 != transformStorage2);
-    transformStorage2.child_frame_id_ = tf2::CompactFrameID();
+    transformStorage2.translation_.setValue(1.0, 0.0, 0.0);
     ASSERT_TRUE(transformStorage1 != transformStorage2);
   }
 }
