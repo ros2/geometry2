@@ -87,8 +87,8 @@ public:
   tf2::Quaternion rotation_;
   tf2::Vector3 translation_;
   TimePoint stamp_;
-  CompactFrameID frame_id_;
-  CompactFrameID child_frame_id_;
+  CompactFrameID frame_id_{UINT32_MAX};
+  CompactFrameID child_frame_id_{UINT32_MAX};
 };
 }  // namespace tf2
 #endif  // TF2__TRANSFORM_STORAGE_HPP_
