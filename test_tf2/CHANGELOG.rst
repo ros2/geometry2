@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.9 (2025-04-02)
 -------------------
 * fix: add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_) (`#763 <https://github.com/ros2/geometry2/issues/763>`_)
