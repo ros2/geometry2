@@ -17,6 +17,7 @@ subject to the following restrictions:
 #ifndef TF2__LINEARMATH__QUATERNION_HPP_
 #define TF2__LINEARMATH__QUATERNION_HPP_
 
+#include <cmath>
 
 #include "Vector3.hpp"
 #include "QuadWord.hpp"
@@ -159,6 +160,10 @@ public:
 	tf2Scalar length() const
 	{
 		return tf2Sqrt(length2());
+	}
+
+	TF2SIMD_FORCE_INLINE bool isnan() const {
+		return std::isnan(m_floats[0]) || std::isnan(m_floats[1]) || std::isnan(m_floats[2]) || std::isnan(m_floats[3]);
 	}
 
   /**@brief Normalize the quaternion 
