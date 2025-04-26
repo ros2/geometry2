@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.0 (2025-04-25)
+-------------------
+
 0.41.0 (2025-04-25)
 -------------------
 * Add isnan support (`#780 <https://github.com/ros2/geometry2/issues/780>`_)

@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.0 (2025-04-25)
+-------------------
+
 0.41.0 (2025-04-25)
 -------------------
 * Fix external docs mappings (`#757 <https://github.com/ros2/geometry2/issues/757>`_)
