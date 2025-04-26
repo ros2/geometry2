@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_)
+* Fix external docs mappings (`#757 <https://github.com/ros2/geometry2/issues/757>`_)
+* Contributors: Emmanuel, Yuyuan Yuan, mosfet80
+
 0.40.1 (2025-01-15)
 -------------------
 

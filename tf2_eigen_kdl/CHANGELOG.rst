@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Contributors: mosfet80
+
 0.40.1 (2025-01-15)
 -------------------
 

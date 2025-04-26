@@ -2,6 +2,14 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2025-04-25)
+-------------------
+* Add isnan support (`#780 <https://github.com/ros2/geometry2/issues/780>`_)
+* Overflow Issue in durationFromSec() Function when Handling Extremely Large or Small Values (`#785 <https://github.com/ros2/geometry2/issues/785>`_)
+* Do not clobber callback handles when cancelling pending transformable requests (`#779 <https://github.com/ros2/geometry2/issues/779>`_)
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Contributors: Michael Carlstrom, Timo Röhling, cramke, mosfet80
+
 0.40.1 (2025-01-15)
 -------------------
 * Remove many extra conversions from Matrix3x3 to Quaternion (`#741 <https://github.com/ros2/geometry2/issues/741>`_)

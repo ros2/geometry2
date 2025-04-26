@@ -2,6 +2,12 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_)
+* Contributors: Yuyuan Yuan, mosfet80
+
 0.40.1 (2025-01-15)
 -------------------
 * Remove many extra conversions from Matrix3x3 to Quaternion (`#741 <https://github.com/ros2/geometry2/issues/741>`_)

@@ -2,6 +2,12 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Fix external docs mappings (`#757 <https://github.com/ros2/geometry2/issues/757>`_)
+* Contributors: Emmanuel, mosfet80
+
 0.40.1 (2025-01-15)
 -------------------
 * tf2_kdl: add python_orocos_kdl_vendor dependency (`#745 <https://github.com/ros2/geometry2/issues/745>`_)
