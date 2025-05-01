@@ -254,68 +254,6 @@ static std::string parse_args(
     quat.setRPY(roll, pitch, yaw);
   }
 
-  if (no_flag_args.size() == 8 || no_flag_args.size() == 9) {
-    RCUTILS_LOG_WARN("Old-style arguments are deprecated; see --help for new-style arguments");
-    if (saw_frame_flag || saw_trans_flag || saw_quat_flag) {
-      return "Cannot specify both new-style (flags) and old-style (arguments)";
-    }
-
-    std::string ret;
-
-    ret = trans_x_opt->visit("x", no_flag_args[0]);
-    if (ret != "") {
-      return ret;
-    }
-    ret = trans_y_opt->visit("y", no_flag_args[1]);
-    if (ret != "") {
-      return ret;
-    }
-    ret = trans_z_opt->visit("z", no_flag_args[2]);
-    if (ret != "") {
-      return ret;
-    }
-
-    if (no_flag_args.size() == 8) {
-      ret = yaw_opt->visit("yaw", no_flag_args[3]);
-      if (ret != "") {
-        return ret;
-      }
-      ret = pitch_opt->visit("pitch", no_flag_args[4]);
-      if (ret != "") {
-        return ret;
-      }
-      ret = roll_opt->visit("roll", no_flag_args[5]);
-      if (ret != "") {
-        return ret;
-      }
-
-      quat.setRPY(roll, pitch, yaw);
-      frame_id = no_flag_args[6];
-      child_frame_id = no_flag_args[7];
-    } else {
-      ret = qx_opt->visit("qx", no_flag_args[3]);
-      if (ret != "") {
-        return ret;
-      }
-      ret = qy_opt->visit("qy", no_flag_args[4]);
-      if (ret != "") {
-        return ret;
-      }
-      ret = qz_opt->visit("qz", no_flag_args[5]);
-      if (ret != "") {
-        return ret;
-      }
-      ret = qw_opt->visit("qw", no_flag_args[6]);
-      if (ret != "") {
-        return ret;
-      }
-      frame_id = no_flag_args[7];
-      child_frame_id = no_flag_args[8];
-    }
-  } else if (no_flag_args.size() != 0) {
-    return "Extra unparsed arguments on command-line";
-  }
-
   if (frame_id == "") {
     return "Frame id must not be empty";
   }

@@ -91,12 +91,7 @@ class BufferClient(BufferInterface):
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
-        if isinstance(time, builtin_interfaces.msg.Time):
-            source_time = Time.from_msg(time)
-            warnings.warn(
-                'Passing a builtin_interfaces.msg.Time argument is deprecated, '
-                'and will be removed in the near future. Use rclpy.time.Time instead.')
-        elif isinstance(time, Time):
+        if isinstance(time, Time):
             source_time = time
         else:
             raise TypeError('Must pass a rclpy.time.Time object.')
