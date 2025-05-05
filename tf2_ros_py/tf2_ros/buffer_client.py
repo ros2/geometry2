@@ -31,9 +31,7 @@
 import threading
 from time import sleep
 from typing import TypeVar
-import warnings
 
-import builtin_interfaces.msg
 from geometry_msgs.msg import TransformStamped
 from rclpy.action.client import ActionClient
 from rclpy.clock import Clock
