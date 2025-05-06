@@ -220,14 +220,10 @@ static std::string parse_args(
     {"-h", help_opt},
   };
 
-  std::vector<std::string> no_flag_args;
-
   size_t i = 1;
   while (i < size) {
     const std::string & optname = args[i];
-    if (options.count(optname) == 0) {
-      no_flag_args.push_back(optname);
-    } else {
+    if (options.count(optname) != 0) {
       std::shared_ptr<Option> opt = options[optname];
       if (opt->has_argument) {
         if (i == last_index) {
