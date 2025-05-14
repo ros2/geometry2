@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.13 (2025-05-14)
+--------------------
+* Overflow Issue in durationFromSec() Function when Handling Extremely Large or Small Values (`#785 <https://github.com/ros2/geometry2/issues/785>`_) (`#787 <https://github.com/ros2/geometry2/issues/787>`_)
+* Backport: Do not clobber callback handles when cancelling pending transformable requests (`#781 <https://github.com/ros2/geometry2/issues/781>`_)
+* Contributors: Timo Röhling, mergify[bot]
+
 0.25.12 (2025-01-17)
 --------------------
 * Fixing Scalar Header Guards (`#755 <https://github.com/ros2/geometry2/issues/755>`_)
