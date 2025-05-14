@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.1 (2025-05-14)
+-------------------
+* Removed deprecated headers tf2 (`#789 <https://github.com/ros2/geometry2/issues/789>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.42.0 (2025-04-25)
 -------------------
 
