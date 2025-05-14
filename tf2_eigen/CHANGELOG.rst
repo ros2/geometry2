@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.11 (2025-05-14)
+--------------------
+
 0.36.10 (2025-04-24)
 --------------------
 
@@ -278,4 +281,3 @@ Changelog for package tf2_eigen
 * fixing CMakeLists.txt from `#97 <https://github.com/ros/geometry_experimental/issues/97>`_
 * create tf2_eigen.
 * Contributors: Tully Foote, koji
-

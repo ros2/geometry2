@@ -2,6 +2,9 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.11 (2025-05-14)
+--------------------
+
 0.36.10 (2025-04-24)
 --------------------
 
@@ -296,4 +299,3 @@ Changelog for package tf2_py
 0.4.0 (2013-06-27)
 ------------------
 * splitting rospy dependency into tf2_py so tf2 is pure c++ library.
-
