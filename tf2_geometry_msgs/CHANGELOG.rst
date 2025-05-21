@@ -2,6 +2,60 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.1 (2025-05-14)
+-------------------
+
+0.42.0 (2025-04-25)
+-------------------
+
+0.41.0 (2025-04-25)
+-------------------
+
+0.40.1 (2025-01-15)
+-------------------
+* Remove many extra conversions from Matrix3x3 to Quaternion (`#741 <https://github.com/ros2/geometry2/issues/741>`_)
+  Co-authored-by: jmachowinski <jmachowinski@users.noreply.github.com>
+  Co-authored-by: Katherine Scott <katherineAScott@gmail.com>
+* Contributors: kyle-basis
+
+0.40.0 (2024-12-20)
+-------------------
+* Deprecate C Headers (`#720 <https://github.com/ros2/geometry2/issues/720>`_)
+* Contributors: Lucas Wendland
+
+0.39.3 (2024-11-25)
+-------------------
+* Add a python3-dev dependency to tf2_py. (`#733 <https://github.com/ros2/geometry2/issues/733>`_)
+* Contributors: Chris Lalancette
+
+0.39.2 (2024-11-20)
+-------------------
+* Fix tf2_geometry_msgs_INCLUDE_DIRS. (`#729 <https://github.com/ros2/geometry2/issues/729>`_)
+* Contributors: rkeating-planted
+
+0.39.1 (2024-10-15)
+-------------------
+* Remove use of python_cmake_module (`#651 <https://github.com/ros2/geometry2//issues/651>`_)
+* Contributors: Chris Lalancette
+
+0.39.0 (2024-10-03)
+-------------------
+
+0.38.2 (2024-07-19)
+-------------------
+
+0.38.1 (2024-07-09)
+-------------------
+
+0.38.0 (2024-06-17)
+-------------------
+
+0.37.1 (2024-05-29)
+-------------------
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)

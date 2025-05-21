@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>tf2_tools</name>
-  <version>0.36.2</version>
+  <version>0.42.1</version>
   <description>
     tf2_tools
   </description>
@@ -31,6 +31,7 @@
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
+  <test_depend>ament_xmllint</test_depend>
   <test_depend>python3-pytest</test_depend>
 
   <export>

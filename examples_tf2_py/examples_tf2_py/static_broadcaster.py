@@ -16,6 +16,7 @@ import math
 
 from geometry_msgs.msg import TransformStamped
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
@@ -109,11 +110,9 @@ class StaticFramePublisher(Node):
 
 
 def main():
-    rclpy.init()
-    node = StaticFramePublisher()
     try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
+        with rclpy.init():
+            node = StaticFramePublisher()
+            rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
-
-    rclpy.shutdown()

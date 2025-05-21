@@ -26,13 +26,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <tf2/time_cache.h>
-
 #include <gtest/gtest.h>
 
 #include <chrono>
 #include <cmath>
 #include <stdexcept>
+
+#include <tf2/time_cache.hpp>
+
 
 void setIdentity(tf2::TransformStorage & stor)
 {
@@ -77,6 +78,8 @@ TEST(StaticCache, DuplicateEntries)
   cache.getData(tf2::TimePoint(std::chrono::nanoseconds(1)), stor);
 
   // printf(" stor is %f\n", stor.transform.translation.x);
+  EXPECT_TRUE(!(stor.translation_.isnan()));
+  EXPECT_TRUE(!(stor.rotation_.isnan()));
   EXPECT_TRUE(!std::isnan(stor.translation_.x()));
   EXPECT_TRUE(!std::isnan(stor.translation_.y()));
   EXPECT_TRUE(!std::isnan(stor.translation_.z()));

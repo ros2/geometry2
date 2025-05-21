@@ -67,6 +67,47 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
   return t;
 }
 
+// Helpers used by gtest to print quaternions when errors happen
+// Must be defined in the namespace the class to be printed in lives, as per
+// https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
+namespace geometry_msgs::msg
+{
+std::ostream & operator<<(std::ostream & stream, const Quaternion & q)
+{
+  stream << "{" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "}";
+  return stream;
+}
+}
+
+namespace tf2
+{
+std::ostream & operator<<(std::ostream & stream, const Quaternion & q)
+{
+  stream << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
+  return stream;
+}
+}
+
+// Runs an equality check between a and b, allowing for the valid case that a == -b
+// https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
+bool CheckQuaternionNear(
+  const geometry_msgs::msg::Quaternion & a,
+  const tf2::Quaternion & b, double epsilon)
+{
+  return (
+    (std::abs(a.x - b.x()) < epsilon) &&
+    (std::abs(a.y - b.y()) < epsilon) &&
+    (std::abs(a.z - b.z()) < epsilon) &&
+    (std::abs(a.w - b.w()) < epsilon)
+  ) ||
+         (
+    (std::abs(a.x + b.x()) < epsilon) &&
+    (std::abs(a.y + b.y()) < epsilon) &&
+    (std::abs(a.z + b.z()) < epsilon) &&
+    (std::abs(a.w + b.w()) < epsilon)
+         );
+}
+
 TEST(TfGeometry, Conversions)
 {
   // Quaternion
@@ -123,10 +164,9 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::Transform tf_msg;
     tf2::convert(tf_, tf_msg);
 
-    EXPECT_NEAR(rotation.getX(), tf_msg.rotation.x, EPS);
-    EXPECT_NEAR(rotation.getY(), tf_msg.rotation.y, EPS);
-    EXPECT_NEAR(rotation.getZ(), tf_msg.rotation.z, EPS);
-    EXPECT_NEAR(rotation.getW(), tf_msg.rotation.w, EPS);
+    // Calls function in first position, with arguments in second and third
+    // position along with epsilon value defined in the fourth position.
+    EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_msg.translation.y, EPS);
     EXPECT_NEAR(translation.getZ(), tf_msg.translation.z, EPS);
@@ -134,10 +174,7 @@ TEST(TfGeometry, Conversions)
     tf2::Transform tf_from_msg;
     tf2::convert(tf_msg, tf_from_msg);
 
-    EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_msg.rotation.x, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_msg.rotation.y, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getZ(), tf_msg.rotation.z, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getW(), tf_msg.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, tf_from_msg.getRotation(), EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getY(), tf_msg.translation.y, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_msg.translation.z, EPS);
@@ -153,10 +190,7 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::TransformStamped tf_stamped_msg;
     tf2::convert(tf_stamped, tf_stamped_msg);
 
-    EXPECT_NEAR(rotation.getX(), tf_stamped_msg.transform.rotation.x, EPS);
-    EXPECT_NEAR(rotation.getY(), tf_stamped_msg.transform.rotation.y, EPS);
-    EXPECT_NEAR(rotation.getZ(), tf_stamped_msg.transform.rotation.z, EPS);
-    EXPECT_NEAR(rotation.getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_stamped_msg.transform.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_stamped_msg.transform.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_stamped_msg.transform.translation.y, EPS);
     EXPECT_NEAR(translation.getZ(), tf_stamped_msg.transform.translation.z, EPS);
@@ -165,10 +199,7 @@ TEST(TfGeometry, Conversions)
     tf2::Stamped<tf2::Transform> tf_from_msg;
     tf2::convert(tf_stamped_msg, tf_from_msg);
 
-    EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_stamped_msg.transform.rotation.x, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_stamped_msg.transform.rotation.y, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getZ(), tf_stamped_msg.transform.rotation.z, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_stamped_msg.transform.rotation, rotation, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getX(), tf_stamped_msg.transform.translation.x, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getY(), tf_stamped_msg.transform.translation.y, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_stamped_msg.transform.translation.z, EPS);
@@ -520,22 +551,20 @@ TEST(TfGeometry, Quaternion)
     q1.header.frame_id = "A";
 
     // simple api
-    const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
-      q1, "B", tf2::durationFromSec(
-        2.0));
-    EXPECT_NEAR(q_simple.quaternion.x, M_SQRT1_2, EPS);
-    EXPECT_NEAR(q_simple.quaternion.y, 0, EPS);
-    EXPECT_NEAR(q_simple.quaternion.z, -1 * M_SQRT1_2, EPS);
-    EXPECT_NEAR(q_simple.quaternion.w, 0, EPS);
+    {
+      const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
+        q1, "B", tf2::durationFromSec(2.0));
+      const tf2::Quaternion q_simple_should_equal(M_SQRT1_2, 0, -M_SQRT1_2, 0);
+      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion, q_simple_should_equal, EPS);
+    }
 
     // advanced api
-    const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
-      q1, "B", tf2::timeFromSec(2.0),
-      "A", tf2::durationFromSec(3.0));
-    EXPECT_NEAR(q_advanced.quaternion.x, M_SQRT1_2, EPS);
-    EXPECT_NEAR(q_advanced.quaternion.y, 0, EPS);
-    EXPECT_NEAR(q_advanced.quaternion.z, -1 * M_SQRT1_2, EPS);
-    EXPECT_NEAR(q_advanced.quaternion.w, 0, EPS);
+    {
+      const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
+        q1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+      tf2::Quaternion q_advanced_should_equal(M_SQRT1_2, 0, -M_SQRT1_2, 0);
+      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, q_advanced_should_equal, EPS);
+    }
   }
 }
 

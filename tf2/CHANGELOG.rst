@@ -2,6 +2,85 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.1 (2025-05-14)
+-------------------
+* Removed deprecated headers tf2 (`#789 <https://github.com/ros2/geometry2/issues/789>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.42.0 (2025-04-25)
+-------------------
+
+0.41.0 (2025-04-25)
+-------------------
+* Add isnan support (`#780 <https://github.com/ros2/geometry2/issues/780>`_)
+* Overflow Issue in durationFromSec() Function when Handling Extremely Large or Small Values (`#785 <https://github.com/ros2/geometry2/issues/785>`_)
+* Do not clobber callback handles when cancelling pending transformable requests (`#779 <https://github.com/ros2/geometry2/issues/779>`_)
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Contributors: Michael Carlstrom, Timo Röhling, cramke, mosfet80
+
+0.40.1 (2025-01-15)
+-------------------
+* Remove many extra conversions from Matrix3x3 to Quaternion (`#741 <https://github.com/ros2/geometry2/issues/741>`_)
+  Co-authored-by: jmachowinski <jmachowinski@users.noreply.github.com>
+  Co-authored-by: Katherine Scott <katherineAScott@gmail.com>
+* Cleanup deprecation warnings. (`#744 <https://github.com/ros2/geometry2/issues/744>`_)
+  The deprecation warnings were not printing out properly on
+  GCC, at least; it would warn that #warning was not standard,
+  and it would also not print out the actual warning.  Also
+  "deprecated" was spelled wrong.  Fix all of these issues here.
+* Contributors: Chris Lalancette, kyle-basis
+
+0.40.0 (2024-12-20)
+-------------------
+* Deprecate C Headers (`#720 <https://github.com/ros2/geometry2/issues/720>`_)
+* Removed unused var in tf2 (`#735 <https://github.com/ros2/geometry2/issues/735>`_)
+* Contributors: Alejandro Hernández Cordero, Lucas Wendland
+
+0.39.3 (2024-11-25)
+-------------------
+
+0.39.2 (2024-11-20)
+-------------------
+
+0.39.1 (2024-10-15)
+-------------------
+* Error String Filled (`#715 <https://github.com/ros2/geometry2//issues/715>`_)
+* Contributors: Lucas Wendland
+
+0.39.0 (2024-10-03)
+-------------------
+
+0.38.2 (2024-07-19)
+-------------------
+
+0.38.1 (2024-07-09)
+-------------------
+* Removed deprecated enuns (`#699 <https://github.com/ros2/geometry2//issues/699>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.38.0 (2024-06-17)
+-------------------
+
+0.37.1 (2024-05-29)
+-------------------
+* [TimeCache] Improve performance for insertData() and pruneList() (`#680 <https://github.com/ros2/geometry2/issues/680>`_)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Removed warning (`#682 <https://github.com/ros2/geometry2/issues/682>`_)
+* Add cache_benchmark (`#679 <https://github.com/ros2/geometry2/issues/679>`_)
+  * Add cache_benchmark
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* [cache_unittest] Add direct implementation testing on ordering, pruning (`#678 <https://github.com/ros2/geometry2/issues/678>`_)
+  * [cache_unittest] Add direct implementation testing on ordering, pruning
+  * do getAllItems() approach
+  * Return a reference instead.
+  * mark getAllItems as internal
+  * Fix warning on Windows.
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: Alejandro Hernández Cordero, Eric Cousineau
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Enable Twist interpolator (`#646 <https://github.com/ros2/geometry2/issues/646>`_)

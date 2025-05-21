@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <chrono>
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 using namespace std::literals::chrono_literals;
 
@@ -96,4 +96,22 @@ TEST(TestTime, displayTimePoint) {
   EXPECT_EQ(tf2::displayTimePoint(tf2::TimePoint(-1ns)), "-0.000000");
   EXPECT_EQ(tf2::displayTimePoint(tf2::TimePoint(1000ns)), "0.000001");
   EXPECT_EQ(tf2::displayTimePoint(tf2::TimePoint(-1000ns)), "-0.000001");
+}
+
+TEST(TestTime, durationFromSec_LargeNegativeValues) {
+  int32_t large_negative = std::numeric_limits<int32_t>::min();
+  EXPECT_EQ(tf2::durationFromSec(large_negative), large_negative * 1s);
+}
+
+TEST(TestTime, durationFromSec_LargePositiveValues) {
+  int32_t large_positive = std::numeric_limits<int32_t>::max();
+  EXPECT_EQ(tf2::durationFromSec(large_positive), large_positive * 1s);
+}
+
+TEST(TestTime, durationFromSec_OverflowNegativeValues) {
+  EXPECT_THROW(tf2::durationFromSec(-1e308), std::overflow_error);
+}
+
+TEST(TestTime, durationFromSec_OverflowPositiveValues) {
+  EXPECT_THROW(tf2::durationFromSec(1e308), std::overflow_error);
 }

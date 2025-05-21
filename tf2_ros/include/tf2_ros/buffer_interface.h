@@ -38,9 +38,9 @@
 #include <string>
 
 #include "tf2_ros/visibility_control.h"
-#include "tf2/transform_datatypes.h"
-#include "tf2/exceptions.h"
-#include "tf2/convert.h"
+#include "tf2/transform_datatypes.hpp"
+#include "tf2/exceptions.hpp"
+#include "tf2/convert.hpp"
 
 #include "builtin_interfaces/msg/duration.hpp"
 #include "builtin_interfaces/msg/time.hpp"

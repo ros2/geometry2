@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
@@ -34,11 +35,9 @@ class FrameDumper(Node):
 
 
 def main():
-    rclpy.init()
-    node = FrameDumper()
     try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
+        with rclpy.init():
+            node = FrameDumper()
+            rclpy.spin(node)
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
-
-    rclpy.shutdown()

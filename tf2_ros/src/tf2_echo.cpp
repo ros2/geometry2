@@ -150,8 +150,8 @@ int main(int argc, char ** argv)
       auto rotation = echo_transform.transform.rotation;
       std::cout << "- Translation: [" << translation.x << ", " << translation.y << ", " <<
         translation.z << "]" << std::endl;
-      std::cout << "- Rotation: in Quaternion [" << rotation.x << ", " << rotation.y << ", " <<
-        rotation.z << ", " << rotation.w << "]" << std::endl;
+      std::cout << "- Rotation: in Quaternion (xyzw) [" << rotation.x << ", " << rotation.y <<
+        ", " << rotation.z << ", " << rotation.w << "]" << std::endl;
 
       tf2::Matrix3x3 mat(tf2::Quaternion{rotation.x, rotation.y, rotation.z, rotation.w});
 

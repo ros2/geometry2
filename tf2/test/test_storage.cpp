@@ -28,10 +28,10 @@
 
 #include <gtest/gtest.h>
 
-#include "tf2/LinearMath/Quaternion.h"
-#include "tf2/LinearMath/Vector3.h"
-#include "tf2/time.h"
-#include "tf2/transform_storage.h"
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2/LinearMath/Vector3.hpp"
+#include "tf2/time.hpp"
+#include "tf2/transform_storage.hpp"
 
 class TransformStorageTest : public ::testing::Test
 {

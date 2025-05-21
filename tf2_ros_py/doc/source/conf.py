@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'tf2_ros_py'
-copyright = '2023, Open Source Robotics Foundation, Inc.'
+copyright = '2023, Open Source Robotics Foundation, Inc.'  # noqa: A001
 author = 'Open Source Robotics Foundation, Inc.'
 
 # The full version, including alpha/beta/rc tags
@@ -174,7 +174,7 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 # -- Options for todo extension ----------------------------------------------
 

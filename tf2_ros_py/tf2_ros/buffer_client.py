@@ -1,67 +1,56 @@
-#! /usr/bin/python
-#***********************************************************
-#* Software License Agreement (BSD License)
-#*
-#*  Copyright (c) 2009, Willow Garage, Inc.
-#*  All rights reserved.
-#*
-#*  Redistribution and use in source and binary forms, with or without
-#*  modification, are permitted provided that the following conditions
-#*  are met:
-#*
-#*   * Redistributions of source code must retain the above copyright
-#*     notice, this list of conditions and the following disclaimer.
-#*   * Redistributions in binary form must reproduce the above
-#*     copyright notice, this list of conditions and the following
-#*     disclaimer in the documentation and/or other materials provided
-#*     with the distribution.
-#*   * Neither the name of Willow Garage, Inc. nor the names of its
-#*     contributors may be used to endorse or promote products derived
-#*     from this software without specific prior written permission.
-#*
-#*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-#*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-#*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-#*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-#*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-#*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-#*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-#*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-#*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-#*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-#*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-#*  POSSIBILITY OF SUCH DAMAGE.
-#*
-#* Author: Eitan Marder-Eppstein
-#***********************************************************
+# Copyright (c) 2009 Willow Garage, Inc. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#
+#    * Neither the name of the copyright holder nor the names of its
+#      contributors may be used to endorse or promote products derived from
+#      this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Author: Eitan Marder-Eppstein
+
+import threading
+from time import sleep
 from typing import TypeVar
 
 from geometry_msgs.msg import TransformStamped
-
-from rclpy.node import Node
 from rclpy.action.client import ActionClient
-from rclpy.duration import Duration
-from rclpy.time import Time
 from rclpy.clock import Clock
-from time import sleep
-
-import builtin_interfaces.msg
-import tf2_py as tf2
-import tf2_ros
-import threading
-import warnings
-
+from rclpy.duration import Duration
+from rclpy.node import Node
+from rclpy.time import Time
 from tf2_msgs.action import LookupTransform
+import tf2_py as tf2
+
+from .buffer_interface import BufferInterface
 
 # Used for documentation purposes only
 LookupTransformGoal = TypeVar('LookupTransformGoal')
 LookupTransformResult = TypeVar('LookupTransformResult')
 
 
-class BufferClient(tf2_ros.BufferInterface):
-    """
-    Action client-based implementation of BufferInterface.
-    """
+class BufferClient(BufferInterface):
+    """Action client-based implementation of BufferInterface."""
+
     def __init__(
         self,
         node: Node,
@@ -70,14 +59,14 @@ class BufferClient(tf2_ros.BufferInterface):
         timeout_padding: Duration = Duration(seconds=2.0)
     ) -> None:
         """
-        Constructor.
+        Construct a BufferClient.
 
-        :param node: The ROS2 node.
+        :param node: The ROS 2 node.
         :param ns: The namespace in which to look for a BufferServer.
         :param check_frequency: How frequently to check for updates to known transforms.
         :param timeout_padding: A constant timeout to add to blocking calls.
         """
-        tf2_ros.BufferInterface.__init__(self)
+        BufferInterface.__init__(self)
         self.node = node
         self.action_client = ActionClient(node, LookupTransform, action_name=ns)
         self.check_frequency = check_frequency
@@ -100,12 +89,7 @@ class BufferClient(tf2_ros.BufferInterface):
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
         """
-        if isinstance(time, builtin_interfaces.msg.Time):
-            source_time = Time.from_msg(time)
-            warnings.warn(
-                'Passing a builtin_interfaces.msg.Time argument is deprecated, and will be removed in the near future. '
-                'Use rclpy.time.Time instead.')
-        elif isinstance(time, Time):
+        if isinstance(time, Time):
             source_time = time
         else:
             raise TypeError('Must pass a rclpy.time.Time object.')
@@ -135,7 +119,7 @@ class BufferClient(tf2_ros.BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 gets the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :return: The transform between the frames.
@@ -193,14 +177,15 @@ class BufferClient(tf2_ros.BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param target_time: The time to transform to. (0 will get the latest)
         :param source_frame: Name of the input frame.
-        :param source_time: The time at which source_frame will be evaluated. (0 will get the latest)
+        :param source_time: The time at which source_frame will be evaluated. (0 gets the latest)
         :param fixed_frame: Name of the frame to consider constant in time.
         :param timeout: Time to wait for the target frame to become available.
         :param return_debug_type: If true, return a tuple representing debug information.
         :return: True if the transform is possible, false otherwise.
         """
         try:
-            self.lookup_transform_full(target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
+            self.lookup_transform_full(
+                target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
             return True
         except tf2.TransformException:
             return False
@@ -208,7 +193,7 @@ class BufferClient(tf2_ros.BufferInterface):
     def __process_goal(self, goal: LookupTransformGoal) -> TransformStamped:
         # TODO(sloretz) why is this an action client? Service seems more appropriate.
         if not self.action_client.server_is_ready():
-            raise tf2.TimeoutException("The BufferServer is not ready.")
+            raise tf2.TimeoutException('The BufferServer is not ready.')
 
         event = threading.Event()
 
@@ -243,21 +228,28 @@ class BufferClient(tf2_ros.BufferInterface):
 
         # This shouldn't happen, but could in rare cases where the server hangs
         if not send_goal_future.done():
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back in the specified time. Something is likely wrong with the server.")
+            raise tf2.TimeoutException(
+                'The LookupTransform goal sent to the BufferServer did not come back in the '
+                'specified time. Something is likely wrong with the server.')
 
         # Raises if future was given an exception
         goal_handle = send_goal_future.result()
 
         if not goal_handle.accepted:
-            raise tf2.TimeoutException("The LookupTransform goal sent to the BufferServer did not come back with accepted status. Something is likely wrong with the server.")
+            raise tf2.TimeoutException(
+                'The LookupTransform goal sent to the BufferServer did not come back with '
+                'accepted status. Something is likely wrong with the server.')
 
         response = self.action_client._get_result(goal_handle)
 
         return self.__process_result(response.result)
 
     def __process_result(self, result: LookupTransformResult) -> TransformStamped:
-        if result == None or result.error == None:
-            raise tf2.TransformException("The BufferServer returned None for result or result.error!  Something is likely wrong with the server.")
+        if result is None or result.error is None:
+            raise tf2.TransformException(
+                'The BufferServer returned None for result or result.error!  '
+                'Something is likely wrong with the server.')
+
         if result.error.error != result.error.NO_ERROR:
             if result.error.error == result.error.LOOKUP_ERROR:
                 raise tf2.LookupException(result.error.error_string)
@@ -276,5 +268,4 @@ class BufferClient(tf2_ros.BufferInterface):
 
     def destroy(self) -> None:
         """Cleanup resources associated with this BufferClient."""
-
         self.action_client.destroy()

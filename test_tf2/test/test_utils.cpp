@@ -18,8 +18,8 @@
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
 #include <geometry_msgs/msg/transform.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2/utils.h>
+#include <tf2/LinearMath/Quaternion.hpp>
+#include <tf2/utils.hpp>
 #include <tf2_kdl/tf2_kdl.hpp>
 
 double epsilon = 1e-9;
@@ -100,5 +100,7 @@ TEST(tf2Utils, identity)
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  auto ret = RUN_ALL_TESTS();
+  rclcpp::shutdown();
+  return ret;
 }

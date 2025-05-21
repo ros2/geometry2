@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(tf2_kdl)
 
 # Default to C++17
@@ -45,7 +45,6 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(rclcpp REQUIRED)
-  find_package(tf2_msgs REQUIRED)
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_link_libraries(test_kdl

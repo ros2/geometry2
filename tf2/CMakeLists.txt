@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(tf2)
 
 # Default to C++17
@@ -44,6 +44,7 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 # Tests
 if(BUILD_TESTING)
+  find_package(ament_cmake_google_benchmark REQUIRED)
   find_package(ament_cmake_copyright REQUIRED)
   find_package(ament_cmake_cppcheck REQUIRED)
   find_package(ament_cmake_cpplint REQUIRED)
@@ -61,6 +62,13 @@ if(BUILD_TESTING)
     include/tf2/LinearMath/Scalar.h
     include/tf2/LinearMath/Transform.h
     include/tf2/LinearMath/Vector3.h
+    include/tf2/LinearMath/Matrix3x3.hpp
+    include/tf2/LinearMath/MinMax.hpp
+    include/tf2/LinearMath/QuadWord.hpp
+    include/tf2/LinearMath/Quaternion.hpp
+    include/tf2/LinearMath/Scalar.hpp
+    include/tf2/LinearMath/Transform.hpp
+    include/tf2/LinearMath/Vector3.hpp
   )
 
   ament_copyright(EXCLUDE ${_linter_excludes})
@@ -81,6 +89,11 @@ if(BUILD_TESTING)
   ament_add_gtest(test_cache_unittest test/cache_unittest.cpp)
   if(TARGET test_cache_unittest)
     target_link_libraries(test_cache_unittest tf2)
+  endif()
+
+  ament_add_google_benchmark(cache_benchmark test/cache_benchmark.cpp)
+  if(TARGET cache_benchmark)
+    target_link_libraries(cache_benchmark tf2)
   endif()
 
   ament_add_gtest(test_static_cache_unittest test/static_cache_test.cpp)

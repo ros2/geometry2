@@ -2,6 +2,68 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.1 (2025-05-14)
+-------------------
+* Remove deprecation warnings (`#790 <https://github.com/ros2/geometry2/issues/790>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.42.0 (2025-04-25)
+-------------------
+
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_)
+* Fix external docs mappings (`#757 <https://github.com/ros2/geometry2/issues/757>`_)
+* Contributors: Emmanuel, Yuyuan Yuan, mosfet80
+
+0.40.1 (2025-01-15)
+-------------------
+
+0.40.0 (2024-12-20)
+-------------------
+* Deprecate C Headers (`#720 <https://github.com/ros2/geometry2/issues/720>`_)
+* Contributors: Lucas Wendland
+
+0.39.3 (2024-11-25)
+-------------------
+
+0.39.2 (2024-11-20)
+-------------------
+* specified quaternion order to be xyzw (`#718 <https://github.com/ros2/geometry2/issues/718>`_)
+* Contributors: Abhishek Kashyap
+
+0.39.1 (2024-10-15)
+-------------------
+* Add configurable TF topics (`#709 <https://github.com/ros2/geometry2//issues/709>`_)
+* Contributors: Ryan
+
+0.39.0 (2024-10-03)
+-------------------
+* Adding static transform listener (`#673 <https://github.com/ros2/geometry2/issues/673>`_)
+* Contributors: Tom Moore
+
+0.38.2 (2024-07-19)
+-------------------
+* Updated deprecated message filter headers (`#702 <https://github.com/ros2/geometry2/issues/702>`_)
+* Contributors: Alejandro Hernández Cordero
+
+0.38.1 (2024-07-09)
+-------------------
+
+0.38.0 (2024-06-17)
+-------------------
+* Update qos for deprecation (`#695 <https://github.com/ros2/geometry2/issues/695>`_)
+* Contributors: Lucas Wendland
+
+0.37.1 (2024-05-29)
+-------------------
+* Cli tools documentation (`#653 <https://github.com/ros2/geometry2/issues/653>`_)
+* Contributors: Lucas Wendland
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Compile fix for upcomming changes to rclcpp::Executor (`#668 <https://github.com/ros2/geometry2/issues/668>`_)

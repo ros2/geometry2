@@ -2,6 +2,61 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.42.1 (2025-05-14)
+-------------------
+
+0.42.0 (2025-04-25)
+-------------------
+
+0.41.0 (2025-04-25)
+-------------------
+* Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
+* Add `rclcpp::shutdown` (`#762 <https://github.com/ros2/geometry2/issues/762>`_)
+* Contributors: Yuyuan Yuan, mosfet80
+
+0.40.1 (2025-01-15)
+-------------------
+* Remove many extra conversions from Matrix3x3 to Quaternion (`#741 <https://github.com/ros2/geometry2/issues/741>`_)
+  Co-authored-by: jmachowinski <jmachowinski@users.noreply.github.com>
+  Co-authored-by: Katherine Scott <katherineAScott@gmail.com>
+* Contributors: kyle-basis
+
+0.40.0 (2024-12-20)
+-------------------
+* Deprecate C Headers (`#720 <https://github.com/ros2/geometry2/issues/720>`_)
+* Contributors: Lucas Wendland
+
+0.39.3 (2024-11-25)
+-------------------
+
+0.39.2 (2024-11-20)
+-------------------
+
+0.39.1 (2024-10-15)
+-------------------
+
+0.39.0 (2024-10-03)
+-------------------
+
+0.38.2 (2024-07-19)
+-------------------
+* Switch to using a context manager for the python examples. (`#700 <https://github.com/ros2/geometry2/issues/700>`_)
+  That way we can be sure to always clean up, but use less
+  code doing so.
+* Contributors: Chris Lalancette
+
+0.38.1 (2024-07-09)
+-------------------
+
+0.38.0 (2024-06-17)
+-------------------
+
+0.37.1 (2024-05-29)
+-------------------
+
+0.37.0 (2024-04-26)
+-------------------
+
 0.36.2 (2024-04-10)
 -------------------
 * Compile fix for upcomming changes to rclcpp::Executor (`#668 <https://github.com/ros2/geometry2/issues/668>`_)

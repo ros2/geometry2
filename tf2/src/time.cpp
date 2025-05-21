@@ -34,7 +34,7 @@
 
 #include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 tf2::TimePoint tf2::get_now()
 {
@@ -43,6 +43,9 @@ tf2::TimePoint tf2::get_now()
 
 tf2::Duration tf2::durationFromSec(double t_sec)
 {
+  if (t_sec > std::numeric_limits<int32_t>::max() || t_sec < std::numeric_limits<int32_t>::min()) {
+    throw std::overflow_error("Input t_sec is too large or too small for tf2::Duration");
+  }
   int32_t sec, nsec;
   sec = static_cast<int32_t>(floor(t_sec));
   nsec = static_cast<int32_t>(std::round((t_sec - sec) * 1e9));

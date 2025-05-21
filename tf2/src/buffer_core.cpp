@@ -40,13 +40,13 @@
 
 #include <iostream>
 
-#include "tf2/buffer_core.h"
-#include "tf2/time_cache.h"
-#include "tf2/exceptions.h"
+#include "tf2/buffer_core.hpp"
+#include "tf2/time_cache.hpp"
+#include "tf2/exceptions.hpp"
 
-#include "tf2/LinearMath/Quaternion.h"
-#include "tf2/LinearMath/Transform.h"
-#include "tf2/LinearMath/Vector3.h"
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2/LinearMath/Transform.hpp"
+#include "tf2/LinearMath/Vector3.hpp"
 
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform.hpp"
@@ -182,27 +182,27 @@ bool BufferCore::setTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   const std::string & authority, bool is_static)
 {
-  tf2::Transform tf2_transform(tf2::Quaternion(
-      transform.transform.rotation.x,
-      transform.transform.rotation.y,
-      transform.transform.rotation.z,
-      transform.transform.rotation.w),
-    tf2::Vector3(
-      transform.transform.translation.x,
-      transform.transform.translation.y,
-      transform.transform.translation.z));
+  const tf2::Quaternion rotation(
+    transform.transform.rotation.x,
+    transform.transform.rotation.y,
+    transform.transform.rotation.z,
+    transform.transform.rotation.w);
+  const tf2::Vector3 origin(
+    transform.transform.translation.x,
+    transform.transform.translation.y,
+    transform.transform.translation.z);
   TimePoint time_point(std::chrono::nanoseconds(transform.header.stamp.nanosec) +
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::seconds(
         transform.header.stamp.sec)));
   return setTransformImpl(
-    tf2_transform, transform.header.frame_id, transform.child_frame_id,
+    origin, rotation, transform.header.frame_id, transform.child_frame_id,
     time_point, authority, is_static);
 }
 
 bool BufferCore::setTransformImpl(
-  const tf2::Transform & transform_in, const std::string frame_id,
-  const std::string child_frame_id, const TimePoint stamp,
+  const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
+  const std::string & child_frame_id, const TimePoint stamp,
   const std::string & authority, bool is_static)
 {
   std::string stripped_frame_id = stripSlash(frame_id);
@@ -231,27 +231,23 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
-  if (std::isnan(transform_in.getOrigin().x()) || std::isnan(transform_in.getOrigin().y()) ||
-    std::isnan(transform_in.getOrigin().z()) ||
-    std::isnan(transform_in.getRotation().x()) || std::isnan(transform_in.getRotation().y()) ||
-    std::isnan(transform_in.getRotation().z()) || std::isnan(transform_in.getRotation().w()))
-  {
+  if (origin_in.isnan() || rotation_in.isnan()) {
     RCUTILS_LOG_ERROR(
       "TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because"
       " of a nan value in the transform (%f %f %f) (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
-      transform_in.getOrigin().x(), transform_in.getOrigin().y(), transform_in.getOrigin().z(),
-      transform_in.getRotation().x(), transform_in.getRotation().y(),
-      transform_in.getRotation().z(), transform_in.getRotation().w()
+      origin_in.x(), origin_in.y(), origin_in.z(),
+      rotation_in.x(), rotation_in.y(),
+      rotation_in.z(), rotation_in.w()
     );
     error_exists = true;
   }
 
-  bool valid = std::abs(
-    (transform_in.getRotation().w() * transform_in.getRotation().w() +
-    transform_in.getRotation().x() * transform_in.getRotation().x() +
-    transform_in.getRotation().y() * transform_in.getRotation().y() +
-    transform_in.getRotation().z() * transform_in.getRotation().z()) - 1.0f) <
+  const bool valid = std::abs(
+    (rotation_in.w() * rotation_in.w() +
+    rotation_in.x() * rotation_in.x() +
+    rotation_in.y() * rotation_in.y() +
+    rotation_in.z() * rotation_in.z()) - 1.0f) <
     QUATERNION_NORMALIZATION_TOLERANCE;
 
   if (!valid) {
@@ -259,8 +255,8 @@ bool BufferCore::setTransformImpl(
       "TF_DENORMALIZED_QUATERNION: Ignoring transform for child_frame_id \"%s\" from authority"
       " \"%s\" because of an invalid quaternion in the transform (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
-      transform_in.getRotation().x(), transform_in.getRotation().y(),
-      transform_in.getRotation().z(), transform_in.getRotation().w());
+      rotation_in.x(), rotation_in.y(),
+      rotation_in.z(), rotation_in.w());
     error_exists = true;
   }
 
@@ -287,8 +283,8 @@ bool BufferCore::setTransformImpl(
 
     if (frame->insertData(
         TransformStorage(
-          stamp, transform_in.getRotation(),
-          transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
+          stamp, rotation_in,
+          origin_in, lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
     {
       frame_authority_[frame_number] = authority;
     } else {
@@ -698,17 +694,18 @@ BufferCore::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time) const
 {
-  tf2::Transform transform;
   TimePoint time_out;
-  lookupTransformImpl(target_frame, source_frame, time, transform, time_out);
+  tf2::Vector3 origin;
+  tf2::Quaternion rotation;
+  lookupTransformImpl(target_frame, source_frame, time, origin, rotation, time_out);
   geometry_msgs::msg::TransformStamped msg;
-  msg.transform.translation.x = transform.getOrigin().x();
-  msg.transform.translation.y = transform.getOrigin().y();
-  msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
+  msg.transform.translation.x = origin.x();
+  msg.transform.translation.y = origin.y();
+  msg.transform.translation.z = origin.z();
+  msg.transform.rotation.x = rotation.x();
+  msg.transform.rotation.y = rotation.y();
+  msg.transform.rotation.z = rotation.z();
+  msg.transform.rotation.w = rotation.w();
   std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
@@ -736,10 +733,11 @@ BufferCore::lookupTransform(
   msg.transform.translation.x = transform.getOrigin().x();
   msg.transform.translation.y = transform.getOrigin().y();
   msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
+  tf2::Quaternion rotation = transform.getRotation();
+  msg.transform.rotation.x = rotation.x();
+  msg.transform.rotation.y = rotation.y();
+  msg.transform.rotation.z = rotation.z();
+  msg.transform.rotation.w = rotation.w();
   std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
@@ -752,16 +750,56 @@ BufferCore::lookupTransform(
   return msg;
 }
 
+/** \brief Private member function that looks up a transform between two frames
+    * at a given time and return the the transform as a TF2::transform. If a transform is
+    * not possible raise the appropriate error.
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param transform_out -- The transform, returned by reference, for the transform from source frame
+    * to target frame at the given time
+    * \param time_out -- the time the transform was computed returned by reference.
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
   const std::string & source_frame,
-  const TimePoint & time, tf2::Transform & transform,
+  const TimePoint & time, tf2::Transform & transform_out,
+  TimePoint & time_out) const
+{
+  tf2::Quaternion rotation;
+  lookupTransformImpl(
+    target_frame, source_frame, time,
+    transform_out.getOrigin(), rotation, time_out);
+  transform_out.setRotation(rotation);
+}
+
+/** \brief Private member function that looks up a transform between two frames
+    * at a given time and return the the transform as a TF2::transform. If a transform is
+    * not possible raise the appropriate error. The rotation and orientation
+    * components are returned separately by reference.
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference
+    * \param rotation_out -- the rotation component of the desired transform
+    *  passed by reference
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
+void BufferCore::lookupTransformImpl(
+  const std::string & target_frame,
+  const std::string & source_frame,
+  const TimePoint & time, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out,
   TimePoint & time_out) const
 {
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   if (target_frame == source_frame) {
-    transform.setIdentity();
+    rotation_out = Quaternion::getIdentity();
+    origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
 
     if (time == TimePointZero) {
       CompactFrameID target_id = lookupFrameNumber(target_frame);
@@ -805,8 +843,8 @@ void BufferCore::lookupTransformImpl(
   }
 
   time_out = accum.time;
-  transform.setOrigin(accum.result_vec);
-  transform.setRotation(accum.result_quat);
+  origin_out = accum.result_vec;
+  rotation_out = accum.result_quat;
 }
 
 void BufferCore::lookupTransformImpl(
@@ -1347,9 +1385,9 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   std::unique_lock<std::mutex> tr_lock(transformable_requests_mutex_);
   std::unique_lock<std::mutex> tc_lock(transformable_callbacks_mutex_);
 
-  V_TransformableRequest::iterator remove_it = std::remove_if(
+  V_TransformableRequest::iterator remove_it = std::stable_partition(
     transformable_requests_.begin(), transformable_requests_.end(),
-    [handle](TransformableRequest req) {return handle == req.request_handle;});
+    [handle](TransformableRequest req) {return handle != req.request_handle;});
   for (V_TransformableRequest::iterator it = remove_it; it != transformable_requests_.end(); ++it) {
     transformable_callbacks_.erase(it->cb_handle);
   }
@@ -1572,7 +1610,6 @@ void BufferCore::_chainAsVector(
 
   output.clear();  // empty vector
 
-  std::stringstream mstream;
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   TransformAccum accum;

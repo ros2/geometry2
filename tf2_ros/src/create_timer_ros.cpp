@@ -33,7 +33,7 @@
 #include <mutex>
 #include <stdexcept>
 
-#include "tf2/time.h"
+#include "tf2/time.hpp"
 
 #include "rclcpp/create_timer.hpp"
 #include "rclcpp/rclcpp.hpp"
