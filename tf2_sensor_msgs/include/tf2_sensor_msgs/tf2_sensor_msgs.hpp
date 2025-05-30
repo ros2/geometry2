@@ -106,6 +106,7 @@ void doTransform(
     static_cast<float>(t_in.transform.rotation.z));
 
   Eigen::Transform<float, 3, Eigen::Affine> t = translation * quaternion;
+  Eigen::Transform<float, 3, Eigen::Affine> r = Eigen::Translation3f(0, 0, 0) * quaternion;
 
   sensor_msgs::PointCloud2ConstIterator<float> x_in(p_in, std::string("x"));
   sensor_msgs::PointCloud2ConstIterator<float> y_in(p_in, std::string("y"));
