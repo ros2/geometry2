@@ -81,6 +81,13 @@ void doTransform(
   const sensor_msgs::msg::PointCloud2 & p_in, sensor_msgs::msg::PointCloud2 & p_out,
   const geometry_msgs::msg::TransformStamped & t_in)
 {
+  bool normals = std::find_if(
+    p_in.fields.begin(),
+    p_in.fields.end(),
+    [](const sensor_msgs::msg::PointField & fname) {
+      return fname.name == std::string("normal_x");
+    }) != p_in.fields.end();
+
   p_out = p_in;
   p_out.header = t_in.header;
   // FIXME(clalancette): The static casts to float aren't ideal; the incoming
@@ -98,6 +105,7 @@ void doTransform(
     static_cast<float>(t_in.transform.rotation.z));
 
   Eigen::Transform<float, 3, Eigen::Affine> t = translation * quaternion;
+  Eigen::Transform<float, 3, Eigen::Affine> r = Eigen::Translation3f(0, 0, 0) * quaternion;
 
   sensor_msgs::PointCloud2ConstIterator<float> x_in(p_in, std::string("x"));
   sensor_msgs::PointCloud2ConstIterator<float> y_in(p_in, std::string("y"));
@@ -108,11 +116,36 @@ void doTransform(
   sensor_msgs::PointCloud2Iterator<float> z_out(p_out, std::string("z"));
 
   Eigen::Vector3f point;
-  for (; x_in != x_in.end(); ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out) {
-    point = t * Eigen::Vector3f(*x_in, *y_in, *z_in);
-    *x_out = point.x();
-    *y_out = point.y();
-    *z_out = point.z();
+
+  if (!normals) {
+    for (; x_in != x_in.end(); ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out) {
+      point = t * Eigen::Vector3f(*x_in, *y_in, *z_in);
+      *x_out = point.x();
+      *y_out = point.y();
+      *z_out = point.z();
+    }
+  } else {
+    Eigen::Vector3f normal;
+    sensor_msgs::PointCloud2ConstIterator<float> x_n_in(p_in, std::string("normal_x"));
+    sensor_msgs::PointCloud2ConstIterator<float> y_n_in(p_in, std::string("normal_y"));
+    sensor_msgs::PointCloud2ConstIterator<float> z_n_in(p_in, std::string("normal_z"));
+    sensor_msgs::PointCloud2Iterator<float> x_n_out(p_out, std::string("normal_x"));
+    sensor_msgs::PointCloud2Iterator<float> y_n_out(p_out, std::string("normal_y"));
+    sensor_msgs::PointCloud2Iterator<float> z_n_out(p_out, std::string("normal_z"));
+
+    for (; x_in != x_in.end();
+      ++x_in, ++y_in, ++z_in, ++x_out, ++y_out, ++z_out,
+      ++x_n_in, ++y_n_in, ++z_n_in, ++x_n_out, ++y_n_out, ++z_n_out)
+    {
+      point = t * Eigen::Vector3f(*x_in, *y_in, *z_in);
+      normal = r * Eigen::Vector3f(*x_n_in, *y_n_in, *z_n_in);
+      *x_out = point.x();
+      *y_out = point.y();
+      *z_out = point.z();
+      *x_n_out = normal.x();
+      *y_n_out = normal.y();
+      *z_n_out = normal.z();
+    }
   }
 }
 inline
