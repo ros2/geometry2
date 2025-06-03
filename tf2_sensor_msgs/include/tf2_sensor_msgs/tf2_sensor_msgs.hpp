@@ -88,7 +88,6 @@ void doTransform(
       return fname.name == std::string("normal_x");
     }) != p_in.fields.end();
 
-  
   p_out = p_in;
   p_out.header = t_in.header;
   // FIXME(clalancette): The static casts to float aren't ideal; the incoming
