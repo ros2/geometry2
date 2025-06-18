@@ -164,8 +164,7 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param time: The time at which to get the transform (0 will get the latest).
         :return: The transform between the frames.
         """
-        await self.wait_for_transform_async(target_frame, source_frame, time)
-        return self.lookup_transform_core(target_frame, source_frame, time)
+        return await self.wait_for_transform_async(target_frame, source_frame, time, timeout)
 
     def lookup_transform_full(
         self,
@@ -210,10 +209,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param fixed_frame: Name of the frame to consider constant in time.
         :return: The transform between the frames.
         """
-        await self.wait_for_transform_full_async(
-            target_frame, target_time, source_frame, source_time, fixed_frame)
-        return self.lookup_transform_full_core(
-            target_frame, target_time, source_frame, source_time, fixed_frame)
+        return await self.wait_for_transform_full_async(
+            target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
 
     def can_transform(
         self,
