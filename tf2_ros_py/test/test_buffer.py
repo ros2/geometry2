@@ -133,7 +133,6 @@ class TestBuffer:
         assert transform == excinfo.value.value
         coro.close()
 
-
     def await_transform_timeout_template(self, transform_coroutine):
         # wait for timeout in an async call
 
@@ -153,7 +152,7 @@ class TestBuffer:
 
                 # Indicate that we had a success
                 stop_fut.set_result(True)
-            except tf2.LookupException as e:
+            except tf2.LookupException:
                 # Indicate that we had a timeout
                 stop_fut.set_result(False)
 
@@ -163,7 +162,8 @@ class TestBuffer:
         # Trigger the guard condition to start the async call
         gc.trigger()
 
-        # Runs the event loop until the future is done or times out (not the timeout that we want to test)
+        # Runs the event loop until the future is done
+        # or times out (not the timeout that we want to test)
         rclpy.spin_until_future_complete(node, stop_fut, executor, timeout_sec=0.2)
 
         # Check if we actually timed out
@@ -185,12 +185,16 @@ class TestBuffer:
         # Check if we can still get the transform after the timeout
         assert stop_fut.done() and stop_fut.result()
 
-
     def test_await_transform_timeout(self):
         # wait for timeout in an async call
 
         def transform_coroutine(buffer, target, source, rclpy_time):
-            return buffer.wait_for_transform_async(target, source, rclpy_time, timeout=rclpy.duration.Duration(seconds=0.1))
+            return buffer.wait_for_transform_async(
+                target,
+                source,
+                rclpy_time,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
 
         self.await_transform_timeout_template(transform_coroutine)
 
@@ -198,7 +202,14 @@ class TestBuffer:
         # wait for timeout in an async call
 
         def transform_coroutine(buffer, target, source, rclpy_time):
-            return buffer.wait_for_transform_full_async(target, rclpy_time, source, rclpy_time, target, timeout=rclpy.duration.Duration(seconds=0.1))
+            return buffer.wait_for_transform_full_async(
+                target,
+                rclpy_time,
+                source,
+                rclpy_time,
+                target,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
 
         self.await_transform_timeout_template(transform_coroutine)
 
@@ -206,7 +217,12 @@ class TestBuffer:
         # wait for timeout in an async call
 
         def transform_coroutine(buffer, target, source, rclpy_time):
-            return buffer.lookup_transform_async(target, source, rclpy_time, timeout=rclpy.duration.Duration(seconds=0.1))
+            return buffer.lookup_transform_async(
+                target,
+                source,
+                rclpy_time,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
 
         self.await_transform_timeout_template(transform_coroutine)
 
@@ -214,7 +230,14 @@ class TestBuffer:
         # wait for timeout in an async call
 
         def transform_coroutine(buffer, target, source, rclpy_time):
-            return buffer.lookup_transform_full_async(target, rclpy_time, source, rclpy_time, target, timeout=rclpy.duration.Duration(seconds=0.1))
+            return buffer.lookup_transform_full_async(
+                target,
+                rclpy_time,
+                source,
+                rclpy_time,
+                target,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
 
         self.await_transform_timeout_template(transform_coroutine)
 

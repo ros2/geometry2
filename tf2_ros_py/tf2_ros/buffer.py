@@ -166,8 +166,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
-        :param timeout: Time to wait for the target frame to become available. Needs a Node instance
-            to be set on the Buffer to work.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: The transform between the frames.
         """
         return await self.wait_for_transform_async(target_frame, source_frame, time, timeout)
@@ -214,8 +214,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
-        :param timeout: Time to wait for the target frame to become available. Needs a Node instance
-            to be set on the Buffer to work.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: The transform between the frames.
         """
         return await self.wait_for_transform_full_async(
@@ -313,8 +313,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
-        :param timeout: Time to wait for the target frame to become available. Needs a Node instance
-            to be set on the Buffer to work.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: A future that contains the transform when it becomes available.
         """
         fut = rclpy.task.Future()
@@ -344,7 +344,7 @@ class Buffer(tf2.BufferCore, BufferInterface):
         # Check if a timeout is specified
         if timeout is not None:
             if self.node is None:
-                raise RuntimeError("Async timeouts require a Node instance to be set.")
+                raise RuntimeError('Async timeouts require a Node instance to be set.')
 
             timeout_timer = self.node.create_timer(
                 timeout.nanoseconds / 1e9, _on_timeout, clock=self.node.get_clock(),
@@ -380,8 +380,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
-        :param timeout: Time to wait for the target frame to become available. Needs a Node instance
-            to be set on the Buffer to work.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: A future that becomes true when the transform is available.
         """
         fut = rclpy.task.Future()
@@ -414,7 +414,7 @@ class Buffer(tf2.BufferCore, BufferInterface):
         # Check if a timeout is specified
         if timeout is not None:
             if self.node is None:
-                raise RuntimeError("Async timeouts require a Node instance to be set.")
+                raise RuntimeError('Async timeouts require a Node instance to be set.')
 
             timeout_timer = self.node.create_timer(
                 timeout.nanoseconds / 1e9, _on_timeout, clock=self.node.get_clock(),
