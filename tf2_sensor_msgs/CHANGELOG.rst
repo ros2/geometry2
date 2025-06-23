@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.1 (2025-06-23)
+-------------------
+* Add normals rotation in `PointCloud2` `doTransform` (`#792 <https://github.com/ros2/geometry2/issues/792>`_) (`#793 <https://github.com/ros2/geometry2/issues/793>`_)
+* Contributors: mergify[bot]
+
 0.41.0 (2025-04-25)
 -------------------
 

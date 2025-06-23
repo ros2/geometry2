@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.1 (2025-06-23)
+-------------------
+
 0.41.0 (2025-04-25)
 -------------------
 * Uniform cmake min version (`#764 <https://github.com/ros2/geometry2/issues/764>`_)
@@ -292,4 +295,3 @@ Changelog for package tf2_eigen
 * fixing CMakeLists.txt from `#97 <https://github.com/ros/geometry_experimental/issues/97>`_
 * create tf2_eigen.
 * Contributors: Tully Foote, koji
-
