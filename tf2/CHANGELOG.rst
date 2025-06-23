@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.14 (2025-05-14)
+--------------------
+
 0.25.13 (2025-05-14)
 --------------------
 * Overflow Issue in durationFromSec() Function when Handling Extremely Large or Small Values (`#785 <https://github.com/ros2/geometry2/issues/785>`_) (`#787 <https://github.com/ros2/geometry2/issues/787>`_)
