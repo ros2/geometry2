@@ -309,8 +309,8 @@ public:
     expected_success_count_ = target_frames_.size() * (time_tolerance_.nanoseconds() ? 2 : 1);
 
     std::stringstream ss;
-    for (V_string::iterator it = target_frames_.begin();
-         it != target_frames_.end(); ++it) {
+      it != target_frames_.end(); ++it)
+    {
       ss << *it;
       if (std::next(it) != target_frames_.end()) {
         ss << ", ";
