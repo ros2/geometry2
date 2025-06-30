@@ -42,11 +42,117 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <getopt.h>
 
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_listener.h"
 
 #include "rclcpp/rclcpp.hpp"
+
+struct Arguments {
+  std::string source_frame;
+  std::string target_frame;
+  double rate = 1.0;
+  double cache_time = 10.0;
+  double offset = 0.0;
+  double time = 0.0;
+  int limit = 0;
+  int precision = 3;
+  bool use_time = false;
+  bool use_offset = false;
+};
+
+void print_usage(const char* program_name) {
+  printf("Usage: %s source_frame target_frame [options]\n\n", program_name);
+  printf("Options:\n");
+  printf("  -r, --rate RATE        Update rate (default: 1.0)\n");
+  printf("  -c, --cache-time TIME  Length of tf buffer cache in seconds (default: 10.0)\n");
+  printf("  -o, --offset OFFSET    Offset the lookup from current time (ignored if using -t)\n");
+  printf("  -t, --time TIME        Fixed time to do the lookup\n");
+  printf("  -l, --limit LIMIT      Lookup fixed number of times\n");
+  printf("  -p, --precision PREC   Output precision (default: 3)\n");
+  printf("  -h, --help             Show this help message\n\n");
+  printf("This will echo the transform from the coordinate frame of the source_frame\n");
+  printf("to the coordinate frame of the target_frame.\n");
+  printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
+}
+
+Arguments parse_arguments(int argc, char** argv) {
+  Arguments args;
+  
+  if (argc < 3) {
+    print_usage(argv[0]);
+    exit(1);
+  }
+  
+  args.source_frame = argv[1];
+  args.target_frame = argv[2];
+  
+  static struct option long_options[] = {
+    {"rate", required_argument, 0, 'r'},
+    {"cache-time", required_argument, 0, 'c'},
+    {"offset", required_argument, 0, 'o'},
+    {"time", required_argument, 0, 't'},
+    {"limit", required_argument, 0, 'l'},
+    {"precision", required_argument, 0, 'p'},
+    {"help", no_argument, 0, 'h'},
+    {0, 0, 0, 0}
+  };
+  
+  int c;
+  int option_index = 0;
+  
+  while ((c = getopt_long(argc, argv, "r:c:o:t:l:p:h", long_options, &option_index)) != -1) {
+    switch (c) {
+      case 'r':
+        args.rate = std::stod(optarg);
+        if (args.rate <= 0.0) {
+          fprintf(stderr, "Rate must be > 0.0\n");
+          exit(1);
+        }
+        break;
+      case 'c':
+        args.cache_time = std::stod(optarg);
+        if (args.cache_time <= 0.0) {
+          fprintf(stderr, "Cache time must be > 0.0\n");
+          exit(1);
+        }
+        break;
+      case 'o':
+        args.offset = std::stod(optarg);
+        args.use_offset = true;
+        break;
+      case 't':
+        args.time = std::stod(optarg);
+        args.use_time = true;
+        break;
+      case 'l':
+        args.limit = std::stoi(optarg);
+        if (args.limit <= 0) {
+          fprintf(stderr, "Limit must be > 0\n");
+          exit(1);
+        }
+        break;
+      case 'p':
+        args.precision = std::stoi(optarg);
+        if (args.precision <= 0) {
+          fprintf(stderr, "Precision must be > 0\n");
+          exit(1);
+        }
+        break;
+      case 'h':
+        print_usage(argv[0]);
+        exit(0);
+      case '?':
+        print_usage(argv[0]);
+        exit(1);
+      default:
+        break;
+    }
+  }
+  
+  return args;
+}
 
 class echoListener
 {
@@ -54,8 +160,8 @@ public:
   tf2_ros::Buffer buffer_;
   std::shared_ptr<tf2_ros::TransformListener> tfl_;
 
-  explicit echoListener(rclcpp::Clock::SharedPtr clock)
-  : buffer_(clock)
+  explicit echoListener(rclcpp::Clock::SharedPtr clock, double cache_time)
+  : buffer_(clock, tf2::durationFromSec(cache_time))
   {
     tfl_ = std::make_shared<tf2_ros::TransformListener>(buffer_);
   }
@@ -70,58 +176,21 @@ int main(int argc, char ** argv)
 {
   // Initialize ROS
   std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
-
-  double rate_hz;
-  // Allow 2 or 3 command line arguments
-  if (args.size() == 3) {
-    rate_hz = 1.0;
-  } else if (args.size() == 4) {
-    size_t pos;
-    try {
-      rate_hz = std::stof(args[3], &pos);
-    } catch (const std::invalid_argument &) {
-      // If the user provided an argument that wasn't a number (like 'foo'), stof() will throw.
-      fprintf(
-        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
-        args[3].c_str());
-      return 2;
-    }
-
-    // If the user provide an floating-point argument with junk on the end (like '1.0foo'), the pos
-    // argument will show it didn't convert the whole argument.
-    if (pos != args[3].length()) {
-      fprintf(
-        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
-        args[3].c_str());
-      return 3;
-    }
-  } else {
-    printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
-    printf("This will echo the transform from the coordinate frame of the source_frame\n");
-    printf("to the coordinate frame of the target_frame. \n");
-    printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
-    printf("Default echo rate is 1 if echo_rate is not given.\n");
-    return 1;
-  }
-  // TODO(tfoote): restore parameter option
-  // // read rate parameter
-  // ros::NodeHandle p_nh("~");
-  // p_nh.param("rate", rate_hz, 1.0);
-  rclcpp::Rate rate(rate_hz);
-
-  // TODO(tfoote): restore anonymous??
-  // ros::init_options::AnonymousName);
-
+  
+  // Parse arguments
+  Arguments parsed_args = parse_arguments(argc, argv);
+  
+  rclcpp::Rate rate(parsed_args.rate);
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_echo");
-
   rclcpp::Clock::SharedPtr clock = nh->get_clock();
-  // Instantiate a local listener
-  echoListener echoListener(clock);
+  
+  // Instantiate a local listener with custom cache time
+  echoListener echoListener(clock, parsed_args.cache_time);
 
-  std::string source_frameid = args[1];
-  std::string target_frameid = args[2];
+  std::string source_frameid = parsed_args.source_frame;
+  std::string target_frameid = parsed_args.target_frame;
 
-  // Wait for the first transforms to become avaiable.
+  // Wait for the first transforms to become available.
   std::string warning_msg;
   while (rclcpp::ok() && !echoListener.buffer_.canTransform(
       source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
@@ -132,51 +201,70 @@ int main(int argc, char ** argv)
     rate.sleep();
   }
   constexpr double rad_to_deg = 180.0 / M_PI;
+  int count = 0;
 
-  // Nothing needs to be done except wait for a quit
-  // The callbacks within the listener class will take care of everything
+  // Main loop
   while (rclcpp::ok()) {
+    count++;
+    if (parsed_args.limit > 0 && count > parsed_args.limit) {
+      break;
+    }
+    
     try {
       geometry_msgs::msg::TransformStamped echo_transform;
+      
+      // Determine lookup time based on arguments
+      tf2::TimePoint lookup_time;
+      if (parsed_args.use_time) {
+        lookup_time = tf2::TimePoint(std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::duration<double>(parsed_args.time)));
+      } else if (parsed_args.use_offset) {
+        auto now = clock->now();
+        lookup_time = tf2::TimePoint(now.nanoseconds() + 
+          std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::duration<double>(parsed_args.offset)));
+      } else {
+        lookup_time = tf2::TimePoint(); // Latest available
+      }
+      
       echo_transform = echoListener.buffer_.lookupTransform(
-        source_frameid, target_frameid,
-        tf2::TimePoint());
-      std::cout.precision(3);
+        source_frameid, target_frameid, lookup_time);
+        
+      // Set precision for output
+      std::cout.precision(parsed_args.precision);
       std::cout.setf(std::ios::fixed, std::ios::floatfield);
-      std::cout << "At time " << echo_transform.header.stamp.sec << "." <<
-        echo_transform.header.stamp.nanosec << std::endl;
+      
+      // Current time info
+      auto current_time = clock->now();
+      std::cout << "At time " << 
+        echo_transform.header.stamp.sec + echo_transform.header.stamp.nanosec * 1e-9 << 
+        ", (current time " << current_time.seconds() << ")" << std::endl;
+        
       auto translation = echo_transform.transform.translation;
-      double translation_xyz[] = {translation.x, translation.y, translation.z};
       auto rotation = echo_transform.transform.rotation;
+      
       std::cout << "- Translation: [" << translation.x << ", " << translation.y << ", " <<
         translation.z << "]" << std::endl;
-      std::cout << "- Rotation: in Quaternion [" << rotation.x << ", " << rotation.y << ", " <<
-        rotation.z << ", " << rotation.w << "]" << std::endl;
+      std::cout << "- Rotation: in Quaternion [" << rotation.x << ", " << rotation.y <<
+        ", " << rotation.z << ", " << rotation.w << "]" << std::endl;
 
       tf2::Matrix3x3 mat(tf2::Quaternion{rotation.x, rotation.y, rotation.z, rotation.w});
 
       tf2Scalar yaw, pitch, roll;
       mat.getEulerYPR(yaw, pitch, roll);
 
-      std::cout << "- Rotation: in RPY (radian) [" << roll << ", " << pitch << ", " << yaw << "]" <<
+      std::cout << "            in RPY (radian) [" << roll << ", " << pitch << ", " << yaw << "]" <<
         std::endl;
-      std::cout << "- Rotation: in RPY (degree) [" <<
+      std::cout << "            in RPY (degree) [" <<
         roll * rad_to_deg << ", " <<
         pitch * rad_to_deg << ", " <<
         yaw * rad_to_deg << "]" << std::endl;
 
-      std::cout << "- Matrix:" << std::endl;
-      for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-          std::cout << " " << std::setw(6) << std::setprecision(3) << mat[i][j];
-        }
-        std::cout << " " << std::setw(6) << std::setprecision(3) << translation_xyz[i];
-        std::cout << std::endl;
-      }
-      for (int j = 0; j < 3; j++) {
-        std::cout << " " << std::setw(6) << std::setprecision(3) << 0.0;
-      }
-      std::cout << " " << std::setw(6) << std::setprecision(3) << 1.0 << std::endl;
+    } catch (const tf2::LookupException & ex) {
+      std::cout << "At time " << clock->now().seconds() << ", (current time " << 
+        clock->now().seconds() << ") " << ex.what() << std::endl;
+    } catch (const tf2::ExtrapolationException & ex) {
+      std::cout << "(current time " << clock->now().seconds() << ") " << ex.what() << std::endl;
     } catch (const tf2::TransformException & ex) {
       std::cout << "Failure at " << clock->now().seconds() << std::endl;
       std::cout << "Exception thrown:" << ex.what() << std::endl;
