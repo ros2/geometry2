@@ -135,7 +135,6 @@ TEST(tf2_ros_message_filter, get_target_frames)
   ASSERT_STREQ(filter.getTargetFramesString().c_str(), "odom, map");
 }
 
-
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
