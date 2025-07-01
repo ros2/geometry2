@@ -119,6 +119,22 @@ TEST(tf2_ros_message_filter, construction_and_destruction)
   }
 }
 
+TEST(tf2_ros_message_filter, get_target_frames)
+{
+  auto node = rclcpp::Node::make_shared("test_message_filter_node");
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  ASSERT_STREQ(filter.getTargetFramesString().c_str(), "map");
+
+  std::vector<std::string> frames;
+  frames.push_back("odom");
+  frames.push_back("map");
+  filter.setTargetFrames(frames);
+  ASSERT_STREQ(filter.getTargetFramesString().c_str(), "odom, map");
+}
+
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
