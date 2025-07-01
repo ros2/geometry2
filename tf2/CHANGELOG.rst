@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.42.2 (2025-06-19)
 -------------------
 * Default initialize TransformStorage's frame_id\_ and child_frame_id\_ with UINT32_MAX (`#783 <https://github.com/ros2/geometry2/issues/783>`_)

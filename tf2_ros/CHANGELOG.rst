@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix message filter target frames string (`#803 <https://github.com/ros2/geometry2/issues/803>`_)
+* Contributors: Sergei Zobov
+
 0.42.2 (2025-06-19)
 -------------------
 
