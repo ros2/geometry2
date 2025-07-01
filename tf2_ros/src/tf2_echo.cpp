@@ -108,8 +108,9 @@ int main(int argc, char ** argv)
         }
         i++;  // Skip the next argument as it's the rate value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert rate argument '%s' \
-          to a floating-point number\n", args[i + 1].c_str());
+        fprintf(
+          stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+          args[i + 1].c_str());
         return 2;
       }
     } else if (args[i] == "-t" && i + 1 < args.size()) {
@@ -117,8 +118,9 @@ int main(int argc, char ** argv)
         fixed_time = std::stof(args[i + 1]);
         i++;  // Skip the next argument as it's the time value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert time argument '%s' \
-          to a floating-point number\n", args[i + 1].c_str());
+        fprintf(
+          stderr, "Failed to convert time argument '%s' to a floating-point number\n",
+          args[i + 1].c_str());
         return 3;
       }
     } else if (args[i] == "-p" && i + 1 < args.size()) {
@@ -130,8 +132,9 @@ int main(int argc, char ** argv)
         }
         i++;  // Skip the next argument as it's the precision value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert precision argument '%s' \
-          to an integer\n", args[i + 1].c_str());
+        fprintf(
+          stderr, "Failed to convert precision argument '%s' to an integer\n",
+          args[i + 1].c_str());
         return 4;
       }
     } else {
