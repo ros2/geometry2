@@ -106,17 +106,19 @@ int main(int argc, char ** argv)
           fprintf(stderr, "Rate must be positive\n");
           return 2;
         }
-        i++; // Skip the next argument as it's the rate value
+        i++;  // Skip the next argument as it's the rate value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert rate argument '%s' to a floating-point number\n", args[i + 1].c_str());
+        fprintf(stderr, "Failed to convert rate argument '%s' \
+          to a floating-point number\n", args[i + 1].c_str());
         return 2;
       }
     } else if (args[i] == "-t" && i + 1 < args.size()) {
       try {
         fixed_time = std::stof(args[i + 1]);
-        i++; // Skip the next argument as it's the time value
+        i++;  // Skip the next argument as it's the time value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert time argument '%s' to a floating-point number\n", args[i + 1].c_str());
+        fprintf(stderr, "Failed to convert time argument '%s' \
+          to a floating-point number\n", args[i + 1].c_str());
         return 3;
       }
     } else if (args[i] == "-p" && i + 1 < args.size()) {
@@ -126,9 +128,10 @@ int main(int argc, char ** argv)
           fprintf(stderr, "Precision must be non-negative\n");
           return 4;
         }
-        i++; // Skip the next argument as it's the precision value
+        i++;  // Skip the next argument as it's the precision value
       } catch (const std::invalid_argument &) {
-        fprintf(stderr, "Failed to convert precision argument '%s' to an integer\n", args[i + 1].c_str());
+        fprintf(stderr, "Failed to convert precision argument '%s' \
+          to an integer\n", args[i + 1].c_str());
         return 4;
       }
     } else {
@@ -149,7 +152,7 @@ int main(int argc, char ** argv)
   // Wait for the first transforms to become available.
   std::string warning_msg;
   tf2::TimePoint lookup_time_point;
-  
+
   if (fixed_time >= 0.0) {
     // Convert fixed time to tf2::TimePoint
     rclcpp::Time rclcpp_time(static_cast<int64_t>(fixed_time * 1e9));
@@ -166,7 +169,7 @@ int main(int argc, char ** argv)
       source_frameid.c_str(), target_frameid.c_str(), warning_msg.c_str());
     rate.sleep();
   }
-  
+
   constexpr double rad_to_deg = 180.0 / M_PI;
 
   // Nothing needs to be done except wait for a quit
@@ -174,7 +177,7 @@ int main(int argc, char ** argv)
   while (rclcpp::ok()) {
     try {
       geometry_msgs::msg::TransformStamped echo_transform;
-      
+
       // Determine lookup time
       if (fixed_time >= 0.0) {
         // Use fixed time
@@ -184,10 +187,10 @@ int main(int argc, char ** argv)
         // Use current time (most recent transform)
         lookup_time_point = tf2::TimePoint();
       }
-      
+
       echo_transform = echoListener.buffer_.lookupTransform(
         source_frameid, target_frameid, lookup_time_point);
-        
+
       std::cout.precision(precision);
       std::cout.setf(std::ios::fixed, std::ios::floatfield);
       std::cout << "At time " << echo_transform.header.stamp.sec << "." <<
