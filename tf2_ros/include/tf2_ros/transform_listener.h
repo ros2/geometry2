@@ -32,6 +32,7 @@
 #ifndef TF2_ROS__TRANSFORM_LISTENER_H_
 #define TF2_ROS__TRANSFORM_LISTENER_H_
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <thread>
@@ -211,7 +212,13 @@ private:
       // Create executor with dedicated thread to spin.
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
       executor_->add_callback_group(callback_group_, node_base_interface_);
-      dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
+      running_.store(true);
+      dedicated_listener_thread_ = std::make_unique<std::thread>(
+        [&]() {
+          while (running_.load()) {
+            executor_->spin_once();
+          }
+        });
       // Tell the buffer we have a dedicated thread to enable timeouts
       buffer_.setUsingDedicatedThread(true);
     } else {
@@ -229,6 +236,7 @@ private:
     }
   }
 
+  std::atomic<bool> running_;
   bool spin_thread_{false};
   std::unique_ptr<std::thread> dedicated_listener_thread_ {nullptr};
   rclcpp::Executor::SharedPtr executor_ {nullptr};

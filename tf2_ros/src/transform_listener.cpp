@@ -71,6 +71,7 @@ TransformListener::TransformListener(tf2::BufferCore & buffer, bool spin_thread,
 TransformListener::~TransformListener()
 {
   if (spin_thread_) {
+    running_.store(false);
     executor_->cancel();
     dedicated_listener_thread_->join();
   }
