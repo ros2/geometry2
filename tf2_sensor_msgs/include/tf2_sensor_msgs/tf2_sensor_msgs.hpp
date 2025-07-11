@@ -47,7 +47,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include "tf2_ros/buffer_interface.h"
+#include "tf2_ros/buffer_interface.hpp"
 
 #include "tf2/convert.hpp"
 #include "tf2/time.hpp"
