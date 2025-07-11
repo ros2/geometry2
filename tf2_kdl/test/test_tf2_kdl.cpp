@@ -42,7 +42,7 @@
 #include <kdl/frames_io.hpp>
 #include <gtest/gtest.h>
 #include <rclcpp/rclcpp.hpp>
-#include "tf2_ros/buffer.h"
+#include "tf2_ros/buffer.hpp"
 #include <tf2/convert.hpp>
 
 std::unique_ptr<tf2_ros::Buffer> tf_buffer;
