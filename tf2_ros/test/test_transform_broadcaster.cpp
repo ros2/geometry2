@@ -28,7 +28,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.hpp>
 
 #include <memory>
 

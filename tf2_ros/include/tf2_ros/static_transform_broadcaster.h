@@ -33,83 +33,14 @@
 #ifndef TF2_ROS__STATIC_TRANSFORM_BROADCASTER_H_
 #define TF2_ROS__STATIC_TRANSFORM_BROADCASTER_H_
 
-#include <memory>
-#include <vector>
+#define STATIC_TRANSFORM_BROADCASTER_HEADER_DEPRECATION This header is obsolete, \
+  please include "tf2_ros/static_transform_broadcaster.hpp" instead
+#ifdef _MSC_VER
+  #pragma message(STATIC_TRANSFORM_BROADCASTER_HEADER_DEPRECATION)
+#else
+  #warning STATIC_TRANSFORM_BROADCASTER_HEADER_DEPRECATION
+#endif
 
-#include "tf2_ros/visibility_control.h"
-
-#include "rclcpp/node_interfaces/get_node_parameters_interface.hpp"
-#include "rclcpp/node_interfaces/get_node_topics_interface.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "tf2_msgs/msg/tf_message.hpp"
-#include "tf2_ros/qos.hpp"
-
-namespace tf2_ros
-{
-
-/** \brief This class provides an easy way to publish coordinate frame transform information.
- * It will handle all the messaging and stuffing of messages.  And the function prototypes lay out all the
- * necessary data needed for each message.  */
-
-class StaticTransformBroadcaster
-{
-public:
-  /** \brief Node constructor */
-  template<class NodeT, class AllocatorT = std::allocator<void>>
-  StaticTransformBroadcaster(
-    NodeT && node,
-    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
-      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } ())
-    : StaticTransformBroadcaster(
-      rclcpp::node_interfaces::get_node_parameters_interface(node),
-      rclcpp::node_interfaces::get_node_topics_interface(node),
-      qos,
-      options)
-  {}
-
-  /** \brief Node interfaces constructor */
-  template<class AllocatorT = std::allocator<void>>
-  StaticTransformBroadcaster(
-    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
-    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
-    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
-      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } ())
-  {
-    publisher_ = rclcpp::create_publisher<tf2_msgs::msg::TFMessage>(
-      node_parameters, node_topics, "/tf_static", qos, options);
-  }
-
-  /** \brief Send a TransformStamped message
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
-  TF2_ROS_PUBLIC
-  void sendTransform(const geometry_msgs::msg::TransformStamped & transform);
-
-  /** \brief Send a vector of TransformStamped messages
-   * The stamped data structure includes frame_id, and time, and parent_id already.  */
-  TF2_ROS_PUBLIC
-  void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
-
-private:
-  /// Internal reference to ros::Node
-  rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
-  tf2_msgs::msg::TFMessage net_message_;
-};
-
-}  // namespace tf2_ros
+#include <tf2_ros/static_transform_broadcaster.hpp>
 
 #endif  // TF2_ROS__STATIC_TRANSFORM_BROADCASTER_H_
