@@ -82,12 +82,16 @@ public:
   : buffer_(buffer),
     logger_(node->get_logger())
   {
+    rcl_action_server_options_t action_server_ops = rcl_action_server_get_default_options();
+    action_server_ops.result_timeout.nanoseconds = (rcl_duration_value_t)RCL_S_TO_NS(0);
     server_ = rclcpp_action::create_server<LookupTransformAction>(
       node,
       ns,
       std::bind(&BufferServer::goalCB, this, std::placeholders::_1, std::placeholders::_2),
       std::bind(&BufferServer::cancelCB, this, std::placeholders::_1),
-      std::bind(&BufferServer::acceptedCB, this, std::placeholders::_1));
+      std::bind(&BufferServer::acceptedCB, this, std::placeholders::_1),
+      action_server_ops
+      );
 
     check_timer_ = rclcpp::create_timer(
       node, node->get_clock(), check_period, std::bind(&BufferServer::checkTransforms, this));
