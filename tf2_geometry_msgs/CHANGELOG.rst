@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.43.1 (2025-07-18)
+-------------------
+* Change tf2_ros C to C++ headers (`#805 <https://github.com/ros2/geometry2/issues/805>`_)
+* Contributors: Gary Servin
+
 0.43.0 (2025-07-01)
 -------------------
 
