@@ -27,17 +27,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_H_
-#define TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_H_
+#ifndef TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_HPP_
+#define TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_HPP_
 
-#define STATIC_TF_BROADCASTER_VISIBILITY_CONTROL_HEADER_DEPRECATION This header is obsolete, \
-  please include "tf2_ros/static_transform_broadcaster_visibility_control.hpp" instead
-#ifdef _MSC_VER
-  #pragma message(STATIC_TF_BROADCASTER_VISIBILITY_CONTROL_HEADER_DEPRECATION)
+// This logic was borrowed (then namespaced) from the examples on the gcc wiki:
+//     https://gcc.gnu.org/wiki/Visibility
+
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef __GNUC__
+    #define STATIC_TRANSFORM_BROADCASTER_EXPORT __attribute__ ((dllexport))
+    #define STATIC_TRANSFORM_BROADCASTER_IMPORT __attribute__ ((dllimport))
+  #else
+    #define STATIC_TRANSFORM_BROADCASTER_EXPORT __declspec(dllexport)
+    #define STATIC_TRANSFORM_BROADCASTER_IMPORT __declspec(dllimport)
+  #endif
+  #ifdef STATIC_TRANSFORM_BROADCASTER_BUILDING_DLL
+    #define STATIC_TRANSFORM_BROADCASTER_PUBLIC STATIC_TRANSFORM_BROADCASTER_EXPORT
+  #else
+    #define STATIC_TRANSFORM_BROADCASTER_PUBLIC STATIC_TRANSFORM_BROADCASTER_IMPORT
+  #endif
+  #define STATIC_TRANSFORM_BROADCASTER_PUBLIC_TYPE STATIC_TRANSFORM_BROADCASTER_PUBLIC
+  #define STATIC_TRANSFORM_BROADCASTER_LOCAL
 #else
-  #warning STATIC_TF_BROADCASTER_VISIBILITY_CONTROL_HEADER_DEPRECATION
+  #define STATIC_TRANSFORM_BROADCASTER_EXPORT __attribute__ ((visibility("default")))
+  #define STATIC_TRANSFORM_BROADCASTER_IMPORT
+  #if __GNUC__ >= 4
+    #define STATIC_TRANSFORM_BROADCASTER_PUBLIC __attribute__ ((visibility("default")))
+    #define STATIC_TRANSFORM_BROADCASTER_LOCAL  __attribute__ ((visibility("hidden")))
+  #else
+    #define STATIC_TRANSFORM_BROADCASTER_PUBLIC
+    #define STATIC_TRANSFORM_BROADCASTER_LOCAL
+  #endif
+  #define STATIC_TRANSFORM_BROADCASTER_PUBLIC_TYPE
 #endif
 
-#include <tf2_ros/static_transform_broadcaster_visibility_control.hpp>
-
-#endif  // TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_H_
+#endif  // TF2_ROS__STATIC_TRANSFORM_BROADCASTER_VISIBILITY_CONTROL_HPP_

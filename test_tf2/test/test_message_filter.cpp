@@ -44,9 +44,9 @@
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2/LinearMath/Vector3.hpp>
 #include <tf2/time.hpp>
-#include <tf2_ros/buffer_interface.h>
-#include <tf2_ros/create_timer_ros.h>
-#include <tf2_ros/message_filter.h>
+#include <tf2_ros/buffer_interface.hpp>
+#include <tf2_ros/create_timer_ros.hpp>
+#include <tf2_ros/message_filter.hpp>
 
 class Notification
 {

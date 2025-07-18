@@ -31,7 +31,7 @@
 #define TF2_ROS__QOS_HPP_
 
 #include <rclcpp/qos.hpp>
-#include <tf2_ros/visibility_control.h>
+#include <tf2_ros/visibility_control.hpp>
 
 namespace tf2_ros
 {

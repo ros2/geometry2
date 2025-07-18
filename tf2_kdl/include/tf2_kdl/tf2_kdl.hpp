@@ -33,7 +33,7 @@
 #define TF2_KDL_HPP
 
 #include <tf2/convert.hpp>
-#include <tf2_ros/buffer_interface.h>
+#include <tf2_ros/buffer_interface.hpp>
 #include <kdl/frames.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>

@@ -30,110 +30,14 @@
 #ifndef TF2_ROS__CREATE_TIMER_INTERFACE_H_
 #define TF2_ROS__CREATE_TIMER_INTERFACE_H_
 
-#include <functional>
-#include <memory>
-#include <stdexcept>
-#include <string>
+#define CREATE_TIMER_INTERFACE_HEADER_DEPRECATION This header is obsolete, \
+  please include "tf2_ros/create_timer_interface.hpp" instead
+#ifdef _MSC_VER
+  #pragma message(CREATE_TIMER_INTERFACE_HEADER_DEPRECATION)
+#else
+  #warning CREATE_TIMER_INTERFACE_HEADER_DEPRECATION
+#endif
 
-#include "tf2/time.hpp"
-
-#include "tf2_ros/visibility_control.h"
-
-#include "rclcpp/rclcpp.hpp"
-
-namespace tf2_ros
-{
-
-using TimerHandle = uint64_t;
-using TimerCallbackType = std::function<void (const TimerHandle &)>;
-
-class CreateTimerInterfaceException : public std::runtime_error
-{
-public:
-  TF2_ROS_PUBLIC
-  explicit CreateTimerInterfaceException(const std::string & errorDescription)
-  : std::runtime_error(errorDescription)
-  {
-  }
-};
-
-class InvalidTimerHandleException : public std::runtime_error
-{
-public:
-  TF2_ROS_PUBLIC
-  explicit InvalidTimerHandleException(const std::string & description)
-  : std::runtime_error(description)
-  {
-  }
-};
-
-/**
- * \brief Abstract interface for creating timers.
- */
-class CreateTimerInterface
-{
-public:
-  using SharedPtr = std::shared_ptr<CreateTimerInterface>;
-  using ConstSharedPtr = std::shared_ptr<const CreateTimerInterface>;
-  using UniquePtr = std::unique_ptr<CreateTimerInterface>;
-
-  TF2_ROS_PUBLIC
-  virtual
-  ~CreateTimerInterface() = default;
-
-  /**
-   * \brief Create a new timer.
-   *
-   * After creation, the timer will periodically execute the user-provided callback.
-   *
-   * \param clock The clock providing the current time
-   * \param period The interval at which the timer fires
-   * \param callback The callback function to execute every interval
-   */
-  TF2_ROS_PUBLIC
-  virtual TimerHandle
-  createTimer(
-    rclcpp::Clock::SharedPtr clock,
-    const tf2::Duration & period,
-    TimerCallbackType callback) = 0;
-
-  /**
-   * \brief Cancel a timer.
-   *
-   * The timer will stop executing user callbacks.
-   *
-   * \param timer_handle Handle to the timer to cancel
-   * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
-   */
-  TF2_ROS_PUBLIC
-  virtual void
-  cancel(const TimerHandle & timer_handle) = 0;
-
-  /**
-   * \brief Reset the timer.
-   *
-   * The timer will reset and continue to execute user callbacks periodically.
-   *
-   * \param timer_handle Handle to the timer to reset
-   * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
-   */
-  TF2_ROS_PUBLIC
-  virtual void
-  reset(const TimerHandle & timer_handle) = 0;
-
-  /**
-   * \brief Remove a timer.
-   *
-   * The timer will be canceled and removed from internal storage.
-   *
-   * \param timer_handle Handle to the timer to reset
-   * \raises tf2_ros::InvalidTimerHandleException if the timer does not exist
-   */
-  TF2_ROS_PUBLIC
-  virtual void
-  remove(const TimerHandle & timer_handle) = 0;
-};  // class CreateTimerInterface
-
-}  // namespace tf2_ros
+#include <tf2_ros/create_timer_interface.hpp>
 
 #endif  // TF2_ROS__CREATE_TIMER_INTERFACE_H_
