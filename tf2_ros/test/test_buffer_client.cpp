@@ -39,8 +39,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/buffer_client.h"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/buffer_client.hpp"
 
 static const char ACTION_NAME[] = "test_tf2_buffer_action";
 

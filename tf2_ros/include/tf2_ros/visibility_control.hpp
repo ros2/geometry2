@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Willow Garage, Inc.
+ * Copyright (c) 2017 Open Source Robotics Foundation, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Josh Faust */
+#ifndef TF2_ROS__VISIBILITY_CONTROL_HPP_
+#define TF2_ROS__VISIBILITY_CONTROL_HPP_
 
-#ifndef TF2_ROS__MESSAGE_FILTER_H_
-#define TF2_ROS__MESSAGE_FILTER_H_
+// This logic was borrowed (then namespaced) from the examples on the gcc wiki:
+//     https://gcc.gnu.org/wiki/Visibility
 
-#include <tf2_ros/message_filter.hpp>
+#if defined _WIN32 || defined __CYGWIN__
+  #ifdef __GNUC__
+    #define TF2_ROS_EXPORT __attribute__ ((dllexport))
+    #define TF2_ROS_IMPORT __attribute__ ((dllimport))
+  #else
+    #define TF2_ROS_EXPORT __declspec(dllexport)
+    #define TF2_ROS_IMPORT __declspec(dllimport)
+  #endif
+  #ifdef TF2_ROS_BUILDING_DLL
+    #define TF2_ROS_PUBLIC TF2_ROS_EXPORT
+  #else
+    #define TF2_ROS_PUBLIC TF2_ROS_IMPORT
+  #endif
+  #define TF2_ROS_PUBLIC_TYPE TF2_ROS_PUBLIC
+  #define TF2_ROS_LOCAL
+#else
+  #define TF2_ROS_EXPORT __attribute__ ((visibility("default")))
+  #define TF2_ROS_IMPORT
+  #if __GNUC__ >= 4
+    #define TF2_ROS_PUBLIC __attribute__ ((visibility("default")))
+    #define TF2_ROS_LOCAL  __attribute__ ((visibility("hidden")))
+  #else
+    #define TF2_ROS_PUBLIC
+    #define TF2_ROS_LOCAL
+  #endif
+  #define TF2_ROS_PUBLIC_TYPE
+#endif
 
-#endif  // TF2_ROS__MESSAGE_FILTER_H_
+#endif  // TF2_ROS__VISIBILITY_CONTROL_HPP_

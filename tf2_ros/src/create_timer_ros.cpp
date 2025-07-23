@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "tf2_ros/create_timer_ros.h"
+#include "tf2_ros/create_timer_ros.hpp"
 
 #include <functional>
 #include <mutex>
