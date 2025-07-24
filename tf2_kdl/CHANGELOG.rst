@@ -2,6 +2,11 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.2 (2025-07-24)
+-------------------
+* Change tf2_ros C to C++ headers (`#808 <https://github.com/ros2/geometry2/issues/808>`_)
+* Contributors: Gary Servin
+
 0.41.1 (2025-06-23)
 -------------------
 
