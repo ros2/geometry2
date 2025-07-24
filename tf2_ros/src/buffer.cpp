@@ -30,7 +30,7 @@
 /** \author Wim Meeussen */
 
 
-#include "tf2_ros/buffer.h"
+#include "tf2_ros/buffer.hpp"
 
 #include <exception>
 #include <limits>

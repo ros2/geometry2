@@ -28,9 +28,10 @@
  */
 
 #include <gtest/gtest.h>
-#include <tf2_ros/transform_broadcaster.h>
 
 #include <memory>
+
+#include <tf2_ros/transform_broadcaster.hpp>
 
 #include "node_wrapper.hpp"
 

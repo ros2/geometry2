@@ -39,10 +39,10 @@
 #include <tf2/buffer_core.hpp>
 #include <tf2/exceptions.hpp>
 #include <tf2/time.hpp>
-#include <tf2_ros/buffer.h>
-#include <tf2_ros/buffer_interface.h>
-#include <tf2_ros/static_transform_broadcaster.h>
-#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.hpp>
+#include <tf2_ros/buffer_interface.hpp>
+#include <tf2_ros/static_transform_broadcaster.hpp>
+#include <tf2_ros/transform_listener.hpp>
 
 #include "permuter.hpp"
 

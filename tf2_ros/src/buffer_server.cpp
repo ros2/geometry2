@@ -35,8 +35,8 @@
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
 
-#include <tf2_ros/buffer.h>  // Only needed for toMsg() and fromMsg()
-#include <tf2_ros/buffer_server.h>
+#include <tf2_ros/buffer.hpp>  // Only needed for toMsg() and fromMsg()
+#include <tf2_ros/buffer_server.hpp>
 
 #include <list>
 #include <memory>
