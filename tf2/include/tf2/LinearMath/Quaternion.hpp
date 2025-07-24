@@ -48,6 +48,15 @@ public:
 	{ 
 		setRotation(axis, angle); 
 	}
+  /**@brief Constructor from fixed axis RPY
+   * @param roll Angle around X
+   * @param pitch Angle around Y
+   * @param yaw Angle around Z */
+        TF2_PUBLIC
+	Quaternion(const tf2Scalar& roll, const tf2Scalar& pitch, const tf2Scalar& yaw) 
+	{
+		setRPY(roll, pitch, yaw);
+	}
   /**@brief Set the rotation using axis angle notation 
    * @param axis The axis around which to rotate
    * @param angle The magnitude of the rotation in Radians */
