@@ -37,9 +37,9 @@
 
 #include <memory>
 
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/buffer_server.h"
-#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/buffer_server.hpp"
+#include "tf2_ros/transform_listener.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 

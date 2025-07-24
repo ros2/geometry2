@@ -64,8 +64,8 @@
 #include "tf2/convert.hpp"
 #include "tf2/transform_datatypes.hpp"
 #include "tf2_eigen/tf2_eigen.hpp"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.hpp"
+#include "tf2_ros/transform_listener.hpp"
 
 TEST(TfEigen, ConvertVector3dStamped)
 {

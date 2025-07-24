@@ -35,7 +35,7 @@
 * Author: Eitan Marder-Eppstein
 *********************************************************************/
 
-#include "tf2_ros/buffer_client.h"
+#include "tf2_ros/buffer_client.hpp"
 
 #include <chrono>
 #include <future>
