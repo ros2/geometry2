@@ -104,8 +104,8 @@ inline
 void getEulerYPR(const tf2::Quaternion & q, double & yaw, double & pitch, double & roll)
 {
   const double pi_2 = 1.57079632679489661923;
-  // Use a larger threshold to handle numerical errors from quaternion computations
-  const double epsilon = 1e-10;
+  // Use a conservative threshold to handle numerical errors from quaternion computations
+  const double epsilon = 1e-8;
   double sqw;
   double sqx;
   double sqy;
@@ -166,8 +166,8 @@ inline
 double getYaw(const tf2::Quaternion & q)
 {
   double yaw;
-  // Use a larger threshold to handle numerical errors from quaternion computations
-  const double epsilon = 1e-10;
+  // Use a conservative threshold to handle numerical errors from quaternion computations
+  const double epsilon = 1e-8;
 
   double sqw;
   double sqx;

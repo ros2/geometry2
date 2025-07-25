@@ -297,8 +297,8 @@ public:
 		//get the pointer to the raw data
 
 		// Apply epsilon thresholding to matrix elements to handle numerical precision issues
-		// Use a larger threshold to handle numerical errors from quaternion-to-matrix conversion
-		tf2Scalar threshold = tf2Scalar(1e-10);
+		// Use a conservative threshold to handle numerical errors from quaternion-to-matrix conversion
+		tf2Scalar threshold = tf2Scalar(1e-8);
 		tf2Scalar m20 = tf2Fabs(m_el[2].x()) < threshold ? tf2Scalar(0.0) : m_el[2].x();
 		tf2Scalar m21 = tf2Fabs(m_el[2].y()) < threshold ? tf2Scalar(0.0) : m_el[2].y();
 		tf2Scalar m22 = tf2Fabs(m_el[2].z()) < threshold ? tf2Scalar(0.0) : m_el[2].z();
