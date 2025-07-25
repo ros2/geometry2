@@ -20,6 +20,8 @@
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
+#include <limits>
+#include <cmath>
 
 
 namespace tf2
@@ -102,6 +104,8 @@ inline
 void getEulerYPR(const tf2::Quaternion & q, double & yaw, double & pitch, double & roll)
 {
   const double pi_2 = 1.57079632679489661923;
+  // Use a larger threshold to handle numerical errors from quaternion computations
+  const double epsilon = 1e-10;
   double sqw;
   double sqx;
   double sqy;
@@ -115,18 +119,40 @@ void getEulerYPR(const tf2::Quaternion & q, double & yaw, double & pitch, double
   // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
   // normalization added from urdfom_headers
   double sarg = -2 * (q.x() * q.z() - q.w() * q.y()) / (sqx + sqy + sqz + sqw);
-  if (sarg <= -0.99999) {
+  
+  // Apply epsilon thresholding to handle numerical precision issues
+  double threshold_high = 0.99999 - epsilon;
+  double threshold_low = -0.99999 + epsilon;
+  
+  if (sarg <= threshold_low) {
     pitch = -0.5 * pi_2;
     roll = 0;
     yaw = -2 * atan2(q.y(), q.x());
-  } else if (sarg >= 0.99999) {
+  } else if (sarg >= threshold_high) {
     pitch = 0.5 * pi_2;
     roll = 0;
     yaw = 2 * atan2(q.y(), q.x());
   } else {
     pitch = asin(sarg);
-    roll = atan2(2 * (q.y() * q.z() + q.w() * q.x()), sqw - sqx - sqy + sqz);
-    yaw = atan2(2 * (q.x() * q.y() + q.w() * q.z()), sqw + sqx - sqy - sqz);
+    
+    // Apply epsilon thresholding to arguments before atan2 calls
+    double roll_y = 2 * (q.y() * q.z() + q.w() * q.x());
+    double roll_x = sqw - sqx - sqy + sqz;
+    double yaw_y = 2 * (q.x() * q.y() + q.w() * q.z());
+    double yaw_x = sqw + sqx - sqy - sqz;
+    
+    // Zero out very small values to prevent atan2 from returning incorrect angles
+    if (std::abs(roll_y) < epsilon && std::abs(roll_x) < epsilon) {
+      roll = 0;
+    } else {
+      roll = atan2(roll_y, roll_x);
+    }
+    
+    if (std::abs(yaw_y) < epsilon && std::abs(yaw_x) < epsilon) {
+      yaw = 0;
+    } else {
+      yaw = atan2(yaw_y, yaw_x);
+    }
   }
 }
 
@@ -140,6 +166,8 @@ inline
 double getYaw(const tf2::Quaternion & q)
 {
   double yaw;
+  // Use a larger threshold to handle numerical errors from quaternion computations
+  const double epsilon = 1e-10;
 
   double sqw;
   double sqx;
@@ -155,12 +183,24 @@ double getYaw(const tf2::Quaternion & q)
   // normalization added from urdfom_headers
   double sarg = -2 * (q.x() * q.z() - q.w() * q.y()) / (sqx + sqy + sqz + sqw);
 
-  if (sarg <= -0.99999) {
+  // Apply epsilon thresholding to handle numerical precision issues
+  double threshold_high = 0.99999 - epsilon;
+  double threshold_low = -0.99999 + epsilon;
+
+  if (sarg <= threshold_low) {
     yaw = -2 * atan2(q.y(), q.x());
-  } else if (sarg >= 0.99999) {
+  } else if (sarg >= threshold_high) {
     yaw = 2 * atan2(q.y(), q.x());
   } else {
-    yaw = atan2(2 * (q.x() * q.y() + q.w() * q.z()), sqw + sqx - sqy - sqz);
+    double yaw_y = 2 * (q.x() * q.y() + q.w() * q.z());
+    double yaw_x = sqw + sqx - sqy - sqz;
+    
+    // Zero out very small values to prevent atan2 from returning incorrect angles
+    if (std::abs(yaw_y) < epsilon && std::abs(yaw_x) < epsilon) {
+      yaw = 0;
+    } else {
+      yaw = atan2(yaw_y, yaw_x);
+    }
   }
   return yaw;
 }

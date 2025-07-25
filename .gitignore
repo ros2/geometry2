@@ -1,3 +1,84 @@
-*~
+# Build directories
+build/
+install/
+log/
+devel/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.cmake
+
+# Compiled Object files
+*.o
+*.obj
+*.slo
+*.lo
+*.a
+*.la
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Python files
 *.pyc
+*.pyo
+__pycache__/
+*.egg-info/
+dist/
+
+# Test results
+test_results/
+Testing/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# ROS specific
+*.launch.xml
+*.bag
+.catkin_workspace
+
+# Coverage files
+*.gcno
+*.gcda
+*.gcov
+coverage.info
+coverage/
+
+# Test executables and temporary test files
+test_*
+*test_output*
+gtest_*.xml
+
+# Editor backup files
+*~
+*.orig
+*.rej
 \#*
+
+# Doxygen output
+html/
+latex/
