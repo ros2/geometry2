@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.16 (2025-07-25)
+--------------------
+* Change tf2_ros C to C++ headers (backport `#807 <https://github.com/ros2/geometry2/issues/807>`_) (`#810 <https://github.com/ros2/geometry2/issues/810>`_)
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.25.15 (2025-07-16)
 --------------------
 * Updated tf2_echo with some other features (`#802 <https://github.com/ros2/geometry2/issues/802>`_)
