@@ -1,6 +1,6 @@
 /**
  * \file
- * \brief 
+ * \brief
  * \author Martin Pecka
  * SPDX-License-Identifier: BSD-3-Clause
  * SPDX-FileCopyrightText: Czech Technical University in Prague
@@ -22,10 +22,11 @@
 
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 
-void compareCovariances(const std::array<double, 9>& c1, const std::array<double, 9>& c2)
+void compareCovariances(const std::array<double, 9> & c1, const std::array<double, 9> & c2)
 {
-  for (size_t i = 0; i < 9; ++i)
+  for (size_t i = 0; i < 9; ++i) {
     EXPECT_NEAR(c1[i], c2[i], 1e-6) << "Wrong value at position " << i;
+  }
 }
 
 TEST(Covariance, Transform)
@@ -92,7 +93,7 @@ TEST(Imu, GetFrameId)
   EXPECT_EQ(msg.header.frame_id, tf2::getFrameId(msg));
 }
 
-void prepareImuMsg(sensor_msgs::msg::Imu& msg)
+void prepareImuMsg(sensor_msgs::msg::Imu & msg)
 {
   msg.header.frame_id = "test2";
   msg.header.stamp.sec = 1;
@@ -108,7 +109,7 @@ void prepareImuMsg(sensor_msgs::msg::Imu& msg)
   msg.orientation_covariance = {1, 0, 0, 0, 2, 0, 0, 0, 3};
 }
 
-void prepareTf(geometry_msgs::msg::TransformStamped& tf)
+void prepareTf(geometry_msgs::msg::TransformStamped & tf)
 {
   tf.header.frame_id = "test";
   tf.header.stamp.sec = 1;
@@ -215,7 +216,7 @@ TEST(Mag, GetFrameId)
   EXPECT_EQ(msg.header.frame_id, tf2::getFrameId(msg));
 }
 
-void prepareMagMsg(sensor_msgs::msg::MagneticField& msg)
+void prepareMagMsg(sensor_msgs::msg::MagneticField & msg)
 {
   msg.header.frame_id = "test2";
   msg.header.stamp.sec = 1;

@@ -170,44 +170,52 @@ void fromMsg(const sensor_msgs::msg::PointCloud2 & msg, sensor_msgs::msg::PointC
 /**
 * method to extract timestamp from object
 */
-template <>
+template<>
 inline
-tf2::TimePoint getTimestamp(const sensor_msgs::msg::Imu& p) {return tf2_ros::fromMsg(p.header.stamp);}
+tf2::TimePoint getTimestamp(const sensor_msgs::msg::Imu & p)
+{
+  return tf2_ros::fromMsg(p.header.stamp);
+}
 
 /**
 * method to extract frame id from object
 */
-template <>
+template<>
 inline
-std::string getFrameId(const sensor_msgs::msg::Imu &p) {return p.header.frame_id;}
+std::string getFrameId(const sensor_msgs::msg::Imu & p) {return p.header.frame_id;}
 
 
 /**
 * Transforms a covariance array from one frame to another
 */
 inline
-void transformCovariance(const std::array<double, 9>& in, std::array<double, 9>& out, Eigen::Quaternion<double> r){
-  Eigen::Map<const Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > cov_in(in.data());
-  Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor> > cov_out(out.data());
+void transformCovariance(
+  const std::array<double, 9> & in, std::array<double, 9> & out,
+  Eigen::Quaternion<double> r)
+{
+  Eigen::Map<const Eigen::Matrix<double, 3, 3, Eigen::RowMajor>> cov_in(in.data());
+  Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>> cov_out(out.data());
   cov_out = r * cov_in * r.inverse();
 }
 
 /**
 * Transforms sensor_msgs::Imu data from one frame to another
 */
-template <>
+template<>
 inline
-void doTransform(const sensor_msgs::msg::Imu &imu_in, sensor_msgs::msg::Imu &imu_out, const geometry_msgs::msg::TransformStamped& t_in)
+void doTransform(
+  const sensor_msgs::msg::Imu & imu_in, sensor_msgs::msg::Imu & imu_out,
+  const geometry_msgs::msg::TransformStamped & t_in)
 {
   imu_out.header = t_in.header;
 
   // Discard translation, only use orientation for IMU transform
   Eigen::Quaternion<double> r(
-      t_in.transform.rotation.w, 
-      t_in.transform.rotation.x, 
-      t_in.transform.rotation.y, 
-      t_in.transform.rotation.z);
-  Eigen::Transform<double,3,Eigen::Affine> t(r);
+    t_in.transform.rotation.w,
+    t_in.transform.rotation.x,
+    t_in.transform.rotation.y,
+    t_in.transform.rotation.z);
+  Eigen::Transform<double, 3, Eigen::Affine> t(r);
 
   Eigen::Vector3d vel = t * Eigen::Vector3d(
       imu_in.angular_velocity.x, imu_in.angular_velocity.y, imu_in.angular_velocity.z);
@@ -228,12 +236,12 @@ void doTransform(const sensor_msgs::msg::Imu &imu_in, sensor_msgs::msg::Imu &imu
   transformCovariance(
     imu_in.linear_acceleration_covariance, imu_out.linear_acceleration_covariance, r);
 
-  // Orientation expresses attitude of the new frame_id in a fixed world frame. 
+  // Orientation expresses attitude of the new frame_id in a fixed world frame.
   // This is why the transform here applies in the opposite direction.
   Eigen::Quaternion<double> orientation = Eigen::Quaternion<double>(
-      imu_in.orientation.w, 
-      imu_in.orientation.x, 
-      imu_in.orientation.y, 
+      imu_in.orientation.w,
+      imu_in.orientation.x,
+      imu_in.orientation.y,
       imu_in.orientation.z) * r.inverse();
 
   imu_out.orientation.w = orientation.w();
@@ -241,19 +249,19 @@ void doTransform(const sensor_msgs::msg::Imu &imu_in, sensor_msgs::msg::Imu &imu
   imu_out.orientation.y = orientation.y();
   imu_out.orientation.z = orientation.z();
 
-  // Orientation is measured relative to the fixed world frame, 
+  // Orientation is measured relative to the fixed world frame,
   // so it doesn't change when applying a static transform to the sensor frame.
   imu_out.orientation_covariance = imu_in.orientation_covariance;
 }
 
 inline
-sensor_msgs::msg::Imu toMsg(const sensor_msgs::msg::Imu &in)
+sensor_msgs::msg::Imu toMsg(const sensor_msgs::msg::Imu & in)
 {
   return in;
 }
 
 inline
-void fromMsg(const sensor_msgs::msg::Imu &msg, sensor_msgs::msg::Imu &out)
+void fromMsg(const sensor_msgs::msg::Imu & msg, sensor_msgs::msg::Imu & out)
 {
   out = msg;
 }
@@ -265,36 +273,39 @@ void fromMsg(const sensor_msgs::msg::Imu &msg, sensor_msgs::msg::Imu &out)
 /**
 * method to extract timestamp from object
 */
-template <>
+template<>
 inline
-tf2::TimePoint getTimestamp(const sensor_msgs::msg::MagneticField& p) {return tf2_ros::fromMsg(p.header.stamp);}
+tf2::TimePoint getTimestamp(const sensor_msgs::msg::MagneticField & p)
+{
+  return tf2_ros::fromMsg(p.header.stamp);
+}
 
 /**
 * method to extract frame id from object
 */
-template <>
+template<>
 inline
-std::string getFrameId(const sensor_msgs::msg::MagneticField &p) {return p.header.frame_id;}
+std::string getFrameId(const sensor_msgs::msg::MagneticField & p) {return p.header.frame_id;}
 
 /**
 * Transforms sensor_msgs::MagneticField data from one frame to another
 */
-template <>
+template<>
 inline
 void doTransform(
-  const sensor_msgs::msg::MagneticField &mag_in, 
-  sensor_msgs::msg::MagneticField &mag_out, 
-  const geometry_msgs::msg::TransformStamped& t_in)
+  const sensor_msgs::msg::MagneticField & mag_in,
+  sensor_msgs::msg::MagneticField & mag_out,
+  const geometry_msgs::msg::TransformStamped & t_in)
 {
   mag_out.header = t_in.header;
 
   // Discard translation, only use orientation for Magnetic Field transform
   Eigen::Quaternion<double> r(
-      t_in.transform.rotation.w, 
-      t_in.transform.rotation.x, 
-      t_in.transform.rotation.y, 
-      t_in.transform.rotation.z);
-  Eigen::Transform<double,3,Eigen::Affine> t(r);
+    t_in.transform.rotation.w,
+    t_in.transform.rotation.x,
+    t_in.transform.rotation.y,
+    t_in.transform.rotation.z);
+  Eigen::Transform<double, 3, Eigen::Affine> t(r);
 
   Eigen::Vector3d mag = t * Eigen::Vector3d(
       mag_in.magnetic_field.x, mag_in.magnetic_field.y, mag_in.magnetic_field.z);
@@ -307,13 +318,13 @@ void doTransform(
 }
 
 inline
-sensor_msgs::msg::MagneticField toMsg(const sensor_msgs::msg::MagneticField &in)
+sensor_msgs::msg::MagneticField toMsg(const sensor_msgs::msg::MagneticField & in)
 {
   return in;
 }
 
 inline
-void fromMsg(const sensor_msgs::msg::MagneticField &msg, sensor_msgs::msg::MagneticField &out)
+void fromMsg(const sensor_msgs::msg::MagneticField & msg, sensor_msgs::msg::MagneticField & out)
 {
   out = msg;
 }
