@@ -195,12 +195,14 @@ template <>
 inline
 void doTransform(const sensor_msgs::msg::Imu &imu_in, sensor_msgs::msg::Imu &imu_out, const geometry_msgs::msg::TransformStamped& t_in)
 {
-
   imu_out.header = t_in.header;
 
   // Discard translation, only use orientation for IMU transform
   Eigen::Quaternion<double> r(
-      t_in.transform.rotation.w, t_in.transform.rotation.x, t_in.transform.rotation.y, t_in.transform.rotation.z);
+      t_in.transform.rotation.w, 
+      t_in.transform.rotation.x, 
+      t_in.transform.rotation.y, 
+      t_in.transform.rotation.z);
   Eigen::Transform<double,3,Eigen::Affine> t(r);
 
   Eigen::Vector3d vel = t * Eigen::Vector3d(
@@ -215,27 +217,29 @@ void doTransform(const sensor_msgs::msg::Imu &imu_in, sensor_msgs::msg::Imu &imu
   Eigen::Vector3d accel = t * Eigen::Vector3d(
       imu_in.linear_acceleration.x, imu_in.linear_acceleration.y, imu_in.linear_acceleration.z);
 
-
   imu_out.linear_acceleration.x = accel.x();
   imu_out.linear_acceleration.y = accel.y();
   imu_out.linear_acceleration.z = accel.z();
 
-  transformCovariance(imu_in.linear_acceleration_covariance, imu_out.linear_acceleration_covariance, r);
+  transformCovariance(
+    imu_in.linear_acceleration_covariance, imu_out.linear_acceleration_covariance, r);
 
-  // Orientation expresses attitude of the new frame_id in a fixed world frame. This is why the transform here applies
-  // in the opposite direction.
+  // Orientation expresses attitude of the new frame_id in a fixed world frame. 
+  // This is why the transform here applies in the opposite direction.
   Eigen::Quaternion<double> orientation = Eigen::Quaternion<double>(
-      imu_in.orientation.w, imu_in.orientation.x, imu_in.orientation.y, imu_in.orientation.z) * r.inverse();
+      imu_in.orientation.w, 
+      imu_in.orientation.x, 
+      imu_in.orientation.y, 
+      imu_in.orientation.z) * r.inverse();
 
   imu_out.orientation.w = orientation.w();
   imu_out.orientation.x = orientation.x();
   imu_out.orientation.y = orientation.y();
   imu_out.orientation.z = orientation.z();
 
-  // Orientation is measured relative to the fixed world frame, so it doesn't change when applying a static
-  // transform to the sensor frame.
+  // Orientation is measured relative to the fixed world frame, 
+  // so it doesn't change when applying a static transform to the sensor frame.
   imu_out.orientation_covariance = imu_in.orientation_covariance;
-
 }
 
 inline
@@ -273,14 +277,19 @@ std::string getFrameId(const sensor_msgs::msg::MagneticField &p) {return p.heade
 */
 template <>
 inline
-void doTransform(const sensor_msgs::msg::MagneticField &mag_in, sensor_msgs::msg::MagneticField &mag_out, const geometry_msgs::msg::TransformStamped& t_in)
+void doTransform(
+  const sensor_msgs::msg::MagneticField &mag_in, 
+  sensor_msgs::msg::MagneticField &mag_out, 
+  const geometry_msgs::msg::TransformStamped& t_in)
 {
-
   mag_out.header = t_in.header;
 
   // Discard translation, only use orientation for Magnetic Field transform
   Eigen::Quaternion<double> r(
-      t_in.transform.rotation.w, t_in.transform.rotation.x, t_in.transform.rotation.y, t_in.transform.rotation.z);
+      t_in.transform.rotation.w, 
+      t_in.transform.rotation.x, 
+      t_in.transform.rotation.y, 
+      t_in.transform.rotation.z);
   Eigen::Transform<double,3,Eigen::Affine> t(r);
 
   Eigen::Vector3d mag = t * Eigen::Vector3d(
@@ -291,7 +300,6 @@ void doTransform(const sensor_msgs::msg::MagneticField &mag_in, sensor_msgs::msg
   mag_out.magnetic_field.z = mag.z();
 
   transformCovariance(mag_in.magnetic_field_covariance, mag_out.magnetic_field_covariance, r);
-
 }
 
 inline

@@ -6,8 +6,7 @@
  * SPDX-FileCopyrightText: Czech Technical University in Prague
  */
 
-#include "gtest/gtest.h"
-
+#include <gtest/gtest.h>
 
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
