@@ -1,21 +1,16 @@
-/**
- * \file
- * \brief
- * \author Martin Pecka
- * SPDX-License-Identifier: BSD-3-Clause
- * SPDX-FileCopyrightText: Czech Technical University in Prague
- */
+// Copyright 2022 Martin Pecka
+// Moved from https://github.com/ros-perception/imu_pipeline
 
 #include <gtest/gtest.h>
+
+#include <Eigen/Eigen>
+#include <Eigen/Geometry>
 
 #include <array>
 #include <cstddef>
 
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-
-#include <Eigen/Eigen>
-#include <Eigen/Geometry>
 
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/magnetic_field.hpp>
@@ -187,9 +182,10 @@ TEST(Imu, DoTransformEnuNed)
   EXPECT_NEAR(msg.linear_acceleration.y, out.linear_acceleration.x, 1e-6);
   EXPECT_NEAR(msg.linear_acceleration.x, out.linear_acceleration.y, 1e-6);
   EXPECT_NEAR(-msg.linear_acceleration.z, out.linear_acceleration.z, 1e-6);
-  // Transforming orientation means expressing the attitude of the new frame in the same world frame (i.e. you have
-  // data in imu frame and want to ask what is the world-referenced orientation of the base_link frame that is attached
-  // to this IMU). This is why the orientation change goes the other way than the transform.
+  // Transforming orientation means expressing the attitude of the new frame in
+  // the same world frame (i.e. you have data in imu frame and want to ask what is
+  // the world-referenced orientation of the base_link frame that is attached to this IMU).
+  // This is why the orientation change goes the other way than the transform.
   tf2::convert(out.orientation, rot);
   EXPECT_NEAR(0, rot.angleShortestPath(q.inverse()), 1e-6);
 
