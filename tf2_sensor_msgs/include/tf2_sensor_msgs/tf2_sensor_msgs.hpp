@@ -29,6 +29,7 @@
 #ifndef TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
 #define TF2_SENSOR_MSGS__TF2_SENSOR_MSGS_HPP_
 
+#include <array>
 #include <string>
 
 // Version 3.4.0 of Eigen in Ubuntu 22.04 has a bug that causes -Wclass-memaccess warnings on
@@ -46,8 +47,6 @@
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-#include <array>
 
 #include "tf2_ros/buffer_interface.hpp"
 
@@ -183,7 +182,6 @@ tf2::TimePoint getTimestamp(const sensor_msgs::msg::Imu & p)
 template<>
 inline
 std::string getFrameId(const sensor_msgs::msg::Imu & p) {return p.header.frame_id;}
-
 
 /**
 * Transforms a covariance array from one frame to another
