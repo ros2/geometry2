@@ -58,6 +58,7 @@ endif()
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+  find_package(tf2_geometry_msgs REQUIRED)
 
   # TODO(ros2/geometry2#259) Remove once headers
   # are renamed to .hpp
