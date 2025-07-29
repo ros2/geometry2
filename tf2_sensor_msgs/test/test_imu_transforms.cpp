@@ -33,6 +33,8 @@
 
 #include <array>
 #include <cstddef>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
