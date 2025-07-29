@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.43.1 (2025-07-18)
 -------------------
 * Fix deprecation warning (`#804 <https://github.com/ros2/geometry2/issues/804>`_)

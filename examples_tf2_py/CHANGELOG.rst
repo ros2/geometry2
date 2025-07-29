@@ -2,6 +2,11 @@
 Changelog for package examples_tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix Setuptools deprecations (`#809 <https://github.com/ros2/geometry2/issues/809>`_)
+* Contributors: mosfet80
+
 0.43.1 (2025-07-18)
 -------------------
 
