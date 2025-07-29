@@ -58,6 +58,8 @@ endif()
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_lint_auto REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(tf2_geometry_msgs REQUIRED)
 
   # TODO(ros2/geometry2#259) Remove once headers
   # are renamed to .hpp
@@ -85,6 +87,16 @@ if(BUILD_TESTING)
       target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC ${Eigen3_INCLUDE_DIRS})
     endif()
   endif()
+
+  ament_add_gtest(test_imu_transforms test/test_imu_transforms.cpp)
+  target_include_directories(test_imu_transforms PUBLIC include)
+  target_link_libraries(test_imu_transforms
+    ${geometry_msgs_TARGETS}
+    ${sensor_msgs_TARGETS}
+    tf2::tf2
+    tf2_geometry_msgs::tf2_geometry_msgs
+    tf2_ros::tf2_ros
+  )
 endif()
 
 install(TARGETS ${PROJECT_NAME} EXPORT export_${PROJECT_NAME})
