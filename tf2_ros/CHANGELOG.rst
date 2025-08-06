@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.36.14 (2025-08-06)
+--------------------
 * Ensure variable is considered volatile in message_filter_test (`#812 <https://github.com/ros2/geometry2/issues/812>`_) (`#815 <https://github.com/ros2/geometry2/issues/815>`_)
   (cherry picked from commit effa539126beb465a4d17fd93d8076180d1a27b2)
   Co-authored-by: Mirko Ferrati <mirko.ferrati@gmail.com>
