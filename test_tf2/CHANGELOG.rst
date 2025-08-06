@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.13 (2025-07-23)
 --------------------
 * Change tf2_ros C to C++ headers (`#807 <https://github.com/ros2/geometry2/issues/807>`_)
