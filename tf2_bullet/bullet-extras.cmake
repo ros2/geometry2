@@ -32,6 +32,11 @@
 if(WIN32)
   set(BULLET_ROOT $ENV{ChocolateyInstall}/lib/bullet)
 endif()
+
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 NEW)
+endif()
+
 find_package(Bullet REQUIRED)
 
 add_library(tf2_bullet::Bullet INTERFACE IMPORTED)
