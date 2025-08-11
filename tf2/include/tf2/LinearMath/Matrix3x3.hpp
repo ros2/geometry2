@@ -296,8 +296,12 @@ public:
 		Euler euler_out2; //second solution
 		//get the pointer to the raw data
 
-		// Apply epsilon thresholding to matrix elements to handle numerical precision issues
-		// Use a conservative threshold to handle numerical errors from quaternion-to-matrix conversion
+		// Apply epsilon thresholding to matrix elements to handle numerical precision issues.
+		// Use a conservative threshold to handle numerical errors from quaternion-to-matrix conversion.
+		// 1e-8 is chosen as a balance between numerical stability and precision:
+		// - More conservative than FLT_EPSILON (~1.19e-7) to handle single-precision input
+		// - Less restrictive than DBL_EPSILON (~2.22e-16) to avoid false positives
+		// - Prevents numerical instabilities near gimbal lock singularities
 		tf2Scalar threshold = tf2Scalar(1e-8);
 		tf2Scalar m20 = tf2Fabs(m_el[2].x()) < threshold ? tf2Scalar(0.0) : m_el[2].x();
 		tf2Scalar m21 = tf2Fabs(m_el[2].y()) < threshold ? tf2Scalar(0.0) : m_el[2].y();
