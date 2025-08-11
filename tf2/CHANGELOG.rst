@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.44.0 (2025-07-29)
+-------------------
+* Add RPY quaternion constructor (`#806 <https://github.com/ros2/geometry2/issues/806>`_)
+* Contributors: Alireza Moayyedi
+
 0.43.1 (2025-07-18)
 -------------------
 

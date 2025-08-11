@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.44.0 (2025-07-29)
+-------------------
+* Fix Setuptools deprecations (`#809 <https://github.com/ros2/geometry2/issues/809>`_)
+* Contributors: mosfet80
+
 0.43.1 (2025-07-18)
 -------------------
 

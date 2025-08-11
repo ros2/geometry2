@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.44.0 (2025-07-29)
+-------------------
+* Add imu & mag support in `tf2_sensor_msgs` (`#800 <https://github.com/ros2/geometry2/issues/800>`_) (`#813 <https://github.com/ros2/geometry2/issues/813>`_)
+* Contributors: Patrick Roncagliolo
+
 0.43.1 (2025-07-18)
 -------------------
 * Change tf2_ros C to C++ headers (`#805 <https://github.com/ros2/geometry2/issues/805>`_)
