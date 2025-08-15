@@ -58,12 +58,8 @@ to_rclcpp(const tf2::Duration & duration)
 
 Buffer::Buffer(
   rclcpp::Clock::SharedPtr clock,
-  rclcpp::node_interfaces::NodeInterfaces<
-    rclcpp::node_interfaces::NodeBaseInterface,
-    rclcpp::node_interfaces::NodeLoggingInterface,
-    rclcpp::node_interfaces::NodeServicesInterface
-  > node_interfaces,
   tf2::Duration cache_time,
+  RequiredInterfaces node_interfaces,
   const rclcpp::QoS & qos)
 : BufferCore(cache_time), clock_(clock), node_interfaces_(std::move(node_interfaces)),
   timer_interface_(nullptr)
@@ -84,15 +80,17 @@ Buffer::Buffer(
 
   jump_handler_ = clock_->create_jump_callback(nullptr, post_jump_cb, jump_threshold);
 
-  auto node_base = node_interfaces_.get_node_base_interface();
-  auto node_services = node_interfaces_.get_node_services_interface();
+  if (node_interfaces.get<NodeBaseInterface>()) {
+    auto node_base = node_interfaces_.get_node_base_interface();
+    auto node_services = node_interfaces_.get_node_services_interface();
 
-  node_logging_interface_ = node_interfaces_.get_node_logging_interface();
+    node_logging_interface_ = node_interfaces_.get_node_logging_interface();
 
-  frames_server_ = rclcpp::create_service<tf2_msgs::srv::FrameGraph>(
-    node_base, node_services, "tf2_frames", std::bind(
-      &Buffer::getFrames, this, std::placeholders::_1,
-      std::placeholders::_2), qos, nullptr);
+    frames_server_ = rclcpp::create_service<tf2_msgs::srv::FrameGraph>(
+      node_base, node_services, "tf2_frames", std::bind(
+        &Buffer::getFrames, this, std::placeholders::_1,
+        std::placeholders::_2), qos, nullptr);
+  }
 }
 
 geometry_msgs::msg::TransformStamped

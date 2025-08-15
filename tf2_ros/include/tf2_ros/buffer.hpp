@@ -72,21 +72,24 @@ public:
   using tf2::BufferCore::lookupTransform;
   using tf2::BufferCore::canTransform;
   using SharedPtr = std::shared_ptr<tf2_ros::Buffer>;
-  
+
+  using NodeBaseInterface = rclcpp::node_interfaces::NodeBaseInterface;
+  using NodeLoggingInterface = rclcpp::node_interfaces::NodeLoggingInterface;
+  using NodeServicesInterface = rclcpp::node_interfaces::NodeServicesInterface;
+  using RequiredInterfaces = rclcpp::node_interfaces::NodeInterfaces<NodeBaseInterface,
+      NodeLoggingInterface, NodeServicesInterface>;
+
+
   /** \brief  Constructor for a Buffer object
    * \param clock A clock to use for time and sleeping
    * \param cache_time How long to keep a history of transforms
-   * \param interfaces Advertise the view_frames service that exposes debugging information from the buffer, based on a set of node interfaces
+   * \param interfaces If passed advertise the view_frames service that exposes debugging information from the buffer, based on a set of node interfaces
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
   Buffer(
     rclcpp::Clock::SharedPtr clock,
-    rclcpp::node_interfaces::NodeInterfaces<
-      rclcpp::node_interfaces::NodeBaseInterface,
-      rclcpp::node_interfaces::NodeLoggingInterface,
-      rclcpp::node_interfaces::NodeServicesInterface
-    > node_interfaces,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
+    RequiredInterfaces node_interfaces = RequiredInterfaces(),
     const rclcpp::QoS & qos = rclcpp::ServicesQoS());
 
   /** \brief  Constructor for a Buffer object
@@ -95,16 +98,16 @@ public:
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
-  template<typename NodeT = rclcpp::Node::SharedPtr>
+  template<class NodeT = rclcpp::Node::SharedPtr, class AllocatorT = std::allocator<void>,
+    std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NoteT")]]
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
     NodeT && node = NodeT(),
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
-  : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
+  : Buffer(clock, cache_time, *node, qos)
   {
-    Buffer(clock, *node, cache_time, qos);
   }
 
   /** \brief Get the transform between two frames by frame ID.
@@ -328,14 +331,10 @@ private:
   rclcpp::Clock::SharedPtr clock_;
 
   /// \brief A set of interface to access the buffer's node
-  rclcpp::node_interfaces::NodeInterfaces<
-    rclcpp::node_interfaces::NodeBaseInterface,
-    rclcpp::node_interfaces::NodeLoggingInterface,
-    rclcpp::node_interfaces::NodeServicesInterface
-  > node_interfaces_;
+  RequiredInterfaces node_interfaces_;
 
   /// \brief A node logging interface to access the buffer node's logger
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging_interface_;
+  NodeLoggingInterface::SharedPtr node_logging_interface_;
 
   /// \brief Interface for creating timers
   CreateTimerInterface::SharedPtr timer_interface_;

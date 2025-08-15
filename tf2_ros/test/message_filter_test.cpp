@@ -55,11 +55,83 @@ void filter_callback(const geometry_msgs::msg::PointStamped & msg)
   filter_callback_fired++;
 }
 
+TEST(tf2_ros_message_filter, construction_and_destruction_deprecated)
+{
+  auto node = rclcpp::Node::make_shared("test_message_filter_node");
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+
+  #ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable : 4996)
+  #else
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  #endif
+
+  tf2_ros::Buffer buffer(clock);
+
+  // Node constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  }
+
+  // Node constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer, "map", 10, node, std::chrono::milliseconds(100));
+  }
+
+  // Node interface constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
+   }
+
+  // Node interface constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface(),
+      std::chrono::seconds(42));
+  }
+
+  message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
+  // Filter + node constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(sub, buffer, "map", 10, node);
+  }
+
+  // Filter + node constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub, buffer, "map", 10, node, std::chrono::hours(1));
+  }
+
+  // Filter + node interface constructor with defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub, buffer, "map", 10, node->get_node_logging_interface(),
+      node->get_node_clock_interface());
+  }
+
+  // Filter + node interface constructor no defaults
+  {
+    tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
+      sub, buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface(),
+      std::chrono::microseconds(0));
+  }
+
+  #ifdef _MSC_VER
+  #pragma warning(pop)
+  #else
+  #pragma GCC diagnostic pop
+  #endif
+}
+
 TEST(tf2_ros_message_filter, construction_and_destruction)
 {
   auto node = rclcpp::Node::make_shared("test_message_filter_node");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock, *node);
+  tf2_ros::Buffer buffer(clock, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), *node);
 
   // Node constructor with defaults
   {
@@ -123,13 +195,27 @@ TEST(tf2_ros_message_filter, construction_and_destruction)
   }
 }
 
-TEST(tf2_ros_message_filter, get_target_frames)
+TEST(tf2_ros_message_filter, get_target_frames_deprecated)
 {
   auto node = rclcpp::Node::make_shared("test_message_filter_node");
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock);
 
+  #ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable : 4996)
+  #else
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  #endif
+
+  tf2_ros::Buffer buffer(clock);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+
+  #ifdef _MSC_VER
+  #pragma warning(pop)
+  #else
+  #pragma GCC diagnostic pop
+  #endif
   ASSERT_STREQ(filter.getTargetFramesString().c_str(), "map");
 
   std::vector<std::string> frames;
@@ -137,6 +223,117 @@ TEST(tf2_ros_message_filter, get_target_frames)
   frames.push_back("map");
   filter.setTargetFrames(frames);
   ASSERT_STREQ(filter.getTargetFramesString().c_str(), "odom, map");
+}
+
+TEST(tf2_ros_message_filter, get_target_frames)
+{
+  auto node = rclcpp::Node::make_shared("test_message_filter_node");
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), *node);
+
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, *node);
+  ASSERT_STREQ(filter.getTargetFramesString().c_str(), "map");
+
+  std::vector<std::string> frames;
+  frames.push_back("odom");
+  frames.push_back("map");
+  filter.setTargetFrames(frames);
+  ASSERT_STREQ(filter.getTargetFramesString().c_str(), "odom, map");
+}
+
+TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
+{
+  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+
+  #ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable : 4996)
+  #else
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  #endif
+
+  auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+    node->get_node_base_interface(),
+    node->get_node_timers_interface());
+
+  rclcpp::QoS default_qos =
+    rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default));
+  message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
+  sub.subscribe(node, "point", default_qos);
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  buffer.setCreateTimerInterface(create_timer_interface);
+  tf2_ros::TransformListener tfl(buffer);
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, node);
+  filter.connectInput(sub);
+  filter.registerCallback(&filter_callback);
+
+  // Register multiple target frames
+  std::vector<std::string> frames;
+  frames.push_back("odom");
+  frames.push_back("map");
+  filter.setTargetFrames(frames);
+  // Set a non-zero time tolerance
+  filter.setTolerance(rclcpp::Duration(1, 0));
+
+  // Publish static transforms so the frame transformations will always be valid
+  tf2_ros::StaticTransformBroadcaster tfb(node);
+
+  #ifdef _MSC_VER
+  #pragma warning(pop)
+  #else
+  #pragma GCC diagnostic pop
+  #endif
+
+  geometry_msgs::msg::TransformStamped map_to_odom;
+  map_to_odom.header.stamp = rclcpp::Time(0, 0);
+  map_to_odom.header.frame_id = "map";
+  map_to_odom.child_frame_id = "odom";
+  map_to_odom.transform.translation.x = 0.0;
+  map_to_odom.transform.translation.y = 0.0;
+  map_to_odom.transform.translation.z = 0.0;
+  map_to_odom.transform.rotation.x = 0.0;
+  map_to_odom.transform.rotation.y = 0.0;
+  map_to_odom.transform.rotation.z = 0.0;
+  map_to_odom.transform.rotation.w = 1.0;
+  tfb.sendTransform(map_to_odom);
+
+  geometry_msgs::msg::TransformStamped odom_to_base;
+  odom_to_base.header.stamp = rclcpp::Time(0, 0);
+  odom_to_base.header.frame_id = "odom";
+  odom_to_base.child_frame_id = "base";
+  odom_to_base.transform.translation.x = 0.0;
+  odom_to_base.transform.translation.y = 0.0;
+  odom_to_base.transform.translation.z = 0.0;
+  odom_to_base.transform.rotation.x = 0.0;
+  odom_to_base.transform.rotation.y = 0.0;
+  odom_to_base.transform.rotation.z = 0.0;
+  odom_to_base.transform.rotation.w = 1.0;
+  tfb.sendTransform(odom_to_base);
+
+  rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub;
+  pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point", 10);
+  geometry_msgs::msg::PointStamped point;
+  point.header.stamp = rclcpp::Clock().now();
+  point.header.frame_id = "base";
+  point.point.x = 0.1;
+  point.point.y = 0.2;
+  point.point.z = 0.3;
+
+  rclcpp::WallRate loop_rate(1);
+  while (rclcpp::ok()) {
+    pub->publish(point);
+    rclcpp::spin_some(node);
+    loop_rate.sleep();
+    RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired.load());
+    if (filter_callback_fired.load() > 5) {
+      break;
+    }
+  }
+
+  ASSERT_TRUE(filter_callback_fired);
 }
 
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
@@ -151,7 +348,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   sub.subscribe(node, "point", default_qos);
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer buffer(clock, *node);
+  tf2_ros::Buffer buffer(clock);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::TransformListener tfl(buffer);
   tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(buffer, "map", 10, *node);
@@ -214,7 +411,6 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
     }
   }
 
-  rclcpp::shutdown();
   ASSERT_TRUE(filter_callback_fired);
 }
 

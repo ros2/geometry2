@@ -53,8 +53,8 @@ TEST(StaticTransformPublisher, a_b_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_b_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock, *node);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  tf2_ros::Buffer mB(clock);
+  tf2_ros::TransformListener tfl(mB, *node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -88,8 +88,8 @@ TEST(StaticTransformPublisher, a_c_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_c_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock, *node);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  tf2_ros::Buffer mB(clock);
+  tf2_ros::TransformListener tfl(mB, *node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -122,8 +122,8 @@ TEST(StaticTransformPublisher, a_d_different_times)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_d_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock, *node);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  tf2_ros::Buffer mB(clock);
+  tf2_ros::TransformListener tfl(mB, *node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -173,8 +173,8 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_d_different_times_test");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
-  tf2_ros::Buffer mB(clock, *node);
-  tf2_ros::TransformListener tfl(mB, node, false);
+  tf2_ros::Buffer mB(clock);
+  tf2_ros::TransformListener tfl(mB, *node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -194,7 +194,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
     }
   }
 
-  tf2_ros::StaticTransformBroadcaster stb(node);
+  tf2_ros::StaticTransformBroadcaster stb(*node);
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
   ts.header.frame_id = "c";
