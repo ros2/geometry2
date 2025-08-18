@@ -166,7 +166,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'tf2', 'tf2 Documentation',
-     author, 'tf2', 'ROS 2 components for point cloud transport.',
+     author, 'tf2', 'ROS 2 implementation for the transform interface',
      'Miscellaneous'),
 ]
 
