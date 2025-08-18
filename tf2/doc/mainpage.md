@@ -8,7 +8,7 @@ Some tutorials are available at <A HREF="http://docs.ros.org/en/rolling/Tutorial
 
 # Architecture
 
-``tf2`` is a transform library designed to provide implementation of interface that keeps track of multiple coordinate frames over time.
+``tf2`` is a transform library designed to provide implementation of the interface that keeps track of multiple coordinate frames over time.
 ``tf2`` maintains the relationship between coordinate frames in a tree structure buffered in time, and lets the user transform data between any two coordinate frames at any desired point in time.
 The high level goal is to allow developers and users not to have to worry about which coordinate frame any specific data is stored in.
 
