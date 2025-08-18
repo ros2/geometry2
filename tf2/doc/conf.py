@@ -42,7 +42,7 @@ copyright = '2008-' + year + ', Open Source Robotics Foundation, Inc.'  # noqa
 author = 'Open Source Robotics Foundation, Inc.'
 
 # The short X.Y version
-version = ''
+version = '0.44'
 # The full version, including alpha/beta/rc tags
 release = '0.36.2'
 
