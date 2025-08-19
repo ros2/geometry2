@@ -6,7 +6,7 @@ PROJECT_BRIEF          = "tf2 maintains the relationship between coordinate fram
 structure buffered in time, and lets the user transform points, vectors, etc between any two \
 coordinate frames at any desired point in time."
 
-INPUT                  = ./include mainpage.dox
+INPUT                  = ./include
 RECURSIVE              = YES
 OUTPUT_DIRECTORY       = doc_output
 
@@ -21,3 +21,4 @@ EXPAND_ONLY_PREDEF     = YES
 PREDEFINED             += TF2_PUBLIC=
 PREDEFINED             += TF2SIMD_FORCE_INLINE=
 PREDEFINED             += ATTRIBUTE_ALIGNED16(class)=
+EXCLUDE_PATTERNS       = */test/*
