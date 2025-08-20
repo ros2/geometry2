@@ -202,10 +202,12 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   point.point.y = 0.2;
   point.point.z = 0.3;
 
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
   rclcpp::WallRate loop_rate(1);
   while (rclcpp::ok()) {
     pub->publish(point);
-    rclcpp::spin_some(node);
+    executor.spin_some();
     loop_rate.sleep();
     RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired.load());
     if (filter_callback_fired.load() > 5) {
