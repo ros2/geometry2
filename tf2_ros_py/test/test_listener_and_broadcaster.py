@@ -37,13 +37,13 @@ from tf2_ros.transform_broadcaster import TransformBroadcaster
 from tf2_ros.transform_listener import TransformListener
 
 
-def build_transform(target_frame, source_frame, stamp):
+def build_transform(target_frame, source_frame, stamp, translation_x=42.0):
     transform = TransformStamped()
     transform.header.frame_id = target_frame
     transform.header.stamp = stamp
     transform.child_frame_id = source_frame
 
-    transform.transform.translation.x = 42.0
+    transform.transform.translation.x = translation_x
     transform.transform.translation.y = -3.14
     transform.transform.translation.z = 0.0
     transform.transform.rotation.w = 1.0
@@ -93,9 +93,11 @@ class TestBroadcasterAndListener:
 
         return broadcast_transform
 
-    def broadcast_static_transform(self, target_frame, source_frame, time_stamp):
+    def broadcast_static_transform(self, target_frame, source_frame, time_stamp,
+                                   translation_x=42.0):
         broadcast_transform = build_transform(
-            target_frame=target_frame, source_frame=source_frame, stamp=time_stamp)
+            target_frame=target_frame, source_frame=source_frame, stamp=time_stamp,
+            translation_x=translation_x)
 
         self.static_broadcaster.sendTransform(broadcast_transform)
 
@@ -158,6 +160,13 @@ class TestBroadcasterAndListener:
         assert broadcasted_transform == listened_transform_async
 
     def test_static_broadcaster_and_listener(self):
+        def compare_transforms(received_tf, expected_tf):
+            assert expected_tf.header.frame_id == received_tf.header.frame_id
+            assert expected_tf.child_frame_id == received_tf.child_frame_id
+            assert expected_tf.transform.translation == received_tf.transform.translation
+            assert expected_tf.transform.rotation == received_tf.transform.rotation
+
+        # broadcasting initial static transformation
         broadcasted_tf = self.broadcast_static_transform(
             target_frame='foo', source_frame='bar',
             time_stamp=rclpy.time.Time(seconds=1.1, nanoseconds=0).to_msg())
@@ -172,7 +181,54 @@ class TestBroadcasterAndListener:
         assert listened_tf.header.stamp.sec == 1
         assert listened_tf.header.stamp.nanosec == 500000000
 
-        assert broadcasted_tf.header.frame_id == listened_tf.header.frame_id
-        assert broadcasted_tf.child_frame_id == listened_tf.child_frame_id
-        assert broadcasted_tf.transform.translation == listened_tf.transform.translation
-        assert broadcasted_tf.transform.rotation == listened_tf.transform.rotation
+        compare_transforms(received_tf=listened_tf, expected_tf=broadcasted_tf)
+
+        # updating a previously sent transform
+        broadcasted_updated_tf = self.broadcast_static_transform(
+            target_frame='foo', source_frame='bar',
+            time_stamp=rclpy.time.Time(seconds=2.1, nanoseconds=0).to_msg(),
+            translation_x=24.0)
+
+        self.executor.spin_once()
+
+        listened_tf = self.buffer.lookup_transform(
+            target_frame='foo', source_frame='bar',
+            time=rclpy.time.Time(seconds=2.5, nanoseconds=0).to_msg())
+
+        assert broadcasted_updated_tf.header.stamp.sec == 2
+        assert broadcasted_updated_tf.header.stamp.nanosec == 100000000
+
+        assert listened_tf.header.stamp.sec == 2
+        assert listened_tf.header.stamp.nanosec == 500000000
+
+        compare_transforms(received_tf=listened_tf, expected_tf=broadcasted_updated_tf)
+
+        # adding another transform (clearing the listener buffer since the broadcaster is expected
+        # to repeat the first transform)
+        self.buffer.clear()
+
+        broadcasted_second_tf = self.broadcast_static_transform(
+            target_frame='foo', source_frame='qux',
+            time_stamp=rclpy.time.Time(seconds=3.1, nanoseconds=0).to_msg())
+
+        self.executor.spin_once()
+
+        # lookup first transform
+        listened_first_tf = self.buffer.lookup_transform(
+            target_frame='foo', source_frame='bar',
+            time=rclpy.time.Time(seconds=3.5, nanoseconds=0).to_msg())
+
+        assert listened_first_tf.header.stamp.sec == 3
+        assert listened_first_tf.header.stamp.nanosec == 500000000
+
+        compare_transforms(received_tf=listened_first_tf, expected_tf=broadcasted_updated_tf)
+
+        # lookup second transform
+        listened_second_tf = self.buffer.lookup_transform(
+            target_frame='foo', source_frame='qux',
+            time=rclpy.time.Time(seconds=3.5, nanoseconds=0).to_msg())
+
+        assert listened_second_tf.header.stamp.sec == 3
+        assert listened_second_tf.header.stamp.nanosec == 500000000
+
+        compare_transforms(received_tf=listened_second_tf, expected_tf=broadcasted_second_tf)

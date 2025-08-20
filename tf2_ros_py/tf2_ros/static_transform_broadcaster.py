@@ -61,7 +61,6 @@ class StaticTransformBroadcaster:
         self.pub_tf = node.create_publisher(TFMessage, '/tf_static', qos)
 
         self.net_message = TFMessage()
-        self._child_frame_ids = set()
 
     def sendTransform(self, transform: Union[TransformStamped, List[TransformStamped]]) -> None:
         if not isinstance(transform, list):
@@ -71,8 +70,15 @@ class StaticTransformBroadcaster:
                 transform = [transform]
 
         for t_in in transform:
-            if t_in.child_frame_id not in self._child_frame_ids:
-                self._child_frame_ids.add(t_in.child_frame_id)
+            match_found = False
+            for i in range(len(self.net_message.transforms)):
+                if self.net_message.transforms[i].child_frame_id == t_in.child_frame_id:
+                    self.net_message.transforms[i] = t_in
+
+                    match_found = True
+                    break
+
+            if not match_found:
                 self.net_message.transforms.append(t_in)
 
         self.pub_tf.publish(self.net_message)
