@@ -82,7 +82,6 @@ get_default_transform_listener_static_sub_options()
     rclcpp::QosPolicyKind::Reliability};
   return options;
 }
-
 }  // namespace detail
 
 /** \brief This class provides an easy way to request and receive coordinate frame transform information.

@@ -33,6 +33,7 @@
 #include "tf2_ros/buffer.hpp"
 
 #include <exception>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <mutex>

@@ -36,6 +36,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <unordered_map>
 
@@ -78,7 +79,6 @@ public:
   using NodeServicesInterface = rclcpp::node_interfaces::NodeServicesInterface;
   using RequiredInterfaces = rclcpp::node_interfaces::NodeInterfaces<NodeBaseInterface,
       NodeLoggingInterface, NodeServicesInterface>;
-
 
   /** \brief  Constructor for a Buffer object
    * \param clock A clock to use for time and sleeping

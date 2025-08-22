@@ -34,6 +34,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <list>
 #include <memory>

@@ -28,6 +28,7 @@
  */
 
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <string>
 #include <vector>
@@ -85,7 +86,7 @@ TEST(tf2_ros_message_filter, construction_and_destruction_deprecated)
   {
     tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped> filter(
       buffer, "map", 10, node->get_node_logging_interface(), node->get_node_clock_interface());
-   }
+  }
 
   // Node interface constructor no defaults
   {

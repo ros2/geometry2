@@ -34,6 +34,7 @@
 #define TF2_ROS__TRANSFORM_BROADCASTER_HPP_
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "tf2_ros/visibility_control.hpp"
