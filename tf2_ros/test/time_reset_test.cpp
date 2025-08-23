@@ -42,11 +42,13 @@
 
 void spin_for_a_second(std::shared_ptr<rclcpp::Node> & node)
 {
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
   rclcpp::Rate r(10);
-  rclcpp::spin_some(node);
+  executor.spin_some();
   for (int i = 0; i < 10; ++i) {
     r.sleep();
-    rclcpp::spin_some(node);
+    executor.spin_some();
   }
 }
 
@@ -97,7 +99,9 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   // clock_pub->publish(c);
   //
   // // make sure it arrives
-  // rclcpp::spin_some(node_);
+  // rclcpp::executors::SingleThreadedExecutor executor;
+  // executor.add_node(node_);
+  // executor.spin_some();
   // sleep(1);
   //
   // //Send anoterh message to trigger clock test on an unrelated frame
@@ -108,7 +112,7 @@ TEST(tf2_ros_time_reset_test, time_backwards)
   // tfb.sendTransform(msg);
   //
   // // make sure it arrives
-  // rclcpp::spin_some(node_);
+  // executor.spin_some();
   // sleep(1);
   //
   // //verify the data's been cleared
