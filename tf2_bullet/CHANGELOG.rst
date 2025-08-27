@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.0 (2025-08-27)
+-------------------
+* Set Cmake Policy CMP0144 (`#819 <https://github.com/ros2/geometry2/issues/819>`_)
+* Contributors: Cristóbal Arroyo
+
 0.44.0 (2025-07-29)
 -------------------
 

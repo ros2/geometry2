@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.0 (2025-08-27)
+-------------------
+* Fixed inconsistency of C++ and Python implementations of StaticTransformPublisher (`#820 <https://github.com/ros2/geometry2/issues/820>`_)
+* Contributors: Dominik
+
 0.44.0 (2025-07-29)
 -------------------
 

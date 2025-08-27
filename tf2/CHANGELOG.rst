@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.0 (2025-08-27)
+-------------------
+* Added tf2 documentation to docs.ros.org (`#671 <https://github.com/ros2/geometry2/issues/671>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.44.0 (2025-07-29)
 -------------------
 * Add RPY quaternion constructor (`#806 <https://github.com/ros2/geometry2/issues/806>`_)

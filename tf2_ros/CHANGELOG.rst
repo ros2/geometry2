@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.0 (2025-08-27)
+-------------------
+* Adding NodeInterfaces API Design (`#714 <https://github.com/ros2/geometry2/issues/714>`_)
+* ger rid of deprecated rclcpp::spin_some(). (`#821 <https://github.com/ros2/geometry2/issues/821>`_)
+* Contributors: Lucas Wendland, Tomoya Fujita
+
 0.44.0 (2025-07-29)
 -------------------
 * Ensure variable is considered volatile in message_filter_test (`#812 <https://github.com/ros2/geometry2/issues/812>`_)
