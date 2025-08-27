@@ -267,11 +267,14 @@ TEST(tf2_test_listeners, static_vs_dynamic_deprecated)
   dynamic_trans.child_frame_id = "child_dynamic";
   dynamic_trans.transform.rotation.w = 1.0;
 
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+
   for (int i = 0; i < 10; ++i) {
     dynamic_trans.header.stamp = clock->now();
     broadcaster.sendTransform(dynamic_trans);
 
-    rclcpp::spin_some(node);
+    executor.spin_some();
     rclcpp::sleep_for(std::chrono::milliseconds(10));
   }
 
