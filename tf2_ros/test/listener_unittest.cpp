@@ -40,14 +40,76 @@
 #include "rclcpp/rclcpp.hpp"
 #include "builtin_interfaces/msg/time.hpp"
 
+TEST(tf2_ros_test_listener, transform_listener_deprecated)
+{
+  auto node = rclcpp::Node::make_shared("tf2_ros_test_listener_transform_listener");
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+
+  #ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable : 4996)
+  #else
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  #endif
+
+  tf2_ros::Buffer buffer(clock);
+  tf2_ros::TransformListener tfl(buffer, node, false);
+
+  #ifdef _MSC_VER
+  #pragma warning(pop)
+  #else
+  #pragma GCC diagnostic pop
+  #endif
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+  // Start spinning in a thread
+  std::thread spin_thread = std::thread([&executor] () {
+        executor.spin();
+  });
+
+  geometry_msgs::msg::TransformStamped ts;
+  ts.transform.rotation.w = 1;
+  ts.header.frame_id = "a";
+  ts.header.stamp = rclcpp::Time(10, 0);
+  ts.child_frame_id = "b";
+  ts.transform.translation.x = 1;
+  ts.transform.translation.y = 2;
+  ts.transform.translation.z = 3;
+
+  buffer.setTransform(ts, "authority");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+  EXPECT_TRUE(buffer.canTransform("a", "b", tf2::timeFromSec(0)));
+
+  geometry_msgs::msg::TransformStamped out_rootc = buffer.lookupTransform(
+    "a", "b",
+    rclcpp::Time());
+
+  EXPECT_EQ(1, out_rootc.transform.translation.x);
+  EXPECT_EQ(2, out_rootc.transform.translation.y);
+  EXPECT_EQ(3, out_rootc.transform.translation.z);
+  EXPECT_EQ(1, out_rootc.transform.rotation.w);
+  EXPECT_EQ(0, out_rootc.transform.rotation.x);
+  EXPECT_EQ(0, out_rootc.transform.rotation.y);
+  EXPECT_EQ(0, out_rootc.transform.rotation.z);
+
+  executor.cancel();
+  spin_thread.join();
+  node.reset();
+}
+
 TEST(tf2_ros_test_listener, transform_listener)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_test_listener_transform_listener");
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
 
-  tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, false);
+  tf2_ros::Buffer buffer(clock, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), *node);
+  tf2_ros::TransformListener tfl(buffer, *node, false);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);

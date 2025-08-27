@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
-  tf2_ros::TransformListener tfl(buffer, node, false);
+  tf2_ros::TransformListener tfl(buffer, *node, false);
   std::unique_ptr<tf2_ros::BufferServer> server = std::make_unique<tf2_ros::BufferServer>(
     buffer,
     node,

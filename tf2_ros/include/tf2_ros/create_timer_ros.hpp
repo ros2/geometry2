@@ -38,6 +38,9 @@
 #include "tf2/time.hpp"
 
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/node_interfaces/node_interfaces.hpp"
+#include "rclcpp/node_interfaces/get_node_base_interface.hpp"
+#include "rclcpp/node_interfaces/get_node_timers_interface.hpp"
 
 namespace tf2_ros
 {
@@ -50,10 +53,21 @@ namespace tf2_ros
 class CreateTimerROS : public CreateTimerInterface
 {
 public:
+  using NodeBaseInterface = rclcpp::node_interfaces::NodeBaseInterface;
+  using NodeTimersInterface = rclcpp::node_interfaces::NodeTimersInterface;
+  using RequiredInterfaces = rclcpp::node_interfaces::NodeInterfaces<NodeBaseInterface,
+      NodeTimersInterface>;
+
   TF2_ROS_PUBLIC
   CreateTimerROS(
-    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
-    rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers,
+    RequiredInterfaces node_interfaces,
+    rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
+
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
+  TF2_ROS_PUBLIC
+  CreateTimerROS(
+    NodeBaseInterface::SharedPtr node_base,
+    NodeTimersInterface::SharedPtr node_timers,
     rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
 
   virtual ~CreateTimerROS() = default;
@@ -119,8 +133,7 @@ private:
     const TimerHandle & timer_handle,
     TimerCallbackType callback);
 
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base_;
-  rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers_;
+  RequiredInterfaces node_interfaces_;
   TimerHandle next_timer_handle_index_;
   std::unordered_map<TimerHandle, rclcpp::TimerBase::SharedPtr> timers_map_;
   std::mutex timers_map_mutex_;
