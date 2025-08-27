@@ -86,6 +86,7 @@ public:
    * \param interfaces If passed advertise the view_frames service that exposes debugging information from the buffer, based on a set of node interfaces
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
+  TF2_ROS_PUBLIC
   Buffer(
     rclcpp::Clock::SharedPtr clock,
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),

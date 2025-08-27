@@ -58,6 +58,7 @@ public:
   using RequiredInterfaces = rclcpp::node_interfaces::NodeInterfaces<NodeBaseInterface,
       NodeTimersInterface>;
 
+  TF2_ROS_PUBLIC
   CreateTimerROS(
     RequiredInterfaces node_interfaces,
     rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
