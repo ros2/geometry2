@@ -15,14 +15,17 @@
   <author>Wim Meeussen</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
-  <depend>orocos_kdl_vendor</depend>
+  <depend>liborocos-kdl</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 
-  <exec_depend>python_orocos_kdl_vendor</exec_depend>
+  <build_depend>eigen3</build_depend>
+
+  <exec_depend>python3-pykdl</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>

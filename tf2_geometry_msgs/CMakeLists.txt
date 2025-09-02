@@ -28,7 +28,6 @@ set(Python3_FIND_UNVERSIONED_NAMES FIRST)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 find_package(geometry_msgs REQUIRED)
-find_package(orocos_kdl_vendor REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -66,6 +65,7 @@ if(BUILD_TESTING)
   if(TARGET test_tf2_geometry_msgs)
     target_link_libraries(test_tf2_geometry_msgs
       ${PROJECT_NAME}
+      Eigen3::Eigen
       rclcpp::rclcpp
       # Used, but not linked to test ${PROJECT_NAME}'s exports:
       #   tf2_ros::tf2_ros
@@ -80,7 +80,6 @@ ament_export_include_directories("include/${PROJECT_NAME}")
 ament_export_targets(export_${PROJECT_NAME})
 ament_export_dependencies(
   "geometry_msgs"
-  "orocos_kdl_vendor"
   "orocos_kdl"
   "tf2"
   "tf2_ros")
