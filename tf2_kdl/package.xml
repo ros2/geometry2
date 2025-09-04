@@ -23,7 +23,7 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 
-  <build_depend>eigen3</build_depend>
+  <build_depend>eigen</build_depend>
 
   <exec_depend>python3-pykdl</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
