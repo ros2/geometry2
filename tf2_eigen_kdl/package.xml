@@ -20,9 +20,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>eigen</build_depend>
-  <build_export_depend>eigen</build_export_depend>
+  <build_depend>liborocos-kdl-dev</build_depend>
 
-  <depend>liborocos-kdl</depend>
+  <build_export_depend>eigen</build_export_depend>
+  <build_export_depend>liborocos-kdl-dev</build_export_depend>
+
+  <exec_depend>liborocos-kdl</exec_depend>
+
   <depend>tf2</depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
