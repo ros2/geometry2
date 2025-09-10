@@ -14,7 +14,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(orocos_kdl_vendor REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -48,6 +49,7 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_link_libraries(test_kdl
+    Eigen3::Eigen
     tf2_kdl
     rclcpp::rclcpp
     # Used, but not linked to test tf2_kdl's exports:
@@ -62,6 +64,6 @@ ament_export_include_directories("include/${PROJECT_NAME}")
 # Export modern CMake targets
 ament_export_targets(export_tf2_kdl)
 
-ament_export_dependencies(builtin_interfaces geometry_msgs orocos_kdl_vendor orocos_kdl tf2 tf2_ros)
+ament_export_dependencies(builtin_interfaces geometry_msgs orocos_kdl tf2 tf2_ros)
 
 ament_package()

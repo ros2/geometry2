@@ -93,6 +93,7 @@ if(BUILD_TESTING)
   target_link_libraries(test_imu_transforms
     ${geometry_msgs_TARGETS}
     ${sensor_msgs_TARGETS}
+    Eigen3::Eigen
     tf2::tf2
     tf2_geometry_msgs::tf2_geometry_msgs
     tf2_ros::tf2_ros
