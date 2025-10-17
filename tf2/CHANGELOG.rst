@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.1 (2025-10-17)
+-------------------
+
 0.45.0 (2025-08-27)
 -------------------
 * Added tf2 documentation to docs.ros.org (`#671 <https://github.com/ros2/geometry2/issues/671>`_)

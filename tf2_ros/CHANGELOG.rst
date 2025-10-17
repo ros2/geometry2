@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.1 (2025-10-17)
+-------------------
+* Removed deprecation rclcpp::spin_some(node) (`#824 <https://github.com/ros2/geometry2/issues/824>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.45.0 (2025-08-27)
 -------------------
 * Adding NodeInterfaces API Design (`#714 <https://github.com/ros2/geometry2/issues/714>`_)
