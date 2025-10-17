@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.17 (2025-10-17)
+--------------------
+* Ensure variable is considered volatile in message_filter_test (`#812 <https://github.com/ros2/geometry2/issues/812>`_) (`#816 <https://github.com/ros2/geometry2/issues/816>`_)
+* Contributors: mergify[bot]
+
 0.25.16 (2025-07-25)
 --------------------
 * Change tf2_ros C to C++ headers (backport `#807 <https://github.com/ros2/geometry2/issues/807>`_) (`#810 <https://github.com/ros2/geometry2/issues/810>`_)

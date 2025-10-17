@@ -2,6 +2,9 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.17 (2025-10-17)
+--------------------
+
 0.25.16 (2025-07-25)
 --------------------
 * Change tf2_ros C to C++ headers (backport `#807 <https://github.com/ros2/geometry2/issues/807>`_) (`#810 <https://github.com/ros2/geometry2/issues/810>`_)
