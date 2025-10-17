@@ -2,6 +2,9 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.15 (2025-10-17)
+--------------------
+
 0.36.14 (2025-08-06)
 --------------------
 * Ensure variable is considered volatile in message_filter_test (`#812 <https://github.com/ros2/geometry2/issues/812>`_) (`#815 <https://github.com/ros2/geometry2/issues/815>`_)
