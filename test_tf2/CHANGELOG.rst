@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.1 (2025-10-17)
+-------------------
+
 0.45.0 (2025-08-27)
 -------------------
 * Adding NodeInterfaces API Design (`#714 <https://github.com/ros2/geometry2/issues/714>`_)
