@@ -61,10 +61,6 @@ if(BUILD_TESTING)
   find_package(rclcpp REQUIRED)
   find_package(tf2_geometry_msgs REQUIRED)
 
-  # TODO(ros2/geometry2#259) Remove once headers
-  # are renamed to .hpp
-  set(ament_cmake_uncrustify_ADDITIONAL_ARGS --language CPP)
-  set(ament_cmake_cppcheck_LANGUAGE c++)
   ament_lint_auto_find_test_dependencies()
 
   find_package(ament_cmake_pytest REQUIRED)
