@@ -139,7 +139,7 @@ public:
           node_->get_logger(), *clock_, 1000,
           "Waiting for transform %s ->  %s: %s", framea_.c_str(), frameb_.c_str(),
           warning_msg.c_str());
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        clock_->sleep_for(std::chrono::milliseconds(500));
       }
 
       try {
@@ -202,7 +202,7 @@ public:
           max_diff = diff;
         }
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      clock_->sleep_for(std::chrono::milliseconds(500));
       if (counter > 20) {
         counter = 0;
 

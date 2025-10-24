@@ -164,8 +164,7 @@ Buffer::canTransform(
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
-    // TODO(sloretz) sleep using clock_->sleep_for when implemented
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    clock_->sleep_for(std::chrono::milliseconds(10));
   }
   bool retval = canTransform(target_frame, source_frame, time, errstr);
   rclcpp::Time current_time = clock_->now();
@@ -194,8 +193,7 @@ Buffer::canTransform(
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
-    // TODO(sloretz) sleep using clock_->sleep_for when implemented
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    clock_->sleep_for(std::chrono::milliseconds(10));
   }
   bool retval = canTransform(
     target_frame, target_time,
