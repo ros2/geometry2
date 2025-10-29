@@ -65,52 +65,86 @@ public:
   }
 };
 
+void print_usage()
+{
+  printf("Usage: tf2_echo source_frame target_frame [options]\n\n");
+  printf("This will echo the transform from the coordinate frame of the source_frame\n");
+  printf("to the coordinate frame of the target_frame. \n");
+  printf("Note: This is the transform to get data from target_frame into the source_frame.\n\n");
+  printf("Options:\n");
+  printf("  -r <rate>       Echo rate in Hz (default: 1.0)\n");
+  printf("  -t <time>       Fixed time to do the lookup (in seconds)\n");
+  printf("  -p <precision>  Output precision (default: 3)\n");
+}
 
 int main(int argc, char ** argv)
 {
   // Initialize ROS
   std::vector<std::string> args = rclcpp::init_and_remove_ros_arguments(argc, argv);
 
-  double rate_hz;
-  // Allow 2 or 3 command line arguments
-  if (args.size() == 3) {
-    rate_hz = 1.0;
-  } else if (args.size() == 4) {
-    size_t pos;
-    try {
-      rate_hz = std::stof(args[3], &pos);
-    } catch (const std::invalid_argument &) {
-      // If the user provided an argument that wasn't a number (like 'foo'), stof() will throw.
-      fprintf(
-        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
-        args[3].c_str());
-      return 2;
-    }
+  double rate_hz = 1.0;
+  double fixed_time = -1.0;  // -1 means use current time
+  int precision = 3;
+  std::string source_frameid;
+  std::string target_frameid;
 
-    // If the user provide an floating-point argument with junk on the end (like '1.0foo'), the pos
-    // argument will show it didn't convert the whole argument.
-    if (pos != args[3].length()) {
-      fprintf(
-        stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
-        args[3].c_str());
-      return 3;
-    }
-  } else {
-    printf("Usage: tf2_echo source_frame target_frame [echo_rate]\n\n");
-    printf("This will echo the transform from the coordinate frame of the source_frame\n");
-    printf("to the coordinate frame of the target_frame. \n");
-    printf("Note: This is the transform to get data from target_frame into the source_frame.\n");
-    printf("Default echo rate is 1 if echo_rate is not given.\n");
+  // Parse arguments
+  if (args.size() < 3) {
+    print_usage();
     return 1;
   }
-  // TODO(tfoote): restore parameter option
-  // // read rate parameter
-  // ros::NodeHandle p_nh("~");
-  // p_nh.param("rate", rate_hz, 1.0);
-  rclcpp::Rate rate(rate_hz);
 
-  // TODO(tfoote): restore anonymous??
-  // ros::init_options::AnonymousName);
+  source_frameid = args[1];
+  target_frameid = args[2];
+
+  // Parse optional arguments
+  for (size_t i = 3; i < args.size(); i++) {
+    if (args[i] == "-r" && i + 1 < args.size()) {
+      try {
+        rate_hz = std::stof(args[i + 1]);
+        if (rate_hz <= 0.0) {
+          fprintf(stderr, "Rate must be positive\n");
+          return 2;
+        }
+        i++;  // Skip the next argument as it's the rate value
+      } catch (const std::invalid_argument &) {
+        fprintf(
+          stderr, "Failed to convert rate argument '%s' to a floating-point number\n",
+          args[i + 1].c_str());
+        return 2;
+      }
+    } else if (args[i] == "-t" && i + 1 < args.size()) {
+      try {
+        fixed_time = std::stof(args[i + 1]);
+        i++;  // Skip the next argument as it's the time value
+      } catch (const std::invalid_argument &) {
+        fprintf(
+          stderr, "Failed to convert time argument '%s' to a floating-point number\n",
+          args[i + 1].c_str());
+        return 3;
+      }
+    } else if (args[i] == "-p" && i + 1 < args.size()) {
+      try {
+        precision = std::stoi(args[i + 1]);
+        if (precision < 0) {
+          fprintf(stderr, "Precision must be non-negative\n");
+          return 4;
+        }
+        i++;  // Skip the next argument as it's the precision value
+      } catch (const std::invalid_argument &) {
+        fprintf(
+          stderr, "Failed to convert precision argument '%s' to an integer\n",
+          args[i + 1].c_str());
+        return 4;
+      }
+    } else {
+      fprintf(stderr, "Unknown argument: %s\n", args[i].c_str());
+      print_usage();
+      return 5;
+    }
+  }
+
+  rclcpp::Rate rate(rate_hz);
 
   rclcpp::Node::SharedPtr nh = rclcpp::Node::make_shared("tf2_echo");
 
@@ -118,19 +152,27 @@ int main(int argc, char ** argv)
   // Instantiate a local listener
   echoListener echoListener(clock);
 
-  std::string source_frameid = args[1];
-  std::string target_frameid = args[2];
-
-  // Wait for the first transforms to become avaiable.
+  // Wait for the first transforms to become available.
   std::string warning_msg;
+  tf2::TimePoint lookup_time_point;
+
+  if (fixed_time >= 0.0) {
+    // Convert fixed time to tf2::TimePoint
+    rclcpp::Time rclcpp_time(static_cast<int64_t>(fixed_time * 1e9));
+    lookup_time_point = tf2_ros::fromRclcpp(rclcpp_time);
+  } else {
+    lookup_time_point = tf2::TimePoint();
+  }
+
   while (rclcpp::ok() && !echoListener.buffer_.canTransform(
-      source_frameid, target_frameid, tf2::TimePoint(), &warning_msg))
+      source_frameid, target_frameid, lookup_time_point, &warning_msg))
   {
     RCLCPP_INFO_THROTTLE(
       nh->get_logger(), *clock, 1000, "Waiting for transform %s ->  %s: %s",
       source_frameid.c_str(), target_frameid.c_str(), warning_msg.c_str());
     rate.sleep();
   }
+
   constexpr double rad_to_deg = 180.0 / M_PI;
 
   // Nothing needs to be done except wait for a quit
@@ -138,10 +180,21 @@ int main(int argc, char ** argv)
   while (rclcpp::ok()) {
     try {
       geometry_msgs::msg::TransformStamped echo_transform;
+
+      // Determine lookup time
+      if (fixed_time >= 0.0) {
+        // Use fixed time
+        rclcpp::Time rclcpp_time(static_cast<int64_t>(fixed_time * 1e9));
+        lookup_time_point = tf2_ros::fromRclcpp(rclcpp_time);
+      } else {
+        // Use current time (most recent transform)
+        lookup_time_point = tf2::TimePoint();
+      }
+
       echo_transform = echoListener.buffer_.lookupTransform(
-        source_frameid, target_frameid,
-        tf2::TimePoint());
-      std::cout.precision(3);
+        source_frameid, target_frameid, lookup_time_point);
+
+      std::cout.precision(precision);
       std::cout.setf(std::ios::fixed, std::ios::floatfield);
       std::cout << "At time " << echo_transform.header.stamp.sec << "." <<
         echo_transform.header.stamp.nanosec << std::endl;
@@ -168,15 +221,15 @@ int main(int argc, char ** argv)
       std::cout << "- Matrix:" << std::endl;
       for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-          std::cout << " " << std::setw(6) << std::setprecision(3) << mat[i][j];
+          std::cout << " " << std::setw(6) << std::setprecision(precision) << mat[i][j];
         }
-        std::cout << " " << std::setw(6) << std::setprecision(3) << translation_xyz[i];
+        std::cout << " " << std::setw(6) << std::setprecision(precision) << translation_xyz[i];
         std::cout << std::endl;
       }
       for (int j = 0; j < 3; j++) {
-        std::cout << " " << std::setw(6) << std::setprecision(3) << 0.0;
+        std::cout << " " << std::setw(6) << std::setprecision(precision) << 0.0;
       }
-      std::cout << " " << std::setw(6) << std::setprecision(3) << 1.0 << std::endl;
+      std::cout << " " << std::setw(6) << std::setprecision(precision) << 1.0 << std::endl;
     } catch (const tf2::TransformException & ex) {
       std::cout << "Failure at " << clock->now().seconds() << std::endl;
       std::cout << "Exception thrown:" << ex.what() << std::endl;
