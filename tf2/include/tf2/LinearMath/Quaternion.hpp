@@ -207,6 +207,14 @@ public:
 	Quaternion& operator/=(const tf2Scalar& s) 
 	{
 		tf2Assert(s != tf2Scalar(0.0));
+		if(s == tf2Scalar(0.0))
+		{
+			this->setValue(tf2Scalar(std::numeric_limits<tf2Scalar>::quiet_NaN()),
+						   tf2Scalar(std::numeric_limits<tf2Scalar>::quiet_NaN()),
+						   tf2Scalar(std::numeric_limits<tf2Scalar>::quiet_NaN()),
+						   tf2Scalar(std::numeric_limits<tf2Scalar>::quiet_NaN()));
+			return *this;
+		}
 		return *this *= tf2Scalar(1.0) / s;
 	}
 
