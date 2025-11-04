@@ -31,14 +31,18 @@
 #include <algorithm>
 #include <cassert>
 #include <chrono>
+#include <cmath>
+#include <ios>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <iostream>
+#include "rcutils/logging_macros.h"
 
 #include "tf2/buffer_core.hpp"
 #include "tf2/time_cache.hpp"
