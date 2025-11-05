@@ -27,9 +27,11 @@
   <build_depend>rosidl_runtime_cpp</build_depend>
   <build_export_depend>rosidl_runtime_cpp</build_export_depend>
 
+  <build_depend>rcutils</build_depend>
+  <exec_depend>rcutils</exec_depend>
+
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
-  <depend>rcutils</depend>
 
   <test_depend>ament_cmake_google_benchmark</test_depend>
   <test_depend>ament_cmake_gtest</test_depend>

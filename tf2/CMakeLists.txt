@@ -122,7 +122,7 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-ament_export_dependencies(geometry_msgs rcutils rosidl_runtime_cpp)
+ament_export_dependencies(geometry_msgs rosidl_runtime_cpp)
 
 # Export old-style CMake variables
 ament_export_include_directories("include/${PROJECT_NAME}")
