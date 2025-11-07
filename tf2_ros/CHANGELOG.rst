@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.4 (2025-11-07)
+-------------------
+* Updated tf2_echo with some other features (`#802 <https://github.com/ros2/geometry2/issues/802>`_) (`#841 <https://github.com/ros2/geometry2/issues/841>`_)
+* Contributors: mergify[bot]
+
 0.41.3 (2025-10-17)
 -------------------
 * Ensure variable is considered volatile in message_filter_test (`#812 <https://github.com/ros2/geometry2/issues/812>`_) (`#814 <https://github.com/ros2/geometry2/issues/814>`_)
