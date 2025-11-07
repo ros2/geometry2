@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.2 (2025-11-07)
+-------------------
+* Adding explicit handling for normalization of zero-quaternions (`#839 <https://github.com/ros2/geometry2/issues/839>`_)
+* Cleanup TF2 dependencies (`#843 <https://github.com/ros2/geometry2/issues/843>`_)
+* Contributors: Chris Lalancette, Simon Jusner
+
 0.45.1 (2025-10-17)
 -------------------
 

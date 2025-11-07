@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.2 (2025-11-07)
+-------------------
+* Solved TODO with copyright in tf2_sensor_msgs (`#836 <https://github.com/ros2/geometry2/issues/836>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.45.1 (2025-10-17)
 -------------------
 * Removed orocos kdl vendor dependency (`#826 <https://github.com/ros2/geometry2/issues/826>`_)

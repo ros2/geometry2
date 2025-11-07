@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.2 (2025-11-07)
+-------------------
+* Updated tf2_echo with some other features (`#802 <https://github.com/ros2/geometry2/issues/802>`_) (`#840 <https://github.com/ros2/geometry2/issues/840>`_)
+* Replace std::sleep_for with rclcpp::clock::sleep_for (`#835 <https://github.com/ros2/geometry2/issues/835>`_)
+* Contributors: Alejandro Hernández Cordero, mergify[bot]
+
 0.45.1 (2025-10-17)
 -------------------
 * Removed deprecation rclcpp::spin_some(node) (`#824 <https://github.com/ros2/geometry2/issues/824>`_)
