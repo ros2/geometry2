@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.16 (2025-11-07)
+--------------------
+* Updated tf2_echo with some other features (`#802 <https://github.com/ros2/geometry2/issues/802>`_) (`#842 <https://github.com/ros2/geometry2/issues/842>`_)
+* Contributors: mergify[bot]
+
 0.36.15 (2025-10-17)
 --------------------
 
