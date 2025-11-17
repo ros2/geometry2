@@ -36,7 +36,7 @@ This class provides a simple interface to allow recording and lookup of relation
 
 ``tf2`` assumes that there is a tree of coordinate frame transforms which define the relationship between all coordinate frames.
 After transformation relationships are supplied, query specifiyng target frame, source frame, and time point can be used to obtain required data.
-``tf2`` will take care of all the intermediate transfromation steps for specific queries.
+``tf2`` will take care of all the intermediate transformation steps for specific queries.
 
 Additionally, ``tf2`` features data interpolation.
 The probability that a specific query would be at the same timestamp of all the frames in the system is very unlikely in an asynchronous system with nanosecond precision.
@@ -118,11 +118,11 @@ Most are either C++ or Python specific.
 An important part of using ``tf2`` is to use standard conventions for coordinate frames.
 There are several sources of conventions for using coordinate frames.
 
-- Units, orientation conventions, chirality, rotation representations, and covariance representations are covered in <a href=https://www.ros.org/reps/rep-0103.html>REP 103</a>.
+- Units, orientation conventions, chirality, rotation representations, and covariance representations are covered in <a href=https://reps.openrobotics.org/rep-0103/>REP 103</a>.
 
-- Standard names for mobile base coordinate frames are covered in <a href=https://www.ros.org/reps/rep-0105.html>REP 105</a>.
+- Standard names for mobile base coordinate frames are covered in <a href=https://reps.openrobotics.org/rep-0105/>REP 105</a>.
 
-- Standard coordinate frames for Humanoid Robots are in <a href=https://www.ros.org/reps/rep-0120.html>REP 120</a>.
+- Standard coordinate frames for Humanoid Robots are in <a href=https://reps.openrobotics.org/rep-0120/>REP 120</a>.
 
 \subsection geometry Geometry
 
