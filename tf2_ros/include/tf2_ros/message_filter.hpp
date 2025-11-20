@@ -703,6 +703,7 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
+    auto clock = node_clock_->get_clock();
     RCLCPP_INFO_THROTTLE(
       node_logging_->get_logger(),
       *clock,
