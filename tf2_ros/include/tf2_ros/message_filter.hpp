@@ -703,16 +703,10 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
-<<<<<<< HEAD
-    RCLCPP_INFO(
-      node_logging_->get_logger(),
-=======
-    auto clock = node_interfaces_.get_node_clock_interface()->get_clock();
     RCLCPP_INFO_THROTTLE(
-      node_interfaces_.get_node_logging_interface()->get_logger(),
+      node_logging_->get_logger(),
       *clock,
       2500,
->>>>>>> 00ea530 (Prevent log spam from tf2_ros message_filter (#851))
       "Message Filter dropping message: frame '%s' at time %.3f for reason '%s'",
       frame_id.c_str(), stamp.seconds(), get_filter_failure_reason_string(reason).c_str());
   }
