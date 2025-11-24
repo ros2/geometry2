@@ -11,7 +11,7 @@ settings: {
     ## be assumed for 'sphinx-apidoc' invocation. The user can provide the path
     ## (relative to the 'package.xml' file) where the Python modules defined by this
     ## package are located.
-    # python_source: 'tf2',
+    # python_source: 'tf2_kdl',
 
     ## This setting, if true, attempts to run `doxygen` and the `breathe`/`exhale`
     ## extensions to `sphinx` regardless of build type. This is most useful if the
@@ -60,7 +60,7 @@ builders:
     ##  * 'name' - used when referencing the built docs from the index.
 
     - doxygen: {
-        # name: 'tf2 Public C/C++ API',
+        # name: 'tf2_kdl Public C/C++ API',
         # output_dir: 'generated/doxygen',
         ## file name for a user-supplied Doxyfile
         # doxyfile: null,
@@ -71,7 +71,7 @@ builders:
         # doxygen_input_dir: null,
       }
     - sphinx: {
-        # name: 'tf2',
+        # name: 'tf2_kdl',
         ## This path is relative to output staging.
         # doxygen_xml_directory: 'generated/doxygen/xml',
         # output_dir: '',
