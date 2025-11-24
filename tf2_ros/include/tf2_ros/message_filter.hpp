@@ -703,8 +703,11 @@ private:
     const MConstPtr & message = evt.getMessage();
     std::string frame_id = stripSlash(mt::FrameId<M>::value(*message));
     rclcpp::Time stamp = mt::TimeStamp<M>::value(*message);
-    RCLCPP_INFO(
+    auto clock = node_clock_->get_clock();
+    RCLCPP_INFO_THROTTLE(
       node_logging_->get_logger(),
+      *clock,
+      2500,
       "Message Filter dropping message: frame '%s' at time %.3f for reason '%s'",
       frame_id.c_str(), stamp.seconds(), get_filter_failure_reason_string(reason).c_str());
   }
