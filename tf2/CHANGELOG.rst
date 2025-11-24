@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.3 (2025-11-24)
+-------------------
+* Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (`#856 <https://github.com/ros2/geometry2/issues/856>`_)
+* Fix REP url locations (`#847 <https://github.com/ros2/geometry2/issues/847>`_)
+* Contributors: R Kent James, Tim Clephas
+
 0.45.2 (2025-11-07)
 -------------------
 * Adding explicit handling for normalization of zero-quaternions (`#839 <https://github.com/ros2/geometry2/issues/839>`_)

@@ -2,6 +2,9 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.3 (2025-11-24)
+-------------------
+
 0.45.2 (2025-11-07)
 -------------------
 * Solved TODO with copyright in tf2_sensor_msgs (`#836 <https://github.com/ros2/geometry2/issues/836>`_)

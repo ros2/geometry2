@@ -2,6 +2,9 @@
 Changelog for package tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.3 (2025-11-24)
+-------------------
+
 0.45.2 (2025-11-07)
 -------------------
 * Cleanup TF2 dependencies (`#843 <https://github.com/ros2/geometry2/issues/843>`_)
