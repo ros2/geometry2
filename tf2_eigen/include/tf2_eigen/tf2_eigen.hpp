@@ -31,6 +31,7 @@
 
 #include <Eigen/Geometry>
 
+#include "geometry_msgs/msg/accel.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/point_stamped.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
@@ -526,6 +527,22 @@ void fromMsg(const geometry_msgs::msg::Twist & msg, Eigen::Matrix<double, 6, 1> 
   out[5] = msg.angular.z;
 }
 
+/** \brief Convert an Accel message transform type to an Eigen 6x1 Matrix.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param msg The Accel message to convert.
+ * \param out The accel converted to an Eigen 6x1 Matrix.
+ */
+inline
+void fromMsg(const geometry_msgs::msg::Accel & msg, Eigen::Matrix<double, 6, 1> & out)
+{
+  out[0] = msg.linear.x;
+  out[1] = msg.linear.y;
+  out[2] = msg.linear.z;
+  out[3] = msg.angular.x;
+  out[4] = msg.angular.y;
+  out[5] = msg.angular.z;
+}
+
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen Affine3d transform.
  * This function is a specialization of the doTransform template defined in tf2/convert.h,
  * although it can not be used in tf2_ros::BufferInterface::transform because this
@@ -677,6 +694,12 @@ geometry_msgs::msg::Twist toMsg(const Eigen::Matrix<double, 6, 1> & in)
 
 inline
 void fromMsg(const geometry_msgs::msg::Twist & msg, Eigen::Matrix<double, 6, 1> & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+inline
+void fromMsg(const geometry_msgs::msg::Accel & msg, Eigen::Matrix<double, 6, 1> & out)
 {
   tf2::fromMsg(msg, out);
 }
