@@ -88,7 +88,7 @@ public:
 	}
 
 /**@brief Add a vector to this one 
- * @param The vector to add to this one */
+ * @param v The vector to add to this one */
 	TF2SIMD_FORCE_INLINE Vector3& operator+=(const Vector3& v)
 	{
 
@@ -97,8 +97,8 @@ public:
 	}
 
 
-  /**@brief Sutf2ract a vector from this one
-   * @param The vector to sutf2ract */
+  /**@brief Subtract a vector from this one
+   * @param v The vector to subtract */
 	TF2SIMD_FORCE_INLINE Vector3& operator-=(const Vector3& v) 
 	{
 		m_floats[0] -= v.m_floats[0]; m_floats[1] -= v.m_floats[1];m_floats[2] -= v.m_floats[2];
@@ -591,23 +591,7 @@ public:
 		return absolute4().maxAxis4();
 	}
 
-	
- 
 
-  /**@brief Set x,y,z and zero w 
-   * @param x Value of x
-   * @param y Value of y
-   * @param z Value of z
-   */
-		
-
-/*		void getValue(tf2Scalar *m) const 
-		{
-			m[0] = m_floats[0];
-			m[1] = m_floats[1];
-			m[2] =m_floats[2];
-		}
-*/
 /**@brief Set the values 
    * @param x Value of x
    * @param y Value of y
