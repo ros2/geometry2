@@ -36,7 +36,7 @@ class Matrix3x3 {
 	Vector3 m_el[3];
 
 public:
-	/** @brief No initializaion constructor */
+	/** @brief No initialization constructor */
         TF2_PUBLIC
 	Matrix3x3 () {}
 
@@ -281,7 +281,8 @@ public:
 	/**@brief Get the matrix represented as euler angles around YXZ, roundtrip with setEulerYPR
 	* @param yaw Yaw around Z axis
 	* @param pitch Pitch around Y axis
-	* @param roll around X axis */	
+	* @param roll around X axis
+	* @param solution_number Which solution of two possible solutions (1 or 2) are possible values */
         TF2_PUBLIC
 	void getEulerYPR(tf2Scalar& yaw, tf2Scalar& pitch, tf2Scalar& roll, unsigned int solution_number = 1) const
 	{
@@ -411,8 +412,8 @@ public:
 	* @param rot stores the rotation from the coordinate system in which the matrix is diagonal to the original
 	* coordinate system, i.e., old_this = rot * new_this * rot^T. 
 	* @param threshold See iteration
-	* @param iteration The iteration stops when all off-diagonal elements are less than the threshold multiplied 
-	* by the sum of the absolute values of the diagonal, or when maxSteps have been executed. 
+	* @param maxSteps The iteration stops when all off-diagonal elements are less than the threshold multiplied
+	* by the sum of the absolute values of the diagonal, or when maxSteps have been executed.
 	* 
 	* Note that this matrix is assumed to be symmetric. 
 	*/
@@ -501,8 +502,8 @@ public:
 	/**@brief Calculate the matrix cofactor 
 	* @param r1 The first row to use for calculating the cofactor
 	* @param c1 The first column to use for calculating the cofactor
-	* @param r1 The second row to use for calculating the cofactor
-	* @param c1 The second column to use for calculating the cofactor
+	* @param r2 The second row to use for calculating the cofactor
+	* @param c2 The second column to use for calculating the cofactor
 	* See http://en.wikipedia.org/wiki/Cofactor_(linear_algebra) for more details
 	*/
         TF2_PUBLIC

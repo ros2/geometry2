@@ -48,9 +48,9 @@ namespace tf2
 /**\brief The templated function expected to be able to do a transform
  *
  * This is the method which tf2 will use to try to apply a transform for any given datatype.
- * \param data_in[in] The data to be transformed.
- * \param data_out[inout] A reference to the output data. Note this can point to data in and the method should be mutation safe.
- * \param transform[in] The transform to apply to data_in to fill data_out.
+ * \param[in] data_in The data to be transformed.
+ * \param[in,out] data_out A reference to the output data. Note this can point to data in and the method should be mutation safe.
+ * \param[in] transform The transform to apply to data_in to fill data_out.
  *
  * This method needs to be implemented by client library developers
  */
