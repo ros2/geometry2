@@ -163,12 +163,15 @@ public:
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
 
-  /** \brief Lookup the velocity of the moving_frame in the reference_frame
-   * \param reference_frame The frame in which to track
-   * \param moving_frame The frame to track
+  /** \brief Lookup the velocity of the tracking_frame with respect to the observation frame in the reference_frame using the reference point.
+   * \param tracking_frame The frame in which to track
+   * \param observation_frame The frame to track
+   * \param reference_frame The frame in which to express the velocity
+   * \param reference_point The point in the reference_frame at which to compute the velocity
+   * \param reference_point_frame The frame in which the reference_point is expressed
    * \param time The time at which to get the velocity
    * \param duration The period over which to average
-   * \param velocity The velocity output
+   * \return The velocity output
    *
    * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
    * TransformReference::MaxDepthException
