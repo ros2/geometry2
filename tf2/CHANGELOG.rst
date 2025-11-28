@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.17 (2025-11-28)
+--------------------
+* Fix various documentation errors in tf2 (backport `#857 <https://github.com/ros2/geometry2/issues/857>`_) (`#864 <https://github.com/ros2/geometry2/issues/864>`_)
+* Fix REP url locations (`#847 <https://github.com/ros2/geometry2/issues/847>`_) (`#849 <https://github.com/ros2/geometry2/issues/849>`_)
+* Contributors: mergify[bot]
+
 0.36.16 (2025-11-07)
 --------------------
 
