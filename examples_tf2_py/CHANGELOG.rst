@@ -2,6 +2,9 @@
 Changelog for package examples_tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.18 (2025-11-28)
+--------------------
+
 0.25.17 (2025-10-17)
 --------------------
 * Fix Setuptools deprecations (`#809 <https://github.com/ros2/geometry2/issues/809>`_) (`#831 <https://github.com/ros2/geometry2/issues/831>`_)

@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.18 (2025-11-28)
+--------------------
+* Add fromMsg for converting from Accel to Eigen (`#844 <https://github.com/ros2/geometry2/issues/844>`_) (`#860 <https://github.com/ros2/geometry2/issues/860>`_)
+* Contributors: mergify[bot]
+
 0.25.17 (2025-10-17)
 --------------------
 
