@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.4 (2025-11-28)
+-------------------
+* Add fromMsg for converting from Accel to Eigen (`#844 <https://github.com/ros2/geometry2/issues/844>`_)
+* Contributors: Alireza Moayyedi
+
 0.45.3 (2025-11-24)
 -------------------
 * Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (`#856 <https://github.com/ros2/geometry2/issues/856>`_)
