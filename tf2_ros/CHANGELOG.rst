@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.5 (2025-11-28)
+-------------------
+* Prevent log spam from tf2_ros message_filter (backport `#851 <https://github.com/ros2/geometry2/issues/851>`_) (`#852 <https://github.com/ros2/geometry2/issues/852>`_)
+* Contributors: mergify[bot]
+
 0.41.4 (2025-11-07)
 -------------------
 * Updated tf2_echo with some other features (`#802 <https://github.com/ros2/geometry2/issues/802>`_) (`#841 <https://github.com/ros2/geometry2/issues/841>`_)
