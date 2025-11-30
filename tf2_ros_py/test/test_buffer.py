@@ -28,6 +28,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import sys
 import pytest
 import rclpy
 
@@ -146,3 +147,9 @@ class TestBuffer:
         assert transform.transform.translation.x == output.transform.translation.x
         assert transform.transform.translation.y == output.transform.translation.y
         assert transform.transform.translation.z == output.transform.translation.z
+
+
+pytestmark = pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="Flaky on Windows CI; contributes to aborted builds, see osrf/buildfarmer#360"
+)
