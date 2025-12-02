@@ -20,8 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 from datetime import datetime
-now = datetime.now() # current date and time
-year = now.strftime("%Y")
+now = datetime.now()  # current date and time
+year = now.strftime('%Y')
 
 copyright = '2008-' + year + ', Open Source Robotics Foundation, Inc'  # noqa
 author = 'Open Source Robotics Foundation, Inc.'
