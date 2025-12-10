@@ -27,7 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Tully Foote */
+/** \file
+ *  \brief Author: Tully Foote
+ */
 
 #ifndef TF2_ROS__TRANSFORM_LISTENER_HPP_
 #define TF2_ROS__TRANSFORM_LISTENER_HPP_
