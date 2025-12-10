@@ -6,7 +6,12 @@ PROJECT_BRIEF          = "tf2 maintains the relationship between coordinate fram
 structure buffered in time, and lets the user transform points, vectors, etc between any two \
 coordinate frames at any desired point in time."
 
+<<<<<<< HEAD
 INPUT                  = ./include mainpage.dox
+=======
+INPUT                  = ./include
+INPUT                  += README.md
+>>>>>>> 9462cec (Expose Doxygen output in tf2, showing former Doxygen front page also as README.md (#871))
 RECURSIVE              = YES
 OUTPUT_DIRECTORY       = doc_output
 
@@ -22,3 +27,6 @@ PREDEFINED             += TF2_PUBLIC=
 PREDEFINED             += TF2SIMD_FORCE_INLINE=
 PREDEFINED             += ATTRIBUTE_ALIGNED16(class)=class
 EXCLUDE_PATTERNS       = */test/*
+MARKDOWN_SUPPORT       = YES
+USE_MDFILE_AS_MAINPAGE = README.md
+FILE_PATTERNS          += *.md
