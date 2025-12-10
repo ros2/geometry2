@@ -28,7 +28,9 @@
  */
 
 
-/** \author Tully Foote */
+/** \file
+ *  \brief Author: Tully Foote
+ */
 
 #ifndef ROSTEST_PERMUTER_HPP
 #define ROSTEST_PERMUTER_HPP
