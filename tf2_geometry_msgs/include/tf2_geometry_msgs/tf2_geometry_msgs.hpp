@@ -27,7 +27,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-/** \author Wim Meeussen */
+/** \file
+ *  \brief Author: Wim Meeussen
+ */
 
 #ifndef TF2_GEOMETRY_MSGS__TF2_GEOMETRY_MSGS_HPP_
 #define TF2_GEOMETRY_MSGS__TF2_GEOMETRY_MSGS_HPP_

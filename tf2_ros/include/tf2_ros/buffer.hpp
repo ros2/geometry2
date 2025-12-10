@@ -27,7 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Wim Meeussen */
+/** \file
+ *  \brief Author: Wim Meeussen
+ */
 
 #ifndef TF2_ROS__BUFFER_HPP_
 #define TF2_ROS__BUFFER_HPP_
