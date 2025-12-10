@@ -27,7 +27,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 
-/** \author Tully Foote */
+/** \file
+ *  \brief Author: Tully Foote
+ */
 
 #ifndef TF2__BUFFER_CORE_HPP_
 #define TF2__BUFFER_CORE_HPP_
