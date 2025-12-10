@@ -28,7 +28,9 @@
  */
 
 
-/** \author Tully Foote */
+/** \file
+ *  \brief Author: Tully Foote
+ */
 
 #ifndef TF2_ROS__TRANSFORM_BROADCASTER_HPP_
 #define TF2_ROS__TRANSFORM_BROADCASTER_HPP_
