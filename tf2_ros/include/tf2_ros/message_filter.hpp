@@ -27,7 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Josh Faust */
+/** \file
+ *  \brief Author: Josh Faust
+ */
 
 #ifndef TF2_ROS__MESSAGE_FILTER_HPP_
 #define TF2_ROS__MESSAGE_FILTER_HPP_

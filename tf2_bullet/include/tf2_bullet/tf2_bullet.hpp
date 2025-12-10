@@ -26,7 +26,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Wim Meeussen */
+/** \file
+ *  \brief Author: Wim Meeussen
+ */
 
 #ifndef TF2_BULLET__TF2_BULLET_HPP_
 #define TF2_BULLET__TF2_BULLET_HPP_
