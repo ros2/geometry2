@@ -24,7 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** \author Koji Terada */
+/** \file
+ *  \brief Author: Koji Terada
+ */
 
 #ifndef TF2_EIGEN__TF2_EIGEN_HPP_
 #define TF2_EIGEN__TF2_EIGEN_HPP_
