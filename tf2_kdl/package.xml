@@ -15,6 +15,11 @@
   <author>Wim Meeussen</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+<<<<<<< HEAD
+=======
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+>>>>>>> e82e4fc (Documentation fixes for tf2_kdl (#869))
 
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
@@ -27,6 +32,8 @@
 
   <test_depend>ament_cmake_gtest</test_depend>
   <test_depend>rclcpp</test_depend>
+
+  <doc_depend>PyKDL</doc_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
