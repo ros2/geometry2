@@ -46,7 +46,7 @@ settings: {
     # disable_breathe: false,
 
     ## This setting, if true, will display a link to the Doxygen html output.
-    # show_doxygen_html: false,
+    show_doxygen_html: true,
 }
 builders:
     ## Each stanza represents a separate build step, performed by a specific 'builder'.
