@@ -353,6 +353,45 @@ public:
 		return identityQuat;
 	}
 
+  /**@brief Creates a quaternion using fixed axis RPY
+   * @param roll Angle around X
+   * @param pitch Angle around Y
+   * @param yaw Angle around Z
+   * @return new created quaternion */
+        TF2_PUBLIC
+  static Quaternion createFromRPY(const tf2Scalar& roll, const tf2Scalar& pitch, const tf2Scalar& yaw)
+	{
+		Quaternion q;
+		q.setRPY(roll, pitch, yaw);
+		return q;
+	}
+
+  /**@brief Creates a quaternion using Euler angles
+   * @param yaw Angle around Y
+   * @param pitch Angle around X
+   * @param roll Angle around Z
+   * @return new created quaternion */
+        TF2_PUBLIC
+  static Quaternion createFromEuler(const tf2Scalar& roll, const tf2Scalar& pitch, const tf2Scalar& yaw)
+	{
+		Quaternion q;
+		q.setEuler(roll, pitch, yaw);
+		return q;
+	}
+	
+  /**@brief Creates a quaternion using axis angle notation
+   * @param axis The axis around which to rotate
+   * @param angle The magnitude of the rotation in Radians
+   * @return new created quaternion */
+        TF2_PUBLIC
+	static Quaternion createFromRotation(const Vector3& axis, const tf2Scalar& angle)
+	{
+		Quaternion q;
+		q.setRotation(axis, angle);
+		return q;
+	}
+
+
 	TF2SIMD_FORCE_INLINE const tf2Scalar& getW() const { return m_floats[3]; }
 
 	
