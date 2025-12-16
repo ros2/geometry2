@@ -2,6 +2,11 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.5 (2025-12-16)
+-------------------
+* Modernize conf.py files to only include modified Copyright, eliminati… (`#865 <https://github.com/ros2/geometry2/issues/865>`_)
+* Contributors: R Kent James
+
 0.45.4 (2025-11-28)
 -------------------
 

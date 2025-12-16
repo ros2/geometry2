@@ -2,6 +2,13 @@
 Changelog for package tf2_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.5 (2025-12-16)
+-------------------
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)
+* Documentation fixes for tf2_kdl (`#869 <https://github.com/ros2/geometry2/issues/869>`_)
+* Modernize conf.py files to only include modified Copyright, eliminati… (`#865 <https://github.com/ros2/geometry2/issues/865>`_)
+* Contributors: R Kent James
+
 0.45.4 (2025-11-28)
 -------------------
 

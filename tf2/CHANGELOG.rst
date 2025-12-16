@@ -2,6 +2,14 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.5 (2025-12-16)
+-------------------
+* static function to crate quaternions directly from rotation added (`#881 <https://github.com/ros2/geometry2/issues/881>`_)
+* Expose Doxygen output in tf2, showing former Doxygen front page also as README.md (`#871 <https://github.com/ros2/geometry2/issues/871>`_)
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)
+* Modernize conf.py files to only include modified Copyright, eliminati… (`#865 <https://github.com/ros2/geometry2/issues/865>`_)
+* Contributors: Markus Bader, R Kent James
+
 0.45.4 (2025-11-28)
 -------------------
 * Fix various documentation errors in tf2 (`#857 <https://github.com/ros2/geometry2/issues/857>`_)

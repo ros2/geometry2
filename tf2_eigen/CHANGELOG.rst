@@ -2,6 +2,12 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.5 (2025-12-16)
+-------------------
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)
+* Modernize conf.py files to only include modified Copyright, eliminati… (`#865 <https://github.com/ros2/geometry2/issues/865>`_)
+* Contributors: R Kent James
+
 0.45.4 (2025-11-28)
 -------------------
 * Add fromMsg for converting from Accel to Eigen (`#844 <https://github.com/ros2/geometry2/issues/844>`_)
