@@ -2,6 +2,11 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.18 (2025-12-18)
+--------------------
+* Add imu & mag support in `tf2_sensor_msgs` (`#800 <https://github.com/ros2/geometry2/issues/800>`_) (`#813 <https://github.com/ros2/geometry2/issues/813>`_) (`#868 <https://github.com/ros2/geometry2/issues/868>`_)
+* Contributors: mergify[bot]
+
 0.36.17 (2025-11-28)
 --------------------
 

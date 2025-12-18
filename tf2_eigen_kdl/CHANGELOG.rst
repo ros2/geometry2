@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen_kdl
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.18 (2025-12-18)
+--------------------
+* Jazzy disable tagfiles (`#886 <https://github.com/ros2/geometry2/issues/886>`_)
+* Contributors: R Kent James
+
 0.36.17 (2025-11-28)
 --------------------
 

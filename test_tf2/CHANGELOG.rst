@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.18 (2025-12-18)
+--------------------
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#876 <https://github.com/ros2/geometry2/issues/876>`_)
+* Contributors: mergify[bot]
+
 0.36.17 (2025-11-28)
 --------------------
 

@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.18 (2025-12-18)
+--------------------
+* Jazzy disable tagfiles (`#886 <https://github.com/ros2/geometry2/issues/886>`_)
+* static function to crate quaternions directly from rotation added (`#881 <https://github.com/ros2/geometry2/issues/881>`_) (`#883 <https://github.com/ros2/geometry2/issues/883>`_)
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#876 <https://github.com/ros2/geometry2/issues/876>`_)
+* Contributors: R Kent James, mergify[bot]
+
 0.36.17 (2025-11-28)
 --------------------
 * Fix various documentation errors in tf2 (backport `#857 <https://github.com/ros2/geometry2/issues/857>`_) (`#864 <https://github.com/ros2/geometry2/issues/864>`_)

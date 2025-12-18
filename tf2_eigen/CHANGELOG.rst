@@ -2,6 +2,12 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.18 (2025-12-18)
+--------------------
+* Jazzy disable tagfiles (`#886 <https://github.com/ros2/geometry2/issues/886>`_)
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#876 <https://github.com/ros2/geometry2/issues/876>`_)
+* Contributors: R Kent James, mergify[bot]
+
 0.36.17 (2025-11-28)
 --------------------
 * Add fromMsg for converting from Accel to Eigen (`#844 <https://github.com/ros2/geometry2/issues/844>`_) (`#859 <https://github.com/ros2/geometry2/issues/859>`_)
