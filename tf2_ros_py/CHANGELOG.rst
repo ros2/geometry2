@@ -2,6 +2,11 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.6 (2025-12-18)
+-------------------
+* Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (manual kilted backport of `#856 <https://github.com/ros2/geometry2/issues/856>`_) (`#885 <https://github.com/ros2/geometry2/issues/885>`_)
+* Contributors: R Kent James
+
 0.41.5 (2025-11-28)
 -------------------
 

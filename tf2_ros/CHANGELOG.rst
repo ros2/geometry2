@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.6 (2025-12-18)
+-------------------
+* Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (manual kilted backport of `#856 <https://github.com/ros2/geometry2/issues/856>`_) (`#885 <https://github.com/ros2/geometry2/issues/885>`_)
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#875 <https://github.com/ros2/geometry2/issues/875>`_)
+* Contributors: R Kent James, mergify[bot]
+
 0.41.5 (2025-11-28)
 -------------------
 * Prevent log spam from tf2_ros message_filter (backport `#851 <https://github.com/ros2/geometry2/issues/851>`_) (`#852 <https://github.com/ros2/geometry2/issues/852>`_)
