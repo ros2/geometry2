@@ -11,7 +11,7 @@ settings: {
     ## be assumed for 'sphinx-apidoc' invocation. The user can provide the path
     ## (relative to the 'package.xml' file) where the Python modules defined by this
     ## package are located.
-    python_source: 'tf2_ros',
+    # python_source: 'tf2',
 
     ## This setting, if true, attempts to run `doxygen` and the `breathe`/`exhale`
     ## extensions to `sphinx` regardless of build type. This is most useful if the
@@ -38,7 +38,7 @@ settings: {
     ## This setting, if provided, will override the build_type of this package
     ## for documentation purposes only. If not provided, documentation will be
     ## generated assuming the build_type in package.xml.
-    # override_build_type: 'ament_python',
+    # override_build_type: 'ament_cmake',
 
     ## This setting, if true, will skip using breathe to process the C++ documentation, and
     #  use the doxygen html instead. This is intended for cases where breathe is throwing
@@ -60,18 +60,18 @@ builders:
     ##  * 'name' - used when referencing the built docs from the index.
 
     - doxygen: {
-        # name: 'tf2_ros_py Public C/C++ API',
+        # name: 'tf2 Public C/C++ API',
         # output_dir: 'generated/doxygen',
         ## file name for a user-supplied Doxyfile
         # doxyfile: null,
         ## additional statements to add to the Doxyfile, list of strings
-        # extra_doxyfile_statements: [],
+        extra_doxyfile_statements: ['TAGFILES = ""'],
         ## location of include files for Doxygen. By default, rosdoc2 searches in
         ## 'include', 'src', '<package.name>'
         # doxygen_input_dir: null,
       }
     - sphinx: {
-        # name: 'tf2_ros_py',
+        # name: 'tf2',
         ## This path is relative to output staging.
         # doxygen_xml_directory: 'generated/doxygen/xml',
         # output_dir: '',
