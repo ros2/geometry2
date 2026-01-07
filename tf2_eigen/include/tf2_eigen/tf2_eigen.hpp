@@ -537,8 +537,28 @@ void fromMsg(const geometry_msgs::msg::Twist & msg, Eigen::Matrix<double, 6, 1> 
   out[5] = msg.angular.z;
 }
 
+/** \brief Convert an Eigen 6x1 Matrix type to an Accel message.
+ * This function is a specialization of the toMsg template defined in tf2/convert.hpp.
+ * \param in The 6x1 Eigen Matrix to convert.
+ * \param out The Eigen Matrix converted to an Accel message.
+ * \return The Eigen Matrix converted to an Accel message.
+ */
+inline
+geometry_msgs::msg::Accel & toMsg(
+  const Eigen::Matrix<double, 6, 1> & in,
+  geometry_msgs::msg::Accel & out)
+{
+  out.linear.x = in[0];
+  out.linear.y = in[1];
+  out.linear.z = in[2];
+  out.angular.x = in[3];
+  out.angular.y = in[4];
+  out.angular.z = in[5];
+  return out;
+}
+
 /** \brief Convert an Accel message transform type to an Eigen 6x1 Matrix.
- * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * This function is a specialization of the toMsg template defined in tf2/convert.hpp.
  * \param msg The Accel message to convert.
  * \param out The accel converted to an Eigen 6x1 Matrix.
  */
@@ -706,6 +726,14 @@ inline
 void fromMsg(const geometry_msgs::msg::Twist & msg, Eigen::Matrix<double, 6, 1> & out)
 {
   tf2::fromMsg(msg, out);
+}
+
+inline
+geometry_msgs::msg::Accel & toMsg(
+  const Eigen::Matrix<double, 6, 1> & in,
+  geometry_msgs::msg::Accel & out)
+{
+  return tf2::toMsg(in, out);
 }
 
 inline

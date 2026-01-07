@@ -191,6 +191,38 @@ TEST(tf2Convert, PointVectorOtherMessagetype)
   }
 }
 
+TEST(tf2Convert, AccelEigenConversion)
+{
+  geometry_msgs::msg::Accel accel_msg;
+  accel_msg.linear.x = 1.0;
+  accel_msg.linear.y = 2.0;
+  accel_msg.linear.z = 3.0;
+  accel_msg.angular.x = 4.0;
+  accel_msg.angular.y = 5.0;
+  accel_msg.angular.z = 6.0;
+
+  Eigen::Matrix<double, 6, 1> accel_eigen;
+  tf2::fromMsg(accel_msg, accel_eigen);
+
+  EXPECT_EQ(accel_eigen[0], accel_msg.linear.x);
+  EXPECT_EQ(accel_eigen[1], accel_msg.linear.y);
+  EXPECT_EQ(accel_eigen[2], accel_msg.linear.z);
+  EXPECT_EQ(accel_eigen[3], accel_msg.angular.x);
+  EXPECT_EQ(accel_eigen[4], accel_msg.angular.y);
+  EXPECT_EQ(accel_eigen[5], accel_msg.angular.z);
+
+  geometry_msgs::msg::Accel accel_msg_converted;
+  auto & accel_msg_converted_ref = tf2::toMsg(accel_eigen, accel_msg_converted);
+
+  EXPECT_EQ(&accel_msg_converted_ref, &accel_msg_converted);
+  EXPECT_EQ(accel_msg.linear.x, accel_msg_converted.linear.x);
+  EXPECT_EQ(accel_msg.linear.y, accel_msg_converted.linear.y);
+  EXPECT_EQ(accel_msg.linear.z, accel_msg_converted.linear.z);
+  EXPECT_EQ(accel_msg.angular.x, accel_msg_converted.angular.x);
+  EXPECT_EQ(accel_msg.angular.y, accel_msg_converted.angular.y);
+  EXPECT_EQ(accel_msg.angular.z, accel_msg_converted.angular.z);
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
