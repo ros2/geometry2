@@ -1179,6 +1179,7 @@ void doTransform(
     t_out.transform.rotation.z, t_out.transform.rotation.w);
   t_out.header.stamp = transform.header.stamp;
   t_out.header.frame_id = transform.header.frame_id;
+  t_out.child_frame_id = t_in.child_frame_id;
 }
 
 /** \brief Trivial "conversion" function for Transform message type.
