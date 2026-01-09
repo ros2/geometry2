@@ -2,6 +2,9 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.6 (2026-01-09)
+-------------------
+
 0.45.5 (2025-12-16)
 -------------------
 * Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)

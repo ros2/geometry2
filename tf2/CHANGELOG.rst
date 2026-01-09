@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.6 (2026-01-09)
+-------------------
+
 0.45.5 (2025-12-16)
 -------------------
 * static function to crate quaternions directly from rotation added (`#881 <https://github.com/ros2/geometry2/issues/881>`_)

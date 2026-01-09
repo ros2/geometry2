@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.6 (2026-01-09)
+-------------------
+* added toMsg for eigen-accel as well as its tests (`#887 <https://github.com/ros2/geometry2/issues/887>`_)
+* Contributors: Alireza Moayyedi
+
 0.45.5 (2025-12-16)
 -------------------
 * Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)

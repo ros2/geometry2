@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.6 (2026-01-09)
+-------------------
+* Copy child_frame_id from input (`#889 <https://github.com/ros2/geometry2/issues/889>`_)
+* Contributors: Yannik Meinken
+
 0.45.5 (2025-12-16)
 -------------------
 * Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_)
