@@ -84,14 +84,14 @@ class GeometryMsgs(unittest.TestCase):
         v = PoseWithCovarianceStamped()
         v.header.stamp = rclpy.time.Time(seconds=2.0).to_msg()
         v.header.frame_id = 'a'
-        v.pose.covariance = (
+        v.pose.covariance = [
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0
-        )
+        ]
         v.pose.pose.position.x = 1.0
         v.pose.pose.position.y = 2.0
         v.pose.pose.position.z = 3.0
@@ -143,14 +143,14 @@ class GeometryMsgs(unittest.TestCase):
         v = PoseWithCovarianceStamped()
         v.header.stamp = rclpy.time.Time(seconds=2.0).to_msg()
         v.header.frame_id = 'a'
-        v.pose.covariance = (
+        v.pose.covariance = [
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
           1.0, 2.0, 3.0, 4.0, 5.0, 6.0
-        )
+        ]
         v.pose.pose.position.x = 1.0
         v.pose.pose.position.y = 2.0
         v.pose.pose.position.z = 3.0
