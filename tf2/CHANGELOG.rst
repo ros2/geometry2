@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.36.18 (2025-12-18)
 --------------------
 * Jazzy disable tagfiles (`#886 <https://github.com/ros2/geometry2/issues/886>`_)
