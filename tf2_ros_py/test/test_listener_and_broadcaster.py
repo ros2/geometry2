@@ -26,7 +26,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import time
 
 from geometry_msgs.msg import TransformStamped
 import pytest
@@ -172,10 +171,11 @@ class TestBroadcasterAndListener:
 
         def lookup_with_retry(target, source, time_obj, expected_x, timeout_total=5.0):
             """Poll the buffer until the transform matches the expected X value."""
-            end_time = time.time() + timeout_total
+            start_time = self.node.get_clock().now()
+            timeout_duration = rclpy.duration.Duration(seconds=timeout_total)
             last_exception = None
 
-            while time.time() < end_time:
+            while (self.node.get_clock().now() - start_time) < timeout_duration:
                 try:
                     tf = self.buffer.lookup_transform(target, source, time_obj)
                     if abs(tf.transform.translation.x - expected_x) < 1e-3:
