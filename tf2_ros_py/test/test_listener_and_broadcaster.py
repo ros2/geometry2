@@ -26,10 +26,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
 from geometry_msgs.msg import TransformStamped
 import pytest
 import rclpy
+from tf2_ros import ConnectivityException
 from tf2_ros import ExtrapolationException
+from tf2_ros import LookupException
 from tf2_ros.buffer import Buffer
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 from tf2_ros.static_transform_listener import StaticTransformListener
@@ -166,6 +169,25 @@ class TestBroadcasterAndListener:
             assert expected_tf.transform.translation == received_tf.transform.translation
             assert expected_tf.transform.rotation == received_tf.transform.rotation
 
+        def lookup_with_retry(target, source, time_obj, expected_x, timeout_total=5.0):
+            """Poll the buffer until the transform matches the expected X value."""
+            start_time = self.node.get_clock().now()
+            timeout_duration = rclpy.duration.Duration(seconds=timeout_total)
+            last_exception = None
+
+            while (self.node.get_clock().now() - start_time) < timeout_duration:
+                try:
+                    tf = self.buffer.lookup_transform(target, source, time_obj)
+                    if abs(tf.transform.translation.x - expected_x) < 1e-3:
+                        return tf
+                except (LookupException, ConnectivityException,
+                        ExtrapolationException) as e:
+                    last_exception = e
+                self.executor.spin_once(timeout_sec=0.05)
+            if last_exception:
+                raise last_exception
+            return self.buffer.lookup_transform(target, source, time_obj)
+
         # broadcasting initial static transformation
         broadcasted_tf = self.broadcast_static_transform(
             target_frame='foo', source_frame='bar',
@@ -174,6 +196,11 @@ class TestBroadcasterAndListener:
         listened_tf = self.buffer.lookup_transform(
             target_frame='foo', source_frame='bar',
             time=rclpy.time.Time(seconds=1.5, nanoseconds=0).to_msg())
+
+        listened_tf = lookup_with_retry(
+            target='foo', source='bar',
+            time_obj=rclpy.time.Time(seconds=1.5, nanoseconds=0).to_msg(),
+            expected_x=42.0)
 
         assert broadcasted_tf.header.stamp.sec == 1
         assert broadcasted_tf.header.stamp.nanosec == 100000000
@@ -189,19 +216,18 @@ class TestBroadcasterAndListener:
             time_stamp=rclpy.time.Time(seconds=2.1, nanoseconds=0).to_msg(),
             translation_x=24.0)
 
-        self.executor.spin_once()
-
-        listened_tf = self.buffer.lookup_transform(
-            target_frame='foo', source_frame='bar',
-            time=rclpy.time.Time(seconds=2.5, nanoseconds=0).to_msg())
+        listened_updated_tf = lookup_with_retry(
+            target='foo', source='bar',
+            time_obj=rclpy.time.Time(seconds=2.5, nanoseconds=0).to_msg(),
+            expected_x=24.0)
 
         assert broadcasted_updated_tf.header.stamp.sec == 2
         assert broadcasted_updated_tf.header.stamp.nanosec == 100000000
 
-        assert listened_tf.header.stamp.sec == 2
-        assert listened_tf.header.stamp.nanosec == 500000000
+        assert listened_updated_tf.header.stamp.sec == 2
+        assert listened_updated_tf.header.stamp.nanosec == 500000000
 
-        compare_transforms(received_tf=listened_tf, expected_tf=broadcasted_updated_tf)
+        compare_transforms(received_tf=listened_updated_tf, expected_tf=broadcasted_updated_tf)
 
         # adding another transform (clearing the listener buffer since the broadcaster is expected
         # to repeat the first transform)
@@ -211,22 +237,17 @@ class TestBroadcasterAndListener:
             target_frame='foo', source_frame='qux',
             time_stamp=rclpy.time.Time(seconds=3.1, nanoseconds=0).to_msg())
 
-        self.executor.spin_once()
-
-        # lookup first transform
-        listened_first_tf = self.buffer.lookup_transform(
-            target_frame='foo', source_frame='bar',
-            time=rclpy.time.Time(seconds=3.5, nanoseconds=0).to_msg())
+        listened_first_tf = lookup_with_retry('foo', 'bar',
+                                              rclpy.time.Time(seconds=3.5).to_msg(),
+                                              expected_x=24.0)
+        listened_second_tf = lookup_with_retry('foo', 'qux',
+                                               rclpy.time.Time(seconds=3.5).to_msg(),
+                                               expected_x=10.0)
 
         assert listened_first_tf.header.stamp.sec == 3
         assert listened_first_tf.header.stamp.nanosec == 500000000
 
         compare_transforms(received_tf=listened_first_tf, expected_tf=broadcasted_updated_tf)
-
-        # lookup second transform
-        listened_second_tf = self.buffer.lookup_transform(
-            target_frame='foo', source_frame='qux',
-            time=rclpy.time.Time(seconds=3.5, nanoseconds=0).to_msg())
 
         assert listened_second_tf.header.stamp.sec == 3
         assert listened_second_tf.header.stamp.nanosec == 500000000
