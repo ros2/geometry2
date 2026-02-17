@@ -2,8 +2,8 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.25.19 (2026-02-16)
+--------------------
 * Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#877 <https://github.com/ros2/geometry2/issues/877>`_)
 * Contributors: mergify[bot]
 

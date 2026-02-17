@@ -2,8 +2,8 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.25.19 (2026-02-16)
+--------------------
 * added toMsg for eigen-accel as well as its tests (`#887 <https://github.com/ros2/geometry2/issues/887>`_) (`#892 <https://github.com/ros2/geometry2/issues/892>`_)
 * Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#877 <https://github.com/ros2/geometry2/issues/877>`_)
 * Contributors: mergify[bot]
