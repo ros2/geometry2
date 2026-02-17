@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* static function to crate quaternions directly from rotation added (`#881 <https://github.com/ros2/geometry2/issues/881>`_) (`#884 <https://github.com/ros2/geometry2/issues/884>`_)
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#877 <https://github.com/ros2/geometry2/issues/877>`_)
+* Contributors: mergify[bot]
+
 0.25.18 (2025-11-28)
 --------------------
 

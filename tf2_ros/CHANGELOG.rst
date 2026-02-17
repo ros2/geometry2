@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Move \author tags to \file \brief (`#870 <https://github.com/ros2/geometry2/issues/870>`_) (`#877 <https://github.com/ros2/geometry2/issues/877>`_)
+* Contributors: mergify[bot]
+
 0.25.18 (2025-11-28)
 --------------------
 * Prevent log spam from tf2_ros message_filter (backport `#851 <https://github.com/ros2/geometry2/issues/851>`_) (`#854 <https://github.com/ros2/geometry2/issues/854>`_)
