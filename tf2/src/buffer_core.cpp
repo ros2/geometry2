@@ -355,6 +355,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
 
   std::string extrapolation_error_string;
   bool extrapolation_might_have_occurred = false;
+  TimePoint extrapolation_latest_time = TimePointZero;
 
   while (frame != 0) {
     TimeCacheInterfacePtr cache = getFrame(frame);
@@ -373,6 +374,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
       // Just break out here... there may still be a path from source -> target
       top_parent = frame;
       extrapolation_might_have_occurred = true;
+      extrapolation_latest_time = cache->getLatestTimestamp();
       break;
     }
 
@@ -416,6 +418,25 @@ tf2::TF2Error BufferCore::walkToTopParent(
 
     CompactFrameID parent = f.gather(cache, time, error_string);
     if (parent == 0) {
+      if (extrapolation_might_have_occurred) {
+        // Shouldn't treat second walk path failure as extrapolation if the
+        // first walk path failure is older than the latest data in the cache
+        TimePoint phase2_latest = cache->getLatestTimestamp();
+
+        // prefer source for tie-breaker
+        bool prefer_phase1 = (extrapolation_latest_time >= phase2_latest);
+
+        if (prefer_phase1) {
+          if (error_string) {
+            std::stringstream ss;
+            ss << extrapolation_error_string << ", when looking up transform from frame ["
+               << lookupFrameString(source_id) << "] to frame [" << lookupFrameString(target_id)
+               << "]";
+            *error_string = ss.str();
+          }
+          return extrapolation_error_code;
+        }
+      }
       if (error_string) {
         std::stringstream ss;
         ss << *error_string << ", when looking up transform from frame [" << lookupFrameString(
