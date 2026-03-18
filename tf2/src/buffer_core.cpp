@@ -434,7 +434,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
                << "]";
             *error_string = ss.str();
           }
-          return extrapolation_error_code;
+          return tf2::TF2Error::TF2_EXTRAPOLATION_ERROR;
         }
       }
       if (error_string) {
