@@ -61,7 +61,7 @@ public:
   TF2_PUBLIC
   virtual bool getData(
     tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0) = 0;
+    std::string * error_str = nullptr, TF2Error * error_code = nullptr) = 0;
 
   /** \brief Insert data into the cache */
   TF2_PUBLIC
@@ -74,7 +74,7 @@ public:
   /** \brief Retrieve the parent at a specific time */
   TF2_PUBLIC
   virtual CompactFrameID getParent(
-    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0) = 0;
+    tf2::TimePoint time, std::string * error_str = nullptr, TF2Error * error_code = nullptr) = 0;
 
   /**
    * \brief Get the latest time stored in this cache, and the parent associated with it.  Returns parent = 0 if no data.
@@ -112,29 +112,30 @@ public:
   TF2_PUBLIC
   explicit TimeCache(tf2::Duration max_storage_time = TIMECACHE_DEFAULT_MAX_STORAGE_TIME);
 
-  /// Virtual methods
+  /// Overridden methods
 
   TF2_PUBLIC
-  virtual bool getData(
+  bool getData(
     tf2::TimePoint time, tf2::TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0);
+    std::string * error_str = nullptr, TF2Error * error_code = nullptr) override;
   TF2_PUBLIC
-  virtual bool insertData(const tf2::TransformStorage & new_data);
+  bool insertData(const tf2::TransformStorage & new_data) override;
   TF2_PUBLIC
-  virtual void clearList();
+  void clearList() override;
   TF2_PUBLIC
-  virtual tf2::CompactFrameID getParent(
-    tf2::TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
+  tf2::CompactFrameID getParent(
+    tf2::TimePoint time, std::string * error_str = nullptr,
+    TF2Error * error_code = nullptr) override;
   TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent();
+  P_TimeAndFrameID getLatestTimeAndParent() override;
 
   /// Debugging information methods
   TF2_PUBLIC
-  virtual unsigned int getListLength();
+  unsigned int getListLength() override;
   TF2_PUBLIC
-  virtual TimePoint getLatestTimestamp();
+  TimePoint getLatestTimestamp() override;
   TF2_PUBLIC
-  virtual TimePoint getOldestTimestamp();
+  TimePoint getOldestTimestamp() override;
 
 protected:
   // (Internal) Return a reference to the internal list of tf2 frames, which
@@ -154,7 +155,7 @@ private:
   // Assumes storage is already locked for it
   inline uint8_t findClosest(
     tf2::TransformStorage * & one, TransformStorage * & two,
-    tf2::TimePoint target_time, std::string * error_str = 0, TF2Error * error_code = 0);
+    tf2::TimePoint target_time, std::string * error_str = nullptr, TF2Error * error_code = nullptr);
 
   inline void interpolate(
     const tf2::TransformStorage & one, const tf2::TransformStorage & two,
@@ -166,29 +167,29 @@ private:
 class StaticCache : public TimeCacheInterface
 {
 public:
-  /// Virtual methods
+  /// Overridden methods
   TF2_PUBLIC
-  virtual bool getData(
+  bool getData(
     TimePoint time, TransformStorage & data_out,
-    std::string * error_str = 0, TF2Error * error_code = 0);
+    std::string * error_str = nullptr, TF2Error * error_code = nullptr) override;
   // returns false if data unavailable (should be thrown as lookup exception
   TF2_PUBLIC
-  virtual bool insertData(const TransformStorage & new_data);
+  bool insertData(const TransformStorage & new_data) override;
   TF2_PUBLIC
-  virtual void clearList();
+  void clearList() override;
   TF2_PUBLIC
-  virtual CompactFrameID getParent(
-    TimePoint time, std::string * error_str = 0, TF2Error * error_code = 0);
+  CompactFrameID getParent(
+    TimePoint time, std::string * error_str = nullptr, TF2Error * error_code = nullptr) override;
   TF2_PUBLIC
-  virtual P_TimeAndFrameID getLatestTimeAndParent();
+  P_TimeAndFrameID getLatestTimeAndParent() override;
 
   /// Debugging information methods
   TF2_PUBLIC
-  virtual unsigned int getListLength();
+  unsigned int getListLength() override;
   TF2_PUBLIC
-  virtual TimePoint getLatestTimestamp();
+  TimePoint getLatestTimestamp() override;
   TF2_PUBLIC
-  virtual TimePoint getOldestTimestamp();
+  TimePoint getOldestTimestamp() override;
 
 private:
   TransformStorage storage_;
