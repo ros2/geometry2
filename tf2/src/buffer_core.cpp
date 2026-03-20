@@ -614,6 +614,11 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
   // correct for the possiblity that start time was truncated above.
   auto corrected_averaging_interval = end_time - start_time;
 
+  if (std::abs(corrected_averaging_interval) < 1e-9) {
+    throw tf2::TransformException(
+      "averaging_interval is too small to compute a valid velocity (would cause division by zero)");
+  }
+
   tf2::Transform start, end;
   TimePoint time_out;
   lookupTransformImpl(
@@ -1443,9 +1448,9 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 void BufferCore::testTransformableRequests()
 {
   std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-  V_TransformableRequest::iterator it = transformable_requests_.begin();
-  while (it != transformable_requests_.end()) {
-    TransformableRequest & req = *it;
+  size_t i = 0;
+  while (i < transformable_requests_.size()) {
+    TransformableRequest & req = transformable_requests_[i];
 
     // One or both of the frames may not have existed when the request was originally made.
     if (req.target_id == 0) {
@@ -1473,9 +1478,9 @@ void BufferCore::testTransformableRequests()
     if (do_cb) {
       {
         std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
-        M_TransformableCallback::iterator it = transformable_callbacks_.find(req.cb_handle);
-        if (it != transformable_callbacks_.end()) {
-          const TransformableCallback & cb = it->second;
+        M_TransformableCallback::iterator cb_it = transformable_callbacks_.find(req.cb_handle);
+        if (cb_it != transformable_callbacks_.end()) {
+          const TransformableCallback & cb = cb_it->second;
           cb(
             req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
               req.source_id), req.time, result);
@@ -1483,19 +1488,14 @@ void BufferCore::testTransformableRequests()
         }
       }
 
-      if (transformable_requests_.size() > 1) {
-        transformable_requests_[it -
-          transformable_requests_.begin()] = transformable_requests_.back();
+      // Swap with the last element and pop to remove in O(1).
+      // Do not advance i: the element swapped in from the back must also be examined.
+      if (i < transformable_requests_.size() - 1) {
+        transformable_requests_[i] = transformable_requests_.back();
       }
-
-      transformable_requests_.erase(transformable_requests_.end() - 1);
-
-      // If we've removed the last element, then the iterator is invalid
-      if (0u == transformable_requests_.size()) {
-        it = transformable_requests_.end();
-      }
+      transformable_requests_.pop_back();
     } else {
-      ++it;
+      ++i;
     }
   }
 }
