@@ -31,6 +31,7 @@
 #include <chrono>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "rcutils/snprintf.h"
 #include "rcutils/strerror.h"
@@ -96,17 +97,14 @@ std::string tf2::displayTimePoint(const tf2::TimePoint & stamp)
 
   // Increase by one for null-terminating character
   ++buff_size;
-  char * buffer = new char[buff_size];
+  std::vector<char> buffer(buff_size);
 
   // Write to the string. buffer size must accommodate the null-terminating character
-  int bytes_written = rcutils_snprintf(buffer, buff_size, format_str, current_time);
+  int bytes_written = rcutils_snprintf(buffer.data(), buff_size, format_str, current_time);
   if (bytes_written < 0) {
-    delete[] buffer;
     char errmsg[200];
     rcutils_strerror(errmsg, sizeof(errmsg));
     throw std::runtime_error(errmsg);
   }
-  std::string result = std::string(buffer);
-  delete[] buffer;
-  return result;
+  return std::string(buffer.data());
 }
