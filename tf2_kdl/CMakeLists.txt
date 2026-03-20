@@ -25,8 +25,8 @@ ament_python_install_package(${PROJECT_NAME}
 
 add_library(tf2_kdl INTERFACE)
 target_link_libraries(tf2_kdl INTERFACE
-  ${builtin_interfaces_TARGETS}
-  ${geometry_msgs_TARGETS}
+  builtin_interfaces::builtin_interfaces
+  geometry_msgs::geometry_msgs
   orocos-kdl
   tf2::tf2
   tf2_ros::tf2_ros)

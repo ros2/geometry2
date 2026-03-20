@@ -42,8 +42,8 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
 )
 target_link_libraries(${PROJECT_NAME} INTERFACE
-  ${geometry_msgs_TARGETS}
-  ${sensor_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
+  sensor_msgs::sensor_msgs
   tf2::tf2
   tf2_ros::tf2_ros
 )
@@ -70,8 +70,8 @@ if(BUILD_TESTING)
   if(TARGET test_tf2_sensor_msgs_cpp)
     target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
     target_link_libraries(test_tf2_sensor_msgs_cpp
-      ${geometry_msgs_TARGETS}
-      ${sensor_msgs_TARGETS}
+      geometry_msgs::geometry_msgs
+      sensor_msgs::sensor_msgs
       rclcpp::rclcpp
       tf2::tf2
       tf2_ros::tf2_ros
@@ -87,8 +87,8 @@ if(BUILD_TESTING)
   ament_add_gtest(test_imu_transforms test/test_imu_transforms.cpp)
   target_include_directories(test_imu_transforms PUBLIC include)
   target_link_libraries(test_imu_transforms
-    ${geometry_msgs_TARGETS}
-    ${sensor_msgs_TARGETS}
+    geometry_msgs::geometry_msgs
+    sensor_msgs::sensor_msgs
     Eigen3::Eigen
     tf2::tf2
     tf2_geometry_msgs::tf2_geometry_msgs

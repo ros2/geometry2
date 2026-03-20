@@ -26,7 +26,7 @@ target_include_directories(tf2_bullet INTERFACE
 target_link_libraries(tf2_bullet INTERFACE
   tf2_bullet::Bullet
   tf2::tf2
-  ${geometry_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
   tf2_ros::tf2_ros)
 
 install(TARGETS tf2_bullet EXPORT export_tf2_bullet)

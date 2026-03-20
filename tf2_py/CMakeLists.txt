@@ -62,8 +62,8 @@ set_target_properties(_tf2_py PROPERTIES
 )
 
 target_link_libraries(_tf2_py PRIVATE
-  ${builtin_interfaces_TARGETS}
-  ${geometry_msgs_TARGETS}
+  builtin_interfaces::builtin_interfaces
+  geometry_msgs::geometry_msgs
   tf2::tf2
 )
 

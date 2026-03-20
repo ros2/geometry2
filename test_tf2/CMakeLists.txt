@@ -42,19 +42,19 @@ if (BUILD_TESTING)
   ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
   if(TARGET buffer_core_test)
     target_link_libraries(buffer_core_test
-      ${builtin_interfaces_TARGETS}
-      ${geometry_msgs_TARGETS}
+      builtin_interfaces::builtin_interfaces
+      geometry_msgs::geometry_msgs
       rclcpp::rclcpp
       tf2::tf2
-      ${tf2_geometry_msgs_TARGETS}
+      tf2_geometry_msgs::tf2_geometry_msgs
       tf2_ros::tf2_ros)
   endif()
 
   ament_add_gtest(test_message_filter test/test_message_filter.cpp)
   if(TARGET test_message_filter)
     target_link_libraries(test_message_filter
-      ${builtin_interfaces_TARGETS}
-      ${geometry_msgs_TARGETS}
+      builtin_interfaces::builtin_interfaces
+      geometry_msgs::geometry_msgs
       rclcpp::rclcpp
       tf2::tf2
       tf2_ros::tf2_ros)
@@ -63,11 +63,11 @@ if (BUILD_TESTING)
   ament_add_gtest(test_convert test/test_convert.cpp)
   if(TARGET test_convert)
     target_link_libraries(test_convert
-      ${geometry_msgs_TARGETS}
+      geometry_msgs::geometry_msgs
       tf2::tf2
       tf2_bullet::tf2_bullet
       tf2_eigen::tf2_eigen
-      ${tf2_geometry_msgs_TARGETS}
+      tf2_geometry_msgs::tf2_geometry_msgs
       tf2_kdl::tf2_kdl)
     if(TARGET Eigen3::Eigen)
       # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
@@ -80,9 +80,9 @@ if (BUILD_TESTING)
   ament_add_gtest(test_utils test/test_utils.cpp)
   if(TARGET test_utils)
     target_link_libraries(test_utils
-      ${geometry_msgs_TARGETS}
+      geometry_msgs::geometry_msgs
       tf2::tf2
-      ${tf2_geometry_msgs_TARGETS}
+      tf2_geometry_msgs::tf2_geometry_msgs
       tf2_kdl::tf2_kdl)
   endif()
 
@@ -99,7 +99,7 @@ if (BUILD_TESTING)
       ${GTEST_LIBRARIES}
       rclcpp::rclcpp
       tf2_bullet::tf2_bullet
-      ${tf2_geometry_msgs_TARGETS}
+      tf2_geometry_msgs::tf2_geometry_msgs
       tf2_kdl::tf2_kdl
       tf2_ros::tf2_ros)
     add_launch_test(test/buffer_client_tester.launch.py)
@@ -109,7 +109,7 @@ if (BUILD_TESTING)
   if(TARGET test_static_publisher)
     target_link_libraries(test_static_publisher
       ${GTEST_LIBRARIES}
-      ${geometry_msgs_TARGETS}
+      geometry_msgs::geometry_msgs
       rclcpp::rclcpp
       tf2::tf2
       tf2_ros::tf2_ros)
