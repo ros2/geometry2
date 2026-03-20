@@ -127,7 +127,8 @@ class TransformListener:
 
     def unregister(self) -> None:
         """Unregisters all tf subscribers."""
-        self.node.destroy_subscription(self.tf_sub)
+        if hasattr(self, 'tf_sub'):
+            self.node.destroy_subscription(self.tf_sub)
         self.node.destroy_subscription(self.tf_static_sub)
 
     def callback(self, data: TFMessage) -> None:
