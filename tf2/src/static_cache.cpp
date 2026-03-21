@@ -40,8 +40,16 @@ bool tf2::StaticCache::getData(
   tf2::TimePoint time,
   tf2::TransformStorage & data_out, std::string * error_str, TF2Error * error_code)
 {
-  (void)error_code;
-  (void)error_str;
+  (void)time;
+  if (!populated_) {
+    if (error_str) {
+      *error_str = "Static cache is empty";
+    }
+    if (error_code) {
+      *error_code = TF2Error::TF2_LOOKUP_ERROR;
+    }
+    return false;
+  }
   data_out = storage_;
   data_out.stamp_ = time;
   return true;
@@ -50,12 +58,13 @@ bool tf2::StaticCache::getData(
 bool tf2::StaticCache::insertData(const tf2::TransformStorage & new_data)
 {
   storage_ = new_data;
+  populated_ = true;
   return true;
 }
 
-void tf2::StaticCache::clearList() {}
+void tf2::StaticCache::clearList() {populated_ = false;}
 
-unsigned tf2::StaticCache::getListLength() {return 1;}
+unsigned tf2::StaticCache::getListLength() {return populated_ ? 1 : 0;}
 
 tf2::CompactFrameID tf2::StaticCache::getParent(
   tf2::TimePoint time, std::string * error_str,
@@ -64,7 +73,7 @@ tf2::CompactFrameID tf2::StaticCache::getParent(
   (void)time;
   (void)error_code;
   (void)error_str;
-  return storage_.frame_id_;
+  return populated_ ? storage_.frame_id_ : 0;
 }
 
 tf2::P_TimeAndFrameID tf2::StaticCache::getLatestTimeAndParent()

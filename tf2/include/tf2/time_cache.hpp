@@ -192,6 +192,7 @@ public:
 
 private:
   TransformStorage storage_;
+  bool populated_{false};
 };
 }  // namespace tf2
 #endif  // TF2__TIME_CACHE_HPP_
