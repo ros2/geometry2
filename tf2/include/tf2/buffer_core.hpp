@@ -10,7 +10,7 @@
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
 //
-//    * Neither the name of the {copyright_holder} nor the names of its
+//    * Neither the name of the Willow Garage nor the names of its
 //      contributors may be used to endorse or promote products derived from
 //      this software without specific prior written permission.
 //
@@ -46,7 +46,7 @@
 #include <utility>
 #include <vector>
 
-#include "LinearMath/Transform.hpp"
+#include "tf2/LinearMath/Transform.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "tf2/buffer_core_interface.hpp"
