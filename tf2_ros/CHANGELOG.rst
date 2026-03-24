@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.20 (2026-03-24)
+--------------------
+* prevent AttributeError when static_only=true (backport `#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#914 <https://github.com/ros2/geometry2/issues/914>`_)
+* Contributors: mergify[bot]
+
 0.36.19 (2026-01-21)
 --------------------
 

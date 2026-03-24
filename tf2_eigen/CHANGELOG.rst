@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.20 (2026-03-24)
+--------------------
+
 0.36.19 (2026-01-21)
 --------------------
 * added toMsg for eigen-accel as well as its tests (`#887 <https://github.com/ros2/geometry2/issues/887>`_) (`#891 <https://github.com/ros2/geometry2/issues/891>`_)

@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.20 (2026-03-24)
+--------------------
+* local variable tf2 no longer shadows the tf2:: (`#903 <https://github.com/ros2/geometry2/issues/903>`_) (`#917 <https://github.com/ros2/geometry2/issues/917>`_)
+* Fix misleading extrapolation time in buffer_core (`#832 <https://github.com/ros2/geometry2/issues/832>`_) (`#896 <https://github.com/ros2/geometry2/issues/896>`_) (`#898 <https://github.com/ros2/geometry2/issues/898>`_)
+* Contributors: mergify[bot]
+
 0.36.19 (2026-01-21)
 --------------------
 
