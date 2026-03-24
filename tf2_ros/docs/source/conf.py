@@ -211,15 +211,9 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-<<<<<<< HEAD:tf2_ros/docs/source/conf.py
-    'http://docs.python.org/': None,
-    'http://docs.opencv.org/3.0-last-rst/': None,
-    'http://docs.scipy.org/doc/numpy' : None
-=======
     'python': ('http://docs.python.org/3', None),
     'opencv': ('http://docs.opencv.org/3.0-last-rst', None),
     'numpy': ('http://docs.scipy.org/doc/numpy', None)
->>>>>>> 00e1822 (Fix external docs mappings  (#757)):tf2_ros/doc/conf.py
     }
 
 autoclass_content = "both"
