@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.20 (2026-03-24)
+--------------------
+* local variable tf2 no longer shadows the tf2:: (`#903 <https://github.com/ros2/geometry2/issues/903>`_) (`#918 <https://github.com/ros2/geometry2/issues/918>`_)
+* Fix misleading extrapolation time in buffer_core (`#832 <https://github.com/ros2/geometry2/issues/832>`_) (backport `#896 <https://github.com/ros2/geometry2/issues/896>`_) (`#899 <https://github.com/ros2/geometry2/issues/899>`_)
+* Contributors: mergify[bot]
+
 0.25.19 (2026-02-16)
 --------------------
 * static function to crate quaternions directly from rotation added (`#881 <https://github.com/ros2/geometry2/issues/881>`_) (`#884 <https://github.com/ros2/geometry2/issues/884>`_)

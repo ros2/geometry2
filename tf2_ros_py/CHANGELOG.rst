@@ -2,6 +2,12 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.20 (2026-03-24)
+--------------------
+* prevent AttributeError when static_only=true (backport `#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#915 <https://github.com/ros2/geometry2/issues/915>`_)
+* fixed typo in buffer.py (backport `#905 <https://github.com/ros2/geometry2/issues/905>`_) (`#912 <https://github.com/ros2/geometry2/issues/912>`_)
+* Contributors: mergify[bot]
+
 0.25.19 (2026-02-16)
 --------------------
 

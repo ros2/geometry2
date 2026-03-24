@@ -2,6 +2,9 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.20 (2026-03-24)
+--------------------
+
 0.25.19 (2026-02-16)
 --------------------
 * added toMsg for eigen-accel as well as its tests (`#887 <https://github.com/ros2/geometry2/issues/887>`_) (`#892 <https://github.com/ros2/geometry2/issues/892>`_)
