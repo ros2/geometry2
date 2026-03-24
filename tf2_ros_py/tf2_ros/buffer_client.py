@@ -198,14 +198,12 @@ class BufferClient(BufferInterface):
         event = threading.Event()
 
         def unblock(future):
-            nonlocal event
             event.set()
 
         send_goal_future = self.action_client.send_goal_async(goal)
         send_goal_future.add_done_callback(unblock)
 
         def unblock_by_timeout():
-            nonlocal send_goal_future, goal, event
             clock = Clock()
             start_time = clock.now()
             timeout = Duration.from_msg(goal.timeout)
