@@ -2,6 +2,12 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.7 (2026-03-24)
+-------------------
+* local variable tf2 no longer shadows the tf2:: (`#903 <https://github.com/ros2/geometry2/issues/903>`_) (`#916 <https://github.com/ros2/geometry2/issues/916>`_)
+* Fix misleading extrapolation time in buffer_core (`#832 <https://github.com/ros2/geometry2/issues/832>`_) (`#896 <https://github.com/ros2/geometry2/issues/896>`_) (`#897 <https://github.com/ros2/geometry2/issues/897>`_)
+* Contributors: mergify[bot]
+
 0.41.6 (2025-12-18)
 -------------------
 * Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (manual kilted backport of `#856 <https://github.com/ros2/geometry2/issues/856>`_) (`#885 <https://github.com/ros2/geometry2/issues/885>`_)

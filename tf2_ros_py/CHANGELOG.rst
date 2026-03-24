@@ -2,6 +2,12 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.7 (2026-03-24)
+-------------------
+* prevent AttributeError when static_only=true (`#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#913 <https://github.com/ros2/geometry2/issues/913>`_)
+* fixed typoe in buffer.py (`#905 <https://github.com/ros2/geometry2/issues/905>`_) (`#910 <https://github.com/ros2/geometry2/issues/910>`_)
+* Contributors: mergify[bot]
+
 0.41.6 (2025-12-18)
 -------------------
 * Disable TAGFILES in rosdoc2 to separate namespace tf2 documentation into packages (manual kilted backport of `#856 <https://github.com/ros2/geometry2/issues/856>`_) (`#885 <https://github.com/ros2/geometry2/issues/885>`_)
