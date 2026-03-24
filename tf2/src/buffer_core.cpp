@@ -880,12 +880,12 @@ void BufferCore::lookupTransformImpl(
   validateFrameId("lookupTransform argument source_frame", source_frame);
   validateFrameId("lookupTransform argument fixed_frame", fixed_frame);
 
-  tf2::Transform tf1, tf2;
+  tf2::Transform transform1, transform2;
 
-  lookupTransformImpl(fixed_frame, source_frame, source_time, tf1, time_out);
-  lookupTransformImpl(target_frame, fixed_frame, target_time, tf2, time_out);
+  lookupTransformImpl(fixed_frame, source_frame, source_time, transform1, time_out);
+  lookupTransformImpl(target_frame, fixed_frame, target_time, transform2, time_out);
 
-  transform = tf2 * tf1;
+  transform = transform2 * transform1;
 }
 
 struct CanTransformAccum
