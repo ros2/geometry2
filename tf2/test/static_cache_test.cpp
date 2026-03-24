@@ -89,6 +89,33 @@ TEST(StaticCache, DuplicateEntries)
   EXPECT_TRUE(!std::isnan(stor.rotation_.w()));
 }
 
+void resetStorage(tf2::TransformStorage & stor)
+{
+  stor.translation_.setValue(1.0, -1.0, 0.5);
+  stor.rotation_.setValue(0.707, 0.0, 0.707, 0.0);
+}
+
+TEST(StaticCache, EmptyCacheRetrieval)
+{
+  tf2::StaticCache cache;
+  tf2::TransformStorage stor;
+  resetStorage(stor);
+  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(99999)), stor));
+}
+
+TEST(StaticCache, ErrorHandlingForInvalidTimestamps)
+{
+  tf2::StaticCache cache;
+  tf2::TransformStorage stor;
+  resetStorage(stor);
+  stor.frame_id_ = tf2::CompactFrameID(10);
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(10));
+
+  cache.insertData(stor);
+  tf2::TransformStorage result;
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(9999)), result));
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
