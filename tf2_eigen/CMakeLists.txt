@@ -23,7 +23,7 @@ endif()
 
 add_library(tf2_eigen INTERFACE)
 target_link_libraries(tf2_eigen INTERFACE
-  ${geometry_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
   tf2::tf2
   tf2_ros::tf2_ros)
 target_include_directories(tf2_eigen INTERFACE
@@ -58,7 +58,7 @@ if(BUILD_TESTING)
       tf2_eigen
       # Used, but not linked to test tf2_eigen's exports:
       #   Eigen3::Eigen
-      #   ${geometry_msgs_TARGETS}
+      #   geometry_msgs::geometry_msgs
       #   tf2::tf2
       #   tf2_ros::tf2_ros
     )

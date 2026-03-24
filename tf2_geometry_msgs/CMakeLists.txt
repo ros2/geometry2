@@ -40,7 +40,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} INTERFACE
-  ${geometry_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
   orocos-kdl
   tf2::tf2
   tf2_ros::tf2_ros)

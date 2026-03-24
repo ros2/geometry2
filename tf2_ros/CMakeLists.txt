@@ -36,14 +36,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${builtin_interfaces_TARGETS}
-  ${geometry_msgs_TARGETS}
+  builtin_interfaces::builtin_interfaces
+  geometry_msgs::geometry_msgs
   message_filters::message_filters
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
   rcpputils::rcpputils
   tf2::tf2
-  ${tf2_msgs_TARGETS})
+  tf2_msgs::tf2_msgs)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "TF2_ROS_BUILDING_DLL")
 
@@ -63,9 +63,9 @@ target_include_directories(static_transform_broadcaster_node PUBLIC
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(static_transform_broadcaster_node PUBLIC
   ${PROJECT_NAME}
-  ${geometry_msgs_TARGETS}
+  geometry_msgs::geometry_msgs
   rclcpp::rclcpp
-  ${tf2_msgs_TARGETS})
+  tf2_msgs::tf2_msgs)
 target_link_libraries(static_transform_broadcaster_node PRIVATE
   rclcpp_components::component)
 rclcpp_components_register_nodes(static_transform_broadcaster_node "tf2_ros::StaticTransformBroadcasterNode")
@@ -95,7 +95,7 @@ add_executable(tf2_monitor
 target_link_libraries(tf2_monitor
   ${PROJECT_NAME}
   rclcpp::rclcpp
-  ${tf2_msgs_TARGETS}
+  tf2_msgs::tf2_msgs
 )
 
 # Install rules
@@ -152,7 +152,7 @@ if(BUILD_TESTING)
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
     #   rclcpp_action::rclcpp_action
-    #   ${tf2_msgs_TARGETS}
+    #   tf2_msgs::tf2_msgs
   )
 
   ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
@@ -161,7 +161,7 @@ if(BUILD_TESTING)
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
     #   rclcpp_action::rclcpp_action
-    #   ${tf2_msgs_TARGETS}
+    #   tf2_msgs::tf2_msgs
   )
 
   # Adds a tf2_ros message_filter unittest that uses
@@ -170,7 +170,7 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_test_message_filter
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
-    #   ${geometry_msgs_TARGETS}
+    #   geometry_msgs::geometry_msgs
     #   message_filters::message_filters
     #   rclcpp::rclcpp
   )
@@ -199,9 +199,9 @@ if(BUILD_TESTING)
   ament_add_gtest(${PROJECT_NAME}_test_time_reset test/time_reset_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_time_reset
     ${PROJECT_NAME}
-    ${rosgraph_msgs_TARGETS}
+    rosgraph_msgs::rosgraph_msgs
     # Used, but not linked to test tf2_ros's exports:
-    #   ${builtin_interfaces_TARGETS}
+    #   builtin_interfaces::builtin_interfaces
     #   rclcpp::rclcpp
   )
 
@@ -209,7 +209,7 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_test_velocity
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
-    #   ${builtin_interfaces_TARGETS}
+    #   builtin_interfaces::builtin_interfaces
     #   rclcpp::rclcpp
   )
 
@@ -217,7 +217,7 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_test_listener
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
-    #   ${builtin_interfaces_TARGETS}
+    #   builtin_interfaces::builtin_interfaces
     #   rclcpp::rclcpp
   )
 
