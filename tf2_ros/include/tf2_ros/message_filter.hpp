@@ -702,7 +702,7 @@ private:
     }
   }
 
-  // TODO(clalancette): reenable this once we have underlying support for callback queues
+  // TODO(clalancette): re-enable this once we have underlying support for callback queues
 #if 0
   struct CBQueueCallback : public ros::CallbackInterface
   {
@@ -736,7 +736,7 @@ private:
 
   void messageDropped(const MEvent & evt, FilterFailureReason reason)
   {
-    // TODO(clalancette): reenable this once we have underlying support for callback queues
+    // TODO(clalancette): re-enable this once we have underlying support for callback queues
 #if 0
     if (callback_queue_) {
       ros::CallbackInterfacePtr cb(new CBQueueCallback(this, evt, false, reason));
@@ -750,7 +750,7 @@ private:
 
   void messageReady(const MEvent & evt)
   {
-    // TODO(clalancette): reenable this once we have underlying support for callback queues
+    // TODO(clalancette): re-enable this once we have underlying support for callback queues
 #if 0
     if (callback_queue_) {
       ros::CallbackInterfacePtr cb(new CBQueueCallback(

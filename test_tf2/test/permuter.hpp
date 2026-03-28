@@ -143,7 +143,7 @@ public:
         //printf("stepping level %d returning true \n", level);
         return true;
       } else {
-        //printf("reseting level %d\n", level);
+        //printf("resetting level %d\n", level);
         options_[level]->reset();
       }
     }

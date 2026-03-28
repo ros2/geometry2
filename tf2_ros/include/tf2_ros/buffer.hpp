@@ -259,7 +259,7 @@ public:
    * is thrown.
    *
    * \param target_frame The frame into which to transform.
-   * \param source_frame The frame from which to tranform.
+   * \param source_frame The frame from which to transform.
    * \param time The time at which to transform.
    * \param timeout Duration after which waiting will be stopped.
    * \param callback The function to be called when the transform becomes available or a timeout

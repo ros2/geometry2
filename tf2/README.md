@@ -32,7 +32,7 @@ This class and all classes derived from it are responsible for providing coordin
 This class provides a simple interface to allow recording and lookup of relationships between arbitrary frames of the system.
 
 ``tf2`` assumes that there is a tree of coordinate frame transforms which define the relationship between all coordinate frames.
-After transformation relationships are supplied, query specifiyng target frame, source frame, and time point can be used to obtain required data.
+After transformation relationships are supplied, query specifying target frame, source frame, and time point can be used to obtain required data.
 ``tf2`` will take care of all the intermediate transformation steps for specific queries.
 
 Additionally, ``tf2`` features data interpolation.
