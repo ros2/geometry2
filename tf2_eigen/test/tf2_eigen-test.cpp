@@ -293,7 +293,7 @@ TEST_F(EigenBufferTransform, WrenchTransform)
   // simple api
   const tf2::Stamped<Eigen::Quaterniond> q_simple =
     tf_buffer->transform(q1, "B", tf2::durationFromSec(2.0));
-  // compare rotation matrices, as the quaternions can be ambigous
+  // compare rotation matrices, as the quaternions can be ambiguous
   EXPECT_TRUE(q_simple.toRotationMatrix().isApprox(expected.toRotationMatrix(), eps));
 
   // advanced api

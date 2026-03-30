@@ -334,7 +334,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
     frame_chain->clear();
   }
 
-  // Short circuit if zero length transform to allow lookups on non existant links
+  // Short circuit if zero length transform to allow lookups on non existent links
   if (source_id == target_id) {
     f.finalize(Identity, time);
     return tf2::TF2Error::TF2_NO_ERROR;
@@ -624,7 +624,7 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
 
   auto start_time =
     std::max(0.00001 + averaging_interval_seconds, end_time) - averaging_interval_seconds;
-  // correct for the possiblity that start time was truncated above.
+  // correct for the possibility that start time was truncated above.
   auto corrected_averaging_interval = end_time - start_time;
 
   tf2::Transform start, end;
@@ -1362,7 +1362,7 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   transformable_requests_.erase(remove_it, transformable_requests_.end());
 }
 
-// backwards compability for tf methods
+// backwards compatibility for tf methods
 bool BufferCore::_frameExists(const std::string & frame_id_str) const
 {
   std::unique_lock<std::mutex> lock(frame_mutex_);
@@ -1472,7 +1472,7 @@ std::string BufferCore::_allFramesAsDot(TimePoint current_time) const
   TransformStorage temp;
 
   if (frames_.size() == 1) {
-    mstream << "\"no tf data recieved\"";
+    mstream << "\"no tf data received\"";
   }
   mstream.precision(3);
   mstream.setf(std::ios::fixed, std::ios::floatfield);

@@ -28,7 +28,7 @@ inline PyObject * stringToPython(const char * input)
 /// \note The input PyObject is borrowed, and will not be decref'd.
 /// \note It's possible for this function to set an exception.
 ///   If the returned string is empty, callers should check if an exception was
-///   set using PyErr_Ocurred().
+///   set using PyErr_Occurred().
 /// \return a new std::string instance
 inline std::string stringFromPython(PyObject * input)
 {
