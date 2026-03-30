@@ -67,7 +67,7 @@ class TestStaticPublisher(unittest.TestCase):
                       str(cm.exception.output))
 
     def test_publisher_nonexistent_param(self):
-        # Here there is no paramater by that name.
+        # Here there is no parameter by that name.
         cmd = 'ros2 run tf2_ros static_transform_publisher /test_tf2/tf_null'
         with self.assertRaises(subprocess.CalledProcessError) as cm:
             ret = subprocess.check_output(
