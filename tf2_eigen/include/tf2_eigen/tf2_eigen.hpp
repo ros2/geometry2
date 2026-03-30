@@ -314,7 +314,7 @@ void doTransform(
 /** \brief Convert a Eigen Quaterniond type to a Quaternion message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param in The Eigen Quaterniond to convert.
- * \return The quaternion converted to a Quaterion message.
+ * \return The quaternion converted to a Quaternion message.
  */
 inline
 geometry_msgs::msg::Quaternion toMsg(const Eigen::Quaterniond & in)
