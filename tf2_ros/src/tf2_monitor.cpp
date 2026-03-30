@@ -282,7 +282,7 @@ int main(int argc, char ** argv)
   }
 
   // TODO(tfoote) restore simtime logic
-  // //Make sure we don't start before recieving time when in simtime
+  // //Make sure we don't start before receiving time when in simtime
   // int iterations = 0;
   // while (ros::Time::now() == ros::Time())
   // {
@@ -297,7 +297,7 @@ int main(int argc, char ** argv)
   // This lambda is required because `std::thread` cannot infer the correct
   // rclcpp::spin, since there are more than one versions of it (overloaded).
   // see: http://stackoverflow.com/a/27389714/671658
-  // I (wjwwood) chose to use the lamda rather than the static cast solution.
+  // I (wjwwood) chose to use the lambda rather than the static cast solution.
   auto run_func = [](rclcpp::Node::SharedPtr node) {
       return rclcpp::spin(node);
     };

@@ -161,7 +161,7 @@ public:
 
 /** \brief An exception class to notify that one of the arguments is invalid
  *
- * usually it's an uninitalized Quaternion (0,0,0,0)
+ * usually it's an uninitialized Quaternion (0,0,0,0)
  *
  */
 class InvalidArgumentException : public TransformException
@@ -172,7 +172,7 @@ public:
   : tf2::TransformException(errorDescription) {}
 };
 
-/** \brief An exception class to notify that a timeout has occured
+/** \brief An exception class to notify that a timeout has occurred
  *
  *
  */

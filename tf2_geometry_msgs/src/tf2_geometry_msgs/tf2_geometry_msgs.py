@@ -235,7 +235,7 @@ def _get_quat_from_mat(rot_mat: np.ndarray) -> np.ndarray:
     Control and Dynamics 23(6):1085-1087 (Engineering Note), ISSN
     0731-5090
 
-    :param rot_mat: A roatation matrix
+    :param rot_mat: A rotation matrix
     :returns: An quaternion
     """
     # Decompose rotation matrix
@@ -337,7 +337,7 @@ def do_transform_pose(
     """
     Transform a `Pose` using a given `TransformStamped`.
 
-    This method is used to share the tranformation done in
+    This method is used to share the transformation done in
     `do_transform_pose_stamped()` and `do_transform_pose_with_covariance_stamped()`
 
     :param pose: The pose

@@ -175,7 +175,7 @@ uint8_t TimeCache::findClosest(
     storage_it++;
   }
 
-  // Finally the case were somewhere in the middle  Guarenteed no extrapolation :-)
+  // Finally the case were somewhere in the middle  Guaranteed no extrapolation :-)
   one = &*(storage_it);  // Older
   two = &*(--storage_it);  // Newer
   return 2;

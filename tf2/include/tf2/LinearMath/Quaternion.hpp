@@ -139,7 +139,7 @@ public:
 
   /**@brief Multiply this quaternion by q on the right
    * @param q The other quaternion 
-   * Equivilant to this = this * q */
+   * Equivalent to this = this * q */
         TF2_PUBLIC
 	Quaternion& operator*=(const Quaternion& q)
 	{
@@ -487,7 +487,7 @@ inverse(const Quaternion& q)
 	return q.inverse();
 }
 
-/**@brief Return the result of spherical linear interpolation betwen two quaternions 
+/**@brief Return the result of spherical linear interpolation between two quaternions 
  * @param q1 The first quaternion
  * @param q2 The second quaternion 
  * @param t The ration between q1 and q2.  t = 0 return q1, t=1 returns q2 
