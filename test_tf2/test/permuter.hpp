@@ -144,15 +144,10 @@ public:
       {
         //printf("stepping level %d returning true \n", level);
         return true;
-<<<<<<< HEAD
       }
       else
       {
         //printf("reseting level %d\n", level);
-=======
-      } else {
-        //printf("resetting level %d\n", level);
->>>>>>> febd947 (fix typos (#921))
         options_[level]->reset();
       }
     }
