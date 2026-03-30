@@ -89,7 +89,7 @@ tf2::Quaternion toQuaternion(const T & t)
   return toQuaternion(q);
 }
 
-/** The code below is blantantly copied from urdfdom_headers
+/** The code below is blatantly copied from urdfdom_headers
  * only the normalization has been added.
  * It computes the Euler roll, pitch yaw from a tf2::Quaternion
  * It is equivalent to tf2::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
