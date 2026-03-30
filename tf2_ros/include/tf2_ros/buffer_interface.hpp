@@ -204,7 +204,7 @@ public:
    * \tparam T The type of the object to transform.
    * \param in The object to transform
    * \param out The transformed output, preallocated by the caller.
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    */
   template<class T>
@@ -225,7 +225,7 @@ public:
    * type (as defined in geometry_msgs).
    * \tparam T The type of the object to transform.
    * \param in The object to transform.
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output.
    */
@@ -245,13 +245,13 @@ public:
    * type (as defined in geometry_msgs).
    * The function will calculate the transformation and then convert the result into the
    * specified output type.
-   * Compilation will fail if a known conversion does not exist bewteen the two template
+   * Compilation will fail if a known conversion does not exist between the two template
    * parameters.
    * \tparam A The type of the object to transform.
    * \tparam B The type of the transformed output.
    * \param in The object to transform
    * \param out The transformed output, converted to the specified type.
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
    * \return The transformed output, converted to the specified type.
    */
@@ -275,7 +275,7 @@ public:
    * \tparam T The type of the object to transform.
    * \param in The object to transform
    * \param out The transformed output, preallocated by the caller.
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param target_time The time into which to transform
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
@@ -304,7 +304,7 @@ public:
    * points, and specifying a fixed frame that does not varying in time.
    * \tparam T The type of the object to transform.
    * \param in The object to transform
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param target_time The time into which to transform
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).
@@ -327,7 +327,7 @@ public:
    * type (as defined in geometry_msgs).
    * The function will calculate the transformation and then convert the result into the
    * specified output type.
-   * Compilation will fail if a known conversion does not exist bewteen the two template
+   * Compilation will fail if a known conversion does not exist between the two template
    * parameters.
    * This function follows the advanced API, which allows transforming between different time
    * points, and specifying a fixed frame that does not varying in time.
@@ -335,7 +335,7 @@ public:
    * \tparam B The type of the transformed output.
    * \param in The object to transform
    * \param out The transformed output, converted to the specified output type.
-   * \param target_frame The string identifer for the frame to transform into.
+   * \param target_frame The string identifier for the frame to transform into.
    * \param target_time The time into which to transform
    * \param fixed_frame The frame in which to treat the transform as constant in time.
    * \param timeout How long to wait for the target frame. Default value is zero (no blocking).

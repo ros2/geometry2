@@ -142,7 +142,7 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         time: Time
     ) -> TransformStamped:
         """
-        Get the transform from the source frame to the target frame asyncronously.
+        Get the transform from the source frame to the target frame asynchronously.
 
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
@@ -184,7 +184,11 @@ class Buffer(tf2.BufferCore, tf2_ros.BufferInterface):
         fixed_frame: str
     ) -> TransformStamped:
         """
+<<<<<<< HEAD
         Get the transform from the source frame to the target frame using the advanced API asyncronously.
+=======
+        Get transform from source frame to target frame using the advanced API asynchronously.
+>>>>>>> febd947 (fix typos (#921))
 
         :param target_frame: Name of the frame to transform into.
         :param target_time: The time to transform to (0 will get the latest).

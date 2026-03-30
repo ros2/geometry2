@@ -115,7 +115,7 @@ public:
 
 	/** @brief Multiply by the target matrix on the right
 	*  @param m Rotation matrix to be applied 
-	* Equivilant to this = this * m */
+	* Equivalent to this = this * m */
         TF2_PUBLIC
 	Matrix3x3& operator*=(const Matrix3x3& m); 
 
@@ -167,7 +167,7 @@ public:
 	}
 
 	/** @brief Set the matrix from euler angles YPR around ZYX axes
-	* @param eulerZ Yaw aboud Z axis
+	* @param eulerZ Yaw about Z axis
 	* @param eulerY Pitch around Y axis
 	* @param eulerX Roll about X axis
 	* 
@@ -196,7 +196,7 @@ public:
 	/** @brief Set the matrix using RPY about XYZ fixed axes
 	 * @param roll Roll about X axis
          * @param pitch Pitch around Y axis
-         * @param yaw Yaw aboud Z axis
+         * @param yaw Yaw about Z axis
          * 
 	 **/
         TF2_PUBLIC

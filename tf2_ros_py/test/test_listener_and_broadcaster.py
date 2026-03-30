@@ -100,6 +100,39 @@ class TestBroadcasterAndListener(unittest.TestCase):
 
         return broadcast_transform
 
+<<<<<<< HEAD
+=======
+    def test_extrapolation_exception(self):
+        self.broadcast_transform(
+            target_frame='foo', source_frame='bar',
+            time_stamp=rclpy.time.Time(seconds=0.3, nanoseconds=0).to_msg())
+
+        self.broadcast_transform(
+            target_frame='foo', source_frame='bar',
+            time_stamp=rclpy.time.Time(seconds=0.2, nanoseconds=0).to_msg())
+
+        with pytest.raises(ExtrapolationException) as excinfo:
+            self.buffer.lookup_transform(
+                target_frame='foo', source_frame='bar',
+                time=rclpy.time.Time(seconds=0.1, nanoseconds=0).to_msg())
+
+        assert 'Lookup would require extrapolation into the past' in str(excinfo.value)
+
+        with pytest.raises(ExtrapolationException) as excinfo:
+            self.buffer.lookup_transform(
+                target_frame='foo', source_frame='bar',
+                time=rclpy.time.Time(seconds=0.4, nanoseconds=0).to_msg())
+
+        assert 'Lookup would require extrapolation into the future' in str(excinfo.value)
+
+    def static_transform_listener_rclpy_node(self):
+        node = rclpy.create_node('test_broadcaster_listener')
+        buffer = Buffer()
+
+        tfl = StaticTransformListener(buffer=buffer, node=node, spin_thread=False)
+        assert tfl == self.static_listener
+
+>>>>>>> febd947 (fix typos (#921))
     def test_broadcaster_and_listener(self):
         time_stamp = rclpy.time.Time(seconds=1, nanoseconds=0).to_msg()
 
