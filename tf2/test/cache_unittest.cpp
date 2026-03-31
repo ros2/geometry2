@@ -348,7 +348,7 @@ TEST(TimeCache, CartesianInterpolation)
   }
 }
 
-/** \brief Make sure we dont' interpolate across reparented data */
+/** \brief Make sure we don't interpolate across reparented data */
 TEST(TimeCache, ReparentingInterpolationProtection)
 {
   double epsilon = 1e-6;

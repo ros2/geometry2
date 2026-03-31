@@ -126,7 +126,7 @@ class TestBroadcasterAndListener:
 
         assert 'Lookup would require extrapolation into the future' in str(excinfo.value)
 
-    def static_transfrom_listener_rclpy_node(self):
+    def static_transform_listener_rclpy_node(self):
         node = rclpy.create_node('test_broadcaster_listener')
         buffer = Buffer()
 

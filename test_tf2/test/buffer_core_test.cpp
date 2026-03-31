@@ -391,7 +391,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //     }
 //     catch (tf::TransformException & ex)
 //     {
-//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       std::cout << "TransformException got through!!!!! " << ex.what() << std::endl;
 //       bool exception_improperly_thrown = true;
 //       EXPECT_FALSE(exception_improperly_thrown);
 //     }
@@ -437,7 +437,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //     }
 //     catch (tf::TransformException & ex)
 //     {
-//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       std::cout << "TransformException got through!!!!! " << ex.what() << std::endl;
 //       bool exception_improperly_thrown = true;
 //       EXPECT_FALSE(exception_improperly_thrown);
 //     }
@@ -482,7 +482,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //     }
 //     catch (tf::TransformException & ex)
 //     {
-//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       std::cout << "TransformException got through!!!!! " << ex.what() << std::endl;
 //       bool exception_improperly_thrown = true;
 //       EXPECT_FALSE(exception_improperly_thrown);
 //     }
@@ -528,7 +528,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //     }
 //     catch (tf::TransformException & ex)
 //     {
-//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       std::cout << "TransformException got through!!!!! " << ex.what() << std::endl;
 //       bool exception_improperly_thrown = true;
 //       EXPECT_FALSE(exception_improperly_thrown);
 //     }
@@ -536,7 +536,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //
 // }
 //
-// TEST(tf, TransformThrougRoot)
+// TEST(tf, TransformThroughRoot)
 // {
 //   unsigned int runs = 4;
 //   double epsilon = 1e-6;
@@ -574,7 +574,7 @@ TEST(BufferCore_setTransform, NoInsertWithNoParentID)
 //     }
 //     catch (tf::TransformException & ex)
 //     {
-//       std::cout << "TransformExcepion got through!!!!! " << ex.what() << std::endl;
+//       std::cout << "TransformException got through!!!!! " << ex.what() << std::endl;
 //       bool exception_improperly_thrown = true;
 //       EXPECT_FALSE(exception_improperly_thrown);
 //     }
@@ -1903,7 +1903,7 @@ TEST(tf, Exceptions)
 
  mTR.setTransform( StampedTransform (btTransform(tf2::Quaternion(0,0,0,1), btVector3(0,0,0)), builtin_interfaces::msg::Time().fromNSec(300000), "parent", "me"));
 
- //NO Extration when Interpolating
+ //NO Extraction when Interpolating
  //inverse list
  EXPECT_TRUE(mTR.canTransform("parent", "me", builtin_interfaces::msg::Time().fromNSec(200000)));
  try
@@ -2239,7 +2239,7 @@ TEST(tf, RepeatedTimes)
   }
   catch (...)
   {
-    EXPECT_FALSE("Excetion improperly thrown");
+    EXPECT_FALSE("Exception improperly thrown");
   }
 
 

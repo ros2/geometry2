@@ -23,7 +23,7 @@ from tf2_ros.transform_listener import TransformListener
 
 class AsyncWaitsForTransform(Node):
     """
-    Wait for a transform asyncronously using coroutines.
+    Wait for a transform asynchronously using coroutines.
 
     This class is an example of waiting for transforms inside a callback
     without blocking the executor.

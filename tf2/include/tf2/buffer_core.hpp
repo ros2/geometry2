@@ -117,7 +117,7 @@ public:
    * \param transform The transform to store
    * \param authority The source of the information for this transform
    * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
-   * \return True unless an error occured
+   * \return True unless an error occurred
    */
   TF2_PUBLIC
   bool setTransform(
@@ -260,7 +260,7 @@ public:
   bool isUsingDedicatedThread() const {return using_dedicated_thread_;}
 
 
-  /* Backwards compatability section for tf::Transformer you should not use these
+  /* Backwards compatibility section for tf::Transformer you should not use these
    */
 
   /**@brief Check if a frame exists in the tree
@@ -313,7 +313,7 @@ public:
   TF2_PUBLIC
   tf2::Duration getCacheLength() {return cache_time_;}
 
-  /** \brief Backwards compatabilityA way to see what frames have been cached
+  /** \brief Backwards compatibilityA way to see what frames have been cached
    * Useful for debugging
    */
   TF2_PUBLIC
@@ -321,7 +321,7 @@ public:
   TF2_PUBLIC
   std::string _allFramesAsDot() const;
 
-  /** \brief Backwards compatabilityA way to see what frames are in a chain
+  /** \brief Backwards compatibilityA way to see what frames are in a chain
    * Useful for debugging
    */
   TF2_PUBLIC

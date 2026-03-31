@@ -357,7 +357,7 @@ public:
 
 };
 
-/**@brief Return the sum of two vectors (Point symantics)*/
+/**@brief Return the sum of two vectors (Point semantics)*/
 TF2SIMD_FORCE_INLINE Vector3 
 operator+(const Vector3& v1, const Vector3& v2) 
 {
@@ -485,7 +485,7 @@ TF2SIMD_FORCE_INLINE Vector3 Vector3::normalized() const
 
 TF2SIMD_FORCE_INLINE Vector3 Vector3::rotate( const Vector3& wAxis, const tf2Scalar angle ) const
 {
-	// wAxis must be a unit lenght vector
+	// wAxis must be a unit length vector
 
 	Vector3 o = wAxis * wAxis.dot( *this );
 	Vector3 x = *this - o;

@@ -124,7 +124,7 @@ class BufferInterface:
         If new_type is not None, the type specified must have a valid conversion from the input
         type, else the function will raise an exception.
 
-        This function follows the advanced API, which allows tranforming between different time
+        This function follows the advanced API, which allows transforming between different time
         points, as well as specifying a frame to be considered fixed in time.
 
         :param object_stamped: The timestamped object to transform.

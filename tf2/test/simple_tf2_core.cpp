@@ -286,7 +286,7 @@ TEST(tf2_canTransform, One_Exists)
   EXPECT_FALSE(tfc.canTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(1))));
 }
 
-TEST(tf2_clear, LookUp_Static_Transfrom_Succeed)
+TEST(tf2_clear, LookUp_Static_Transform_Succeed)
 {
   tf2::BufferCore tfc;
   geometry_msgs::msg::TransformStamped st;
@@ -303,7 +303,7 @@ TEST(tf2_clear, LookUp_Static_Transfrom_Succeed)
   );
 }
 
-TEST(tf2_clear, LookUp_Static_Transfrom_Fail)
+TEST(tf2_clear, LookUp_Static_Transform_Fail)
 {
   tf2::BufferCore tfc;
   geometry_msgs::msg::TransformStamped st;
