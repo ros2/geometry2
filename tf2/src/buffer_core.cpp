@@ -1489,7 +1489,7 @@ void BufferCore::testTransformableRequests()
       }
 
       // Swap with the last element and pop to remove in O(1).
-      // Do not advance i: the element swapped in from the back must also be examined.
+      // Do not advance i: the element swapped in from the back is examined in the next iteration.
       if (i < transformable_requests_.size() - 1) {
         transformable_requests_[i] = transformable_requests_.back();
       }
