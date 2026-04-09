@@ -2,6 +2,19 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.7 (2026-04-09)
+-------------------
+* Added tests for static cache (`#920 <https://github.com/ros2/geometry2/issues/920>`_)
+* Replacing with clean index-based iteration and avoid division by zero (`#901 <https://github.com/ros2/geometry2/issues/901>`_)
+* fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
+* Fix StaticCache::getData() returning true on empty cache (`#908 <https://github.com/ros2/geometry2/issues/908>`_)
+* Use new ROSIDL aggregate CMake target (`#907 <https://github.com/ros2/geometry2/issues/907>`_)
+* Fix CPP style in tf2 (`#902 <https://github.com/ros2/geometry2/issues/902>`_)
+* local variable tf2 no longer shadows the tf2:: (`#903 <https://github.com/ros2/geometry2/issues/903>`_)
+* Replaced char* with std::string (`#904 <https://github.com/ros2/geometry2/issues/904>`_)
+* Fix misleading extrapolation time in buffer_core (`#832 <https://github.com/ros2/geometry2/issues/832>`_) (`#896 <https://github.com/ros2/geometry2/issues/896>`_)
+* Contributors: Alejandro Hernández Cordero, Auguste Lalande, Emerson Knapp, Pavel Guzenfeld, Selim Ağırman
+
 0.45.6 (2026-01-09)
 -------------------
 

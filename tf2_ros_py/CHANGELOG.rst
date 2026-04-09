@@ -2,6 +2,15 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.7 (2026-04-09)
+-------------------
+* fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
+* flake8 fixes (`#919 <https://github.com/ros2/geometry2/issues/919>`_)
+* prevent AttributeError when static_only=true (`#906 <https://github.com/ros2/geometry2/issues/906>`_)
+* fixed typoe in buffer.py (`#905 <https://github.com/ros2/geometry2/issues/905>`_)
+* Increase robustness of listener and broadcaster test (`#894 <https://github.com/ros2/geometry2/issues/894>`_)
+* Contributors: Alejandro Hernández Cordero, Auguste Lalande, Michael Carlstrom, Michael Carroll
+
 0.45.6 (2026-01-09)
 -------------------
 

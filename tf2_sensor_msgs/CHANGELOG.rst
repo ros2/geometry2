@@ -2,6 +2,12 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.7 (2026-04-09)
+-------------------
+* fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
+* Use new ROSIDL aggregate CMake target (`#907 <https://github.com/ros2/geometry2/issues/907>`_)
+* Contributors: Auguste Lalande, Emerson Knapp
+
 0.45.6 (2026-01-09)
 -------------------
 
