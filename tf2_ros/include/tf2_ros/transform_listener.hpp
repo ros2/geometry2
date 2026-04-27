@@ -231,8 +231,7 @@ private:
     const rclcpp::QoS & qos,
     const rclcpp::QoS & static_qos,
     const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options,
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options,
-    bool static_only = false)
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options)
   {
     spin_thread_ = spin_thread;
     node_base_interface_ = node_base;
@@ -248,19 +247,14 @@ private:
       // Create new callback group for message_subscription of tf and tf_static
       callback_group_ = node_base_interface_->create_callback_group(
         rclcpp::CallbackGroupType::MutuallyExclusive, false);
-
-      if (!static_only) {
-        // Duplicate to modify subscription options
-        rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
-        tf_options.callback_group = callback_group_;
-
-        message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-          node_parameters, node_topics, "/tf", qos, std::move(cb), tf_options);
-      }
-
+      // Duplicate to modify option of subscription
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_options = options;
       rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_static_options = static_options;
+      tf_options.callback_group = callback_group_;
       tf_static_options.callback_group = callback_group_;
 
+      message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+        node_parameters, node_topics, "/tf", qos, std::move(cb), tf_options);
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
@@ -276,10 +270,73 @@ private:
       // Tell the buffer we have a dedicated thread to enable timeouts
       buffer_.setUsingDedicatedThread(true);
     } else {
-      if (!static_only) {
-        message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
-          node_parameters, node_topics, "/tf", qos, std::move(cb), options);
-      }
+      message_subscription_tf_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+        node_parameters, node_topics, "/tf", qos, std::move(cb), options);
+      message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+        node_parameters,
+        node_topics,
+        "/tf_static",
+        static_qos,
+        std::move(static_cb),
+        static_options);
+    }
+  }
+
+  // Overload of init() with the static_only flag
+  template<class AllocatorT = std::allocator<void>>
+  void init(
+    rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
+    rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr node_logging,
+    rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters,
+    rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+    bool spin_thread,
+    const rclcpp::QoS & qos,
+    const rclcpp::QoS & static_qos,
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options,
+    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options,
+    bool static_only)
+  {
+    if (!static_only) {
+      init(
+        node_base,
+        node_logging,
+        node_parameters,
+        node_topics,
+        spin_thread,
+        qos,
+        static_qos,
+        options,
+        static_options);
+      return;
+    }
+
+    spin_thread_ = spin_thread;
+    node_base_interface_ = node_base;
+    node_logging_interface_ = node_logging;
+
+    using callback_t = std::function<void (tf2_msgs::msg::TFMessage::ConstSharedPtr)>;
+    callback_t static_cb = std::bind(
+      &TransformListener::subscription_callback, this, std::placeholders::_1, true);
+
+    if (spin_thread_) {
+      callback_group_ = node_base_interface_->create_callback_group(
+        rclcpp::CallbackGroupType::MutuallyExclusive, false);
+      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> tf_static_options = static_options;
+      tf_static_options.callback_group = callback_group_;
+
+      message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
+        node_parameters,
+        node_topics,
+        "/tf_static",
+        static_qos,
+        std::move(static_cb),
+        tf_static_options);
+
+      executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+      executor_->add_callback_group(callback_group_, node_base_interface_);
+      dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
+      buffer_.setUsingDedicatedThread(true);
+    } else {
       message_subscription_tf_static_ = rclcpp::create_subscription<tf2_msgs::msg::TFMessage>(
         node_parameters,
         node_topics,
