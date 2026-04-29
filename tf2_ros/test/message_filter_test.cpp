@@ -247,7 +247,11 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
   const ::testing::TestInfo * const test_info =
     ::testing::UnitTest::GetInstance()->current_test_info();
   std::string node_name = "tf2_ros_message_filter_" + std::string(test_info->name());
-  for (char & c : node_name) {if (!isalnum(c)) {c = '_';}}
+  for (char & c : node_name) {
+    if (!isalnum(c)) {
+      c = '_';
+    }
+  }
   auto node = rclcpp::Node::make_shared(node_name);
 
   #ifdef _MSC_VER
@@ -338,7 +342,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
     }
   }
 
-  ASSERT_TRUE(filter_callback_fired > 0);
+  ASSERT_GT(filter_callback_fired, 0);
 }
 
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
@@ -346,7 +350,11 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   const ::testing::TestInfo * const test_info =
     ::testing::UnitTest::GetInstance()->current_test_info();
   std::string node_name = "tf2_ros_message_filter_" + std::string(test_info->name());
-  for (char & c : node_name) {if (!isalnum(c)) {c = '_';}}
+  for (char & c : node_name) {
+    if (!isalnum(c)) {
+      c = '_';
+    }
+  }
   auto node = rclcpp::Node::make_shared(node_name);
 
   auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
@@ -420,7 +428,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
     }
   }
 
-  ASSERT_TRUE(filter_callback_fired > 0);
+  ASSERT_GT(filter_callback_fired, 0);
 }
 
 TEST(tf2_ros_message_filter, failure_reason_string_conversion)
