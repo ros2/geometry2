@@ -244,7 +244,15 @@ TEST(tf2_ros_message_filter, get_target_frames)
 
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
 {
-  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+  const ::testing::TestInfo * const test_info =
+    ::testing::UnitTest::GetInstance()->current_test_info();
+  std::string node_name = "tf2_ros_message_filter_" + std::string(test_info->name());
+  for (char & c : node_name) {
+    if (!isalnum(c)) {
+      c = '_';
+    }
+  }
+  auto node = rclcpp::Node::make_shared(node_name);
 
   #ifdef _MSC_VER
   #pragma warning(push)
@@ -263,7 +271,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
   sub.subscribe(node, "point", default_qos);
 
-  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  rclcpp::Clock::SharedPtr clock = node->get_clock();
   tf2_ros::Buffer buffer(clock);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::TransformListener tfl(buffer);
@@ -289,59 +297,65 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance_deprecated)
   #endif
 
   geometry_msgs::msg::TransformStamped map_to_odom;
-  map_to_odom.header.stamp = rclcpp::Time(0, 0);
+  map_to_odom.header.stamp = rclcpp::Time(0, 0, clock->get_clock_type());
   map_to_odom.header.frame_id = "map";
   map_to_odom.child_frame_id = "odom";
-  map_to_odom.transform.translation.x = 0.0;
-  map_to_odom.transform.translation.y = 0.0;
-  map_to_odom.transform.translation.z = 0.0;
-  map_to_odom.transform.rotation.x = 0.0;
-  map_to_odom.transform.rotation.y = 0.0;
-  map_to_odom.transform.rotation.z = 0.0;
   map_to_odom.transform.rotation.w = 1.0;
   tfb.sendTransform(map_to_odom);
 
   geometry_msgs::msg::TransformStamped odom_to_base;
-  odom_to_base.header.stamp = rclcpp::Time(0, 0);
+  odom_to_base.header.stamp = rclcpp::Time(0, 0, clock->get_clock_type());
   odom_to_base.header.frame_id = "odom";
   odom_to_base.child_frame_id = "base";
-  odom_to_base.transform.translation.x = 0.0;
-  odom_to_base.transform.translation.y = 0.0;
-  odom_to_base.transform.translation.z = 0.0;
-  odom_to_base.transform.rotation.x = 0.0;
-  odom_to_base.transform.rotation.y = 0.0;
-  odom_to_base.transform.rotation.z = 0.0;
   odom_to_base.transform.rotation.w = 1.0;
   tfb.sendTransform(odom_to_base);
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+
+  // Wait for transforms to be available
+  auto start_wait = clock->now();
+  while (rclcpp::ok() &&
+    !buffer.canTransform("map", "base", tf2::TimePointZero) &&
+    (clock->now() - start_wait) < rclcpp::Duration(5, 0))
+  {
+    executor.spin_some();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
   rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub;
   pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point", 10);
   geometry_msgs::msg::PointStamped point;
-  point.header.stamp = rclcpp::Clock().now();
+  point.header.stamp = clock->now();
   point.header.frame_id = "base";
   point.point.x = 0.1;
-  point.point.y = 0.2;
-  point.point.z = 0.3;
 
-  rclcpp::WallRate loop_rate(1);
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  while (rclcpp::ok()) {
+  int count = 0;
+  while (rclcpp::ok() && ++count < 60) {
     pub->publish(point);
-    executor.spin_some();
-    loop_rate.sleep();
-    RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired.load());
+    for (int i = 0; i < 10; ++i) {
+      executor.spin_some();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
     if (filter_callback_fired.load() > 5) {
       break;
     }
   }
 
-  ASSERT_TRUE(filter_callback_fired);
+  ASSERT_GT(filter_callback_fired, 0);
 }
 
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
 {
-  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
+  const ::testing::TestInfo * const test_info =
+    ::testing::UnitTest::GetInstance()->current_test_info();
+  std::string node_name = "tf2_ros_message_filter_" + std::string(test_info->name());
+  for (char & c : node_name) {
+    if (!isalnum(c)) {
+      c = '_';
+    }
+  }
+  auto node = rclcpp::Node::make_shared(node_name);
 
   auto create_timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(*node);
 
@@ -350,7 +364,7 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   message_filters::Subscriber<geometry_msgs::msg::PointStamped> sub;
   sub.subscribe(node, "point", default_qos);
 
-  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  rclcpp::Clock::SharedPtr clock = node->get_clock();
   tf2_ros::Buffer buffer(clock);
   buffer.setCreateTimerInterface(create_timer_interface);
   tf2_ros::TransformListener tfl(buffer);
@@ -369,54 +383,52 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   // Publish static transforms so the frame transformations will always be valid
   tf2_ros::StaticTransformBroadcaster tfb(*node);
   geometry_msgs::msg::TransformStamped map_to_odom;
-  map_to_odom.header.stamp = rclcpp::Time(0, 0);
+  map_to_odom.header.stamp = rclcpp::Time(0, 0, clock->get_clock_type());
   map_to_odom.header.frame_id = "map";
   map_to_odom.child_frame_id = "odom";
-  map_to_odom.transform.translation.x = 0.0;
-  map_to_odom.transform.translation.y = 0.0;
-  map_to_odom.transform.translation.z = 0.0;
-  map_to_odom.transform.rotation.x = 0.0;
-  map_to_odom.transform.rotation.y = 0.0;
-  map_to_odom.transform.rotation.z = 0.0;
   map_to_odom.transform.rotation.w = 1.0;
   tfb.sendTransform(map_to_odom);
 
   geometry_msgs::msg::TransformStamped odom_to_base;
-  odom_to_base.header.stamp = rclcpp::Time(0, 0);
+  odom_to_base.header.stamp = rclcpp::Time(0, 0, clock->get_clock_type());
   odom_to_base.header.frame_id = "odom";
   odom_to_base.child_frame_id = "base";
-  odom_to_base.transform.translation.x = 0.0;
-  odom_to_base.transform.translation.y = 0.0;
-  odom_to_base.transform.translation.z = 0.0;
-  odom_to_base.transform.rotation.x = 0.0;
-  odom_to_base.transform.rotation.y = 0.0;
-  odom_to_base.transform.rotation.z = 0.0;
   odom_to_base.transform.rotation.w = 1.0;
   tfb.sendTransform(odom_to_base);
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+
+  // Wait for transforms to be available
+  auto start_wait = clock->now();
+  while (rclcpp::ok() &&
+    !buffer.canTransform("map", "base", tf2::TimePointZero) &&
+    (clock->now() - start_wait) < rclcpp::Duration(5, 0))
+  {
+    executor.spin_some();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 
   rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub;
   pub = node->create_publisher<geometry_msgs::msg::PointStamped>("point", 10);
   geometry_msgs::msg::PointStamped point;
-  point.header.stamp = rclcpp::Clock().now();
+  point.header.stamp = clock->now();
   point.header.frame_id = "base";
   point.point.x = 0.1;
-  point.point.y = 0.2;
-  point.point.z = 0.3;
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  rclcpp::WallRate loop_rate(1);
-  while (rclcpp::ok()) {
+  int count = 0;
+  while (rclcpp::ok() && ++count < 60) {
     pub->publish(point);
-    executor.spin_some();
-    loop_rate.sleep();
-    RCLCPP_INFO(node->get_logger(), "filter callback: trigger(%d)", filter_callback_fired.load());
+    for (int i = 0; i < 10; ++i) {
+      executor.spin_some();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
     if (filter_callback_fired.load() > 5) {
       break;
     }
   }
 
-  ASSERT_TRUE(filter_callback_fired);
+  ASSERT_GT(filter_callback_fired, 0);
 }
 
 TEST(tf2_ros_message_filter, failure_reason_string_conversion)
