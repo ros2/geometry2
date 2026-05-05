@@ -34,7 +34,7 @@ from typing import Optional
 from typing import Union
 
 from rclpy.callback_groups import ReentrantCallbackGroup
-from rclpy.executors import SingleThreadedExecutor
+from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
@@ -112,7 +112,10 @@ class TransformListener:
 
             def run_func():
                 self.executor.add_node(self.node)
-                self.executor.spin()
+                try:
+                    self.executor.spin()
+                except ExternalShutdownException:
+                    pass
                 self.executor.remove_node(self.node)
 
             self.dedicated_listener_thread = Thread(target=run_func)
