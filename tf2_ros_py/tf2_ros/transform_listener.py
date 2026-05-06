@@ -59,7 +59,7 @@ class TransformListener:
     def __init__(
         self,
         buffer: Buffer,
-        node: Node,
+        node: Optional[Node],
         *,
         spin_thread: bool = False,
         qos: Optional[Union[QoSProfile, int]] = None,
@@ -72,7 +72,7 @@ class TransformListener:
         Construct the TransformListener.
 
         :param buffer: The buffer to propagate changes to when tf info updates.
-        :param node: The ROS2 node.
+        :param node: The ROS2 node. Pass None to automatically create one.
         :param spin_thread: Whether to create a dedidcated thread to spin this node.
         :param qos: A QoSProfile or a history depth to apply to subscribers.
         :param static_qos: A QoSProfile or a history depth to apply to tf_static subscribers.
@@ -87,6 +87,13 @@ class TransformListener:
                 history=HistoryPolicy.KEEP_LAST,
                 )
         self.buffer = buffer
+        if node is None:
+            # Sim time is definitely not needed in TF listener node
+            params = [rclpy.Parameter("use_sim_time", value=False)]
+            node = rclpy.node.Node(f"transform_listener_impl_{id(self):010x}",
+                                   enable_rosout=False,
+                                   start_parameter_services=False,
+                                   parameter_overrides=params)
         self.node = node
         # Default callback group is mutually exclusive, which would prevent waiting for transforms
         # from another callback in the same group.
