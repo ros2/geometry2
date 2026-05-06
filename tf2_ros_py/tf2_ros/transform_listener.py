@@ -29,14 +29,9 @@
 from typing import Optional
 from typing import Union
 
-from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
-<<<<<<< HEAD
-from rclpy.executors import SingleThreadedExecutor
-=======
 from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
->>>>>>> a7a5bcf (tf2_ros_py: Ignore ExternalShutdownException in background thread (#930))
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
