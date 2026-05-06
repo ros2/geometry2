@@ -91,7 +91,12 @@ class TransformListener:
         if node is None:
             # Sim time is definitely not needed in TF listener node
             params = [Parameter("use_sim_time", value=False)]
-            node = Node(f"transform_listener_impl_{id(self):010x}",
+            # create a unique name for the node
+            # but specify its name in cli_args to override any __node passed on the command line.
+            name = f"transform_listener_impl_{id(self):010x}"
+            cli = ["--ros-args", "-r", "__node:=" + name]
+            node = Node(name,
+                        cli_args=cli,
                         enable_rosout=False,
                         start_parameter_services=False,
                         parameter_overrides=params)
