@@ -36,6 +36,7 @@ from typing import Union
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
@@ -89,11 +90,11 @@ class TransformListener:
         self.buffer = buffer
         if node is None:
             # Sim time is definitely not needed in TF listener node
-            params = [rclpy.Parameter("use_sim_time", value=False)]
-            node = rclpy.node.Node(f"transform_listener_impl_{id(self):010x}",
-                                   enable_rosout=False,
-                                   start_parameter_services=False,
-                                   parameter_overrides=params)
+            params = [Parameter("use_sim_time", value=False)]
+            node = Node(f"transform_listener_impl_{id(self):010x}",
+                        enable_rosout=False,
+                        start_parameter_services=False,
+                        parameter_overrides=params)
         self.node = node
         # Default callback group is mutually exclusive, which would prevent waiting for transforms
         # from another callback in the same group.
