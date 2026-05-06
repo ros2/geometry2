@@ -90,11 +90,11 @@ class TransformListener:
         self.buffer = buffer
         if node is None:
             # Sim time is definitely not needed in TF listener node
-            params = [Parameter("use_sim_time", value=False)]
+            params = [Parameter('use_sim_time', value=False)]
             # create a unique name for the node
             # but specify its name in cli_args to override any __node passed on the command line.
-            name = f"transform_listener_impl_{id(self):010x}"
-            cli = ["--ros-args", "-r", "__node:=" + name]
+            name = f'transform_listener_impl_{id(self):010x}'
+            cli = ['--ros-args', '-r', '__node:=' + name]
             node = Node(name,
                         cli_args=cli,
                         enable_rosout=False,
