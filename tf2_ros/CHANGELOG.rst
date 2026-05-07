@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Improve tf2_ros::MessageFilter test reliability (`#929 <https://github.com/ros2/geometry2/issues/929>`_)
+* Contributors: Michael Carroll
+
 0.45.7 (2026-04-09)
 -------------------
 * fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)

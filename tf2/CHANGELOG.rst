@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.45.7 (2026-04-09)
 -------------------
 * Added tests for static cache (`#920 <https://github.com/ros2/geometry2/issues/920>`_)
