@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.46.0 (2026-05-07)
+-------------------
 * tf2_ros_py: Make node parameter optional in TransformListener (`#935 <https://github.com/ros2/geometry2/issues/935>`_)
 * tf2_ros_py: Ignore ExternalShutdownException in background thread (`#930 <https://github.com/ros2/geometry2/issues/930>`_)
 * Contributors: Martin Pecka
