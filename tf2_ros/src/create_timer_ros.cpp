@@ -51,16 +51,6 @@ CreateTimerROS::CreateTimerROS(
 {
 }
 
-CreateTimerROS::CreateTimerROS(
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base,
-  rclcpp::node_interfaces::NodeTimersInterface::SharedPtr node_timers,
-  rclcpp::CallbackGroup::SharedPtr callback_group)
-: CreateTimerROS(rclcpp::node_interfaces::NodeInterfaces<
-      rclcpp::node_interfaces::NodeBaseInterface,
-      rclcpp::node_interfaces::NodeTimersInterface>(node_base, node_timers), callback_group)
-{
-}
-
 TimerHandle
 CreateTimerROS::createTimer(
   rclcpp::Clock::SharedPtr clock,

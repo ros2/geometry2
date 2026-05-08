@@ -51,36 +51,6 @@ private:
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };
 
-TEST(tf2_test_transform_broadcaster, transform_broadcaster_rclcpp_node_deprecated)
-{
-  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
-
-  #ifdef _MSC_VER
-  #pragma warning(push)
-  #pragma warning(disable : 4996)
-  #else
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  #endif
-
-  // Construct tf broadcaster from node pointer
-  {
-    tf2_ros::TransformBroadcaster tfb(node);
-  }
-  // Construct tf broadcaster from node interfaces
-  {
-    tf2_ros::TransformBroadcaster tfb(
-      node->get_node_parameters_interface(),
-      node->get_node_topics_interface());
-  }
-
-  #ifdef _MSC_VER
-  #pragma warning(pop)
-  #else
-  #pragma GCC diagnostic pop
-  #endif
-}
-
 TEST(tf2_test_transform_broadcaster, transform_broadcaster_rclcpp_node)
 {
   auto node = rclcpp::Node::make_shared("tf2_ros_message_filter");
@@ -97,36 +67,6 @@ TEST(tf2_test_transform_broadcaster, transform_broadcaster_rclcpp_node)
       node->get_node_parameters_interface(),
       node->get_node_topics_interface()));
   }
-}
-
-TEST(tf2_test_transform_broadcaster, transform_broadcaster_custom_rclcpp_node_deprecated)
-{
-  auto node = std::make_shared<NodeWrapper>("tf2_ros_message_filter");
-
-  #ifdef _MSC_VER
-  #pragma warning(push)
-  #pragma warning(disable : 4996)
-  #else
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  #endif
-
-  // Construct tf broadcaster from node pointer
-  {
-    tf2_ros::TransformBroadcaster tfb(node);
-  }
-  // Construct tf broadcaster from node interfaces
-  {
-    tf2_ros::TransformBroadcaster tfb(
-      node->get_node_parameters_interface(),
-      node->get_node_topics_interface());
-  }
-
-  #ifdef _MSC_VER
-  #pragma warning(pop)
-  #else
-  #pragma GCC diagnostic pop
-  #endif
 }
 
 TEST(tf2_test_transform_broadcaster, transform_broadcaster_custom_rclcpp_node)
