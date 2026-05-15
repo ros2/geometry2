@@ -100,7 +100,7 @@ public:
         rclcpp::QosPolicyKind::Reliability};
       return options;
     } ())
-    : StaticTransformBroadcaster(
+  : StaticTransformBroadcaster(
       RequiredInterfaces(node->get_node_parameters_interface(),
       node->get_node_topics_interface()), qos, options)
   {
@@ -121,7 +121,7 @@ public:
         rclcpp::QosPolicyKind::Reliability};
       return options;
     } ())
-    : StaticTransformBroadcaster(
+  : StaticTransformBroadcaster(
       RequiredInterfaces(node_parameters, node_topics), qos, options)
   {
   }
