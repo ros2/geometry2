@@ -33,12 +33,15 @@
 #include "tf2_ros/buffer.hpp"
 
 #include <exception>
+<<<<<<< HEAD
 #include <limits>
+=======
+#include <functional>
+>>>>>>> 5c556d6 (Cleanup headers (#928))
 #include <memory>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <thread>
 
 namespace tf2_ros
 {
