@@ -34,12 +34,10 @@
 
 #include <exception>
 #include <functional>
-#include <limits>
 #include <memory>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <thread>
 
 namespace tf2_ros
 {
