@@ -40,7 +40,6 @@
 
 #include "tf2/LinearMath/Vector3.hpp"
 #include "tf2/LinearMath/Quaternion.hpp"
-#include "tf2/LinearMath/Transform.hpp"
 
 namespace tf2
 {

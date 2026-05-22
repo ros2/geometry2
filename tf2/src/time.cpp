@@ -29,6 +29,7 @@
 /** \author Tully Foote */
 
 #include <chrono>
+#include <limits>
 #include <stdexcept>
 #include <string>
 
