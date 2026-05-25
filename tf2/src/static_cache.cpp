@@ -34,8 +34,6 @@
 #include "tf2/time_cache.hpp"
 #include "tf2/exceptions.hpp"
 
-#include "tf2/LinearMath/Transform.hpp"
-
 bool tf2::StaticCache::getData(
   tf2::TimePoint time,
   tf2::TransformStorage & data_out, std::string * error_str)
