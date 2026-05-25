@@ -33,12 +33,11 @@
 #include "tf2_ros/buffer.hpp"
 
 #include <exception>
-#include <limits>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <thread>
 
 namespace tf2_ros
 {

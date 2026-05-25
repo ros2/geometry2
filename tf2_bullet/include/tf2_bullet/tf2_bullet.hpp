@@ -33,8 +33,6 @@
 #ifndef TF2_BULLET__TF2_BULLET_HPP_
 #define TF2_BULLET__TF2_BULLET_HPP_
 
-#include <iostream>
-
 #include "tf2/convert.hpp"
 #include "LinearMath/btQuaternion.h"
 #include "LinearMath/btScalar.h"
