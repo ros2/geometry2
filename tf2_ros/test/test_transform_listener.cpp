@@ -37,7 +37,6 @@
 #include <tf2_ros/transform_broadcaster.hpp>
 #include <tf2_ros/static_transform_broadcaster.hpp>
 
-
 #include "node_wrapper.hpp"
 
 class CustomNode : public rclcpp::Node
@@ -131,6 +130,10 @@ TEST(tf2_test_static_transform_listener, static_transform_listener_rclcpp_node)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
+<<<<<<< HEAD
+=======
+  tf2_ros::StaticTransformListener stfl(buffer, node, false);
+>>>>>>> b950c7e (Backport of #673 ("Adding static transform listener") to jazzy with ABI compatibility preserved (#927))
 }
 
 TEST(tf2_test_static_transform_listener, static_transform_listener_custom_rclcpp_node)
@@ -139,7 +142,11 @@ TEST(tf2_test_static_transform_listener, static_transform_listener_custom_rclcpp
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
+<<<<<<< HEAD
   tf2_ros::StaticTransformListener tfl(buffer, node, false);
+=======
+  tf2_ros::StaticTransformListener stfl(buffer, node, false);
+>>>>>>> b950c7e (Backport of #673 ("Adding static transform listener") to jazzy with ABI compatibility preserved (#927))
 }
 
 TEST(tf2_test_static_transform_listener, static_transform_listener_as_member)
@@ -192,13 +199,23 @@ TEST(tf2_test_listeners, static_vs_dynamic)
   // Dynamic buffer should have both dynamic and static transforms available
   EXPECT_NO_THROW(
     dynamic_buffer.lookupTransform("parent_dynamic", "child_dynamic", tf2::TimePointZero));
+<<<<<<< HEAD
   EXPECT_NO_THROW(dynamic_buffer.lookupTransform("parent_static", "child_static", clock->now()));
+=======
+  EXPECT_NO_THROW(
+    dynamic_buffer.lookupTransform("parent_static", "child_static", tf2::TimePointZero));
+>>>>>>> b950c7e (Backport of #673 ("Adding static transform listener") to jazzy with ABI compatibility preserved (#927))
 
   // Static buffer should have only static transforms available
   EXPECT_THROW(
     static_buffer.lookupTransform("parent_dynamic", "child_dynamic", tf2::TimePointZero),
     tf2::LookupException);
+<<<<<<< HEAD
   EXPECT_NO_THROW(static_buffer.lookupTransform("parent_static", "child_static", clock->now()));
+=======
+  EXPECT_NO_THROW(
+    static_buffer.lookupTransform("parent_static", "child_static", tf2::TimePointZero));
+>>>>>>> b950c7e (Backport of #673 ("Adding static transform listener") to jazzy with ABI compatibility preserved (#927))
 }
 
 int main(int argc, char ** argv)
