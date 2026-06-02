@@ -2,8 +2,8 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.36.21 (2026-06-02)
+--------------------
 * tf2_ros_py: Make node parameter optional in TransformListener (`#935 <https://github.com/ros2/geometry2/issues/935>`_) (`#938 <https://github.com/ros2/geometry2/issues/938>`_)
   (cherry picked from commit 32249cc3241a7335ae164412a8ff7d4828b8f1ee)
   Co-authored-by: Martin Pecka <peckama2@fel.cvut.cz>
