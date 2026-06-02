@@ -2,6 +2,19 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Backport of `#673 <https://github.com/ros2/geometry2/issues/673>`_ ("Adding static transform listener") to jazzy with ABI compatibility preserved (`#927 <https://github.com/ros2/geometry2/issues/927>`_)
+* Cleanup headers (backport `#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#945 <https://github.com/ros2/geometry2/issues/945>`_)
+  (cherry picked from commit 5c556d6f44708c3e9542e0e478f35cf6c2c7a97a)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Correct typos (backport `#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#923 <https://github.com/ros2/geometry2/issues/923>`_)
+  * fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
+  (cherry picked from commit febd947629a687583cbd5d52a8e965df80388e11)
+  Co-authored-by: Auguste Lalande <auguste.lalande@gmail.com>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Contributors: Taiga Arai, mergify[bot]
+
 0.36.20 (2026-03-24)
 --------------------
 * prevent AttributeError when static_only=true (backport `#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#914 <https://github.com/ros2/geometry2/issues/914>`_)

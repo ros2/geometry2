@@ -2,6 +2,13 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Cleanup headers (backport `#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#945 <https://github.com/ros2/geometry2/issues/945>`_)
+  (cherry picked from commit 5c556d6f44708c3e9542e0e478f35cf6c2c7a97a)
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.36.20 (2026-03-24)
 --------------------
 

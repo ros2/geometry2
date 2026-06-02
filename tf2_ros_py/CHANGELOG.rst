@@ -2,6 +2,22 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* tf2_ros_py: Make node parameter optional in TransformListener (`#935 <https://github.com/ros2/geometry2/issues/935>`_) (`#938 <https://github.com/ros2/geometry2/issues/938>`_)
+  (cherry picked from commit 32249cc3241a7335ae164412a8ff7d4828b8f1ee)
+  Co-authored-by: Martin Pecka <peckama2@fel.cvut.cz>
+* tf2_ros_py: Ignore ExternalShutdownException in background thread (backport `#930 <https://github.com/ros2/geometry2/issues/930>`_) (`#933 <https://github.com/ros2/geometry2/issues/933>`_)
+  (cherry picked from commit a7a5bcf25f7fffc29a712f8537ff1e1a493f78a7)
+  Co-authored-by: Martin Pecka <peci1@seznam.cz>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Correct typos (backport `#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#923 <https://github.com/ros2/geometry2/issues/923>`_)
+  * fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
+  (cherry picked from commit febd947629a687583cbd5d52a8e965df80388e11)
+  Co-authored-by: Auguste Lalande <auguste.lalande@gmail.com>
+  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.36.20 (2026-03-24)
 --------------------
 * prevent AttributeError when static_only=true (backport `#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#914 <https://github.com/ros2/geometry2/issues/914>`_)
