@@ -60,7 +60,9 @@
 #include "tf2_ros/visibility_control.hpp"
 
 #include "builtin_interfaces/msg/time.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/time.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_clock_interface.hpp"
