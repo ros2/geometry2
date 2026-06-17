@@ -20,7 +20,13 @@ find_package(rosidl_runtime_cpp REQUIRED)
 # export user definitions
 
 #CPP Libraries
-add_library(tf2 src/cache.cpp src/buffer_core.cpp src/static_cache.cpp src/time.cpp)
+add_library(tf2
+  src/cache.cpp
+  src/buffer_core.cpp
+  src/convert.cpp
+  src/exceptions.cpp
+  src/static_cache.cpp
+  src/time.cpp)
 target_include_directories(tf2 PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
