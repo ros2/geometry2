@@ -39,6 +39,10 @@
 #include <sstream>
 #include <string>
 
+#include "rclcpp/create_service.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/utilities.hpp"
+
 namespace tf2_ros
 {
 inline

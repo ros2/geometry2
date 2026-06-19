@@ -45,8 +45,15 @@
 #include "tf2_ros/visibility_control.hpp"
 
 #include "tf2_msgs/msg/tf_message.hpp"
-#include "rclcpp/rclcpp.hpp"
 #include "rcpputils/pointer_traits.hpp"
+#include "rclcpp/callback_group.hpp"
+#include "rclcpp/create_subscription.hpp"
+#include "rclcpp/executor.hpp"
+#include "rclcpp/executors/single_threaded_executor.hpp"
+#include "rclcpp/qos.hpp"
+#include "rclcpp/qos_overriding_options.hpp"
+#include "rclcpp/subscription.hpp"
+#include "rclcpp/subscription_options.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/get_node_base_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
@@ -54,6 +61,11 @@
 #include "rclcpp/node_interfaces/get_node_topics_interface.hpp"
 
 #include "tf2_ros/qos.hpp"
+
+namespace rclcpp
+{
+class Node;
+}  // namespace rclcpp
 
 namespace tf2_ros
 {
@@ -272,7 +284,7 @@ private:
   std::unique_ptr<std::thread> dedicated_listener_thread_ {nullptr};
   rclcpp::Executor::SharedPtr executor_ {nullptr};
 
-  rclcpp::Node::SharedPtr optional_default_node_ {nullptr};
+  std::shared_ptr<rclcpp::Node> optional_default_node_ {nullptr};
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr
     message_subscription_tf_ {nullptr};
   rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr
