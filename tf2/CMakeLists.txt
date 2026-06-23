@@ -23,7 +23,6 @@ find_package(rosidl_runtime_cpp REQUIRED)
 add_library(tf2
   src/cache.cpp
   src/buffer_core.cpp
-  src/convert.cpp
   src/exceptions.cpp
   src/static_cache.cpp
   src/time.cpp)

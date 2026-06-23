@@ -404,10 +404,4 @@ Buffer::waitForTransform(
     callback);
 }
 
-void
-Buffer::setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)
-{
-  timer_interface_ = create_timer_interface;
-}
-
 }  // namespace tf2_ros

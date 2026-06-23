@@ -275,8 +275,11 @@ public:
   cancel(const TransformStampedFuture & ts_future) override;
 
   TF2_ROS_PUBLIC
-  void
-  setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface);
+  inline void
+  setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)
+  {
+    timer_interface_ = create_timer_interface;
+  }
 
 private:
   void timerCallback(
