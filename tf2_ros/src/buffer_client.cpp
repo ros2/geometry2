@@ -45,6 +45,31 @@
 
 namespace tf2_ros
 {
+LookupTransformGoalException::LookupTransformGoalException(const std::string & message)
+: std::runtime_error(message)
+{
+}
+
+GoalRejectedException::GoalRejectedException(const std::string & message)
+: LookupTransformGoalException(message)
+{
+}
+
+GoalAbortedException::GoalAbortedException(const std::string & message)
+: LookupTransformGoalException(message)
+{
+}
+
+GoalCanceledException::GoalCanceledException(const std::string & message)
+: LookupTransformGoalException(message)
+{
+}
+
+UnexpectedResultCodeException::UnexpectedResultCodeException(const std::string & message)
+: LookupTransformGoalException(message)
+{
+}
+
 geometry_msgs::msg::TransformStamped BufferClient::lookupTransform(
   const std::string & target_frame,
   const std::string & source_frame,

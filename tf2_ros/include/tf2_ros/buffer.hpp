@@ -138,10 +138,7 @@ public:
   lookupTransform(
     const std::string & target_frame, const std::string & source_frame,
     const rclcpp::Time & time,
-    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const
-  {
-    return lookupTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout));
-  }
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const;
 
   /** \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed
@@ -173,13 +170,7 @@ public:
     const std::string & target_frame, const rclcpp::Time & target_time,
     const std::string & source_frame, const rclcpp::Time & source_time,
     const std::string & fixed_frame,
-    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const
-  {
-    return lookupTransform(
-      target_frame, fromRclcpp(target_time),
-      source_frame, fromRclcpp(source_time),
-      fixed_frame, fromRclcpp(timeout));
-  }
+    const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0)) const;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -206,10 +197,7 @@ public:
     const std::string & target_frame, const std::string & source_frame,
     const rclcpp::Time & time,
     const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
-    std::string * errstr = NULL) const
-  {
-    return canTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr);
-  }
+    std::string * errstr = NULL) const;
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform
@@ -242,14 +230,7 @@ public:
     const std::string & source_frame, const rclcpp::Time & source_time,
     const std::string & fixed_frame,
     const rclcpp::Duration timeout = rclcpp::Duration::from_nanoseconds(0),
-    std::string * errstr = NULL) const
-  {
-    return canTransform(
-      target_frame, fromRclcpp(target_time),
-      source_frame, fromRclcpp(source_time),
-      fixed_frame, fromRclcpp(timeout),
-      errstr);
-  }
+    std::string * errstr = NULL) const;
 
   /** \brief Wait for a transform between two frames to become available.
    *
@@ -283,13 +264,7 @@ public:
   waitForTransform(
     const std::string & target_frame, const std::string & source_frame,
     const rclcpp::Time & time,
-    const rclcpp::Duration & timeout, TransformReadyCallback callback)
-  {
-    return waitForTransform(
-      target_frame, source_frame,
-      fromRclcpp(time), fromRclcpp(timeout),
-      callback);
-  }
+    const rclcpp::Duration & timeout, TransformReadyCallback callback);
 
   /**
    * \brief Cancel the future to make sure the callback of requested transform is clean.

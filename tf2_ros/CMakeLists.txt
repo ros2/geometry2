@@ -24,11 +24,16 @@ find_package(tf2_msgs REQUIRED)
 
 # tf2_ros library
 add_library(${PROJECT_NAME} SHARED
+  src/async_buffer_interface.cpp
   src/buffer.cpp
+  src/buffer_interface.cpp
+  src/create_timer_interface.cpp
   src/create_timer_ros.cpp
   src/transform_listener.cpp
   src/buffer_client.cpp
   src/buffer_server.cpp
+  src/message_filter.cpp
+  src/qos.cpp
   src/transform_broadcaster.cpp
   src/static_transform_broadcaster.cpp
 )

@@ -51,28 +51,22 @@ class TransformStampedFuture : public std::shared_future<geometry_msgs::msg::Tra
 
 public:
   /// Constructor
-  explicit TransformStampedFuture(BaseType && future) noexcept
-  : BaseType(std::move(future)) {}
+  TF2_ROS_PUBLIC
+  explicit TransformStampedFuture(BaseType && future) noexcept;
 
   /// Copy constructor
-  TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept
-  : BaseType(ts_future),
-    handle_(ts_future.handle_) {}
+  TF2_ROS_PUBLIC
+  TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept;
 
   /// Move constructor
-  TransformStampedFuture(TransformStampedFuture && ts_future) noexcept
-  : BaseType(std::move(ts_future)),
-    handle_(std::move(ts_future.handle_)) {}
+  TF2_ROS_PUBLIC
+  TransformStampedFuture(TransformStampedFuture && ts_future) noexcept;
 
-  void setHandle(const tf2::TransformableRequestHandle handle)
-  {
-    handle_ = handle;
-  }
+  TF2_ROS_PUBLIC
+  void setHandle(const tf2::TransformableRequestHandle handle);
 
-  tf2::TransformableRequestHandle getHandle() const
-  {
-    return handle_;
-  }
+  TF2_ROS_PUBLIC
+  tf2::TransformableRequestHandle getHandle() const;
 
 private:
   tf2::TransformableRequestHandle handle_ {};

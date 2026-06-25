@@ -1,4 +1,5 @@
-// Copyright 2010, Willow Garage, Inc. All rights reserved.
+// Copyright 2027, Open Source Robotics Foundation, Inc.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -10,7 +11,7 @@
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
 //
-//    * Neither the name of the Willow Garage nor the names of its
+//    * Neither the name of the copyright holder nor the names of its
 //      contributors may be used to endorse or promote products derived from
 //      this software without specific prior written permission.
 //
@@ -26,51 +27,38 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \file
- *  \brief Author: Tully Foote
- */
+#include <utility>
 
-#ifndef TF2__TRANSFORM_STORAGE_HPP_
-#define TF2__TRANSFORM_STORAGE_HPP_
+#include "tf2_ros/async_buffer_interface.hpp"
 
-#include "tf2/visibility_control.h"
-
-#include "tf2/LinearMath/Vector3.hpp"
-#include "tf2/LinearMath/Quaternion.hpp"
-#include "tf2/time.hpp"
-
-namespace tf2
+namespace tf2_ros
 {
-typedef uint32_t CompactFrameID;
 
-/** \brief Storage for transforms and their parent */
-class TransformStorage
+TransformStampedFuture::TransformStampedFuture(BaseType && future) noexcept
+: BaseType(std::move(future))
 {
-public:
-  TF2_PUBLIC
-  TransformStorage();
-  TF2_PUBLIC
-  TransformStorage(
-    const TimePoint & stamp, const Quaternion & q, const Vector3 & t, CompactFrameID frame_id,
-    CompactFrameID child_frame_id);
+}
 
-  TF2_PUBLIC
-  TransformStorage(const TransformStorage & rhs);
+TransformStampedFuture::TransformStampedFuture(const TransformStampedFuture & ts_future) noexcept
+: BaseType(ts_future),
+  handle_(ts_future.handle_)
+{
+}
 
-  TF2_PUBLIC
-  TransformStorage & operator=(const TransformStorage & rhs);
+TransformStampedFuture::TransformStampedFuture(TransformStampedFuture && ts_future) noexcept
+: BaseType(std::move(ts_future)),
+  handle_(std::move(ts_future.handle_))
+{
+}
 
-  TF2_PUBLIC
-  bool operator==(const TransformStorage & rhs) const;
+void TransformStampedFuture::setHandle(const tf2::TransformableRequestHandle handle)
+{
+  handle_ = handle;
+}
 
-  TF2_PUBLIC
-  bool operator!=(const TransformStorage & rhs) const;
+tf2::TransformableRequestHandle TransformStampedFuture::getHandle() const
+{
+  return handle_;
+}
 
-  tf2::Quaternion rotation_;
-  tf2::Vector3 translation_;
-  TimePoint stamp_;
-  CompactFrameID frame_id_{UINT32_MAX};
-  CompactFrameID child_frame_id_{UINT32_MAX};
-};
-}  // namespace tf2
-#endif  // TF2__TRANSFORM_STORAGE_HPP_
+}  // namespace tf2_ros

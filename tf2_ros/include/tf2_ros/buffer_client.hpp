@@ -58,50 +58,35 @@ class LookupTransformGoalException : public std::runtime_error
 {
 public:
   TF2_ROS_PUBLIC
-  explicit LookupTransformGoalException(const std::string & message)
-  : std::runtime_error(message)
-  {
-  }
+  explicit LookupTransformGoalException(const std::string & message);
 };
 
 class GoalRejectedException : public LookupTransformGoalException
 {
 public:
   TF2_ROS_PUBLIC
-  explicit GoalRejectedException(const std::string & message)
-  : LookupTransformGoalException(message)
-  {
-  }
+  explicit GoalRejectedException(const std::string & message);
 };
 
 class GoalAbortedException : public LookupTransformGoalException
 {
 public:
   TF2_ROS_PUBLIC
-  explicit GoalAbortedException(const std::string & message)
-  : LookupTransformGoalException(message)
-  {
-  }
+  explicit GoalAbortedException(const std::string & message);
 };
 
 class GoalCanceledException : public LookupTransformGoalException
 {
 public:
   TF2_ROS_PUBLIC
-  explicit GoalCanceledException(const std::string & message)
-  : LookupTransformGoalException(message)
-  {
-  }
+  explicit GoalCanceledException(const std::string & message);
 };
 
 class UnexpectedResultCodeException : public LookupTransformGoalException
 {
 public:
   TF2_ROS_PUBLIC
-  explicit UnexpectedResultCodeException(const std::string & message)
-  : LookupTransformGoalException(message)
-  {
-  }
+  explicit UnexpectedResultCodeException(const std::string & message);
 };
 
 /** \brief Action client-based implementation of the tf2_ros::BufferInterface abstract data type.

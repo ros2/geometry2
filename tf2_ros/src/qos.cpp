@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Open Source Robotics Foundation, Inc.
+ * Copyright 2026, Open Source Robotics Foundation, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
+ *     * Neither the name of the copyright holder. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
@@ -27,38 +27,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_ROS__QOS_HPP_
-#define TF2_ROS__QOS_HPP_
+#include <cstddef>
 
-#include <rclcpp/qos.hpp>
-#include <tf2_ros/visibility_control.hpp>
+#include "tf2_ros/qos.hpp"
 
 namespace tf2_ros
 {
 
-class TF2_ROS_PUBLIC DynamicListenerQoS : public rclcpp::QoS
+DynamicListenerQoS::DynamicListenerQoS(size_t depth)
+: rclcpp::QoS(depth)
 {
-public:
-  explicit DynamicListenerQoS(size_t depth = 100);
-};
+}
 
-class TF2_ROS_PUBLIC DynamicBroadcasterQoS : public rclcpp::QoS
+DynamicBroadcasterQoS::DynamicBroadcasterQoS(size_t depth)
+: rclcpp::QoS(depth)
 {
-public:
-  explicit DynamicBroadcasterQoS(size_t depth = 100);
-};
+}
 
-class TF2_ROS_PUBLIC StaticListenerQoS : public rclcpp::QoS
+StaticListenerQoS::StaticListenerQoS(size_t depth)
+: rclcpp::QoS(depth)
 {
-public:
-  explicit StaticListenerQoS(size_t depth = 100);
-};
+  transient_local();
+}
 
-class TF2_ROS_PUBLIC StaticBroadcasterQoS : public rclcpp::QoS
+StaticBroadcasterQoS::StaticBroadcasterQoS(size_t depth)
+: rclcpp::QoS(depth)
 {
-public:
-  explicit StaticBroadcasterQoS(size_t depth = 1);
-};
+  transient_local();
+}
+
 }  // namespace tf2_ros
-
-#endif  // TF2_ROS__QOS_HPP_

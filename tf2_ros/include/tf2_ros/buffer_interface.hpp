@@ -353,9 +353,8 @@ public:
     return out;
   }
 
-  virtual ~BufferInterface()
-  {
-  }
+  TF2_ROS_PUBLIC
+  virtual ~BufferInterface();
 };
 
 }  // namespace tf2_ros

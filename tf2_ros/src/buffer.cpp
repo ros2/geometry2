@@ -349,4 +349,59 @@ rclcpp::Logger Buffer::getLogger() const
     "tf2_buffer");
 }
 
+geometry_msgs::msg::TransformStamped
+Buffer::lookupTransform(
+  const std::string & target_frame, const std::string & source_frame,
+  const rclcpp::Time & time, const rclcpp::Duration timeout) const
+{
+  return lookupTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout));
+}
+
+geometry_msgs::msg::TransformStamped
+Buffer::lookupTransform(
+  const std::string & target_frame, const rclcpp::Time & target_time,
+  const std::string & source_frame, const rclcpp::Time & source_time,
+  const std::string & fixed_frame, const rclcpp::Duration timeout) const
+{
+  return lookupTransform(
+    target_frame, fromRclcpp(target_time),
+    source_frame, fromRclcpp(source_time),
+    fixed_frame, fromRclcpp(timeout));
+}
+
+bool
+Buffer::canTransform(
+  const std::string & target_frame, const std::string & source_frame,
+  const rclcpp::Time & time, const rclcpp::Duration timeout,
+  std::string * errstr) const
+{
+  return canTransform(target_frame, source_frame, fromRclcpp(time), fromRclcpp(timeout), errstr);
+}
+
+bool
+Buffer::canTransform(
+  const std::string & target_frame, const rclcpp::Time & target_time,
+  const std::string & source_frame, const rclcpp::Time & source_time,
+  const std::string & fixed_frame, const rclcpp::Duration timeout,
+  std::string * errstr) const
+{
+  return canTransform(
+    target_frame, fromRclcpp(target_time),
+    source_frame, fromRclcpp(source_time),
+    fixed_frame, fromRclcpp(timeout),
+    errstr);
+}
+
+TransformStampedFuture
+Buffer::waitForTransform(
+  const std::string & target_frame, const std::string & source_frame,
+  const rclcpp::Time & time, const rclcpp::Duration & timeout,
+  TransformReadyCallback callback)
+{
+  return waitForTransform(
+    target_frame, source_frame,
+    fromRclcpp(time), fromRclcpp(timeout),
+    callback);
+}
+
 }  // namespace tf2_ros

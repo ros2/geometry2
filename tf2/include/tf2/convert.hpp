@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <string>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
