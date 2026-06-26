@@ -34,6 +34,7 @@
 #define TF2__CONVERT_HPP_
 
 #include <array>
+#include <cstddef>
 #include <string>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
