@@ -33,8 +33,8 @@
 #ifndef TF2__CONVERT_HPP_
 #define TF2__CONVERT_HPP_
 
-#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <string>
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -166,38 +166,18 @@ void convert(const A & a1, A & a2)
  * \param row_major A row-major array of 36 covariance values.
  * \return A nested array representation of 6x6 covariance values.
  */
-inline
+TF2_PUBLIC
 std::array<std::array<double, 6>, 6> covarianceRowMajorToNested(
-  const std::array<double, 36> & row_major)
-{
-  std::array<std::array<double, 6>, 6> nested_array;
-  std::array<double, 36>::const_iterator ss = row_major.begin();
-  for (std::array<double, 6> & dd : nested_array) {
-    std::copy_n(ss, dd.size(), dd.begin());
-    ss += dd.size();
-  }
-  return nested_array;
-}
+  const std::array<double, 36> & row_major);
 
 /**\brief Function that converts from a nested array representation of a 6x6
  * covariance matrix to a row-major representation.
  * \param nested_array A nested array representation of 6x6 covariance values.
  * \return A row-major array of 36 covariance values.
  */
-inline
+TF2_PUBLIC
 std::array<double, 36> covarianceNestedToRowMajor(
-  const std::array<std::array<double, 6>, 6> & nested_array)
-{
-  std::array<double, 36> row_major = {};
-  size_t counter = 0;
-  for (const auto & arr : nested_array) {
-    for (const double & val : arr) {
-      row_major[counter] = val;
-      counter++;
-    }
-  }
-  return row_major;
-}
+  const std::array<std::array<double, 6>, 6> & nested_array);
 }  // namespace tf2
 
 #endif  // TF2__CONVERT_HPP_

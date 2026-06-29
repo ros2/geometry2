@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Open Source Robotics Foundation, Inc.
+ * Copyright 2026, Open Source Robotics Foundation, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
+ *     * Neither the name of the copyright holder nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
@@ -27,38 +27,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TF2_ROS__QOS_HPP_
-#define TF2_ROS__QOS_HPP_
+#include <string>
 
-#include <rclcpp/qos.hpp>
-#include <tf2_ros/visibility_control.hpp>
+#include "tf2_ros/message_filter.hpp"
 
 namespace tf2_ros
 {
 
-class TF2_ROS_PUBLIC DynamicListenerQoS : public rclcpp::QoS
+std::string get_filter_failure_reason_string(
+  filter_failure_reasons::FilterFailureReason reason)
 {
-public:
-  explicit DynamicListenerQoS(size_t depth = 100);
-};
+  switch (reason) {
+    case filter_failure_reasons::OutTheBack:
+      return
+        "the timestamp on the message is earlier than all the data in the transform cache";
+    case filter_failure_reasons::EmptyFrameID:
+      return "the frame id of the message is empty";
+    case filter_failure_reasons::NoTransformFound:
+      return "did not find a valid transform, this usually happens at startup ...";
+    case filter_failure_reasons::QueueFull:
+      return "discarding message because the queue is full";
+    case filter_failure_reasons::Unknown:  // fallthrough
+    default:
+      return "unknown";
+  }
+}
 
-class TF2_ROS_PUBLIC DynamicBroadcasterQoS : public rclcpp::QoS
+MessageFilterBase::~MessageFilterBase()
 {
-public:
-  explicit DynamicBroadcasterQoS(size_t depth = 100);
-};
+}
 
-class TF2_ROS_PUBLIC StaticListenerQoS : public rclcpp::QoS
-{
-public:
-  explicit StaticListenerQoS(size_t depth = 100);
-};
-
-class TF2_ROS_PUBLIC StaticBroadcasterQoS : public rclcpp::QoS
-{
-public:
-  explicit StaticBroadcasterQoS(size_t depth = 1);
-};
 }  // namespace tf2_ros
-
-#endif  // TF2_ROS__QOS_HPP_

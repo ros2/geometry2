@@ -1425,6 +1425,46 @@ void BufferCore::cancelTransformableRequest(TransformableRequestHandle handle)
   transformable_requests_.erase(remove_it, transformable_requests_.end());
 }
 
+void BufferCore::setUsingDedicatedThread(bool value)
+{
+  using_dedicated_thread_ = value;
+}
+
+bool BufferCore::isUsingDedicatedThread() const
+{
+  return using_dedicated_thread_;
+}
+
+CompactFrameID BufferCore::_lookupFrameNumber(const std::string & frameid_str) const
+{
+  return lookupFrameNumber(frameid_str);
+}
+
+CompactFrameID BufferCore::_lookupOrInsertFrameNumber(const std::string & frameid_str)
+{
+  return lookupOrInsertFrameNumber(frameid_str);
+}
+
+tf2::TF2Error BufferCore::_getLatestCommonTime(
+  CompactFrameID target_frame, CompactFrameID source_frame,
+  TimePoint & time, std::string * error_string) const
+{
+  std::unique_lock<std::mutex> lock(frame_mutex_);
+  return getLatestCommonTime(target_frame, source_frame, time, error_string);
+}
+
+CompactFrameID BufferCore::_validateFrameId(
+  const char * function_name_arg,
+  const std::string & frame_id) const
+{
+  return validateFrameId(function_name_arg, frame_id);
+}
+
+tf2::Duration BufferCore::getCacheLength()
+{
+  return cache_time_;
+}
+
 // backwards compatibility for tf methods
 bool BufferCore::_frameExists(const std::string & frame_id_str) const
 {

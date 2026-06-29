@@ -47,79 +47,38 @@
 #include "builtin_interfaces/msg/duration.hpp"
 #include "builtin_interfaces/msg/time.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/time.hpp"
 
 namespace tf2_ros
 {
 
-inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
-{
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
-  builtin_interfaces::msg::Time time_msg;
-  time_msg.sec = static_cast<int32_t>(s.count());
-  time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return time_msg;
-}
+TF2_ROS_PUBLIC
+builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t);
 
-inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
-{
-  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
-}
+TF2_ROS_PUBLIC
+tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg);
 
-inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
-{
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t);
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t);
-  builtin_interfaces::msg::Duration duration_msg;
-  duration_msg.sec = static_cast<int32_t>(s.count());
-  duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return duration_msg;
-}
+TF2_ROS_PUBLIC
+builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t);
 
-inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
-{
-  int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
-}
+TF2_ROS_PUBLIC
+tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg);
 
-inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
-{
-  auto ns = std::chrono::duration<double, std::nano>(time_msg.nanosec);
-  auto s = std::chrono::duration<double>(time_msg.sec);
-  return (s + std::chrono::duration_cast<std::chrono::duration<double>>(ns)).count();
-}
+TF2_ROS_PUBLIC
+double timeToSec(const builtin_interfaces::msg::Time & time_msg);
 
-inline tf2::TimePoint fromRclcpp(const rclcpp::Time & time)
-{
-  // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
-  // Ignore that, and assume the clock used from rclcpp time points is consistent.
-  return tf2::TimePoint(std::chrono::nanoseconds(time.nanoseconds()));
-}
+TF2_ROS_PUBLIC
+tf2::TimePoint fromRclcpp(const rclcpp::Time & time);
 
-inline rclcpp::Time toRclcpp(const tf2::TimePoint & time)
-{
-  // tf2::TimePoint is a typedef to a system time point, but rclcpp::Time may be ROS time.
-  // Use whatever the default clock is.
-  return rclcpp::Time(std::chrono::nanoseconds(time.time_since_epoch()).count());
-}
+TF2_ROS_PUBLIC
+rclcpp::Time toRclcpp(const tf2::TimePoint & time);
 
-inline tf2::Duration fromRclcpp(const rclcpp::Duration & duration)
-{
-  return tf2::Duration(std::chrono::nanoseconds(duration.nanoseconds()));
-}
+TF2_ROS_PUBLIC
+tf2::Duration fromRclcpp(const rclcpp::Duration & duration);
 
-inline rclcpp::Duration toRclcpp(const tf2::Duration & duration)
-{
-  return rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
-}
+TF2_ROS_PUBLIC
+rclcpp::Duration toRclcpp(const tf2::Duration & duration);
 
 /** \brief Abstract interface for wrapping tf2::BufferCoreInterface in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.
@@ -353,9 +312,8 @@ public:
     return out;
   }
 
-  virtual ~BufferInterface()
-  {
-  }
+  TF2_ROS_PUBLIC
+  virtual ~BufferInterface();
 };
 
 }  // namespace tf2_ros

@@ -39,7 +39,7 @@
 
 #include "tf2_ros/visibility_control.hpp"
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/clock.hpp"
 
 namespace tf2_ros
 {
@@ -51,20 +51,14 @@ class CreateTimerInterfaceException : public std::runtime_error
 {
 public:
   TF2_ROS_PUBLIC
-  explicit CreateTimerInterfaceException(const std::string & errorDescription)
-  : std::runtime_error(errorDescription)
-  {
-  }
+  explicit CreateTimerInterfaceException(const std::string & errorDescription);
 };
 
 class InvalidTimerHandleException : public std::runtime_error
 {
 public:
   TF2_ROS_PUBLIC
-  explicit InvalidTimerHandleException(const std::string & description)
-  : std::runtime_error(description)
-  {
-  }
+  explicit InvalidTimerHandleException(const std::string & description);
 };
 
 /**

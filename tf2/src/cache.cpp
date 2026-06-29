@@ -59,6 +59,35 @@ TransformStorage::TransformStorage(
 {
 }
 
+TransformStorage::TransformStorage(const TransformStorage & rhs)
+{
+  *this = rhs;
+}
+
+TransformStorage & TransformStorage::operator=(const TransformStorage & rhs)
+{
+  rotation_ = rhs.rotation_;
+  translation_ = rhs.translation_;
+  stamp_ = rhs.stamp_;
+  frame_id_ = rhs.frame_id_;
+  child_frame_id_ = rhs.child_frame_id_;
+  return *this;
+}
+
+bool TransformStorage::operator==(const TransformStorage & rhs) const
+{
+  return (this->rotation_ == rhs.rotation_) &&
+         (this->translation_ == rhs.translation_) &&
+         (this->stamp_ == rhs.stamp_) &&
+         (this->frame_id_ == rhs.frame_id_) &&
+         (this->child_frame_id_ == rhs.child_frame_id_);
+}
+
+bool TransformStorage::operator!=(const TransformStorage & rhs) const
+{
+  return !(*this == rhs);
+}
+
 TimeCache::TimeCache(tf2::Duration max_storage_time)
 : max_storage_time_(max_storage_time)
 {}
