@@ -2,6 +2,13 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.1 (2026-06-29)
+-------------------
+* Optimize header includes (`#952 <https://github.com/ros2/geometry2/issues/952>`_)
+* Move implementation from hpp to cpp (`#951 <https://github.com/ros2/geometry2/issues/951>`_)
+* Cleanup headers (`#928 <https://github.com/ros2/geometry2/issues/928>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.46.0 (2026-05-07)
 -------------------
 

@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.1 (2026-06-29)
+-------------------
+* Optimize header includes (`#952 <https://github.com/ros2/geometry2/issues/952>`_)
+* Move implementation from hpp to cpp (`#951 <https://github.com/ros2/geometry2/issues/951>`_)
+* Change constructor overloads to sidestep uncrustify differences (`#949 <https://github.com/ros2/geometry2/issues/949>`_)
+* Cleanup headers (`#928 <https://github.com/ros2/geometry2/issues/928>`_)
+* Contributors: Alejandro Hernández Cordero, Michael Carroll
+
 0.46.0 (2026-05-07)
 -------------------
 * Improve tf2_ros::MessageFilter test reliability (`#929 <https://github.com/ros2/geometry2/issues/929>`_)

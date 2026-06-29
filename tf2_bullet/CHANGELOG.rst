@@ -2,6 +2,11 @@
 Changelog for package tf2_bullet
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.1 (2026-06-29)
+-------------------
+* Cleanup headers (`#928 <https://github.com/ros2/geometry2/issues/928>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.46.0 (2026-05-07)
 -------------------
 
