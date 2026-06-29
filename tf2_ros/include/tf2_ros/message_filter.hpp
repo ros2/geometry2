@@ -61,6 +61,7 @@
 
 #include "builtin_interfaces/msg/time.hpp"
 #include "rclcpp/duration.hpp"
+#include "rclcpp/node.hpp"
 #include "rclcpp/time.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
@@ -77,11 +78,6 @@
     "tf2_ros_message_filter", \
     std::string(std::string("MessageFilter [target=%s]: ") + std::string(fmt)).c_str(), \
     getTargetFramesString().c_str(), __VA_ARGS__)
-
-namespace rclcpp
-{
-class Node;
-}  // namespace rclcpp
 
 namespace tf2_ros
 {
