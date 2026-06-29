@@ -60,7 +60,9 @@
 #include "tf2_ros/visibility_control.hpp"
 
 #include "builtin_interfaces/msg/time.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/time.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
 #include "rclcpp/node_interfaces/get_node_logging_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_clock_interface.hpp"
@@ -220,7 +222,7 @@ public:
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of Node::SharedPtr&")]]
   MessageFilter(
     BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    const std::shared_ptr<rclcpp::Node> & node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(
@@ -268,7 +270,7 @@ public:
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of Node::SharedPtr&")]]
   MessageFilter(
     F & f, BufferT & buffer, const std::string & target_frame, uint32_t queue_size,
-    const rclcpp::Node::SharedPtr & node,
+    const std::shared_ptr<rclcpp::Node> & node,
     std::chrono::duration<TimeRepT, TimeT> buffer_timeout =
     std::chrono::duration<TimeRepT, TimeT>::max())
   : MessageFilter(

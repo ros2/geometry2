@@ -58,7 +58,17 @@
 #include "rclcpp/node_interfaces/node_services_interface.hpp"
 #include "rclcpp/node_interfaces/node_logging_interface.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/clock.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/qos.hpp"
+#include "rclcpp/service.hpp"
+#include "rclcpp/time.hpp"
+
+namespace rclcpp
+{
+class Node;
+}  // namespace rclcpp
 
 namespace tf2_ros
 {
@@ -101,7 +111,7 @@ public:
    * \param node If passed advertise the view_frames service that exposes debugging information from the buffer
    * \param  qos If passed change the quality of service of the frames_server_ service
    */
-  template<class NodeT = rclcpp::Node::SharedPtr, class AllocatorT = std::allocator<void>,
+  template<class NodeT = std::shared_ptr<rclcpp::Node>, class AllocatorT = std::allocator<void>,
     std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NoteT")]]
   Buffer(
@@ -275,11 +285,8 @@ public:
   cancel(const TransformStampedFuture & ts_future) override;
 
   TF2_ROS_PUBLIC
-  inline void
-  setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)
-  {
-    timer_interface_ = create_timer_interface;
-  }
+  void
+  setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface);
 
 private:
   void timerCallback(

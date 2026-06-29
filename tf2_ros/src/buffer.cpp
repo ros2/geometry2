@@ -39,6 +39,10 @@
 #include <sstream>
 #include <string>
 
+#include "rclcpp/create_service.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/utilities.hpp"
+
 namespace tf2_ros
 {
 inline
@@ -402,6 +406,12 @@ Buffer::waitForTransform(
     target_frame, source_frame,
     fromRclcpp(time), fromRclcpp(timeout),
     callback);
+}
+
+void
+Buffer::setCreateTimerInterface(CreateTimerInterface::SharedPtr create_timer_interface)
+{
+  timer_interface_ = create_timer_interface;
 }
 
 }  // namespace tf2_ros
