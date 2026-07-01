@@ -65,13 +65,6 @@ public:
     RequiredInterfaces node_interfaces,
     rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
 
-  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
-  TF2_ROS_PUBLIC
-  CreateTimerROS(
-    NodeBaseInterface::SharedPtr node_base,
-    NodeTimersInterface::SharedPtr node_timers,
-    rclcpp::CallbackGroup::SharedPtr callback_group = nullptr);
-
   virtual ~CreateTimerROS() = default;
 
   /**

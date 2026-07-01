@@ -36,7 +36,6 @@
 
 #include <functional>
 #include <memory>
-#include <type_traits>
 #include <thread>
 #include <utility>
 
@@ -145,63 +144,6 @@ public:
       options,
       static_options,
       static_only);
-  }
-
-  /** \brief Node constructor */
-  template<class NodeT, class AllocatorT = std::allocator<void>,
-    std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
-  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NodeT")]]
-  TransformListener(
-    tf2::BufferCore & buffer,
-    NodeT && node,
-    bool spin_thread = true,
-    const rclcpp::QoS & qos = DynamicListenerQoS(),
-    const rclcpp::QoS & static_qos = StaticListenerQoS(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
-    detail::get_default_transform_listener_sub_options<AllocatorT>(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>(),
-    bool static_only = false)
-  : TransformListener(
-      buffer,
-      RequiredInterfaces(node->get_node_base_interface(), node->get_node_logging_interface(),
-      node->get_node_parameters_interface(), node->get_node_topics_interface()),
-      spin_thread,
-      qos,
-      static_qos,
-      options,
-      static_options,
-      static_only)
-  {
-  }
-
-  /** \brief Node interface constructor */
-  template<class AllocatorT = std::allocator<void>>
-  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
-  TransformListener(
-    tf2::BufferCore & buffer,
-    NodeBaseInterface::SharedPtr node_base,
-    NodeLoggingInterface::SharedPtr node_logging,
-    NodeParametersInterface::SharedPtr node_parameters,
-    NodeTopicsInterface::SharedPtr node_topics,
-    bool spin_thread = true,
-    const rclcpp::QoS & qos = DynamicListenerQoS(),
-    const rclcpp::QoS & static_qos = StaticListenerQoS(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & options =
-    detail::get_default_transform_listener_sub_options<AllocatorT>(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>(),
-    bool static_only = false)
-  : TransformListener(
-      buffer,
-      RequiredInterfaces(node_base, node_logging, node_parameters, node_topics),
-      spin_thread,
-      qos,
-      static_qos,
-      options,
-      static_options,
-      static_only)
-  {
   }
 
   TF2_ROS_PUBLIC
@@ -331,55 +273,6 @@ public:
   : TransformListener(
       buffer,
       node_interfaces,
-      spin_thread,
-      rclcpp::QoS(1),
-      static_qos,
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>(),
-      static_options,
-      true)
-  {
-  }
-
-  /** \brief Node constructor */
-  template<class NodeT, class AllocatorT = std::allocator<void>,
-    std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
-  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NodeT")]]
-  StaticTransformListener(
-    tf2::BufferCore & buffer,
-    NodeT && node,
-    bool spin_thread = true,
-    const rclcpp::QoS & static_qos = StaticListenerQoS(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
-  : TransformListener(
-      buffer,
-      RequiredInterfaces(node->get_node_base_interface(), node->get_node_logging_interface(),
-      node->get_node_parameters_interface(), node->get_node_topics_interface()),
-      spin_thread,
-      rclcpp::QoS(1),
-      static_qos,
-      rclcpp::SubscriptionOptionsWithAllocator<AllocatorT>(),
-      static_options,
-      true)
-  {
-  }
-
-  /** \brief Node interface constructor */
-  template<class AllocatorT = std::allocator<void>>
-  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
-  StaticTransformListener(
-    tf2::BufferCore & buffer,
-    NodeBaseInterface::SharedPtr node_base,
-    NodeLoggingInterface::SharedPtr node_logging,
-    NodeParametersInterface::SharedPtr node_parameters,
-    NodeTopicsInterface::SharedPtr node_topics,
-    bool spin_thread = true,
-    const rclcpp::QoS & static_qos = StaticListenerQoS(),
-    const rclcpp::SubscriptionOptionsWithAllocator<AllocatorT> & static_options =
-    detail::get_default_transform_listener_static_sub_options<AllocatorT>())
-  : TransformListener(
-      buffer,
-      RequiredInterfaces(node_base, node_logging, node_parameters, node_topics),
       spin_thread,
       rclcpp::QoS(1),
       static_qos,
