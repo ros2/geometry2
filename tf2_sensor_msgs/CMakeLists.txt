@@ -65,7 +65,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_tf2_sensor_msgs_cpp test/test_tf2_sensor_msgs.cpp)
   if(TARGET test_tf2_sensor_msgs_cpp)
     target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
-    target_link_libraries(test_tf2_sensor_msgs_cpp PRIVATE
+    target_link_libraries(test_tf2_sensor_msgs_cpp
       ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       sensor_msgs::sensor_msgs
@@ -75,7 +75,7 @@ if(BUILD_TESTING)
     )
     if(TARGET Eigen3::Eigen)
       # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
-      target_link_libraries(test_tf2_sensor_msgs_cpp PRIVATE Eigen3::Eigen)
+      target_link_libraries(test_tf2_sensor_msgs_cpp Eigen3::Eigen)
     else()
       target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC ${Eigen3_INCLUDE_DIRS})
     endif()
@@ -83,7 +83,7 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_imu_transforms test/test_imu_transforms.cpp)
   target_include_directories(test_imu_transforms PUBLIC include)
-  target_link_libraries(test_imu_transforms PRIVATE
+  target_link_libraries(test_imu_transforms
     ament_cmake_ros_core::ament_ros_defaults
     geometry_msgs::geometry_msgs
     sensor_msgs::sensor_msgs

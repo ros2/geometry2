@@ -50,7 +50,7 @@ if(BUILD_TESTING)
 
   ament_add_gtest(tf2_eigen-test test/tf2_eigen-test.cpp)
   if(TARGET tf2_eigen-test)
-    target_link_libraries(tf2_eigen-test PRIVATE
+    target_link_libraries(tf2_eigen-test
       ament_cmake_ros_core::ament_ros_defaults
       tf2_eigen
       # Used, but not linked to test tf2_eigen's exports:

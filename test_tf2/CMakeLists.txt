@@ -36,7 +36,7 @@ if (BUILD_TESTING)
 
   ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
   if(TARGET buffer_core_test)
-    target_link_libraries(buffer_core_test PRIVATE
+    target_link_libraries(buffer_core_test
       ament_cmake_ros_core::ament_ros_defaults
       builtin_interfaces::builtin_interfaces
       geometry_msgs::geometry_msgs
@@ -48,7 +48,7 @@ if (BUILD_TESTING)
 
   ament_add_gtest(test_message_filter test/test_message_filter.cpp)
   if(TARGET test_message_filter)
-    target_link_libraries(test_message_filter PRIVATE
+    target_link_libraries(test_message_filter
       ament_cmake_ros_core::ament_ros_defaults
       builtin_interfaces::builtin_interfaces
       geometry_msgs::geometry_msgs
@@ -59,7 +59,7 @@ if (BUILD_TESTING)
 
   ament_add_gtest(test_convert test/test_convert.cpp)
   if(TARGET test_convert)
-    target_link_libraries(test_convert PRIVATE
+    target_link_libraries(test_convert
       ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       tf2::tf2
@@ -69,7 +69,7 @@ if (BUILD_TESTING)
       tf2_kdl::tf2_kdl)
     if(TARGET Eigen3::Eigen)
       # TODO(sloretz) require target to exist when https://github.com/ros2/choco-packages/issues/19 is addressed
-      target_link_libraries(test_convert PRIVATE Eigen3::Eigen)
+      target_link_libraries(test_convert Eigen3::Eigen)
     else()
       target_include_directories(test_convert PRIVATE ${Eigen3_INCLUDE_DIRS})
     endif()
@@ -77,7 +77,7 @@ if (BUILD_TESTING)
 
   ament_add_gtest(test_utils test/test_utils.cpp)
   if(TARGET test_utils)
-    target_link_libraries(test_utils PRIVATE
+    target_link_libraries(test_utils
       ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       tf2::tf2
@@ -120,7 +120,7 @@ if (BUILD_TESTING)
 
   ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
   if(TARGET test_tf2_bullet)
-    target_link_libraries(test_tf2_bullet PRIVATE
+    target_link_libraries(test_tf2_bullet
       ament_cmake_ros_core::ament_ros_defaults
       rclcpp::rclcpp
       tf2_bullet::tf2_bullet

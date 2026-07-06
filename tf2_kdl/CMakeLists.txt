@@ -43,7 +43,7 @@ if(BUILD_TESTING)
   find_package(rclcpp REQUIRED)
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
-  target_link_libraries(test_kdl PRIVATE
+  target_link_libraries(test_kdl
     ament_cmake_ros_core::ament_ros_defaults
     Eigen3::Eigen
     tf2_kdl

@@ -59,7 +59,7 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_tf2_geometry_msgs test/test_tf2_geometry_msgs.cpp)
   if(TARGET test_tf2_geometry_msgs)
-    target_link_libraries(test_tf2_geometry_msgs PRIVATE
+    target_link_libraries(test_tf2_geometry_msgs
       ament_cmake_ros_core::ament_ros_defaults
       ${PROJECT_NAME}
       Eigen3::Eigen

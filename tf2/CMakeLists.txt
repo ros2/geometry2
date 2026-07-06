@@ -90,25 +90,25 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_cache_unittest test/cache_unittest.cpp)
   if(TARGET test_cache_unittest)
-    target_link_libraries(test_cache_unittest PRIVATE
+    target_link_libraries(test_cache_unittest
       ament_cmake_ros_core::ament_ros_defaults tf2)
   endif()
 
   ament_add_google_benchmark(cache_benchmark test/cache_benchmark.cpp)
   if(TARGET cache_benchmark)
-    target_link_libraries(cache_benchmark PRIVATE
+    target_link_libraries(cache_benchmark
       ament_cmake_ros_core::ament_ros_defaults tf2)
   endif()
 
   ament_add_gtest(test_static_cache_unittest test/static_cache_test.cpp)
   if(TARGET test_static_cache_unittest)
-    target_link_libraries(test_static_cache_unittest PRIVATE
+    target_link_libraries(test_static_cache_unittest
       ament_cmake_ros_core::ament_ros_defaults tf2)
   endif()
 
   ament_add_gtest(test_simple_tf2_core test/simple_tf2_core.cpp)
   if(TARGET test_simple_tf2_core)
-    target_link_libraries(test_simple_tf2_core PRIVATE
+    target_link_libraries(test_simple_tf2_core
       ament_cmake_ros_core::ament_ros_defaults
       builtin_interfaces::builtin_interfaces
       tf2
@@ -119,13 +119,13 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_time test/test_time.cpp)
   if(TARGET test_time)
-    target_link_libraries(test_time PRIVATE
+    target_link_libraries(test_time
       ament_cmake_ros_core::ament_ros_defaults tf2)
   endif()
 
   ament_add_gtest(test_storage test/test_storage.cpp)
   if(TARGET test_storage)
-    target_link_libraries(test_storage PRIVATE
+    target_link_libraries(test_storage
       ament_cmake_ros_core::ament_ros_defaults tf2)
   endif()
 endif()

@@ -39,7 +39,7 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_cmake_ros_core REQUIRED)
   ament_add_gtest(test_bullet test/test_tf2_bullet.cpp)
-  target_link_libraries(test_bullet PRIVATE
+  target_link_libraries(test_bullet
     ament_cmake_ros_core::ament_ros_defaults tf2_bullet)
 endif()
 
