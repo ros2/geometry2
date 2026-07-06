@@ -33,6 +33,7 @@
   <build_export_depend>liborocos-kdl-dev</build_export_depend>
 
   <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_cmake_ros_core</test_depend>
   <test_depend>rclcpp</test_depend>
 
   <doc_depend>PyKDL</doc_depend>
