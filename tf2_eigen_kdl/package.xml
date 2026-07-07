@@ -18,6 +18,7 @@
   <author>Stuart Glaser</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_ros_core</buildtool_depend>
 
   <build_depend>eigen</build_depend>
   <build_depend>liborocos-kdl-dev</build_depend>

@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(tf2_bullet)
 
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
@@ -43,8 +37,10 @@ if(BUILD_TESTING)
   ament_cppcheck(LANGUAGE c++)
 
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros_core REQUIRED)
   ament_add_gtest(test_bullet test/test_tf2_bullet.cpp)
-  target_link_libraries(test_bullet tf2_bullet)
+  target_link_libraries(test_bullet
+    ament_cmake_ros_core::ament_ros_defaults tf2_bullet)
 endif()
 
 ament_export_targets(export_tf2_bullet)

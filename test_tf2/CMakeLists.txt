@@ -9,18 +9,13 @@ if(NOT BUILD_TESTING)
   return()
 endif()
 
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
 
 if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros_core REQUIRED)
   find_package(builtin_interfaces REQUIRED)
 # Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
   find_package(Eigen3 QUIET NO_MODULE)
@@ -42,6 +37,7 @@ if (BUILD_TESTING)
   ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
   if(TARGET buffer_core_test)
     target_link_libraries(buffer_core_test
+      ament_cmake_ros_core::ament_ros_defaults
       builtin_interfaces::builtin_interfaces
       geometry_msgs::geometry_msgs
       rclcpp::rclcpp
@@ -53,6 +49,7 @@ if (BUILD_TESTING)
   ament_add_gtest(test_message_filter test/test_message_filter.cpp)
   if(TARGET test_message_filter)
     target_link_libraries(test_message_filter
+      ament_cmake_ros_core::ament_ros_defaults
       builtin_interfaces::builtin_interfaces
       geometry_msgs::geometry_msgs
       rclcpp::rclcpp
@@ -63,6 +60,7 @@ if (BUILD_TESTING)
   ament_add_gtest(test_convert test/test_convert.cpp)
   if(TARGET test_convert)
     target_link_libraries(test_convert
+      ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       tf2::tf2
       tf2_bullet::tf2_bullet
@@ -80,6 +78,7 @@ if (BUILD_TESTING)
   ament_add_gtest(test_utils test/test_utils.cpp)
   if(TARGET test_utils)
     target_link_libraries(test_utils
+      ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       tf2::tf2
       tf2_geometry_msgs::tf2_geometry_msgs
@@ -88,14 +87,16 @@ if (BUILD_TESTING)
 
   add_executable(test_buffer_server test/test_buffer_server.cpp)
   if(TARGET test_buffer_server)
-    target_link_libraries(test_buffer_server
+    target_link_libraries(test_buffer_server PRIVATE
+      ament_cmake_ros_core::ament_ros_defaults
       rclcpp::rclcpp
       tf2_ros::tf2_ros)
   endif()
 
   add_executable(test_buffer_client test/test_buffer_client.cpp)
   if(TARGET test_buffer_client)
-    target_link_libraries(test_buffer_client
+    target_link_libraries(test_buffer_client PRIVATE
+      ament_cmake_ros_core::ament_ros_defaults
       ${GTEST_LIBRARIES}
       rclcpp::rclcpp
       tf2_bullet::tf2_bullet
@@ -107,7 +108,8 @@ if (BUILD_TESTING)
 
   add_executable(test_static_publisher test/test_static_publisher.cpp)
   if(TARGET test_static_publisher)
-    target_link_libraries(test_static_publisher
+    target_link_libraries(test_static_publisher PRIVATE
+      ament_cmake_ros_core::ament_ros_defaults
       ${GTEST_LIBRARIES}
       geometry_msgs::geometry_msgs
       rclcpp::rclcpp
@@ -119,6 +121,7 @@ if (BUILD_TESTING)
   ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
   if(TARGET test_tf2_bullet)
     target_link_libraries(test_tf2_bullet
+      ament_cmake_ros_core::ament_ros_defaults
       rclcpp::rclcpp
       tf2_bullet::tf2_bullet
       tf2_ros::tf2_ros

@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(tf2_sensor_msgs)
 
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
@@ -57,6 +52,7 @@ endif()
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros_core REQUIRED)
   find_package(ament_lint_auto REQUIRED)
   find_package(rclcpp REQUIRED)
   find_package(tf2_geometry_msgs REQUIRED)
@@ -70,6 +66,7 @@ if(BUILD_TESTING)
   if(TARGET test_tf2_sensor_msgs_cpp)
     target_include_directories(test_tf2_sensor_msgs_cpp PUBLIC include)
     target_link_libraries(test_tf2_sensor_msgs_cpp
+      ament_cmake_ros_core::ament_ros_defaults
       geometry_msgs::geometry_msgs
       sensor_msgs::sensor_msgs
       rclcpp::rclcpp
@@ -87,6 +84,7 @@ if(BUILD_TESTING)
   ament_add_gtest(test_imu_transforms test/test_imu_transforms.cpp)
   target_include_directories(test_imu_transforms PUBLIC include)
   target_link_libraries(test_imu_transforms
+    ament_cmake_ros_core::ament_ros_defaults
     geometry_msgs::geometry_msgs
     sensor_msgs::sensor_msgs
     Eigen3::Eigen

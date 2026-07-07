@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(tf2_kdl)
 
-# Default to C++17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Woverloaded-virtual)
 endif()
@@ -45,10 +39,12 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros_core REQUIRED)
   find_package(rclcpp REQUIRED)
 
   ament_add_gtest(test_kdl test/test_tf2_kdl.cpp)
   target_link_libraries(test_kdl
+    ament_cmake_ros_core::ament_ros_defaults
     Eigen3::Eigen
     tf2_kdl
     rclcpp::rclcpp
