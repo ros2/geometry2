@@ -113,7 +113,8 @@ def main():
         cli.destroy()
         node.destroy_node()
         rclpy.shutdown()
-        return ret
+
+    return ret
 
 
 def generate_dot(data, recorded_time):
