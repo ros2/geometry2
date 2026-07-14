@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.8 (2026-07-14)
+-------------------
+* Cleanup headers (backport `#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#944 <https://github.com/ros2/geometry2/issues/944>`_)
+* fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#922 <https://github.com/ros2/geometry2/issues/922>`_)
+* Contributors: mergify[bot]
+
 0.41.7 (2026-03-24)
 -------------------
 
