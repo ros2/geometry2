@@ -89,18 +89,33 @@ public:
   template<class NodeT, class AllocatorT = std::allocator<void>,
     std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NodeT")]]
+  explicit StaticTransformBroadcaster(NodeT && node)
+  : StaticTransformBroadcaster(
+      RequiredInterfaces(node->get_node_parameters_interface(),
+      node->get_node_topics_interface()))
+  {
+  }
+
+  template<class NodeT, class AllocatorT = std::allocator<void>,
+    std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NodeT")]]
   StaticTransformBroadcaster(
     NodeT && node,
-    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
-      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } ())
-    : StaticTransformBroadcaster(
+    const rclcpp::QoS & qos)
+  : StaticTransformBroadcaster(
+      RequiredInterfaces(node->get_node_parameters_interface(),
+      node->get_node_topics_interface()), qos)
+  {
+  }
+
+  template<class NodeT, class AllocatorT = std::allocator<void>,
+    std::enable_if_t<rcpputils::is_pointer<NodeT>::value, bool> = true>
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of NodeT")]]
+  StaticTransformBroadcaster(
+    NodeT && node,
+    const rclcpp::QoS & qos,
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options)
+  : StaticTransformBroadcaster(
       RequiredInterfaces(node->get_node_parameters_interface(),
       node->get_node_topics_interface()), qos, options)
   {
@@ -111,17 +126,31 @@ public:
   [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
   StaticTransformBroadcaster(
     NodeParametersInterface::SharedPtr node_parameters,
+    NodeTopicsInterface::SharedPtr node_topics)
+  : StaticTransformBroadcaster(
+      RequiredInterfaces(node_parameters, node_topics))
+  {
+  }
+
+  template<class AllocatorT = std::allocator<void>>
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
+  StaticTransformBroadcaster(
+    NodeParametersInterface::SharedPtr node_parameters,
     NodeTopicsInterface::SharedPtr node_topics,
-    const rclcpp::QoS & qos = StaticBroadcasterQoS(),
-    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options = [] () {
-      rclcpp::PublisherOptionsWithAllocator<AllocatorT> options;
-      options.qos_overriding_options = rclcpp::QosOverridingOptions{
-        rclcpp::QosPolicyKind::Depth,
-        rclcpp::QosPolicyKind::History,
-        rclcpp::QosPolicyKind::Reliability};
-      return options;
-    } ())
-    : StaticTransformBroadcaster(
+    const rclcpp::QoS & qos)
+  : StaticTransformBroadcaster(
+      RequiredInterfaces(node_parameters, node_topics), qos)
+  {
+  }
+
+  template<class AllocatorT = std::allocator<void>>
+  [[deprecated("Use rclcpp::node_interfaces::NodeInterfaces instead of multiple interfaces")]]
+  StaticTransformBroadcaster(
+    NodeParametersInterface::SharedPtr node_parameters,
+    NodeTopicsInterface::SharedPtr node_topics,
+    const rclcpp::QoS & qos,
+    const rclcpp::PublisherOptionsWithAllocator<AllocatorT> & options)
+  : StaticTransformBroadcaster(
       RequiredInterfaces(node_parameters, node_topics), qos, options)
   {
   }
