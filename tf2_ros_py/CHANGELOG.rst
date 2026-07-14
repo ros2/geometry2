@@ -2,6 +2,13 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.21 (2026-07-14)
+--------------------
+* tf2_ros_py: Make node parameter optional in TransformListener (`#935 <https://github.com/ros2/geometry2/issues/935>`_) (`#939 <https://github.com/ros2/geometry2/issues/939>`_)
+* tf2_ros_py: Ignore ExternalShutdownException in background thread (backport `#930 <https://github.com/ros2/geometry2/issues/930>`_) (`#934 <https://github.com/ros2/geometry2/issues/934>`_)
+* Correct typos (backport `#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#924 <https://github.com/ros2/geometry2/issues/924>`_)
+* Contributors: mergify[bot]
+
 0.25.20 (2026-03-24)
 --------------------
 * prevent AttributeError when static_only=true (backport `#906 <https://github.com/ros2/geometry2/issues/906>`_) (`#915 <https://github.com/ros2/geometry2/issues/915>`_)
