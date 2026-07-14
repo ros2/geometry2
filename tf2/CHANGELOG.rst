@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.8 (2026-07-14)
+-------------------
+* Cleanup headers (`#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#943 <https://github.com/ros2/geometry2/issues/943>`_)
+* Contributors: mergify[bot]
+
 0.45.7 (2026-04-09)
 -------------------
 * Added tests for static cache (`#920 <https://github.com/ros2/geometry2/issues/920>`_)
