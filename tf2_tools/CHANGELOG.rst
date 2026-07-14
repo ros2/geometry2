@@ -2,6 +2,11 @@
 Changelog for package tf2_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.2 (2026-07-14)
+-------------------
+* Removed warning in tf2_tools (`#954 <https://github.com/ros2/geometry2/issues/954>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.46.1 (2026-06-29)
 -------------------
 

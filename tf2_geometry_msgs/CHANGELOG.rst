@@ -2,6 +2,11 @@
 Changelog for package tf2_geometry_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.2 (2026-07-14)
+-------------------
+* use C++ 20 in default. (`#953 <https://github.com/ros2/geometry2/issues/953>`_)
+* Contributors: Tomoya Fujita
+
 0.46.1 (2026-06-29)
 -------------------
 

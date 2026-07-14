@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.2 (2026-07-14)
+-------------------
+* use C++ 20 in default. (`#953 <https://github.com/ros2/geometry2/issues/953>`_)
+* Removed deprecated code (`#940 <https://github.com/ros2/geometry2/issues/940>`_)
+* Contributors: Alejandro Hernández Cordero, Tomoya Fujita
+
 0.46.1 (2026-06-29)
 -------------------
 * Optimize header includes (`#952 <https://github.com/ros2/geometry2/issues/952>`_)
