@@ -13,11 +13,7 @@
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-<<<<<<< HEAD
-=======
   <buildtool_depend>ament_cmake_gen_version_h</buildtool_depend>
-  <buildtool_depend>ament_cmake_ros_core</buildtool_depend>
->>>>>>> 157ee1d (Add generated version header for tf2_ros (#955))
 
   <depend>builtin_interfaces</depend>
   <depend>geometry_msgs</depend>
