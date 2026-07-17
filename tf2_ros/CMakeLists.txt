@@ -11,6 +11,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+<<<<<<< HEAD
+=======
+find_package(ament_cmake_gen_version_h REQUIRED)
+find_package(ament_cmake_ros_core REQUIRED)
+>>>>>>> 157ee1d (Add generated version header for tf2_ros (#955))
 find_package(builtin_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(message_filters REQUIRED)
@@ -240,3 +245,4 @@ ament_export_dependencies(
   tf2_msgs
 )
 ament_package()
+ament_generate_version_header(${PROJECT_NAME})
