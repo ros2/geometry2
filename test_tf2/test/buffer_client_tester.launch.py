@@ -9,6 +9,7 @@ from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 import launch_testing
 import launch_testing.actions
+from launch_testing_ros.actions import EnableRmwIsolation
 
 
 def generate_test_description():
@@ -33,6 +34,7 @@ def generate_test_description():
         sigterm_timeout=LaunchConfiguration('sigterm_timeout', default=2)
     )
     return LaunchDescription([
+        EnableRmwIsolation(),
         node_static_transform_publisher,
         node_buffer_server,
         node_under_test,
