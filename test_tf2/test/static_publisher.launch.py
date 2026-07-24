@@ -9,6 +9,7 @@ from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
 import launch_testing
 import launch_testing.actions
+from launch_testing_ros.actions import EnableRmwIsolation
 
 def generate_test_description():
     node_under_test = Node(
@@ -31,6 +32,7 @@ def generate_test_description():
     )
 
     return LaunchDescription([
+        EnableRmwIsolation(),
         node_static_transform_publisher_1,
         node_static_transform_publisher_2,
         node_under_test,
