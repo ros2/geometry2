@@ -38,6 +38,7 @@
 #include <geometry_msgs/msg/point_stamped.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
+#include <rclcpp/utilities.hpp>
 #include <tf2/convert.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <tf2_kdl/tf2_kdl.hpp>
