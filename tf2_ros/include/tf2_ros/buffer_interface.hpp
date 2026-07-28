@@ -34,9 +34,6 @@
 #ifndef TF2_ROS__BUFFER_INTERFACE_HPP_
 #define TF2_ROS__BUFFER_INTERFACE_HPP_
 
-#include <chrono>
-#include <functional>
-#include <future>
 #include <string>
 
 #include "tf2_ros/visibility_control.hpp"
