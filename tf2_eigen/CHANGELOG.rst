@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.25.22 (2026-07-28)
+--------------------
+
 0.25.21 (2026-07-14)
 --------------------
 * Correct typos (backport `#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#924 <https://github.com/ros2/geometry2/issues/924>`_)
