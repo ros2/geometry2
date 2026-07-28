@@ -2,6 +2,9 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.22 (2026-07-28)
+--------------------
+
 0.36.21 (2026-06-02)
 --------------------
 * Cleanup headers (backport `#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#945 <https://github.com/ros2/geometry2/issues/945>`_)

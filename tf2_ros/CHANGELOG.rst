@@ -2,6 +2,11 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.22 (2026-07-28)
+--------------------
+* Add generated version header for tf2_ros (backport `#955 <https://github.com/ros2/geometry2/issues/955>`_) (`#958 <https://github.com/ros2/geometry2/issues/958>`_)
+* Contributors: mergify[bot]
+
 0.36.21 (2026-06-02)
 --------------------
 * Backport of `#673 <https://github.com/ros2/geometry2/issues/673>`_ ("Adding static transform listener") to jazzy with ABI compatibility preserved (`#927 <https://github.com/ros2/geometry2/issues/927>`_)

@@ -2,13 +2,12 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.36.22 (2026-07-28)
+--------------------
+
 0.36.21 (2026-06-02)
 --------------------
 * Correct typos (backport `#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#923 <https://github.com/ros2/geometry2/issues/923>`_)
-  * fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_)
-  (cherry picked from commit febd947629a687583cbd5d52a8e965df80388e11)
-  Co-authored-by: Auguste Lalande <auguste.lalande@gmail.com>
-  Co-authored-by: Alejandro Hernandez Cordero <ahcorde@gmail.com>
 * Contributors: mergify[bot]
 
 0.36.20 (2026-03-24)
