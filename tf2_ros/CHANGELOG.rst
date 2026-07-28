@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.3 (2026-07-28)
+-------------------
+* Cleanup message filters headers (`#963 <https://github.com/ros2/geometry2/issues/963>`_)
+* Add generated version header for tf2_ros (`#955 <https://github.com/ros2/geometry2/issues/955>`_)
+* Contributors: Alejandro Hernández Cordero, Maurice Alexander Purnawan
+
 0.46.2 (2026-07-14)
 -------------------
 * use C++ 20 in default. (`#953 <https://github.com/ros2/geometry2/issues/953>`_)

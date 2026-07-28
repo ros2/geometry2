@@ -2,6 +2,11 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.3 (2026-07-28)
+-------------------
+* Removed redundant header in tf2_eigen (`#964 <https://github.com/ros2/geometry2/issues/964>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.46.2 (2026-07-14)
 -------------------
 * use C++ 20 in default. (`#953 <https://github.com/ros2/geometry2/issues/953>`_)
