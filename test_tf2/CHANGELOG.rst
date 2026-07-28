@@ -2,6 +2,11 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.9 (2026-07-28)
+-------------------
+* Run RMW tests in isolation (`#960 <https://github.com/ros2/geometry2/issues/960>`_) (`#961 <https://github.com/ros2/geometry2/issues/961>`_)
+* Contributors: mergify[bot]
+
 0.45.8 (2026-07-14)
 -------------------
 

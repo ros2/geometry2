@@ -2,6 +2,13 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.9 (2026-07-28)
+-------------------
+* Add generated version header for tf2_ros (backport `#955 <https://github.com/ros2/geometry2/issues/955>`_) (`#956 <https://github.com/ros2/geometry2/issues/956>`_)
+* Merge pull request `#950 <https://github.com/ros2/geometry2/issues/950>`_ from ros2/mergify/bp/lyrical/pr-949
+* Change constructor overloads to sidestep uncrustify differences (`#949 <https://github.com/ros2/geometry2/issues/949>`_)
+* Contributors: Janosch Machowinski, Michael Carroll, mergify[bot]
+
 0.45.8 (2026-07-14)
 -------------------
 * Cleanup headers (`#928 <https://github.com/ros2/geometry2/issues/928>`_) (`#943 <https://github.com/ros2/geometry2/issues/943>`_)
