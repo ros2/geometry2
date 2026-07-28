@@ -2,6 +2,9 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.9 (2026-07-28)
+-------------------
+
 0.41.8 (2026-07-14)
 -------------------
 * fix typos (`#921 <https://github.com/ros2/geometry2/issues/921>`_) (`#922 <https://github.com/ros2/geometry2/issues/922>`_)
