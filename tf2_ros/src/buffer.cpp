@@ -255,30 +255,39 @@ Buffer::waitForTransform(
       callback(future);
     };
 
-  auto handle = addTransformableRequest(cb, target_frame, source_frame, time);
-  future.setHandle(handle);
-  if (0 == handle) {
-    // Immediately transformable
-    geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(
-      target_frame, source_frame, time);
-    promise->set_value(msg_stamped);
-    callback(future);
-  } else if (0xffffffffffffffffULL == handle) {
-    // Never transformable
-    promise->set_exception(
-      std::make_exception_ptr(
-        tf2::LookupException(
-          "Failed to transform from " + source_frame + " to " + target_frame)));
-    callback(future);
-  } else {
+  bool call_callback = false;
+  {
+    // Putting the lock here to avoid a race condition where the callback is called before
+    // the timer handle is inserted into timer_to_request_map_. Otherwise, it gets wrongly
+    // discarded.
     std::lock_guard<std::mutex> lock(timer_to_request_map_mutex_);
-    auto timer_handle = timer_interface_->createTimer(
-      clock_,
-      timeout,
-      std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
+    auto handle = addTransformableRequest(cb, target_frame, source_frame, time);
+    future.setHandle(handle);
+    if (0 == handle) {
+      // Immediately transformable
+      geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(
+        target_frame, source_frame, time);
+      promise->set_value(msg_stamped);
+      call_callback = true;
+    } else if (0xffffffffffffffffULL == handle) {
+      // Never transformable
+      promise->set_exception(
+        std::make_exception_ptr(
+          tf2::LookupException(
+            "Failed to transform from " + source_frame + " to " + target_frame)));
+      call_callback = true;
+    } else {
+      auto timer_handle = timer_interface_->createTimer(
+        clock_,
+        timeout,
+        std::bind(&Buffer::timerCallback, this, std::placeholders::_1, promise, future, callback));
 
-    // Save association between timer and request handle
-    timer_to_request_map_[timer_handle] = handle;
+      // Save association between timer and request handle
+      timer_to_request_map_[timer_handle] = handle;
+    }
+  }
+  if (call_callback) {
+    callback(future);
   }
   return future;
 }
