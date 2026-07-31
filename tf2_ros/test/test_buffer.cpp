@@ -29,6 +29,7 @@
 
 #include <chrono>
 #include <exception>
+#include <functional>
 #include <future>
 #include <memory>
 #include <unordered_map>
