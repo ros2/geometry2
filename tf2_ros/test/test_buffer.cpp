@@ -32,6 +32,7 @@
 #include <functional>
 #include <future>
 #include <memory>
+#include <thread>
 #include <unordered_map>
 
 #include "gtest/gtest.h"
@@ -545,6 +546,47 @@ TEST(test_buffer, timer_ros_wait_for_transform_race)
   EXPECT_EQ(status, std::future_status::ready);
   EXPECT_FALSE(callback_timeout);
   rclcpp::shutdown();
+}
+
+// Regression test: setTransform arriving after addTransformableRequest registers cb but
+// before the timer handle is inserted into timer_to_request_map_ must not be silently
+// dropped. This is a race condition that does not always occur hence high number of iterations.
+// To reliably reproduce the race condition, add a short sleep before creating the timer
+// in buffer.cpp
+TEST(test_buffer, wait_for_transform_race_during_setup)
+{
+  constexpr int iterations = 100;
+  for (int i = 0; i < iterations; ++i) {
+    rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+    tf2_ros::Buffer buffer(clock);
+    buffer.setUsingDedicatedThread(true);
+    auto mock_create_timer = std::make_shared<MockCreateTimer>();
+    buffer.setCreateTimerInterface(mock_create_timer);
+    rclcpp::Time rclcpp_time = clock->now();
+    tf2::TimePoint tf2_time(std::chrono::nanoseconds(rclcpp_time.nanoseconds()));
+    geometry_msgs::msg::TransformStamped transform;
+    transform.header.frame_id = "foo";
+    transform.header.stamp = builtin_interfaces::msg::Time(rclcpp_time);
+    transform.child_frame_id = "bar";
+    transform.transform.rotation.w = 1.0;
+    bool callback_timeout = false;
+    std::thread tf_thread([&]() {
+        buffer.setTransform(transform, "unittest");
+      });
+    auto future = buffer.waitForTransform(
+      "foo", "bar", tf2_time, tf2::durationFromSec(0.1),
+      [&callback_timeout](const tf2_ros::TransformStampedFuture & future) {
+        try {
+          future.get();
+        } catch (...) {
+          callback_timeout = true;
+        }
+      });
+    tf_thread.join();
+    const auto status = future.wait_for(std::chrono::milliseconds(200));
+    ASSERT_EQ(status, std::future_status::ready) << "Failed at iteration " << i;
+    ASSERT_FALSE(callback_timeout) << "Failed at iteration " << i;
+  }
 }
 
 int main(int argc, char ** argv)
