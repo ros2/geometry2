@@ -177,6 +177,7 @@ if(BUILD_TESTING)
   ament_add_gtest(${PROJECT_NAME}_test_transform_listener test/test_transform_listener.cpp)
   target_link_libraries(${PROJECT_NAME}_test_transform_listener
     ${PROJECT_NAME}
+    ${rcl_interfaces_TARGETS}
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
   )

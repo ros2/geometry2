@@ -266,6 +266,9 @@ private:
       // Create executor with dedicated thread to spin.
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
       executor_->add_callback_group(callback_group_, node_base_interface_);
+      if (optional_default_node_) {
+        executor_->add_node(optional_default_node_);
+      }
       dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
       // Tell the buffer we have a dedicated thread to enable timeouts
       buffer_.setUsingDedicatedThread(true);
@@ -334,6 +337,9 @@ private:
 
       executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
       executor_->add_callback_group(callback_group_, node_base_interface_);
+      if (optional_default_node_) {
+        executor_->add_node(optional_default_node_);
+      }
       dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
       buffer_.setUsingDedicatedThread(true);
     } else {
