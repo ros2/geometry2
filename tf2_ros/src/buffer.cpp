@@ -155,8 +155,16 @@ Buffer::canTransform(
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
+<<<<<<< HEAD
     // TODO(sloretz) sleep using clock_->sleep_for when implemented
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+=======
+    auto remaining_ns = ((start_time + rclcpp_timeout) - clock_->now()).nanoseconds();
+    if (remaining_ns > 0) {
+      clock_->sleep_for(std::chrono::nanoseconds(std::min(remaining_ns,
+          static_cast<int64_t>(10000000))));
+    }
+>>>>>>> 2eccfcd (Fixed sub 10ms timeout (#967))
   }
   bool retval = canTransform(target_frame, source_frame, time, errstr);
   rclcpp::Time current_time = clock_->now();
@@ -185,8 +193,16 @@ Buffer::canTransform(
     (clock_->now() + rclcpp::Duration(3, 0) >= start_time) &&  // don't wait bag loop detected
     (rclcpp::ok()))  // Make sure we haven't been stopped (won't work for pytf)
   {
+<<<<<<< HEAD
     // TODO(sloretz) sleep using clock_->sleep_for when implemented
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+=======
+    auto remaining_ns = ((start_time + rclcpp_timeout) - clock_->now()).nanoseconds();
+    if (remaining_ns > 0) {
+      clock_->sleep_for(std::chrono::nanoseconds(std::min(remaining_ns,
+          static_cast<int64_t>(10000000))));
+    }
+>>>>>>> 2eccfcd (Fixed sub 10ms timeout (#967))
   }
   bool retval = canTransform(
     target_frame, target_time,
