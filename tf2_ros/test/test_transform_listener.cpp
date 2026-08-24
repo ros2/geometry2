@@ -37,7 +37,6 @@
 #include <tf2_ros/transform_broadcaster.hpp>
 #include <tf2_ros/static_transform_broadcaster.hpp>
 
-
 #include "node_wrapper.hpp"
 
 class CustomNode : public rclcpp::Node
@@ -131,6 +130,7 @@ TEST(tf2_test_static_transform_listener, static_transform_listener_rclcpp_node)
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
+  tf2_ros::StaticTransformListener stfl(buffer, node, false);
 }
 
 TEST(tf2_test_static_transform_listener, static_transform_listener_custom_rclcpp_node)
@@ -139,7 +139,7 @@ TEST(tf2_test_static_transform_listener, static_transform_listener_custom_rclcpp
 
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
-  tf2_ros::StaticTransformListener tfl(buffer, node, false);
+  tf2_ros::StaticTransformListener stfl(buffer, node, false);
 }
 
 TEST(tf2_test_static_transform_listener, static_transform_listener_as_member)
@@ -192,13 +192,15 @@ TEST(tf2_test_listeners, static_vs_dynamic)
   // Dynamic buffer should have both dynamic and static transforms available
   EXPECT_NO_THROW(
     dynamic_buffer.lookupTransform("parent_dynamic", "child_dynamic", tf2::TimePointZero));
-  EXPECT_NO_THROW(dynamic_buffer.lookupTransform("parent_static", "child_static", clock->now()));
+  EXPECT_NO_THROW(
+    dynamic_buffer.lookupTransform("parent_static", "child_static", tf2::TimePointZero));
 
   // Static buffer should have only static transforms available
   EXPECT_THROW(
     static_buffer.lookupTransform("parent_dynamic", "child_dynamic", tf2::TimePointZero),
     tf2::LookupException);
-  EXPECT_NO_THROW(static_buffer.lookupTransform("parent_static", "child_static", clock->now()));
+  EXPECT_NO_THROW(
+    static_buffer.lookupTransform("parent_static", "child_static", tf2::TimePointZero));
 }
 
 int main(int argc, char ** argv)
