@@ -1397,13 +1397,8 @@ TransformableRequestHandle BufferCore::addTransformableRequest(
     req.request_handle = 1;
   }
 
-  if (req.target_id == 0) {
-    req.target_string = target_frame;
-  }
-
-  if (req.source_id == 0) {
-    req.source_string = source_frame;
-  }
+  req.target_string = req.target_id == 0 ? target_frame : lookupFrameString(req.target_id);
+  req.source_string = req.source_id == 0 ? source_frame : lookupFrameString(req.source_id);
 
   transformable_requests_.push_back(req);
 
@@ -1537,24 +1532,35 @@ void BufferCore::testTransformableRequests()
     }
 
     if (do_cb) {
+      M_TransformableCallback::node_type callback_node;
+      const TransformableRequestHandle request_handle = req.request_handle;
+      std::string target_frame = std::move(req.target_string);
+      std::string source_frame = std::move(req.source_string);
+      const TimePoint request_time = req.time;
       {
         std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
         M_TransformableCallback::iterator cb_it = transformable_callbacks_.find(req.cb_handle);
         if (cb_it != transformable_callbacks_.end()) {
-          const TransformableCallback & cb = cb_it->second;
-          cb(
-            req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
-              req.source_id), req.time, result);
-          transformable_callbacks_.erase(req.cb_handle);
+          callback_node = transformable_callbacks_.extract(cb_it);
         }
       }
 
-      // Swap with the last element and pop to remove in O(1).
-      // Do not advance i: the element swapped in from the back is examined in the next iteration.
+      // Remove this request before invoking application code, since the callback may re-enter
+      // BufferCore and mutate the request vector.
       if (i < transformable_requests_.size() - 1) {
         transformable_requests_[i] = transformable_requests_.back();
       }
       transformable_requests_.pop_back();
+
+      if (!callback_node.empty()) {
+        // Application callbacks may re-enter BufferCore from this or another thread. Invoke the
+        // callback without holding either transformable-request mutex.
+        lock.unlock();
+        callback_node.mapped()(request_handle, target_frame, source_frame, request_time, result);
+        lock.lock();
+        // The callback or another thread may have changed the request vector.
+        i = 0;
+      }
     } else {
       ++i;
     }

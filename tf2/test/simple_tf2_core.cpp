@@ -31,8 +31,10 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <future>
 #include <numeric>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "builtin_interfaces/msg/time.hpp"
@@ -114,6 +116,173 @@ TEST(tf2, setTransformValidWithCallback)
   EXPECT_EQ(received_source_frame, source_frame);
   EXPECT_EQ(received_time_point, time_point);
   EXPECT_TRUE(transform_available);
+}
+
+TEST(tf2, transformableCallbackCanAddAnotherRequest)
+{
+  tf2::BufferCore buffer;
+
+  const std::string target_frame = "target";
+  const std::string first_source_frame = "first_source";
+  const std::string second_source_frame = "second_source";
+  const tf2::TimePoint time_point = tf2::timeFromSec(1.0);
+  bool second_callback_called = false;
+
+  auto second_callback = [&second_callback_called](
+    tf2::TransformableRequestHandle, const std::string &, const std::string &,
+    tf2::TimePoint, tf2::TransformableResult result)
+    {
+      second_callback_called = result == tf2::TransformAvailable;
+    };
+
+  auto first_callback = [&buffer, &second_callback, &target_frame, &second_source_frame,
+      time_point](
+    tf2::TransformableRequestHandle, const std::string &, const std::string &,
+    tf2::TimePoint, tf2::TransformableResult)
+    {
+      // Transformable callbacks are application code and may re-enter BufferCore.
+      EXPECT_NE(
+        buffer.addTransformableRequest(
+          second_callback, target_frame, second_source_frame, time_point),
+        0u);
+    };
+
+  ASSERT_NE(
+    buffer.addTransformableRequest(
+      first_callback, target_frame, first_source_frame, time_point),
+    0u);
+
+  geometry_msgs::msg::TransformStamped transform_msg;
+  transform_msg.header.frame_id = target_frame;
+  transform_msg.header.stamp.sec = 1;
+  transform_msg.child_frame_id = first_source_frame;
+  transform_msg.transform.rotation.w = 1;
+  ASSERT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+
+  transform_msg.child_frame_id = second_source_frame;
+  ASSERT_TRUE(buffer.setTransform(transform_msg, "authority1"));
+  EXPECT_TRUE(second_callback_called);
+}
+
+TEST(tf2, transformableCallbackCanCancelAnotherRequest)
+{
+  tf2::BufferCore buffer;
+  const auto time_point = tf2::timeFromSec(1.0);
+  bool cancelled_callback_called = false;
+
+  const auto cancelled_handle = buffer.addTransformableRequest(
+    [&cancelled_callback_called](
+      tf2::TransformableRequestHandle, const std::string &, const std::string &,
+      tf2::TimePoint, tf2::TransformableResult)
+    {
+      cancelled_callback_called = true;
+    },
+    "target", "cancelled_source", time_point);
+  ASSERT_NE(cancelled_handle, 0u);
+
+  ASSERT_NE(
+    buffer.addTransformableRequest(
+      [&buffer, cancelled_handle](
+        tf2::TransformableRequestHandle, const std::string &, const std::string &,
+        tf2::TimePoint, tf2::TransformableResult)
+      {
+        buffer.cancelTransformableRequest(cancelled_handle);
+      },
+      "target", "first_source", time_point),
+    0u);
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "target";
+  transform.header.stamp.sec = 1;
+  transform.child_frame_id = "first_source";
+  transform.transform.rotation.w = 1;
+  ASSERT_TRUE(buffer.setTransform(transform, "authority1"));
+
+  transform.child_frame_id = "cancelled_source";
+  ASSERT_TRUE(buffer.setTransform(transform, "authority1"));
+  EXPECT_FALSE(cancelled_callback_called);
+}
+
+TEST(tf2, transformableCallbackCanSetAnotherTransform)
+{
+  tf2::BufferCore buffer;
+  const auto time_point = tf2::timeFromSec(1.0);
+  bool nested_callback_called = false;
+
+  ASSERT_NE(
+    buffer.addTransformableRequest(
+      [&nested_callback_called](
+        tf2::TransformableRequestHandle, const std::string &, const std::string &,
+        tf2::TimePoint, tf2::TransformableResult result)
+      {
+        nested_callback_called = result == tf2::TransformAvailable;
+      },
+      "target", "nested_source", time_point),
+    0u);
+
+  ASSERT_NE(
+    buffer.addTransformableRequest(
+      [&buffer](
+        tf2::TransformableRequestHandle, const std::string &, const std::string &,
+        tf2::TimePoint, tf2::TransformableResult)
+      {
+        geometry_msgs::msg::TransformStamped nested_transform;
+        nested_transform.header.frame_id = "target";
+        nested_transform.header.stamp.sec = 1;
+        nested_transform.child_frame_id = "nested_source";
+        nested_transform.transform.rotation.w = 1;
+        EXPECT_TRUE(buffer.setTransform(nested_transform, "authority1"));
+      },
+      "target", "first_source", time_point),
+    0u);
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "target";
+  transform.header.stamp.sec = 1;
+  transform.child_frame_id = "first_source";
+  transform.transform.rotation.w = 1;
+  ASSERT_TRUE(buffer.setTransform(transform, "authority1"));
+  EXPECT_TRUE(nested_callback_called);
+}
+
+TEST(tf2, transformableCallbackDoesNotBlockRequestFromAnotherThread)
+{
+  using namespace std::chrono_literals;
+
+  tf2::BufferCore buffer;
+  const auto time_point = tf2::timeFromSec(1.0);
+  std::promise<void> request_added;
+  auto request_added_future = request_added.get_future();
+  std::thread request_thread;
+
+  ASSERT_NE(
+    buffer.addTransformableRequest(
+      [&](tf2::TransformableRequestHandle, const std::string &, const std::string &,
+      tf2::TimePoint, tf2::TransformableResult)
+      {
+        // A transform-ready callback can synchronously depend on work dispatched to another
+        // executor thread. That thread must be able to enter BufferCore while this callback runs.
+        request_thread = std::thread(
+          [&buffer, &request_added, time_point]() {
+            buffer.addTransformableRequest(
+              [](tf2::TransformableRequestHandle, const std::string &, const std::string &,
+              tf2::TimePoint, tf2::TransformableResult) {},
+              "target", "second_source", time_point);
+            request_added.set_value();
+          });
+        EXPECT_EQ(request_added_future.wait_for(1s), std::future_status::ready);
+      },
+      "target", "first_source", time_point),
+    0u);
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.frame_id = "target";
+  transform.header.stamp.sec = 1;
+  transform.child_frame_id = "first_source";
+  transform.transform.rotation.w = 1;
+  ASSERT_TRUE(buffer.setTransform(transform, "authority1"));
+
+  request_thread.join();
 }
 
 TEST(tf2, CancelTransformableRequest)
