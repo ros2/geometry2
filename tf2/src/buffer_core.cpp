@@ -500,14 +500,17 @@ tf2::TF2Error BufferCore::walkToTopParent(
     }
     // Erase all duplicate items from frame_chain
     if (n > 0u) {
-      frame_chain->erase(frame_chain->begin() + (n - 1u), frame_chain->end());
+      frame_chain->erase(frame_chain->begin() + (n + 1u), frame_chain->end());
     }
 
     if (m < reverse_frame_chain.size()) {
-      size_t i = m + 1uL;
-      while (i > 0u) {
-        --i;
+      size_t i = m + 1;
+      while (true) {
         frame_chain->push_back(reverse_frame_chain[i]);
+        if(i == 0u) {
+          break;
+        }
+        --i;
       }
     }
   }
@@ -1604,44 +1607,46 @@ void BufferCore::_chainAsVector(
     }
   }
 
-  if (source_time != target_time) {
-    std::vector<CompactFrameID> target_frame_chain;
-    retval = walkToTopParent(
-      accum, target_time, target_id, fixed_id, &error_string,
-      &target_frame_chain);
+  std::vector<CompactFrameID> target_frame_chain;
+  retval = walkToTopParent(
+    accum, target_time, fixed_id, target_id, &error_string,
+    &target_frame_chain);
 
-    if (retval != tf2::TF2Error::TF2_NO_ERROR) {
-      switch (retval) {
-        case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
-          throw ConnectivityException(error_string);
-        case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
-          throw ExtrapolationException(error_string);
-        case tf2::TF2Error::TF2_LOOKUP_ERROR:
-          throw LookupException(error_string);
-        default:
-          CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
-          assert(0);
-      }
+  if (retval != tf2::TF2Error::TF2_NO_ERROR) {
+    switch (retval) {
+      case tf2::TF2Error::TF2_CONNECTIVITY_ERROR:
+        throw ConnectivityException(error_string);
+      case tf2::TF2Error::TF2_EXTRAPOLATION_ERROR:
+        throw ExtrapolationException(error_string);
+      case tf2::TF2Error::TF2_LOOKUP_ERROR:
+        throw LookupException(error_string);
+      default:
+        CONSOLE_BRIDGE_logError("Unknown error code: %d", retval);
+        assert(0);
     }
-    size_t m = target_frame_chain.size();
-    size_t n = source_frame_chain.size();
-    while (m > 0u && n > 0u) {
-      --m;
-      --n;
-      if (source_frame_chain[n] != target_frame_chain[m]) {
-        break;
-      }
-    }
-    // Erase all duplicate items from frame_chain
-    if (n > 0u) {
-      source_frame_chain.erase(source_frame_chain.begin() + (n - 1u), source_frame_chain.end());
-    }
+  } 
 
-    if (m < target_frame_chain.size()) {
-      for (size_t i = 0u; i <= m; ++i) {
-        source_frame_chain.push_back(target_frame_chain[i]);
-      }
+  size_t m = target_frame_chain.size();
+  size_t n = source_frame_chain.size();
+  while (m > 0u && n > 0u) {
+    --m;
+    --n;
+    if (source_frame_chain[n] != target_frame_chain[m]) {
+      break;
     }
+  }
+  // Erase all duplicate items from frame_chain
+  if (n > 0u) {
+    source_frame_chain.erase(source_frame_chain.begin() + (n + 1u), source_frame_chain.end());
+  }
+
+  size_t i = m + 1;
+  while (true) {
+    source_frame_chain.push_back(target_frame_chain[i]);
+    if(i == 0u) {
+      break;
+    }
+    --i;
   }
 
   // Write each element of source_frame_chain as string
