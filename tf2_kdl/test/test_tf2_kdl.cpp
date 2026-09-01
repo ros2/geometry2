@@ -41,7 +41,7 @@
 #include <tf2_kdl/tf2_kdl.hpp>
 #include <kdl/frames_io.hpp>
 #include <gtest/gtest.h>
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/clock.hpp>
 #include "tf2_ros/buffer.hpp"
 #include <tf2/convert.hpp>
 
