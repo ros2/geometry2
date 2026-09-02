@@ -146,7 +146,6 @@ if(BUILD_TESTING)
   ament_lint_cmake()
   ament_uncrustify(LANGUAGE "c++")
 
-  find_package(ament_cmake_gtest REQUIRED)
   find_package(ament_cmake_ros REQUIRED)
 
   ament_add_ros_isolated_gtest(test_buffer test/test_buffer.cpp)
