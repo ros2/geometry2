@@ -41,6 +41,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <ratio>
 #include <sstream>
 #include <string>
@@ -298,7 +299,9 @@ public:
     {
       std::unique_lock<std::mutex> lock(ts_futures_mutex_);
       for (auto & kv : ts_futures_) {
-        buffer_.cancel(kv.second);
+        if (kv.second) {
+          buffer_.cancel(*kv.second);
+        }
       }
       ts_futures_.clear();
     }
@@ -391,18 +394,37 @@ public:
       const auto & handle = std::get<0>(param);
       const auto & stamp = std::get<1>(param);
       const auto & target_frame = std::get<2>(param);
-      tf2_ros::TransformStampedFuture future = buffer_.waitForTransform(
-        target_frame,
-        frame_id,
-        stamp,
-        buffer_timeout_,
-        std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+
+      {
+        std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+        ts_futures_.insert({handle, std::nullopt});
+      }
+
+      std::optional<tf2_ros::TransformStampedFuture> future;
+      try {
+        future.emplace(buffer_.waitForTransform(
+            target_frame,
+            frame_id,
+            stamp,
+            buffer_timeout_,
+            std::bind(
+              &MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle)));
+      } catch (...) {
+        std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+        ts_futures_.erase(handle);
+        throw;
+      }
 
       // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform have already called
       // the callback.
-      if (0 != future.getHandle() && 0xffffffffffffffffULL != future.getHandle()) {
-        std::unique_lock<std::mutex> lock(ts_futures_mutex_);
-        ts_futures_.insert({handle, std::move(future)});
+      std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+      auto iter = ts_futures_.find(handle);
+      if (iter != ts_futures_.end()) {
+        if (0 != future->getHandle() && 0xffffffffffffffffULL != future->getHandle()) {
+          iter->second.emplace(std::move(*future));
+        } else {
+          ts_futures_.erase(iter);
+        }
       }
     }
   }
@@ -738,9 +760,9 @@ private:
   ///< The mutex used for locking TransformStampedFuture map operations
   std::mutex ts_futures_mutex_;
 
-  ///< Store the TransformStampedFuture returned by 'waitForTransform',
-  // to clear the callback in the Buffer if MessageFiltered object is destroyed.
-  std::unordered_map<uint64_t, tf2_ros::TransformStampedFuture> ts_futures_;
+  ///< Store futures so their callbacks can be cancelled when the filter is cleared. A null
+  // optional marks a request whose future has not returned from 'waitForTransform' yet.
+  std::unordered_map<uint64_t, std::optional<tf2_ros::TransformStampedFuture>> ts_futures_;
 };
 }  // namespace tf2_ros
 
