@@ -2,8 +2,8 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.25.23 (2026-09-06)
+--------------------
 * Fix waitForTransform race condition (`#966 <https://github.com/ros2/geometry2/issues/966>`_) (`#974 <https://github.com/ros2/geometry2/issues/974>`_)
 * Contributors: mergify[bot]
 
