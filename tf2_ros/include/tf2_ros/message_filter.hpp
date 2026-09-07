@@ -391,14 +391,20 @@ public:
       const auto & handle = std::get<0>(param);
       const auto & stamp = std::get<1>(param);
       const auto & target_frame = std::get<2>(param);
-      tf2_ros::TransformStampedFuture future = buffer_.waitForTransform(
-        target_frame,
-        frame_id,
-        stamp,
-        buffer_timeout_,
-        std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+      tf2_ros::TransformStampedFuture future;
+      try {
+        future = buffer_.waitForTransform(
+          target_frame,
+          frame_id,
+          stamp,
+          buffer_timeout_,
+          std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+      } catch (const tf2::TransformException & ex) {
+        RCLCPP_ERROR(node->get_logger(), "waitForTransform failed: %s", ex.what());
+        continue;
+      }
 
-      // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform have already called
+      // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform has already called
       // the callback.
       if (0 != future.getHandle() && 0xffffffffffffffffULL != future.getHandle()) {
         std::unique_lock<std::mutex> lock(ts_futures_mutex_);
