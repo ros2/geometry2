@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rcpputils REQUIRED)
+find_package(rcutils REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
@@ -57,6 +58,7 @@ target_link_libraries(buffer_server PRIVATE
   ament_cmake_ros_core::ament_ros_defaults
   ${PROJECT_NAME}
   rclcpp::rclcpp
+  tf2::tf2
 )
 
 add_library(static_transform_broadcaster_node SHARED
@@ -69,6 +71,7 @@ target_include_directories(static_transform_broadcaster_node PUBLIC
 target_link_libraries(static_transform_broadcaster_node PUBLIC
   ${PROJECT_NAME}
   geometry_msgs::geometry_msgs
+  rcl_interfaces::rcl_interfaces
   rclcpp::rclcpp
   tf2_msgs::tf2_msgs)
 target_link_libraries(static_transform_broadcaster_node PRIVATE
@@ -84,6 +87,7 @@ target_link_libraries(static_transform_publisher PRIVATE
   ament_cmake_ros_core::ament_ros_defaults
   ${PROJECT_NAME}
   rclcpp::rclcpp
+  rcutils::rcutils
   static_transform_broadcaster_node
   tf2::tf2
 )
@@ -94,7 +98,9 @@ add_executable(tf2_echo
 target_link_libraries(tf2_echo PRIVATE
   ament_cmake_ros_core::ament_ros_defaults
   ${PROJECT_NAME}
+  geometry_msgs::geometry_msgs
   rclcpp::rclcpp
+  tf2::tf2
 )
 
 add_executable(tf2_monitor
@@ -104,6 +110,7 @@ target_link_libraries(tf2_monitor PRIVATE
   ament_cmake_ros_core::ament_ros_defaults
   ${PROJECT_NAME}
   rclcpp::rclcpp
+  tf2::tf2
   tf2_msgs::tf2_msgs
 )
 
