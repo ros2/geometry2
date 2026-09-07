@@ -31,6 +31,7 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -48,6 +49,43 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/point_stamped.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+
+class CallbackBeforeWaitReturnsBuffer : public tf2_ros::Buffer
+{
+public:
+  using tf2_ros::Buffer::Buffer;
+
+  tf2_ros::TransformStampedFuture waitForTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time,
+    const tf2::Duration & timeout,
+    tf2_ros::TransformReadyCallback callback) override
+  {
+    (void)target_frame;
+    (void)source_frame;
+    (void)time;
+    (void)timeout;
+
+    auto promise = std::make_shared<std::promise<geometry_msgs::msg::TransformStamped>>();
+    tf2_ros::TransformStampedFuture future(promise->get_future());
+    future.setHandle(1u);
+    promise->set_exception(
+      std::make_exception_ptr(tf2::LookupException("Test transform unavailable")));
+
+    std::thread callback_thread([&callback, &future]() {callback(future);});
+    callback_thread.join();
+    return future;
+  }
+
+  void cancel(const tf2_ros::TransformStampedFuture & future) override
+  {
+    (void)future;
+    ++cancel_count;
+  }
+
+  std::atomic<size_t> cancel_count {0u};
+};
 
 std::atomic<uint8_t> filter_callback_fired = 0;
 void filter_callback(const geometry_msgs::msg::PointStamped & msg)
@@ -138,6 +176,25 @@ TEST(tf2_ros_message_filter, get_target_frames)
   frames.push_back("map");
   filter.setTargetFrames(frames);
   ASSERT_STREQ(filter.getTargetFramesString().c_str(), "odom, map");
+}
+
+TEST(tf2_ros_message_filter, callback_before_wait_returns_does_not_leave_stale_future)
+{
+  auto node = rclcpp::Node::make_shared("test_message_filter_callback_race");
+  auto clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  CallbackBeforeWaitReturnsBuffer buffer(
+    clock, tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME), *node);
+  tf2_ros::MessageFilter<
+    geometry_msgs::msg::PointStamped,
+    CallbackBeforeWaitReturnsBuffer> filter(buffer, "map", 10, *node);
+
+  auto point = std::make_shared<geometry_msgs::msg::PointStamped>();
+  point->header.frame_id = "base";
+  point->header.stamp = clock->now();
+  filter.add(point);
+
+  filter.clear();
+  EXPECT_EQ(0u, buffer.cancel_count.load());
 }
 
 TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
