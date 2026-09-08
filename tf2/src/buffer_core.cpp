@@ -1421,12 +1421,6 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 
 void BufferCore::testTransformableRequests()
 {
-<<<<<<< HEAD
-  std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
-  V_TransformableRequest::iterator it = transformable_requests_.begin();
-  while (it != transformable_requests_.end()) {
-    TransformableRequest & req = *it;
-=======
   struct PendingCallback
   {
     TransformableCallback cb;
@@ -1437,7 +1431,6 @@ void BufferCore::testTransformableRequests()
     TransformableResult result;
   };
   std::vector<PendingCallback> pending;
->>>>>>> 16cfc11 (Fix ABBA deadlock between waitForTransform and testTransformableRequests (#982))
 
   {
     std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
@@ -1454,18 +1447,6 @@ void BufferCore::testTransformableRequests()
         req.source_id = lookupFrameNumber(req.source_string);
       }
 
-<<<<<<< HEAD
-    if (do_cb) {
-      {
-        std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
-        M_TransformableCallback::iterator it = transformable_callbacks_.find(req.cb_handle);
-        if (it != transformable_callbacks_.end()) {
-          const TransformableCallback & cb = it->second;
-          cb(
-            req.request_handle, lookupFrameString(req.target_id), lookupFrameString(
-              req.source_id), req.time, result);
-          transformable_callbacks_.erase(req.cb_handle);
-=======
       TimePoint latest_time;
       bool do_cb = false;
       TransformableResult result = TransformAvailable;
@@ -1489,24 +1470,8 @@ void BufferCore::testTransformableRequests()
             cb = std::move(cb_it->second);
             transformable_callbacks_.erase(cb_it);
           }
->>>>>>> 16cfc11 (Fix ABBA deadlock between waitForTransform and testTransformableRequests (#982))
         }
 
-<<<<<<< HEAD
-      if (transformable_requests_.size() > 1) {
-        transformable_requests_[it -
-          transformable_requests_.begin()] = transformable_requests_.back();
-      }
-
-      transformable_requests_.erase(transformable_requests_.end() - 1);
-
-      // If we've removed the last element, then the iterator is invalid
-      if (0u == transformable_requests_.size()) {
-        it = transformable_requests_.end();
-      }
-    } else {
-      ++it;
-=======
         if (cb) {
           pending.push_back(
             {std::move(cb), req.request_handle,
@@ -1523,7 +1488,6 @@ void BufferCore::testTransformableRequests()
       } else {
         ++i;
       }
->>>>>>> 16cfc11 (Fix ABBA deadlock between waitForTransform and testTransformableRequests (#982))
     }
   }
 
