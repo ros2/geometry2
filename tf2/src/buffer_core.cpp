@@ -1405,12 +1405,15 @@ void BufferCore::_getFrameStrings(std::vector<std::string> & vec) const
 
 void BufferCore::testTransformableRequests()
 {
+<<<<<<< Updated upstream
 <<<<<<< HEAD
   std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
   V_TransformableRequest::iterator it = transformable_requests_.begin();
   while (it != transformable_requests_.end()) {
     TransformableRequest & req = *it;
 =======
+=======
+>>>>>>> Stashed changes
   struct PendingCallback
   {
     TransformableCallback cb;
@@ -1421,7 +1424,10 @@ void BufferCore::testTransformableRequests()
     TransformableResult result;
   };
   std::vector<PendingCallback> pending;
+<<<<<<< Updated upstream
 >>>>>>> 16cfc11 (Fix ABBA deadlock between waitForTransform and testTransformableRequests (#982))
+=======
+>>>>>>> Stashed changes
 
   {
     std::unique_lock<std::mutex> lock(transformable_requests_mutex_);
@@ -1438,6 +1444,7 @@ void BufferCore::testTransformableRequests()
         req.source_id = lookupFrameNumber(req.source_string);
       }
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     if (do_cb) {
       {
@@ -1450,6 +1457,8 @@ void BufferCore::testTransformableRequests()
               req.source_id), req.time, result);
           transformable_callbacks_.erase(req.cb_handle);
 =======
+=======
+>>>>>>> Stashed changes
       TimePoint latest_time;
       bool do_cb = false;
       TransformableResult result = TransformAvailable;
@@ -1463,6 +1472,7 @@ void BufferCore::testTransformableRequests()
         do_cb = true;
         result = TransformAvailable;
       }
+<<<<<<< Updated upstream
 
       if (do_cb) {
         TransformableCallback cb;
@@ -1481,13 +1491,37 @@ void BufferCore::testTransformableRequests()
         transformable_requests_[it -
           transformable_requests_.begin()] = transformable_requests_.back();
       }
+=======
 
-      transformable_requests_.erase(transformable_requests_.end() - 1);
+      if (do_cb) {
+        TransformableCallback cb;
+        {
+          std::unique_lock<std::mutex> lock2(transformable_callbacks_mutex_);
+          auto cb_it = transformable_callbacks_.find(req.cb_handle);
+          if (cb_it != transformable_callbacks_.end()) {
+            cb = std::move(cb_it->second);
+            transformable_callbacks_.erase(cb_it);
+          }
+        }
 
-      // If we've removed the last element, then the iterator is invalid
-      if (0u == transformable_requests_.size()) {
-        it = transformable_requests_.end();
+        if (cb) {
+          pending.push_back(
+            {std::move(cb), req.request_handle,
+              lookupFrameString(req.target_id), lookupFrameString(req.source_id),
+              req.time, result});
+        }
+>>>>>>> Stashed changes
+
+        // Swap with the last element and pop to remove in O(1).
+        // Do not advance i: the element swapped in from the back is examined in the next iteration.
+        if (i < transformable_requests_.size() - 1) {
+          transformable_requests_[i] = transformable_requests_.back();
+        }
+        transformable_requests_.pop_back();
+      } else {
+        ++i;
       }
+<<<<<<< Updated upstream
     } else {
       ++it;
 =======
@@ -1508,6 +1542,8 @@ void BufferCore::testTransformableRequests()
         ++i;
       }
 >>>>>>> 16cfc11 (Fix ABBA deadlock between waitForTransform and testTransformableRequests (#982))
+=======
+>>>>>>> Stashed changes
     }
   }
 
