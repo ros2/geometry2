@@ -21,11 +21,8 @@ endif()
 
 if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
-<<<<<<< HEAD
-=======
   find_package(ament_cmake_ros REQUIRED)
   find_package(ament_cmake_ros_core REQUIRED)
->>>>>>> bcee5a2 (Enable RMW isolation for single process tests (#983))
   find_package(builtin_interfaces REQUIRED)
 # Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
   find_package(Eigen3 QUIET NO_MODULE)
