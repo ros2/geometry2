@@ -138,16 +138,16 @@ if(BUILD_TESTING)
   ament_lint_cmake()
   ament_uncrustify(LANGUAGE "c++")
 
-  find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros REQUIRED)
 
-  ament_add_gtest(test_buffer test/test_buffer.cpp)
+  ament_add_ros_isolated_gtest(test_buffer test/test_buffer.cpp)
   target_link_libraries(test_buffer
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(test_buffer_server test/test_buffer_server.cpp)
+  ament_add_ros_isolated_gtest(test_buffer_server test/test_buffer_server.cpp)
   target_link_libraries(test_buffer_server
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
@@ -156,7 +156,7 @@ if(BUILD_TESTING)
     #   tf2_msgs::tf2_msgs
   )
 
-  ament_add_gtest(test_buffer_client test/test_buffer_client.cpp)
+  ament_add_ros_isolated_gtest(test_buffer_client test/test_buffer_client.cpp)
   target_link_libraries(test_buffer_client
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
@@ -167,7 +167,7 @@ if(BUILD_TESTING)
 
   # Adds a tf2_ros message_filter unittest that uses
   # multiple target frames and a non-zero time tolerance
-  ament_add_gtest(${PROJECT_NAME}_test_message_filter test/message_filter_test.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_message_filter test/message_filter_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_message_filter
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
@@ -176,28 +176,28 @@ if(BUILD_TESTING)
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_transform_listener test/test_transform_listener.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_transform_listener test/test_transform_listener.cpp)
   target_link_libraries(${PROJECT_NAME}_test_transform_listener
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_static_transform_broadcaster test/test_static_transform_broadcaster.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_static_transform_broadcaster test/test_static_transform_broadcaster.cpp)
   target_link_libraries(${PROJECT_NAME}_test_static_transform_broadcaster
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_transform_broadcaster test/test_transform_broadcaster.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_transform_broadcaster test/test_transform_broadcaster.cpp)
   target_link_libraries(${PROJECT_NAME}_test_transform_broadcaster
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_time_reset test/time_reset_test.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_time_reset test/time_reset_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_time_reset
     ${PROJECT_NAME}
     rosgraph_msgs::rosgraph_msgs
@@ -206,7 +206,7 @@ if(BUILD_TESTING)
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_velocity test/velocity_test.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_velocity test/velocity_test.cpp)
   target_link_libraries(${PROJECT_NAME}_test_velocity
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
@@ -214,7 +214,7 @@ if(BUILD_TESTING)
     #   rclcpp::rclcpp
   )
 
-  ament_add_gtest(${PROJECT_NAME}_test_listener test/listener_unittest.cpp)
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_listener test/listener_unittest.cpp)
   target_link_libraries(${PROJECT_NAME}_test_listener
     ${PROJECT_NAME}
     # Used, but not linked to test tf2_ros's exports:
