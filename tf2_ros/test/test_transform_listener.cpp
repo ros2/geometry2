@@ -29,8 +29,12 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/transform_listener.hpp>
@@ -38,6 +42,97 @@
 #include <tf2_ros/static_transform_broadcaster.hpp>
 
 #include "node_wrapper.hpp"
+#include "rcl_interfaces/msg/parameter.hpp"
+#include "rcl_interfaces/msg/parameter_event.hpp"
+#include "rcl_interfaces/msg/parameter_type.hpp"
+
+using namespace std::chrono_literals;
+
+template<typename PredicateT>
+bool wait_for(PredicateT predicate, std::chrono::seconds timeout = 5s)
+{
+  const auto deadline = std::chrono::steady_clock::now() + timeout;
+  while (std::chrono::steady_clock::now() < deadline) {
+    if (predicate()) {
+      return true;
+    }
+    std::this_thread::sleep_for(20ms);
+  }
+  return predicate();
+}
+
+void expect_internal_node_groups_are_spun(bool static_only)
+{
+  auto probe = rclcpp::Node::make_shared(
+    static_only ? "static_listener_callback_group_probe" : "listener_callback_group_probe");
+  const auto nodes_before = probe->get_node_names();
+  auto parameter_events = probe->create_publisher<rcl_interfaces::msg::ParameterEvent>(
+    "/parameter_events", rclcpp::ParameterEventsQoS());
+
+  rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
+  tf2_ros::Buffer buffer(clock);
+  tf2_ros::TransformListener listener(buffer, true, static_only);
+
+  std::string listener_node_name;
+  const auto listener_was_discovered = [&]() {
+      for (const auto & node_name : probe->get_node_names()) {
+        const bool is_listener =
+          node_name.find("transform_listener_impl_") != std::string::npos;
+        const bool is_new =
+          std::find(nodes_before.begin(), nodes_before.end(), node_name) == nodes_before.end();
+        if (is_listener && is_new) {
+          listener_node_name = node_name;
+          return true;
+        }
+      }
+      return false;
+    };
+  ASSERT_TRUE(wait_for(listener_was_discovered)) <<
+    "The TransformListener's internal node was not discovered";
+
+  const auto initial_clock_subscriptions = probe->count_subscribers("/clock");
+  rcl_interfaces::msg::ParameterEvent event;
+  event.stamp = probe->now();
+  event.node = listener_node_name;
+  rcl_interfaces::msg::Parameter use_sim_time;
+  use_sim_time.name = "use_sim_time";
+  use_sim_time.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_BOOL;
+  use_sim_time.value.bool_value = true;
+  event.changed_parameters.push_back(use_sim_time);
+
+  const auto default_group_was_spun = [&]() {
+      parameter_events->publish(event);
+      return probe->count_subscribers("/clock") > initial_clock_subscriptions;
+    };
+  ASSERT_TRUE(wait_for(default_group_was_spun)) <<
+    "The internal node's default callback group was not spun";
+
+  geometry_msgs::msg::TransformStamped transform;
+  transform.header.stamp = probe->now();
+  transform.header.frame_id = static_only ? "static_parent" : "dynamic_parent";
+  transform.child_frame_id = static_only ? "static_child" : "dynamic_child";
+  transform.transform.rotation.w = 1.0;
+
+  if (static_only) {
+    tf2_ros::StaticTransformBroadcaster broadcaster(probe);
+    const auto static_transform_was_received = [&]() {
+        broadcaster.sendTransform(transform);
+        return buffer.canTransform(
+        transform.header.frame_id, transform.child_frame_id, tf2::TimePointZero);
+      };
+    EXPECT_TRUE(wait_for(static_transform_was_received)) <<
+      "The manually added /tf_static callback group was not spun";
+  } else {
+    tf2_ros::TransformBroadcaster broadcaster(probe);
+    const auto transform_was_received = [&]() {
+        broadcaster.sendTransform(transform);
+        return buffer.canTransform(
+        transform.header.frame_id, transform.child_frame_id, tf2::TimePointZero);
+      };
+    EXPECT_TRUE(wait_for(transform_was_received)) <<
+      "The manually added /tf callback group was not spun";
+  }
+}
 
 class CustomNode : public rclcpp::Node
 {
@@ -100,6 +195,11 @@ TEST(tf2_test_transform_listener, transform_listener_rclcpp_node)
   tf2_ros::TransformListener tfl(buffer, node, false);
 }
 
+TEST(tf2_test_transform_listener, internal_node_callback_groups)
+{
+  expect_internal_node_groups_are_spun(false);
+}
+
 TEST(tf2_test_transform_listener, transform_listener_custom_rclcpp_node)
 {
   auto node = std::make_shared<NodeWrapper>("tf2_ros_message_filter");
@@ -131,6 +231,11 @@ TEST(tf2_test_static_transform_listener, static_transform_listener_rclcpp_node)
   rclcpp::Clock::SharedPtr clock = std::make_shared<rclcpp::Clock>(RCL_SYSTEM_TIME);
   tf2_ros::Buffer buffer(clock);
   tf2_ros::StaticTransformListener stfl(buffer, node, false);
+}
+
+TEST(tf2_test_static_transform_listener, internal_node_callback_groups)
+{
+  expect_internal_node_groups_are_spun(true);
 }
 
 TEST(tf2_test_static_transform_listener, static_transform_listener_custom_rclcpp_node)
