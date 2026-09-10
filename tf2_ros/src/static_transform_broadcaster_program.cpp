@@ -40,9 +40,8 @@
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2/LinearMath/Vector3.hpp"
 
-#include "rcutils/logging_macros.h"
-
 #include "rclcpp/executors.hpp"
+#include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 #include "rclcpp/node_options.hpp"
 #include "rclcpp/utilities.hpp"
@@ -305,7 +304,9 @@ int main(int argc, char ** argv)
 
   std::string ret = parse_args(args, help, rotation, translation, frame_id, child_frame_id);
   if (ret != "") {
-    RCUTILS_LOG_ERROR("error parsing command line arguments: %s", ret.c_str());
+    RCLCPP_ERROR(
+      rclcpp::get_logger("static_transform_publisher"),
+      "error parsing command line arguments: %s", ret.c_str());
     print_usage();
     return 1;
   }

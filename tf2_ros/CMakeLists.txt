@@ -16,7 +16,6 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rcpputils REQUIRED)
-find_package(rcutils REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_msgs REQUIRED)
 
@@ -87,7 +86,6 @@ target_link_libraries(static_transform_publisher PRIVATE
   ament_cmake_ros_core::ament_ros_defaults
   ${PROJECT_NAME}
   rclcpp::rclcpp
-  rcutils::rcutils
   static_transform_broadcaster_node
   tf2::tf2
 )
