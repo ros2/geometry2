@@ -15,6 +15,7 @@ endif()
 
 if (BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
+  find_package(ament_cmake_ros REQUIRED)
   find_package(ament_cmake_ros_core REQUIRED)
   find_package(builtin_interfaces REQUIRED)
 # Work around broken find module in AlmaLinux/RHEL eigen3-devel from PowerTools repo
@@ -34,7 +35,7 @@ if (BUILD_TESTING)
 
   ament_find_gtest()
 
-  ament_add_gtest(buffer_core_test test/buffer_core_test.cpp)
+  ament_add_ros_isolated_gtest(buffer_core_test test/buffer_core_test.cpp)
   if(TARGET buffer_core_test)
     target_link_libraries(buffer_core_test
       ament_cmake_ros_core::ament_ros_defaults
@@ -46,7 +47,7 @@ if (BUILD_TESTING)
       tf2_ros::tf2_ros)
   endif()
 
-  ament_add_gtest(test_message_filter test/test_message_filter.cpp)
+  ament_add_ros_isolated_gtest(test_message_filter test/test_message_filter.cpp)
   if(TARGET test_message_filter)
     target_link_libraries(test_message_filter
       ament_cmake_ros_core::ament_ros_defaults
@@ -118,7 +119,7 @@ if (BUILD_TESTING)
     add_launch_test(test/static_publisher.launch.py)
   endif()
 
-  ament_add_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
+  ament_add_ros_isolated_gtest(test_tf2_bullet test/test_tf2_bullet.cpp)
   if(TARGET test_tf2_bullet)
     target_link_libraries(test_tf2_bullet
       ament_cmake_ros_core::ament_ros_defaults
