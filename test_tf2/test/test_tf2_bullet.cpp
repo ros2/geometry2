@@ -31,7 +31,9 @@
 
 #include <tf2_bullet/tf2_bullet.hpp>
 #include <tf2_ros/buffer.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/clock.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/utilities.hpp>
 #include <gtest/gtest.h>
 #include <tf2/convert.hpp>
 

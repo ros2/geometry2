@@ -37,7 +37,10 @@
 #include <tf2_ros/buffer.hpp>
 #include <tf2_ros/buffer_server.hpp>
 #include <tf2_ros/transform_listener.hpp>
-#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/clock.hpp>
+#include <rclcpp/executors.hpp>
+#include <rclcpp/node.hpp>
+#include <rclcpp/utilities.hpp>
 #include <memory>
 
 int main(int argc, char ** argv)

@@ -40,7 +40,12 @@
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2/LinearMath/Vector3.hpp"
 
-#include "rclcpp/rclcpp.hpp"
+#include "rcutils/logging_macros.h"
+
+#include "rclcpp/executors.hpp"
+#include "rclcpp/logging.hpp"
+#include "rclcpp/node_options.hpp"
+#include "rclcpp/utilities.hpp"
 
 struct Option
 {

@@ -33,6 +33,14 @@
 
 #include <tf2_ros/static_transform_broadcaster.hpp>
 
+#include "rclcpp/executors/single_threaded_executor.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/node_interfaces/node_interfaces.hpp"
+#include "rclcpp/node_interfaces/node_parameters_interface.hpp"
+#include "rclcpp/node_interfaces/node_topics_interface.hpp"
+#include "rclcpp/node_options.hpp"
+#include "rclcpp/utilities.hpp"
+
 #include "node_wrapper.hpp"
 
 class CustomNode : public rclcpp::Node

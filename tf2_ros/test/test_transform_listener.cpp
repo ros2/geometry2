@@ -37,6 +37,11 @@
 #include <tf2_ros/transform_broadcaster.hpp>
 #include <tf2_ros/static_transform_broadcaster.hpp>
 
+#include "rclcpp/clock.hpp"
+#include "rclcpp/executors/single_threaded_executor.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/node_options.hpp"
+#include "rclcpp/utilities.hpp"
 
 #include "node_wrapper.hpp"
 

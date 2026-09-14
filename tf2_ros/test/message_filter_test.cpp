@@ -28,16 +28,24 @@
  */
 
 #include <atomic>
+#include <cctype>
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "gtest/gtest.h"
 
+#include "geometry_msgs/msg/point_stamped.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+
 #include "message_filters/subscriber.hpp"
-#include "message_filters/simple_filter.hpp"
-#include "message_filters/message_traits.hpp"
+
+#include "tf2/buffer_core.hpp"
+#include "tf2/time.hpp"
 
 #include "tf2_ros/buffer.hpp"
 #include "tf2_ros/create_timer_ros.hpp"
@@ -45,9 +53,17 @@
 #include "tf2_ros/static_transform_broadcaster.hpp"
 #include "tf2_ros/transform_listener.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include "geometry_msgs/msg/point_stamped.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "rclcpp/clock.hpp"
+#include "rclcpp/duration.hpp"
+#include "rclcpp/executors/single_threaded_executor.hpp"
+#include "rclcpp/node.hpp"
+#include "rclcpp/node_interfaces/node_clock_interface.hpp"
+#include "rclcpp/node_interfaces/node_interfaces.hpp"
+#include "rclcpp/node_interfaces/node_logging_interface.hpp"
+#include "rclcpp/publisher.hpp"
+#include "rclcpp/qos.hpp"
+#include "rclcpp/time.hpp"
+#include "rclcpp/utilities.hpp"
 
 std::atomic<uint8_t> filter_callback_fired = 0;
 void filter_callback(const geometry_msgs::msg::PointStamped & msg)
