@@ -2,6 +2,17 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.4 (2026-09-15)
+-------------------
+* Removed rcutils dependency (`#991 <https://github.com/ros2/geometry2/issues/991>`_)
+* granular rclcpp/rclcpp.hpp and include what you use (`#984 <https://github.com/ros2/geometry2/issues/984>`_)
+* Fix ABBA deadlock between waitForTransform and testTransformableRequests (`#982 <https://github.com/ros2/geometry2/issues/982>`_)
+* Enable RMW isolation for single process tests (`#983 <https://github.com/ros2/geometry2/issues/983>`_)
+* Fixed sub 10ms timeout (`#967 <https://github.com/ros2/geometry2/issues/967>`_)
+* Fix waitForTransform race condition (`#966 <https://github.com/ros2/geometry2/issues/966>`_)
+* Cleanup headers (`#965 <https://github.com/ros2/geometry2/issues/965>`_)
+* Contributors: Alejandro Hernández Cordero, Alireza Moayyedi, yadunund
+
 0.46.3 (2026-07-28)
 -------------------
 * Cleanup message filters headers (`#963 <https://github.com/ros2/geometry2/issues/963>`_)

@@ -2,6 +2,12 @@
 Changelog for package test_tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.4 (2026-09-15)
+-------------------
+* granular rclcpp/rclcpp.hpp and include what you use (`#984 <https://github.com/ros2/geometry2/issues/984>`_)
+* Enable RMW isolation for single process tests (`#983 <https://github.com/ros2/geometry2/issues/983>`_)
+* Contributors: Alejandro Hernández Cordero, yadunund
+
 0.46.3 (2026-07-28)
 -------------------
 * Removed redundant header in tf2_eigen (`#964 <https://github.com/ros2/geometry2/issues/964>`_)

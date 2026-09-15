@@ -2,6 +2,9 @@
 Changelog for package tf2_eigen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.4 (2026-09-15)
+-------------------
+
 0.46.3 (2026-07-28)
 -------------------
 * Removed redundant header in tf2_eigen (`#964 <https://github.com/ros2/geometry2/issues/964>`_)

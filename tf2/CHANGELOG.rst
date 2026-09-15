@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.4 (2026-09-15)
+-------------------
+* Fix ABBA deadlock between waitForTransform and testTransformableRequests (`#982 <https://github.com/ros2/geometry2/issues/982>`_)
+* Contributors: Alireza Moayyedi
+
 0.46.3 (2026-07-28)
 -------------------
 
