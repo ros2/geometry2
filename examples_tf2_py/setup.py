@@ -27,7 +27,7 @@ setup(
     description=(
         'Has examples of using the tf2 python api.'
     ),
-    license='Apache License, Version 2.0',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',
