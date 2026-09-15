@@ -2,6 +2,12 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.41.10 (2026-09-15)
+-------------------
+* Fix ABBA deadlock between `waitForTransform` and `testTransformableRequests` (backport `#982 <https://github.com/ros2/geometry2/issues/982>`_) (`#988 <https://github.com/ros2/geometry2/issues/988>`_)
+* Fix waitForTransform race condition (`#966 <https://github.com/ros2/geometry2/issues/966>`_) (`#972 <https://github.com/ros2/geometry2/issues/972>`_)
+* Contributors: mergify[bot]
+
 0.41.9 (2026-07-28)
 -------------------
 * Add generated version header for tf2_ros (backport `#955 <https://github.com/ros2/geometry2/issues/955>`_) (`#957 <https://github.com/ros2/geometry2/issues/957>`_)
