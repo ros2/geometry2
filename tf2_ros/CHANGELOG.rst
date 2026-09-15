@@ -2,6 +2,14 @@
 Changelog for package tf2_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.45.10 (2026-09-15)
+--------------------
+* Enable RMW isolation for single process tests (backport `#983 <https://github.com/ros2/geometry2/issues/983>`_) (`#985 <https://github.com/ros2/geometry2/issues/985>`_)
+* Fix ABBA deadlock between waitForTransform and testTransformableRequests (`#982 <https://github.com/ros2/geometry2/issues/982>`_) (`#987 <https://github.com/ros2/geometry2/issues/987>`_)
+* Fixed sub 10ms timeout (`#967 <https://github.com/ros2/geometry2/issues/967>`_) (`#975 <https://github.com/ros2/geometry2/issues/975>`_)
+* Fix waitForTransform race condition (`#966 <https://github.com/ros2/geometry2/issues/966>`_) (`#971 <https://github.com/ros2/geometry2/issues/971>`_)
+* Contributors: mergify[bot]
+
 0.45.9 (2026-07-28)
 -------------------
 * Add generated version header for tf2_ros (backport `#955 <https://github.com/ros2/geometry2/issues/955>`_) (`#956 <https://github.com/ros2/geometry2/issues/956>`_)
