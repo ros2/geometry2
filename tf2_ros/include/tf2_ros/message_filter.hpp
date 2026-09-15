@@ -62,6 +62,7 @@
 #include "builtin_interfaces/msg/time.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/duration.hpp"
+#include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 #include "rclcpp/time.hpp"
 #include "rclcpp/node_interfaces/node_interfaces.hpp"
@@ -69,14 +70,14 @@
 #include "rclcpp/node_interfaces/get_node_clock_interface.hpp"
 
 #define TF2_ROS_MESSAGEFILTER_DEBUG(fmt, ...) \
-  RCUTILS_LOG_DEBUG_NAMED( \
-    "tf2_ros_message_filter", \
+  RCLCPP_DEBUG( \
+    rclcpp::get_logger("tf2_ros_message_filter"), \
     std::string(std::string("MessageFilter [target=%s]: ") + std::string(fmt)).c_str(), \
     getTargetFramesString().c_str(), __VA_ARGS__)
 
 #define TF2_ROS_MESSAGEFILTER_WARN(fmt, ...) \
-  RCUTILS_LOG_WARN_NAMED( \
-    "tf2_ros_message_filter", \
+  RCLCPP_WARN( \
+    rclcpp::get_logger("tf2_ros_message_filter"), \
     std::string(std::string("MessageFilter [target=%s]: ") + std::string(fmt)).c_str(), \
     getTargetFramesString().c_str(), __VA_ARGS__)
 
