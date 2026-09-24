@@ -10,7 +10,7 @@
   <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
   <author email="sloretz@openrobotics.org">Shane Loretz</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
