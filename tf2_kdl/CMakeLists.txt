@@ -54,9 +54,6 @@ if(BUILD_TESTING)
   )
 endif()
 
-# Export old-style CMake variables
-ament_export_include_directories("include/${PROJECT_NAME}")
-
 # Export modern CMake targets
 ament_export_targets(export_tf2_kdl)
 

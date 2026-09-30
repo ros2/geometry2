@@ -51,10 +51,6 @@ ament_export_dependencies(
   tf2
 )
 
-# Export old-style CMake variables
-ament_export_include_directories("include/${PROJECT_NAME}")
-ament_export_libraries(${PROJECT_NAME})
-
 # Export modern CMake targets
 ament_export_targets(export_${PROJECT_NAME})
 
