@@ -108,7 +108,11 @@ public:
   TF2_PUBLIC
   virtual ~BufferCore(void);
 
-  /** \brief Clear all data */
+  /** \brief Clear all dynamic transform data
+   *
+   * Static transforms are preserved. They are typically published only once
+   * (with transient-local QoS on /tf_static) and would not be received again.
+   */
   TF2_PUBLIC
   void clear() override;
 

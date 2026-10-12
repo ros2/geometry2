@@ -322,6 +322,35 @@ TEST(tf2_clear, LookUp_Static_Transform_Fail)
   );
 }
 
+TEST(tf2_clear, Static_Transform_Survives_Clear)
+{
+  // Regression test for https://github.com/ros2/geometry2/issues/997
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1", true));
+
+  geometry_msgs::msg::TransformStamped dyn = st;
+  dyn.child_frame_id = "baz";
+  EXPECT_TRUE(tfc.setTransform(dyn, "authority1"));
+
+  const tf2::TimePoint t1(std::chrono::seconds(1));
+  EXPECT_NO_THROW(tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2))));
+  EXPECT_TRUE(tfc.canTransform("foo", "baz", t1));
+
+  tfc.clear();
+
+  // Static transforms are published once with transient-local QoS and are not resent
+  // to existing subscribers, so they must survive.
+  EXPECT_NO_THROW(tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2))));
+  // Dynamic transforms are still cleared.
+  EXPECT_FALSE(tfc.canTransform("foo", "baz", t1));
+}
+
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();

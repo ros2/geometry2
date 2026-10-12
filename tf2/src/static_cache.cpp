@@ -60,7 +60,7 @@ bool tf2::StaticCache::insertData(const tf2::TransformStorage & new_data)
   return true;
 }
 
-void tf2::StaticCache::clearList() {populated_ = false;}
+void tf2::StaticCache::clearList() {}
 
 unsigned tf2::StaticCache::getListLength() {return populated_ ? 1 : 0;}
 
