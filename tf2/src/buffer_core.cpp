@@ -432,7 +432,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
         // prefer source for tie-breaker
         bool prefer_phase1 = (extrapolation_latest_time >= phase2_latest);
 
-        if (prefer_phase1) {
+        if (prefer_phase1 && extrapolation_error_code != TF2Error::TF2_NO_ERROR) {
           if (error_string) {
             std::stringstream ss;
             ss << extrapolation_error_string << ", when looking up transform from frame ["
@@ -450,6 +450,9 @@ tf2::TF2Error BufferCore::walkToTopParent(
         *error_string = ss.str();
       }
 
+      if (error_code == TF2Error::TF2_NO_ERROR) {
+        error_code = TF2Error::TF2_CONNECTIVITY_ERROR;
+      }
       return error_code;
     }
 
@@ -479,7 +482,7 @@ tf2::TF2Error BufferCore::walkToTopParent(
   }
 
   if (frame != top_parent) {
-    if (extrapolation_might_have_occurred) {
+    if (extrapolation_might_have_occurred && extrapolation_error_code != TF2Error::TF2_NO_ERROR) {
       if (error_string) {
         std::stringstream ss;
         ss << extrapolation_error_string << ", when looking up transform from frame [" <<

@@ -116,6 +116,42 @@ TEST(StaticCache, ErrorHandlingForInvalidTimestamps)
   EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(9999)), result));
 }
 
+TEST(StaticCache, EmptyCacheParentRetrieval)
+{
+  tf2::StaticCache cache;
+  std::string error_str;
+  tf2::TF2Error error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::nanoseconds(100)), &error_str, &error_code),
+    0u);
+  EXPECT_EQ(error_str, "Static cache is empty");
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_LOOKUP_ERROR);
+  EXPECT_EQ(cache.getLatestTimeAndParent().second, 0u);
+  EXPECT_EQ(cache.getListLength(), 0u);
+}
+
+TEST(StaticCache, ClearListPreservesStaticTransform)
+{
+  tf2::StaticCache cache;
+  tf2::TransformStorage stor;
+  resetStorage(stor);
+  stor.frame_id_ = tf2::CompactFrameID(10);
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(10));
+  cache.insertData(stor);
+
+  EXPECT_EQ(cache.getListLength(), 1u);
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::nanoseconds(10))), 10u);
+
+  // Calling clearList() must not wipe static transforms
+  cache.clearList();
+
+  tf2::TransformStorage result;
+  EXPECT_TRUE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(10)), result));
+  EXPECT_EQ(result.frame_id_, 10u);
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::nanoseconds(10))), 10u);
+  EXPECT_EQ(cache.getLatestTimeAndParent().second, 10u);
+  EXPECT_EQ(cache.getListLength(), 1u);
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);

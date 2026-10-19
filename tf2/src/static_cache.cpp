@@ -60,7 +60,12 @@ bool tf2::StaticCache::insertData(const tf2::TransformStorage & new_data)
   return true;
 }
 
-void tf2::StaticCache::clearList() {populated_ = false;}
+void tf2::StaticCache::clearList()
+{
+  // Static transforms represent fixed frame relationships that do not expire over time.
+  // clearList() is intentionally a no-op so BufferCore::clear() (e.g. on RViz Reset or bag replay)
+  // clears dynamic transform history without discarding latched static transforms.
+}
 
 unsigned tf2::StaticCache::getListLength() {return populated_ ? 1 : 0;}
 
@@ -69,14 +74,21 @@ tf2::CompactFrameID tf2::StaticCache::getParent(
   TF2Error * error_code)
 {
   (void)time;
-  (void)error_code;
-  (void)error_str;
-  return populated_ ? storage_.frame_id_ : 0;
+  if (!populated_) {
+    if (error_str) {
+      *error_str = "Static cache is empty";
+    }
+    if (error_code) {
+      *error_code = TF2Error::TF2_LOOKUP_ERROR;
+    }
+    return 0;
+  }
+  return storage_.frame_id_;
 }
 
 tf2::P_TimeAndFrameID tf2::StaticCache::getLatestTimeAndParent()
 {
-  return std::make_pair(TimePoint(), storage_.frame_id_);
+  return std::make_pair(TimePoint(), populated_ ? storage_.frame_id_ : 0);
 }
 
 tf2::TimePoint tf2::StaticCache::getLatestTimestamp()

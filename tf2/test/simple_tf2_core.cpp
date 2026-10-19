@@ -322,6 +322,44 @@ TEST(tf2_clear, LookUp_Static_Transform_Fail)
   );
 }
 
+
+TEST(tf2_clear, StaticTransformPreservedAcrossClear)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "base_link";
+  st.child_frame_id = "lidar_0";
+  st.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1", true));
+
+  geometry_msgs::msg::TransformStamped dynamic_tf;
+  dynamic_tf.header.frame_id = "map";
+  dynamic_tf.header.stamp.sec = 100;
+  dynamic_tf.header.stamp.nanosec = 0;
+  dynamic_tf.child_frame_id = "base_link";
+  dynamic_tf.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(dynamic_tf, "authority1", false));
+
+  tf2::TimePoint t(std::chrono::seconds(100));
+  EXPECT_TRUE(tfc.canTransform("map", "lidar_0", t));
+  EXPECT_NO_THROW(
+    auto trans = tfc.lookupTransform("map", "lidar_0", t);
+    (void)trans;
+  );
+
+  // Clear buffer (e.g. RViz Reset)
+  tfc.clear();
+
+  EXPECT_TRUE(tfc.setTransform(dynamic_tf, "authority1", false));
+
+  // Static transform must still be valid and canTransform/lookupTransform must agree
+  EXPECT_TRUE(tfc.canTransform("map", "lidar_0", t));
+  EXPECT_NO_THROW(
+    auto trans = tfc.lookupTransform("map", "lidar_0", t);
+    (void)trans;
+  );
+}
+
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();
