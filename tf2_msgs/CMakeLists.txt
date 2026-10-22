@@ -16,7 +16,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FrameGraph.srv"
   "action/LookupTransform.action"
   DEPENDENCIES builtin_interfaces geometry_msgs
-  ADD_LINTER_TESTS
 )
 
 install(
