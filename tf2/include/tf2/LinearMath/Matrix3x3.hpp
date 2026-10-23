@@ -297,16 +297,28 @@ public:
 		Euler euler_out2; //second solution
 		//get the pointer to the raw data
 
-		// Check that pitch is not at a singularity
-  		// Check that pitch is not at a singularity
-		if (tf2Fabs(m_el[2].x()) >= 1)
+		// Apply epsilon thresholding to matrix elements to handle numerical precision issues.
+		// Use a conservative threshold to handle numerical errors from quaternion-to-matrix conversion.
+		// 1e-8 is chosen as a balance between numerical stability and precision:
+		// - More conservative than FLT_EPSILON (~1.19e-7) to handle single-precision input
+		// - Less restrictive than DBL_EPSILON (~2.22e-16) to avoid false positives
+		// - Prevents numerical instabilities near gimbal lock singularities
+		tf2Scalar threshold = tf2Scalar(1e-8);
+		tf2Scalar m20 = tf2Fabs(m_el[2].x()) < threshold ? tf2Scalar(0.0) : m_el[2].x();
+		tf2Scalar m21 = tf2Fabs(m_el[2].y()) < threshold ? tf2Scalar(0.0) : m_el[2].y();
+		tf2Scalar m22 = tf2Fabs(m_el[2].z()) < threshold ? tf2Scalar(0.0) : m_el[2].z();
+		tf2Scalar m10 = tf2Fabs(m_el[1].x()) < threshold ? tf2Scalar(0.0) : m_el[1].x();
+		tf2Scalar m00 = tf2Fabs(m_el[0].x()) < threshold ? tf2Scalar(0.0) : m_el[0].x();
+
+		// Check that pitch is not at a singularity (improved detection)
+		if (tf2Fabs(m20) >= tf2Scalar(1.0) - threshold)
 		{
 			euler_out.yaw = 0;
 			euler_out2.yaw = 0;
 	
 			// From difference of angles formula
-			tf2Scalar delta = tf2Atan2(m_el[2].y(),m_el[2].z());
-			if (m_el[2].x() < 0)  //gimbal locked down
+			tf2Scalar delta = tf2Atan2(m21, m22);
+			if (m20 < 0)  //gimbal locked down
 			{
 				euler_out.pitch = TF2SIMD_PI / tf2Scalar(2.0);
 				euler_out2.pitch = TF2SIMD_PI / tf2Scalar(2.0);
@@ -323,18 +335,36 @@ public:
 		}
 		else
 		{
-			euler_out.pitch = - tf2Asin(m_el[2].x());
+			euler_out.pitch = - tf2Asin(m20);
 			euler_out2.pitch = TF2SIMD_PI - euler_out.pitch;
 
-			euler_out.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out.pitch), 
-				m_el[2].z()/tf2Cos(euler_out.pitch));
-			euler_out2.roll = tf2Atan2(m_el[2].y()/tf2Cos(euler_out2.pitch), 
-				m_el[2].z()/tf2Cos(euler_out2.pitch));
+			tf2Scalar cos_pitch1 = tf2Cos(euler_out.pitch);
+			tf2Scalar cos_pitch2 = tf2Cos(euler_out2.pitch);
 
-			euler_out.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out.pitch), 
-				m_el[0].x()/tf2Cos(euler_out.pitch));
-			euler_out2.yaw = tf2Atan2(m_el[1].x()/tf2Cos(euler_out2.pitch), 
-				m_el[0].x()/tf2Cos(euler_out2.pitch));
+			// Check for near-zero cosine values to avoid division by very small numbers
+			if (tf2Fabs(cos_pitch1) < threshold)
+			{
+				// Handle singularity case
+				euler_out.yaw = 0;
+				euler_out.roll = tf2Atan2(m21, m22);
+			}
+			else
+			{
+				euler_out.roll = tf2Atan2(m21 / cos_pitch1, m22 / cos_pitch1);
+				euler_out.yaw = tf2Atan2(m10 / cos_pitch1, m00 / cos_pitch1);
+			}
+
+			if (tf2Fabs(cos_pitch2) < threshold)
+			{
+				// Handle singularity case
+				euler_out2.yaw = 0;
+				euler_out2.roll = tf2Atan2(m21, m22);
+			}
+			else
+			{
+				euler_out2.roll = tf2Atan2(m21 / cos_pitch2, m22 / cos_pitch2);
+				euler_out2.yaw = tf2Atan2(m10 / cos_pitch2, m00 / cos_pitch2);
+			}
 		}
 
 		if (solution_number == 1)
