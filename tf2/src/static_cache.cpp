@@ -40,9 +40,18 @@ bool tf2::StaticCache::getData(
   tf2::TransformStorage & data_out, std::string * error_str, TF2Error * error_code)
 {
   (void)time;
-  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
+  if (storage_.frame_id_ == UINT32_MAX) {
     if (error_str) {
-      *error_str = "Static cache is empty";
+      *error_str = "Static cache has uninitialized values";
+    }
+    if (error_code) {
+      *error_code = TF2Error::TF2_LOOKUP_ERROR;
+    }
+    return false;
+  }
+  if (storage_.frame_id_ == 0) {
+    if (error_str) {
+      *error_str = "Static Cache Transform has NO_PARENT";
     }
     if (error_code) {
       *error_code = TF2Error::TF2_LOOKUP_ERROR;
@@ -75,9 +84,9 @@ tf2::CompactFrameID tf2::StaticCache::getParent(
   TF2Error * error_code)
 {
   (void)time;
-  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
+  if (storage_.frame_id_ == UINT32_MAX) {
     if (error_str) {
-      *error_str = "Static cache is empty";
+      *error_str = "Static cache has uninitialized values";
     }
     if (error_code) {
       *error_code = TF2Error::TF2_LOOKUP_ERROR;
@@ -89,7 +98,7 @@ tf2::CompactFrameID tf2::StaticCache::getParent(
 
 tf2::P_TimeAndFrameID tf2::StaticCache::getLatestTimeAndParent()
 {
-  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
+  if (storage_.frame_id_ == UINT32_MAX) {
     return std::make_pair(TimePoint(), 0);
   }
   return std::make_pair(TimePoint(), storage_.frame_id_);
