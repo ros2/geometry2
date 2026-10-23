@@ -28,6 +28,7 @@
 
 /** \author Tully Foote */
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -39,7 +40,7 @@ bool tf2::StaticCache::getData(
   tf2::TransformStorage & data_out, std::string * error_str, TF2Error * error_code)
 {
   (void)time;
-  if (!populated_) {
+  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
     if (error_str) {
       *error_str = "Static cache is empty";
     }
@@ -56,26 +57,41 @@ bool tf2::StaticCache::getData(
 bool tf2::StaticCache::insertData(const tf2::TransformStorage & new_data)
 {
   storage_ = new_data;
-  populated_ = true;
   return true;
 }
 
-void tf2::StaticCache::clearList() {populated_ = false;}
+void tf2::StaticCache::clearList()
+{
+  storage_ = TransformStorage();
+}
 
-unsigned tf2::StaticCache::getListLength() {return populated_ ? 1 : 0;}
+unsigned tf2::StaticCache::getListLength()
+{
+  return (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) ? 0 : 1;
+}
 
 tf2::CompactFrameID tf2::StaticCache::getParent(
   tf2::TimePoint time, std::string * error_str,
   TF2Error * error_code)
 {
   (void)time;
-  (void)error_code;
-  (void)error_str;
-  return populated_ ? storage_.frame_id_ : 0;
+  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
+    if (error_str) {
+      *error_str = "Static cache is empty";
+    }
+    if (error_code) {
+      *error_code = TF2Error::TF2_LOOKUP_ERROR;
+    }
+    return 0;
+  }
+  return storage_.frame_id_;
 }
 
 tf2::P_TimeAndFrameID tf2::StaticCache::getLatestTimeAndParent()
 {
+  if (storage_.frame_id_ == UINT32_MAX || storage_.frame_id_ == 0) {
+    return std::make_pair(TimePoint(), 0);
+  }
   return std::make_pair(TimePoint(), storage_.frame_id_);
 }
 

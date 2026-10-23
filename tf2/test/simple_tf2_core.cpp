@@ -322,6 +322,42 @@ TEST(tf2_clear, LookUp_Static_Transform_Fail)
   );
 }
 
+TEST(tf2_clear, Clear_Static_Transform)
+{
+  tf2::BufferCore tfc;
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp = builtin_interfaces::msg::Time();
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1", true));
+  EXPECT_TRUE(tfc.canTransform("foo", "bar", tf2::TimePointZero));
+  EXPECT_TRUE(tfc.canTransform("bar", "foo", tf2::TimePointZero));
+  EXPECT_TRUE(tfc.canTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2))));
+  EXPECT_TRUE(tfc.canTransform("bar", "foo", tf2::TimePoint(std::chrono::seconds(2))));
+
+  tfc.clear();
+
+  EXPECT_FALSE(tfc.canTransform("foo", "bar", tf2::TimePointZero));
+  EXPECT_FALSE(tfc.canTransform("bar", "foo", tf2::TimePointZero));
+  EXPECT_FALSE(tfc.canTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2))));
+  EXPECT_FALSE(tfc.canTransform("bar", "foo", tf2::TimePoint(std::chrono::seconds(2))));
+  EXPECT_THROW(
+    tfc.lookupTransform("foo", "bar", tf2::TimePointZero),
+    tf2::TransformException);
+  EXPECT_THROW(
+    tfc.lookupTransform("bar", "foo", tf2::TimePointZero),
+    tf2::TransformException);
+  EXPECT_THROW(
+    tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2))),
+    tf2::TransformException);
+  EXPECT_THROW(
+    tfc.lookupTransform("bar", "foo", tf2::TimePoint(std::chrono::seconds(2))),
+    tf2::TransformException);
+}
+
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();
