@@ -2,6 +2,11 @@
 Changelog for package tf2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.5 (2026-10-23)
+-------------------
+* Remove ADD_LINTER_TESTS from generated-code lint on interface packages (`#1003 <https://github.com/ros2/geometry2//issues/1003>`_)
+* Contributors: Michael Carroll
+
 0.46.4 (2026-09-15)
 -------------------
 

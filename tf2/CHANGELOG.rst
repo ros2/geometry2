@@ -2,6 +2,11 @@
 Changelog for package tf2
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.5 (2026-10-23)
+-------------------
+* Delete old-style ament_export_include_directories() and ament_export_libraries() calls (`#996 <https://github.com/ros2/geometry2//issues/996>`_)
+* Contributors: Francois Gonothi Toure
+
 0.46.4 (2026-09-15)
 -------------------
 * Fix ABBA deadlock between waitForTransform and testTransformableRequests (`#982 <https://github.com/ros2/geometry2/issues/982>`_)

@@ -2,6 +2,9 @@
 Changelog for package tf2_ros_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.5 (2026-10-23)
+-------------------
+
 0.46.4 (2026-09-15)
 -------------------
 * Enable RMW isolation for single process tests (`#983 <https://github.com/ros2/geometry2/issues/983>`_)

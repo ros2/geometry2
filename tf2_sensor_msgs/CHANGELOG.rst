@@ -2,6 +2,9 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.5 (2026-10-23)
+-------------------
+
 0.46.4 (2026-09-15)
 -------------------
 * granular rclcpp/rclcpp.hpp and include what you use (`#984 <https://github.com/ros2/geometry2/issues/984>`_)

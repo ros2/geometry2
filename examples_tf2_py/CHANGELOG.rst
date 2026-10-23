@@ -2,6 +2,11 @@
 Changelog for package examples_tf2_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.46.5 (2026-10-23)
+-------------------
+* Use the SPDX identifier Apache-2.0 in license declarations (`#993 <https://github.com/ros2/geometry2//issues/993>`_)
+* Contributors: Michael Carroll
+
 0.46.4 (2026-09-15)
 -------------------
 
