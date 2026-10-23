@@ -358,6 +358,41 @@ TEST(tf2_clear, Clear_Static_Transform)
     tf2::TransformException);
 }
 
+// Regression test for https://github.com/ros2/geometry2/issues/1000
+TEST(tf2_clear, Clear_Dynamic_And_Static_Chain)
+{
+  tf2::BufferCore tfc;
+
+  geometry_msgs::msg::TransformStamped dynamic_tf;
+  dynamic_tf.header.frame_id = "map";
+  dynamic_tf.child_frame_id = "base_link";
+  dynamic_tf.header.stamp.sec = 1;
+  dynamic_tf.header.stamp.nanosec = 0;
+  dynamic_tf.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(dynamic_tf, "authority1", false));
+
+  geometry_msgs::msg::TransformStamped static_tf;
+  static_tf.header.frame_id = "base_link";
+  static_tf.child_frame_id = "lidar_0";
+  static_tf.header.stamp.sec = 1;
+  static_tf.header.stamp.nanosec = 0;
+  static_tf.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(static_tf, "authority1", true));
+
+  EXPECT_TRUE(tfc.canTransform("map", "lidar_0", tf2::TimePointZero));
+  EXPECT_TRUE(tfc.canTransform("map", "lidar_0", tf2::TimePoint(std::chrono::seconds(1))));
+
+  tfc.clear();
+
+  dynamic_tf.header.stamp.sec = 2;
+  EXPECT_TRUE(tfc.setTransform(dynamic_tf, "authority1", false));
+
+  EXPECT_FALSE(tfc.canTransform("map", "lidar_0", tf2::TimePointZero));
+  EXPECT_FALSE(tfc.canTransform("lidar_0", "map", tf2::TimePointZero));
+  EXPECT_FALSE(tfc.canTransform("map", "lidar_0", tf2::TimePoint(std::chrono::seconds(2))));
+  EXPECT_FALSE(tfc.canTransform("lidar_0", "map", tf2::TimePoint(std::chrono::seconds(2))));
+}
+
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();
