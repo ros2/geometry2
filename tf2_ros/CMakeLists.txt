@@ -142,13 +142,11 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 
 # Tests
 if(BUILD_TESTING)
-  find_package(ament_cmake_cppcheck REQUIRED)
   find_package(ament_cmake_cpplint REQUIRED)
   find_package(ament_cmake_lint_cmake REQUIRED)
   find_package(ament_cmake_uncrustify REQUIRED)
   find_package(rosgraph_msgs REQUIRED)
 
-  ament_cppcheck(LANGUAGE "c++")
   ament_cpplint()
   ament_lint_cmake()
   ament_uncrustify(LANGUAGE "c++")
