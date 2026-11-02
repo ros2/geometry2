@@ -30,6 +30,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <string>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -49,7 +50,23 @@
 
 #include "permuter.hpp"
 
-const int MAX_ATTEMPTS = 400;
+// A static transform only becomes visible to the listener once the publisher and
+// subscriber have discovered each other and the message has been delivered, which can
+// take a variable amount of time.  Since the topic is transient_local the transform is
+// never lost, so polling for it is safe; the deadline just keeps a real failure from
+// hanging the test.
+static bool waitForTransform(
+  tf2_ros::Buffer & buffer, const std::string & target, const std::string & source)
+{
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+  while (!buffer.canTransform(target, source, tf2::timeFromSec(0))) {
+    if (std::chrono::steady_clock::now() >= deadline) {
+      return false;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  return true;
+}
 
 TEST(StaticTransformPublisher, a_b_different_times)
 {
@@ -67,15 +84,7 @@ TEST(StaticTransformPublisher, a_b_different_times)
       executor.spin();
     });
 
-  int attempts = 0;
-
-  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    attempts++;
-    if (attempts > MAX_ATTEMPTS) {
-      FAIL();
-    }
-  }
+  ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(100)));
@@ -102,14 +111,7 @@ TEST(StaticTransformPublisher, a_c_different_times)
       executor.spin();
     });
 
-  int attempts = 0;
-  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    attempts++;
-    if (attempts > MAX_ATTEMPTS) {
-      FAIL();
-    }
-  }
+  ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(10)));
@@ -136,15 +138,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
       executor.spin();
     });
 
-  int attempts = 0;
-
-  while (!mB.canTransform("a", "c", tf2::timeFromSec(0))) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    attempts++;
-    if (attempts > MAX_ATTEMPTS) {
-      FAIL();
-    }
-  }
+  ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
   geometry_msgs::msg::TransformStamped ts;
   ts.transform.rotation.w = 1;
@@ -187,15 +181,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
       executor.spin();
     });
 
-  int attempts = 0;
-
-  while (!mB.canTransform("a", "b", tf2::timeFromSec(0))) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    attempts++;
-    if (attempts > MAX_ATTEMPTS) {
-      FAIL();
-    }
-  }
+  ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
   tf2_ros::StaticTransformBroadcaster stb(*node);
   geometry_msgs::msg::TransformStamped ts;
@@ -206,9 +192,8 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
   stb.sendTransform(ts);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
   // make sure listener has populated
+  ASSERT_TRUE(waitForTransform(mB, "a", "d"));
   EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(100)));
   EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(1000)));
@@ -221,8 +206,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   ts.child_frame_id = "other_child2";
   stb.sendTransform(ts);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
-
+  ASSERT_TRUE(waitForTransform(mB, "new_parent", "other_child2"));
   EXPECT_TRUE(mB.canTransform("new_parent", "d", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child2", tf2::timeFromSec(0)));
