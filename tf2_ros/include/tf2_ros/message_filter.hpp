@@ -54,6 +54,7 @@
 #include "message_filters/message_traits.hpp"
 #include "message_filters/simple_filter.hpp"
 #include "tf2/buffer_core_interface.hpp"
+#include "tf2/exceptions.hpp"
 #include "tf2/time.hpp"
 #include "tf2_ros/async_buffer_interface.hpp"
 #include "tf2_ros/buffer.hpp"
@@ -392,18 +393,37 @@ public:
       const auto & handle = std::get<0>(param);
       const auto & stamp = std::get<1>(param);
       const auto & target_frame = std::get<2>(param);
-      tf2_ros::TransformStampedFuture future = buffer_.waitForTransform(
-        target_frame,
-        frame_id,
-        stamp,
-        buffer_timeout_,
-        std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
-
-      // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform have already called
-      // the callback.
-      if (0 != future.getHandle() && 0xffffffffffffffffULL != future.getHandle()) {
-        std::unique_lock<std::mutex> lock(ts_futures_mutex_);
-        ts_futures_.insert({handle, std::move(future)});
+      try {
+        tf2_ros::TransformStampedFuture future = buffer_.waitForTransform(
+          target_frame,
+          frame_id,
+          stamp,
+          buffer_timeout_,
+          std::bind(&MessageFilter::transformReadyCallback, this, std::placeholders::_1, handle));
+        // If handle of future is 0 or 0xffffffffffffffffULL, waitForTransform has already called
+        // the callback.
+        if (0 != future.getHandle() && 0xffffffffffffffffULL != future.getHandle()) {
+          std::unique_lock<std::mutex> lock(ts_futures_mutex_);
+          ts_futures_.insert({handle, std::move(future)});
+        }
+      } catch (const tf2::TransformException & ex) {
+        RCLCPP_ERROR(
+            node_interfaces_.get_node_logging_interface()->get_logger(),
+            "waitForTransform failed: %s", ex.what());
+        std::unique_lock<std::mutex> unique_lock(messages_mutex_);
+        typename L_MessageInfo::iterator msg_it = messages_.begin();
+        typename L_MessageInfo::iterator msg_end = messages_.end();
+        for (; msg_it != msg_end; ++msg_it) {
+          MessageInfo & info = *msg_it;
+          auto handle_it = std::find(info.handles.begin(), info.handles.end(), handle);
+          if (handle_it != info.handles.end()) {
+            MEvent saved_event = msg_it->event;
+            messageDropped(saved_event, filter_failure_reasons::NoTransformFound);
+            messages_.erase(msg_it);
+            break;
+          }
+        }
+        break;
       }
     }
   }
