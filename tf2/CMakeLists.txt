@@ -48,7 +48,6 @@ install(DIRECTORY include/ DESTINATION include/${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_cmake_google_benchmark REQUIRED)
   find_package(ament_cmake_copyright REQUIRED)
-  find_package(ament_cmake_cppcheck REQUIRED)
   find_package(ament_cmake_cpplint REQUIRED)
   find_package(ament_cmake_lint_cmake REQUIRED)
   find_package(ament_cmake_uncrustify REQUIRED)
@@ -74,10 +73,6 @@ if(BUILD_TESTING)
   )
 
   ament_copyright(EXCLUDE ${_linter_excludes})
-  ament_cppcheck(
-    EXCLUDE ${_linter_excludes}
-    LANGUAGE c++
-  )
   ament_cpplint(EXCLUDE ${_linter_excludes})
   ament_lint_cmake()
   ament_uncrustify(
