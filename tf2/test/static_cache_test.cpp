@@ -100,7 +100,69 @@ TEST(StaticCache, EmptyCacheRetrieval)
   tf2::StaticCache cache;
   tf2::TransformStorage stor;
   resetStorage(stor);
-  EXPECT_FALSE(cache.getData(tf2::TimePoint(std::chrono::nanoseconds(99999)), stor));
+  std::string error_str;
+  tf2::TF2Error error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_FALSE(
+    cache.getData(
+      tf2::TimePoint(std::chrono::nanoseconds(99999)), stor, &error_str, &error_code));
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_LOOKUP_ERROR);
+  EXPECT_EQ(error_str, "Static cache has uninitialized values");
+
+  error_str.clear();
+  error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_EQ(
+    cache.getParent(
+      tf2::TimePoint(std::chrono::nanoseconds(99999)), &error_str, &error_code), 0u);
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_LOOKUP_ERROR);
+  EXPECT_EQ(error_str, "Static cache has uninitialized values");
+
+  EXPECT_EQ(cache.getLatestTimeAndParent(), std::make_pair(tf2::TimePoint(), 0u));
+  EXPECT_EQ(cache.getListLength(), 0u);
+
+  // Also test NO_PARENT (frame_id_ == 0)
+  stor.frame_id_ = 0;
+  EXPECT_TRUE(cache.insertData(stor));
+  error_str.clear();
+  error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_FALSE(
+    cache.getData(
+      tf2::TimePoint(std::chrono::nanoseconds(99999)), stor, &error_str, &error_code));
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_LOOKUP_ERROR);
+  EXPECT_EQ(error_str, "Static Cache Transform has NO_PARENT");
+
+  error_str.clear();
+  error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_EQ(
+    cache.getParent(
+      tf2::TimePoint(std::chrono::nanoseconds(99999)), &error_str, &error_code), 0u);
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_NO_ERROR);
+  EXPECT_TRUE(error_str.empty());
+}
+
+TEST(StaticCache, ClearListResetsCache)
+{
+  tf2::StaticCache cache;
+  tf2::TransformStorage stor;
+  resetStorage(stor);
+  stor.frame_id_ = tf2::CompactFrameID(10);
+  stor.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(10));
+
+  EXPECT_TRUE(cache.insertData(stor));
+  EXPECT_EQ(cache.getListLength(), 1u);
+  EXPECT_EQ(cache.getParent(tf2::TimePoint(std::chrono::nanoseconds(10))), 10u);
+  EXPECT_EQ(cache.getLatestTimeAndParent(), std::make_pair(tf2::TimePoint(), 10u));
+
+  cache.clearList();
+  EXPECT_EQ(cache.getListLength(), 0u);
+
+  std::string error_str;
+  tf2::TF2Error error_code = tf2::TF2Error::TF2_NO_ERROR;
+  EXPECT_EQ(
+    cache.getParent(
+      tf2::TimePoint(std::chrono::nanoseconds(10)), &error_str, &error_code), 0u);
+  EXPECT_EQ(error_code, tf2::TF2Error::TF2_LOOKUP_ERROR);
+  EXPECT_EQ(error_str, "Static cache has uninitialized values");
+  EXPECT_EQ(cache.getLatestTimeAndParent(), std::make_pair(tf2::TimePoint(), 0u));
 }
 
 TEST(StaticCache, ErrorHandlingForInvalidTimestamps)
