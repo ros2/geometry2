@@ -81,9 +81,8 @@ TEST(tf2Utils, singularityGimbalLock)
   const double test_epsilon = 1e-6;
 
   // Test gimbal lock at exactly only positive 90 degrees pitch
-  // This corresponds to quaternion with specific values that produce sarg ≈ 1.0
   tf2::Quaternion q_pos_gimbal_exact;
-  q_pos_gimbal_exact.setRPY(0.0, TF2SIMD_HALF_PI, 0.0);  // Roll=0.1, Pitch=90°, Yaw=0.2
+  q_pos_gimbal_exact.setRPY(0.0, TF2SIMD_HALF_PI, 0.0);  // Roll=0.0, Pitch=90°, Yaw=0.0
   
   tf2::getEulerYPR(q_pos_gimbal_exact, yaw, pitch, roll);
   EXPECT_NEAR(roll, 0.0, test_epsilon);
@@ -100,7 +99,6 @@ TEST(tf2Utils, singularityGimbalLock)
   EXPECT_NEAR(yaw_m, yaw, test_epsilon);
 
   // Test gimbal lock at exactly only negative 90 degrees pitch
-  // This corresponds to quaternion with specific values that produce sarg ≈ -1.0
   tf2::Quaternion q_neg_gimbal_exact;
   q_neg_gimbal_exact.setRPY(0.0, -TF2SIMD_HALF_PI, 0.0);  // Roll=0.0, Pitch=-90°, Yaw=0.0
   
@@ -111,7 +109,6 @@ TEST(tf2Utils, singularityGimbalLock)
   EXPECT_NEAR(tf2::getYaw(q_neg_gimbal_exact), yaw, test_epsilon);
 
   // Test gimbal lock at positive 90 degrees pitch
-  // This corresponds to quaternion with specific values that produce sarg ≈ 1.0
   tf2::Quaternion q_pos_gimbal;
   q_pos_gimbal.setRPY(0.1, TF2SIMD_HALF_PI, 0.2);  // Roll=0.1, Pitch=90°, Yaw=0.2
   
@@ -119,6 +116,10 @@ TEST(tf2Utils, singularityGimbalLock)
   EXPECT_NEAR(pitch, TF2SIMD_HALF_PI, test_epsilon);
   // At gimbal lock, roll and yaw combine - exact values depend on implementation
   EXPECT_TRUE(std::isfinite(yaw) && std::isfinite(roll));
+  // Below values are expected according to #796
+  EXPECT_NEAR(roll, 0.0, test_epsilon);
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
   EXPECT_NEAR(tf2::getYaw(q_pos_gimbal), yaw, test_epsilon);
 
   // Test gimbal lock at negative 90 degrees pitch  
@@ -129,15 +130,19 @@ TEST(tf2Utils, singularityGimbalLock)
   EXPECT_NEAR(pitch, -TF2SIMD_HALF_PI, test_epsilon);
   // At gimbal lock, roll and yaw combine - exact values depend on implementation
   EXPECT_TRUE(std::isfinite(yaw) && std::isfinite(roll));
+  // Below values are expected according to #796
+  EXPECT_NEAR(roll, 0.0, test_epsilon);
+  EXPECT_NEAR(pitch, -TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
   EXPECT_NEAR(tf2::getYaw(q_neg_gimbal), yaw, test_epsilon);
 
   // Test near-gimbal lock cases (just under threshold)
   tf2::Quaternion q_near_gimbal;
-  q_near_gimbal.setRPY(0.1, TF2SIMD_HALF_PI - 1e-7, 0.2);
+  q_near_gimbal.setRPY(0.1, TF2SIMD_HALF_PI - 1e-5, 0.2);
   
   tf2::getEulerYPR(q_near_gimbal, yaw, pitch, roll);
   EXPECT_NEAR(roll, 0.1, test_epsilon);
-  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI - 1e-7, test_epsilon);
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI - 1e-5, test_epsilon);
   EXPECT_NEAR(yaw, 0.2, test_epsilon);
   EXPECT_NEAR(tf2::getYaw(q_near_gimbal), yaw, test_epsilon);
 
