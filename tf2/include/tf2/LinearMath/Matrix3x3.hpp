@@ -296,47 +296,42 @@ public:
 		Euler euler_out;
 		Euler euler_out2;  // second solution
 
-		// Apply epsilon thresholding to matrix elements to handle numerical precision issues.
-		// Use a conservative threshold to handle numerical errors from quaternion-to-matrix conversion.
+		// Apply epsilon thresholding for numerical stability in gimbal lock detection and angle computations
 		// 1e-12 is chosen as a balance between numerical stability and precision:
 		// - More conservative than FLT_EPSILON (~1.19e-7) to handle single-precision input
 		// - Less restrictive than DBL_EPSILON (~2.22e-16) to avoid false positives
-		// - Prevents numerical instabilities near gimbal lock singularities
 		const tf2Scalar threshold = tf2Scalar(1e-12);
-		const tf2Scalar m20 = tf2Fabs(m_el[2].x()) < threshold ? tf2Scalar(0.0) : m_el[2].x();
-		const tf2Scalar m21 = tf2Fabs(m_el[2].y()) < threshold ? tf2Scalar(0.0) : m_el[2].y();
-		const tf2Scalar m22 = tf2Fabs(m_el[2].z()) < threshold ? tf2Scalar(0.0) : m_el[2].z();
-		const tf2Scalar m10 = tf2Fabs(m_el[1].x()) < threshold ? tf2Scalar(0.0) : m_el[1].x();
-		const tf2Scalar m00 = tf2Fabs(m_el[0].x()) < threshold ? tf2Scalar(0.0) : m_el[0].x();
+
+		const tf2Scalar m20 = m_el[2].x();
+		const tf2Scalar m21 = m_el[2].y();
+		const tf2Scalar m22 = m_el[2].z();
+		const tf2Scalar m10 = m_el[1].x();
+		const tf2Scalar m00 = m_el[0].x();
+		const tf2Scalar m11 = m_el[1].y();
+		const tf2Scalar m12 = m_el[1].z();
 
 		// Check that pitch is not at a singularity (improved detection)
 		if (tf2Fabs(m20) >= tf2Scalar(1.0) - threshold)
 		{
+			// Gimbal lock detected, pitch is +/-90 degrees
+			// Explicitly set yaw to zero and compute roll from remaining elements
+			// Use m11 and m12 instead of obvious m21 and m22 because m21 and m22 only depend on roll (and pitch) while
+			// m11 and m12 also contain yaw which means that computing roll from m11 and m12 while setting yaw there
+			// explicitly to zero provides an overall consistent solution with the fixed yaw.
 			euler_out.yaw = 0;
 			euler_out2.yaw = 0;
-	
-			// From difference of angles formula
-			const tf2Scalar delta = tf2Atan2(m21, m22);
 
-			if (m20 < 0)  // gimbal locked down
-			{
-				euler_out.pitch = TF2SIMD_PI / tf2Scalar(2.0);
-				euler_out2.pitch = TF2SIMD_PI / tf2Scalar(2.0);
-				euler_out.roll = delta;
-				euler_out2.roll = delta;
-			}
-			else  // gimbal locked up
-			{
-				euler_out.pitch = -TF2SIMD_PI / tf2Scalar(2.0);
-				euler_out2.pitch = -TF2SIMD_PI / tf2Scalar(2.0);
-				euler_out.roll = delta;
-				euler_out2.roll = delta;
-			}
+			const tf2Scalar roll = tf2Atan2(-m12, m11);
+			const tf2Scalar pitch = (m20 < 0) ? TF2SIMD_HALF_PI : -TF2SIMD_HALF_PI;
+			euler_out.pitch = pitch;
+			euler_out2.pitch = pitch;
+			euler_out.roll = roll;
+			euler_out2.roll  = roll;
 		}
 		else
 		{
 			euler_out.pitch = - tf2Asin(m20);
-			euler_out2.pitch = TF2SIMD_PI - euler_out.pitch;
+			euler_out2.pitch = tf2NormalizeAngle(TF2SIMD_PI - euler_out.pitch);
 
 			const tf2Scalar cos_pitch1 = tf2Cos(euler_out.pitch);
 			const tf2Scalar cos_pitch2 = tf2Cos(euler_out2.pitch);
@@ -345,8 +340,12 @@ public:
 			if (tf2Fabs(cos_pitch1) < threshold)
 			{
 				// Handle singularity case
+				// Explicitly set yaw to zero and compute roll from remaining elements
+				// Use m11 and m12 instead of obvious m21 and m22 because m21 and m22 only depend on roll (and pitch) while
+				// m11 and m12 also contain yaw which means that computing roll from m11 and m12 while setting yaw there
+				// explicitly to zero provides an overall consistent solution with the fixed yaw.
 				euler_out.yaw = 0;
-				euler_out.roll = tf2Atan2(m21, m22);
+				euler_out.roll = tf2Atan2(-m12, m11);
 			}
 			else
 			{
@@ -358,7 +357,11 @@ public:
 			{
 				// Handle singularity case
 				euler_out2.yaw = 0;
-				euler_out2.roll = tf2Atan2(m21, m22);
+				// Explicitly set yaw to zero and compute roll from remaining elements
+				// Use m11 and m12 instead of obvious m21 and m22 because m21 and m22 only depend on roll (and pitch) while
+				// m11 and m12 also contain yaw which means that computing roll from m11 and m12 while setting yaw there
+				// explicitly to zero provides an overall consistent solution with the fixed yaw.
+				euler_out2.roll = tf2Atan2(-m12, m11);
 			}
 			else
 			{
