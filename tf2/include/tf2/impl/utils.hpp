@@ -17,6 +17,7 @@
 
 #include <tf2/convert.hpp>
 #include <tf2/transform_datatypes.hpp>
+#include <tf2/LinearMath/Matrix3x3.hpp>
 #include <tf2/LinearMath/Quaternion.hpp>
 #include <geometry_msgs/msg/quaternion.hpp>
 #include <geometry_msgs/msg/quaternion_stamped.hpp>
@@ -89,10 +90,8 @@ tf2::Quaternion toQuaternion(const T & t)
   return toQuaternion(q);
 }
 
-/** The code below is blatantly copied from urdfdom_headers
- * only the normalization has been added.
- * It computes the Euler roll, pitch yaw from a tf2::Quaternion
- * It is equivalent to tf2::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
+/** Computes the Euler roll, pitch yaw from a tf2::Quaternion
+ * It internally calls tf2::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
  * \param q a tf2::Quaternion
  * \param yaw the computed yaw
  * \param pitch the computed pitch
@@ -101,36 +100,10 @@ tf2::Quaternion toQuaternion(const T & t)
 inline
 void getEulerYPR(const tf2::Quaternion & q, double & yaw, double & pitch, double & roll)
 {
-  const double pi_2 = 1.57079632679489661923;
-  double sqw;
-  double sqx;
-  double sqy;
-  double sqz;
-
-  sqx = q.x() * q.x();
-  sqy = q.y() * q.y();
-  sqz = q.z() * q.z();
-  sqw = q.w() * q.w();
-
-  // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
-  // normalization added from urdfom_headers
-  double sarg = -2 * (q.x() * q.z() - q.w() * q.y()) / (sqx + sqy + sqz + sqw);
-  if (sarg <= -0.99999) {
-    pitch = -0.5 * pi_2;
-    roll = 0;
-    yaw = -2 * atan2(q.y(), q.x());
-  } else if (sarg >= 0.99999) {
-    pitch = 0.5 * pi_2;
-    roll = 0;
-    yaw = 2 * atan2(q.y(), q.x());
-  } else {
-    pitch = asin(sarg);
-    roll = atan2(2 * (q.y() * q.z() + q.w() * q.x()), sqw - sqx - sqy + sqz);
-    yaw = atan2(2 * (q.x() * q.y() + q.w() * q.z()), sqw + sqx - sqy - sqz);
-  }
+  Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
 }
 
-/** The code below is a simplified version of getEulerRPY that only
+/** The code below is the same as getEulerYPR but directly
  * returns the yaw. It is mostly useful in navigation where only yaw
  * matters
  * \param q a tf2::Quaternion
@@ -140,28 +113,9 @@ inline
 double getYaw(const tf2::Quaternion & q)
 {
   double yaw;
-
-  double sqw;
-  double sqx;
-  double sqy;
-  double sqz;
-
-  sqx = q.x() * q.x();
-  sqy = q.y() * q.y();
-  sqz = q.z() * q.z();
-  sqw = q.w() * q.w();
-
-  // Cases derived from https://orbitalstation.wordpress.com/tag/quaternion/
-  // normalization added from urdfom_headers
-  double sarg = -2 * (q.x() * q.z() - q.w() * q.y()) / (sqx + sqy + sqz + sqw);
-
-  if (sarg <= -0.99999) {
-    yaw = -2 * atan2(q.y(), q.x());
-  } else if (sarg >= 0.99999) {
-    yaw = 2 * atan2(q.y(), q.x());
-  } else {
-    yaw = atan2(2 * (q.x() * q.y() + q.w() * q.z()), sqw + sqx - sqy - sqz);
-  }
+  double unused_pitch;
+  double unused_roll;
+  getEulerYPR(q, yaw, unused_pitch, unused_roll);
   return yaw;
 }
 

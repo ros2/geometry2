@@ -75,6 +75,153 @@ TEST(tf2Utils, yaw)
   }
 }
 
+// Test fixture for rpyConversion tests
+class RpyConversionTest : public ::testing::Test
+{
+protected:
+  void SetUp() override
+  {
+    yaw = 0.0;
+    pitch = 0.0;
+    roll = 0.0;
+  }
+
+  tf2::Quaternion q_input;
+  double yaw, pitch, roll;
+  const double test_epsilon = 1e-6;
+};
+
+TEST_F(RpyConversionTest, singularityOnlyGimbalLockPositive)
+{
+  // Test gimbal lock at exactly only positive 90 degrees pitch
+  q_input.setRPY(0.0, TF2SIMD_HALF_PI, 0.0);  // Roll=0.0, Pitch=90°, Yaw=0.0
+  
+  tf2::getEulerYPR(q_input, yaw, pitch, roll);
+  EXPECT_NEAR(roll, 0.0, test_epsilon);
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_input), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_input);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
+TEST_F(RpyConversionTest, singularityOnlyGimbalLockNegative)
+{
+  // Test gimbal lock at exactly only negative 90 degrees pitch
+  q_input.setRPY(0.0, -TF2SIMD_HALF_PI, 0.0);  // Roll=0.0, Pitch=-90°, Yaw=0.0
+  
+  tf2::getEulerYPR(q_input, yaw, pitch, roll);
+  EXPECT_NEAR(roll, 0.0, test_epsilon);
+  EXPECT_NEAR(pitch, -TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_input), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_input);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
+TEST_F(RpyConversionTest, singularityGimbalLockWithRollYawPositive)
+{
+  // Test gimbal lock at positive 90 degrees pitch including non-zero roll and yaw
+  q_input.setRPY(tf2Radians(40.0), TF2SIMD_HALF_PI, tf2Radians(50.0));  // Roll=40°, Pitch=90°, Yaw=50°
+  
+  tf2::getEulerYPR(q_input, yaw, pitch, roll);
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI, test_epsilon);
+  // At gimbal lock, roll and yaw combine - exact values depend on implementation
+  EXPECT_TRUE(std::isfinite(yaw) && std::isfinite(roll));
+  // Below values are expected according to #796
+  // Note that for the gimbal lock case yaw is expected to be zero and that rotation is only represented by roll
+  EXPECT_NEAR(roll, tf2Radians(-10.0), test_epsilon);  // roll - yaw
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_input), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_input);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
+TEST_F(RpyConversionTest, singularityGimbalLockWithRollYawNegative)
+{
+  // Test gimbal lock at negative 90 degrees pitch including non-zero roll and yaw
+  q_input.setRPY(tf2Radians(40.0), -TF2SIMD_HALF_PI, tf2Radians(50.0));  // Roll=40°, Pitch=-90°, Yaw=50°
+  
+  tf2::getEulerYPR(q_input, yaw, pitch, roll);
+  EXPECT_NEAR(pitch, -TF2SIMD_HALF_PI, test_epsilon);
+  // At gimbal lock, roll and yaw combine - exact values depend on implementation
+  EXPECT_TRUE(std::isfinite(yaw) && std::isfinite(roll));
+  // Below values are expected according to #796
+  // Note that for the gimbal lock case yaw is expected to be zero and that rotation is only represented by roll
+  EXPECT_NEAR(roll, tf2Radians(90.0), test_epsilon);  // roll + yaw combined
+  EXPECT_NEAR(pitch, -TF2SIMD_HALF_PI, test_epsilon);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_input), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_input);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
+TEST_F(RpyConversionTest, singularityBelowGimbalLockWithRollYaw)
+{
+  // Test near-gimbal lock cases (just under threshold)
+  q_input.setRPY(0.1, TF2SIMD_HALF_PI - 1e-5, 0.2);
+  
+  tf2::getEulerYPR(q_input, yaw, pitch, roll);
+  EXPECT_NEAR(roll, 0.1, test_epsilon);
+  EXPECT_NEAR(pitch, TF2SIMD_HALF_PI - 1e-5, test_epsilon);
+  EXPECT_NEAR(yaw, 0.2, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_input), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_input);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
+TEST_F(RpyConversionTest, smallAngles)
+{
+  // Test quaternions that should produce very small angles (near epsilon threshold)
+  tf2::Quaternion q_small_angles;
+  q_small_angles.setRPY(1e-9, 1e-9, 1e-9);  // Very small rotations
+  
+  tf2::getEulerYPR(q_small_angles, yaw, pitch, roll);
+  EXPECT_NEAR(yaw, 0.0, test_epsilon);
+  EXPECT_NEAR(pitch, 0.0, test_epsilon);
+  EXPECT_NEAR(roll, 0.0, test_epsilon);
+  EXPECT_NEAR(tf2::getYaw(q_small_angles), yaw, test_epsilon);
+
+  // Compare with Matrix3x3 equivalent getEulerYPR
+  tf2::Matrix3x3 m_pos_gimbal_exact(q_small_angles);
+  double roll_m, pitch_m, yaw_m;
+  m_pos_gimbal_exact.getEulerYPR(yaw_m, pitch_m, roll_m);
+  EXPECT_NEAR(roll_m, roll, test_epsilon);
+  EXPECT_NEAR(pitch_m, pitch, test_epsilon);
+  EXPECT_NEAR(yaw_m, yaw, test_epsilon);
+}
+
 TEST(tf2Utils, identity)
 {
   geometry_msgs::msg::Transform t;
