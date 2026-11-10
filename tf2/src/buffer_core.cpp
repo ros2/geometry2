@@ -102,6 +102,43 @@ void fillOrWarnMessageForInvalidFrame(
   }
 }
 
+bool validateFrameIdFormat(
+  const char * function_name_arg,
+  const std::string & frame_id,
+  std::string * error_msg)
+{
+  if (frame_id.empty()) {
+    fillOrWarnMessageForInvalidFrame(
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot be empty");
+    return false;
+  }
+
+  if (startsWithSlash(frame_id)) {
+    fillOrWarnMessageForInvalidFrame(
+      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot start with a '/'");
+    return false;
+  }
+
+  return true;
+}
+
+void validateFrameIdFormat(
+  const char * function_name_arg,
+  const std::string & frame_id)
+{
+  if (frame_id.empty()) {
+    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg +
+      " - in tf2 frame_ids cannot be empty";
+    throw tf2::InvalidArgumentException(error_msg.c_str());
+  }
+
+  if (startsWithSlash(frame_id)) {
+    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg +
+      " - in tf2 frame_ids cannot start with a '/'";
+    throw tf2::InvalidArgumentException(error_msg.c_str());
+  }
+}
+
 }  // anonymous namespace
 
 CompactFrameID BufferCore::validateFrameId(
@@ -109,15 +146,7 @@ CompactFrameID BufferCore::validateFrameId(
   const std::string & frame_id,
   std::string * error_msg) const
 {
-  if (frame_id.empty()) {
-    fillOrWarnMessageForInvalidFrame(
-      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot be empty");
-    return 0;
-  }
-
-  if (startsWithSlash(frame_id)) {
-    fillOrWarnMessageForInvalidFrame(
-      function_name_arg, frame_id, error_msg, "in tf2 frame_ids cannot start with a '/'");
+  if (!validateFrameIdFormat(function_name_arg, frame_id, error_msg)) {
     return 0;
   }
 
@@ -133,17 +162,7 @@ CompactFrameID BufferCore::validateFrameId(
   const char * function_name_arg,
   const std::string & frame_id) const
 {
-  if (frame_id.empty()) {
-    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg +
-      " - in tf2 frame_ids cannot be empty";
-    throw tf2::InvalidArgumentException(error_msg.c_str());
-  }
-
-  if (startsWithSlash(frame_id)) {
-    std::string error_msg = "Invalid argument \"" + frame_id + "\" passed to " + function_name_arg +
-      " - in tf2 frame_ids cannot start with a '/'";
-    throw tf2::InvalidArgumentException(error_msg.c_str());
-  }
+  validateFrameIdFormat(function_name_arg, frame_id);
 
   CompactFrameID id = lookupFrameNumber(frame_id);
   if (id == 0) {
@@ -828,6 +847,7 @@ void BufferCore::lookupTransformImpl(
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   if (target_frame == source_frame) {
+    validateFrameIdFormat("lookupTransform argument target_frame", target_frame);
     rotation_out = Quaternion::getIdentity();
     origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
 
@@ -953,7 +973,8 @@ bool BufferCore::canTransform(
 {
   // Short circuit if target_frame == source_frame
   if (target_frame == source_frame) {
-    return true;
+    return validateFrameIdFormat(
+      "canTransform argument target_frame", target_frame, error_msg);
   }
 
   CompactFrameID target_id = validateFrameId(
