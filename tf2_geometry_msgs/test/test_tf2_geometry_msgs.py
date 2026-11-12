@@ -174,6 +174,26 @@ class GeometryMsgs(unittest.TestCase):
         self.assertEqual(out.pose.pose.orientation.w, 1)
         self.assertTrue(np.array_equal(out.pose.covariance, expected_covariance))
 
+    def test_transform_vector3_keeps_transform(self):
+        t = TransformStamped()
+        t.transform.translation.x = 1.0
+        t.transform.translation.y = 2.0
+        t.transform.translation.z = 3.0
+        t.transform.rotation = Quaternion(w=1.0, x=0.0, y=0.0, z=0.0)
+        v = Vector3Stamped()
+        v.vector.x = 1.0
+        tf2_geometry_msgs.do_transform_vector3(v, t)
+
+        # The transform must keep its translation for the next use
+        self.assertEqual(t.transform.translation.x, 1.0)
+        self.assertEqual(t.transform.translation.y, 2.0)
+        self.assertEqual(t.transform.translation.z, 3.0)
+        p = PointStamped()
+        out = tf2_geometry_msgs.do_transform_point(p, t)
+        self.assertEqual(out.point.x, 1)
+        self.assertEqual(out.point.y, 2)
+        self.assertEqual(out.point.z, 3)
+
 
 if __name__ == '__main__':
     rclpy.init(args=None)
