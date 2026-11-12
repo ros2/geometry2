@@ -29,6 +29,9 @@
 from geometry_msgs.msg import TransformStamped
 import pytest
 import rclpy
+import rclpy.executors
+import rclpy.task
+import tf2_ros as tf2
 from tf2_ros.buffer import Buffer
 
 
@@ -129,6 +132,114 @@ class TestBuffer:
 
         assert transform == excinfo.value.value
         coro.close()
+
+    def await_transform_timeout_template(self, transform_coroutine):
+        # wait for timeout in an async call
+
+        # We need a node environment to have an event loop with timers running.
+        context = rclpy.context.Context()
+        rclpy.init(context=context)
+        executor = rclpy.executors.SingleThreadedExecutor(context=context)
+        node = rclpy.create_node('test_buffer', context=context)
+        buffer = Buffer(node=node)
+        current_time = node.get_clock().now()
+        stop_fut = rclpy.task.Future()
+
+        async def async_environment():
+            try:
+                # This allows us to test both the await_transform and await_transform_full
+                await transform_coroutine(buffer, 'foo', 'bar', current_time)
+
+                # Indicate that we had a success
+                stop_fut.set_result(True)
+            except tf2.LookupException:
+                # Indicate that we had a timeout
+                stop_fut.set_result(False)
+
+        # This is a workaround to run the wait in the event loop
+        gc = node.create_guard_condition(async_environment)
+
+        # Trigger the guard condition to start the async call
+        gc.trigger()
+
+        # Runs the event loop until the future is done
+        # or times out (not the timeout that we want to test)
+        rclpy.spin_until_future_complete(node, stop_fut, executor, timeout_sec=0.2)
+
+        # Check if we actually timed out
+        assert stop_fut.done() and not stop_fut.result()
+
+        # Add a transform to the buffer to ensure that the buffer is still functional
+        transform = self.build_transform('foo', 'bar', current_time)
+        buffer.set_transform(transform, 'unittest')
+
+        # Refresh the future to check if we can still use the buffer
+        stop_fut = rclpy.task.Future()
+
+        # Trigger the guard condition again to ensure that the buffer can still be used
+        gc.trigger()
+
+        # Run the event loop again
+        rclpy.spin_until_future_complete(node, stop_fut, executor, timeout_sec=0.2)
+
+        # Check if we can still get the transform after the timeout
+        assert stop_fut.done() and stop_fut.result()
+
+    def test_await_transform_timeout(self):
+        # wait for timeout in an async call
+
+        def transform_coroutine(buffer, target, source, rclpy_time):
+            return buffer.wait_for_transform_async(
+                target,
+                source,
+                rclpy_time,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
+
+        self.await_transform_timeout_template(transform_coroutine)
+
+    def test_await_transform_full_timeout(self):
+        # wait for timeout in an async call
+
+        def transform_coroutine(buffer, target, source, rclpy_time):
+            return buffer.wait_for_transform_full_async(
+                target,
+                rclpy_time,
+                source,
+                rclpy_time,
+                target,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
+
+        self.await_transform_timeout_template(transform_coroutine)
+
+    def test_async_lookup_transform_timeout(self):
+        # wait for timeout in an async call
+
+        def transform_coroutine(buffer, target, source, rclpy_time):
+            return buffer.lookup_transform_async(
+                target,
+                source,
+                rclpy_time,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
+
+        self.await_transform_timeout_template(transform_coroutine)
+
+    def test_async_lookup_transform_full_timeout(self):
+        # wait for timeout in an async call
+
+        def transform_coroutine(buffer, target, source, rclpy_time):
+            return buffer.lookup_transform_full_async(
+                target,
+                rclpy_time,
+                source,
+                rclpy_time,
+                target,
+                timeout=rclpy.duration.Duration(seconds=0.1)
+            )
+
+        self.await_transform_timeout_template(transform_coroutine)
 
     def test_buffer_non_default_cache(self):
         buffer = Buffer(cache_time=rclpy.duration.Duration(seconds=10.0))

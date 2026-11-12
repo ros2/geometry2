@@ -37,6 +37,7 @@ from typing import TypeVar
 
 from geometry_msgs.msg import TransformStamped
 import rclpy
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.clock import JumpThreshold, TimeJump
 from rclpy.duration import Duration
 from rclpy.node import Node
@@ -88,6 +89,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
             self.clock = node.get_clock()
         else:
             self.clock = rclpy.clock.Clock()
+
+        self.node = node
 
         # create a jump callback to clear the buffer if use_sim_true is true and there is a
         # jump in time
@@ -154,7 +157,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         self,
         target_frame: str,
         source_frame: str,
-        time: Time
+        time: Time,
+        timeout: Duration | None = None
     ) -> TransformStamped:
         """
         Get the transform from the source frame to the target frame asynchronously.
@@ -162,10 +166,11 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: The transform between the frames.
         """
-        await self.wait_for_transform_async(target_frame, source_frame, time)
-        return self.lookup_transform_core(target_frame, source_frame, time)
+        return await self.wait_for_transform_async(target_frame, source_frame, time, timeout)
 
     def lookup_transform_full(
         self,
@@ -198,7 +203,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         target_time: Time,
         source_frame: str,
         source_time: Time,
-        fixed_frame: str
+        fixed_frame: str,
+        timeout: Duration | None = None
     ) -> TransformStamped:
         """
         Get transform from source frame to target frame using the advanced API asynchronously.
@@ -208,12 +214,12 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: The transform between the frames.
         """
-        await self.wait_for_transform_full_async(
-            target_frame, target_time, source_frame, source_time, fixed_frame)
-        return self.lookup_transform_full_core(
-            target_frame, target_time, source_frame, source_time, fixed_frame)
+        return await self.wait_for_transform_full_async(
+            target_frame, target_time, source_frame, source_time, fixed_frame, timeout)
 
     def can_transform(
         self,
@@ -298,7 +304,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         self,
         target_frame: str,
         source_frame: str,
-        time: Time
+        time: Time,
+        timeout: Duration | None = None
     ) -> Future:
         """
         Wait for a transform from the source frame to the target frame to become possible.
@@ -306,13 +313,43 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param target_frame: Name of the frame to transform into.
         :param source_frame: Name of the input frame.
         :param time: The time at which to get the transform (0 will get the latest).
-        :return: A future that becomes true when the transform is available.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
+        :return: A future that contains the transform when it becomes available.
         """
         fut = rclpy.task.Future()
         if self.can_transform_core(target_frame, source_frame, time)[0]:
             # Short cut, the transform is available
             fut.set_result(self.lookup_transform(target_frame, source_frame, time))
             return fut
+
+        timeout_timer = None
+
+        def _on_timeout():
+            # Deactivate the callback to avoid memory leaks
+            # Cancel the timer after it has triggered once
+            timeout_timer.cancel()
+            # This is needed, as this function otherwise leaks resources.
+            # timer.destroy() is not sufficient!
+            self.node.destroy_timer(timeout_timer)
+
+            # The transform could be available now, so we check if the future is still pending
+            if not fut.done():
+                fut.set_exception(
+                    tf2.LookupException(
+                        f"Failed to find transform from '{source_frame}' to '{target_frame}'"
+                    )
+                )
+
+        # Check if a timeout is specified
+        if timeout is not None:
+            if self.node is None:
+                raise RuntimeError('Async timeouts require a Node instance to be set.')
+
+            timeout_timer = self.node.create_timer(
+                timeout.nanoseconds / 1e9, _on_timeout, clock=self.node.get_clock(),
+                callback_group=MutuallyExclusiveCallbackGroup()
+            )
 
         def _on_new_data():
             try:
@@ -332,7 +369,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         target_time: Time,
         source_frame: str,
         source_time: Time,
-        fixed_frame: str
+        fixed_frame: str,
+        timeout: Duration | None = None
     ) -> Future:
         """
         Wait for a transform from the source frame to the target frame to become possible.
@@ -342,6 +380,8 @@ class Buffer(tf2.BufferCore, BufferInterface):
         :param source_frame: Name of the input frame.
         :param source_time: The time at which source_frame will be evaluated (0 gets the latest).
         :param fixed_frame: Name of the frame to consider constant in time.
+        :param timeout: Time to wait for the target frame to become available.
+            Needs a Node instance to be set on the Buffer to work.
         :return: A future that becomes true when the transform is available.
         """
         fut = rclpy.task.Future()
@@ -352,6 +392,34 @@ class Buffer(tf2.BufferCore, BufferInterface):
                 self.lookup_transform_full_core(
                     target_frame, target_time, source_frame, source_time, fixed_frame))
             return fut
+
+        timeout_timer = None
+
+        def _on_timeout():
+            # Deactivate the callback to avoid memory leaks
+            # Cancel the timer after it has triggered once
+            timeout_timer.cancel()
+            # This is needed, as this function otherwise leaks resources.
+            # timer.destroy() is not sufficient!
+            self.node.destroy_timer(timeout_timer)
+
+            # The transform could be available now, so we check if the future is still pending
+            if not fut.done():
+                fut.set_exception(
+                    tf2.LookupException(
+                        f"Failed to find transform from '{source_frame}' to '{target_frame}'"
+                    )
+                )
+
+        # Check if a timeout is specified
+        if timeout is not None:
+            if self.node is None:
+                raise RuntimeError('Async timeouts require a Node instance to be set.')
+
+            timeout_timer = self.node.create_timer(
+                timeout.nanoseconds / 1e9, _on_timeout, clock=self.node.get_clock(),
+                callback_group=MutuallyExclusiveCallbackGroup()
+            )
 
         def _on_new_data():
             try:
