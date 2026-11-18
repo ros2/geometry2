@@ -27,6 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
+import threading
+import time
+
 from geometry_msgs.msg import TransformStamped
 import pytest
 import rclpy
@@ -253,3 +256,25 @@ class TestBroadcasterAndListener:
         assert listened_second_tf.header.stamp.nanosec == 500000000
 
         compare_transforms(received_tf=listened_second_tf, expected_tf=broadcasted_second_tf)
+
+
+@pytest.mark.parametrize('listener_class', [TransformListener, StaticTransformListener])
+def test_spin_thread_exits_cleanly_on_shutdown(listener_class, monkeypatch):
+    uncaught = []
+    monkeypatch.setattr(threading, 'excepthook', lambda args: uncaught.append(args.exc_type))
+
+    rclpy.init()
+    try:
+        node = rclpy.create_node('test_spin_thread_shutdown')
+        listener = listener_class(buffer=Buffer(), node=node, spin_thread=True)
+        # Let the dedicated thread enter spin() before shutting down
+        deadline = time.monotonic() + 5.0
+        while node not in listener.executor.get_nodes() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        time.sleep(0.2)
+    finally:
+        rclpy.shutdown()
+    listener.dedicated_listener_thread.join(timeout=5.0)
+
+    assert not listener.dedicated_listener_thread.is_alive()
+    assert uncaught == []
