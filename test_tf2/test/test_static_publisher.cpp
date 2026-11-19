@@ -37,6 +37,7 @@
 
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <rclcpp/clock.hpp>
+#include <rclcpp/executor.hpp>
 #include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/node.hpp>
 #include <rclcpp/utilities.hpp>
@@ -68,6 +69,28 @@ static bool waitForTransform(
   return true;
 }
 
+// Joins the spin thread on scope exit, so a failed ASSERT doesn't destroy a joinable
+// std::thread (which calls std::terminate).
+class ExecutorSpinner
+{
+public:
+  explicit ExecutorSpinner(rclcpp::Executor & executor)
+  : executor_(executor), thread_([&executor]() {executor.spin();}) {}
+
+  ~ExecutorSpinner()
+  {
+    executor_.cancel();
+    thread_.join();
+  }
+
+  ExecutorSpinner(const ExecutorSpinner &) = delete;
+  ExecutorSpinner & operator=(const ExecutorSpinner &) = delete;
+
+private:
+  rclcpp::Executor & executor_;
+  std::thread thread_;
+};
+
 TEST(StaticTransformPublisher, a_b_different_times)
 {
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_b_different_times_test");
@@ -78,21 +101,13 @@ TEST(StaticTransformPublisher, a_b_different_times)
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(executor);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(100)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, a_c_different_times)
@@ -105,21 +120,13 @@ TEST(StaticTransformPublisher, a_c_different_times)
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(executor);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(10)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, a_d_different_times)
@@ -132,11 +139,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(executor);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
@@ -159,10 +162,6 @@ TEST(StaticTransformPublisher, a_d_different_times)
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1)));
   EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(10)));
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, multiple_parent_test)
@@ -175,11 +174,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(executor);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
@@ -211,10 +206,6 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child2", tf2::timeFromSec(0)));
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 // TODO (ahcorde) static_transform_publisher allows to load transforma from yaml files
