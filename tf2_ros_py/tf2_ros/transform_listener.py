@@ -121,7 +121,7 @@ class TransformListener:
             callback_group=self.group)
 
         if spin_thread:
-            self.executor = SingleThreadedExecutor()
+            self.executor = SingleThreadedExecutor(context=self.node.context)
 
             def run_func():
                 self.executor.add_node(self.node)
