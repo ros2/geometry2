@@ -88,7 +88,7 @@ static constexpr Duration BUFFER_CORE_DEFAULT_CACHE_TIME = std::chrono::seconds(
  * 0 is a frame without a parent (the top of a tree)
  * The positions of frames over time must be pushed in.
  *
- * All function calls which pass frame ids can potentially throw the exception tf::LookupException
+ * All function calls which pass frame ids can potentially throw the exception tf2::LookupException
  */
 class BufferCore : public BufferCoreInterface
 {

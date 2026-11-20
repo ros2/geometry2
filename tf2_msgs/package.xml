@@ -11,7 +11,7 @@
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
   <license>BSD</license>
-  <url type="website">http://www.ros.org/wiki/tf2_msgs</url>
+  <url type="website">https://docs.ros.org/en/rolling/p/tf2_msgs/</url>
 
   <author>Eitan Marder-Eppstein</author>
   <author email="tfoote@osrfoundation.org">Tully Foote</author>

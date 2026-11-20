@@ -43,8 +43,6 @@
 #include "rclcpp/time.hpp"
 #include "rclcpp/utilities.hpp"
 
-// #include "tf/LinearMath/Vector3.h"
-
 // The fixture for testing class Foo.
 class LinearVelocitySquareTest : public ::testing::Test
 {

@@ -2,7 +2,7 @@
 
 `tf2_kdl` contains functions for converting between `geometry_msgs` and KDL data types.
 
-This library is an implementation of the templated conversion interface specified in `tf/convert.h`.
+This library is an implementation of the templated conversion interface specified in `tf2/convert.hpp`.
 It enables easy conversion from `geometry_msgs` Transform and Point types to the types specified
 by the Orocos KDL (Kinematics and Dynamics Library) API (see http://www.orocos.org/kdl).
 

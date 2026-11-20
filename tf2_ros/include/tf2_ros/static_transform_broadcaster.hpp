@@ -99,7 +99,7 @@ public:
   void sendTransform(const std::vector<geometry_msgs::msg::TransformStamped> & transforms);
 
 private:
-  /// Internal reference to ros::Node
+  /// Publisher of the static transforms
   rclcpp::Publisher<tf2_msgs::msg::TFMessage>::SharedPtr publisher_;
   tf2_msgs::msg::TFMessage net_message_;
 };

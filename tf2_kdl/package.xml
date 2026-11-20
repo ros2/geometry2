@@ -9,7 +9,7 @@
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
   <license>BSD</license>
-  <url type="website">http://ros.org/wiki/tf2</url>
+  <url type="website">https://docs.ros.org/en/rolling/p/tf2_kdl/</url>
 
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>

@@ -11,7 +11,7 @@
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
   <license>BSD</license>
-  <url type="website">http://www.ros.org/wiki/tf2_tools</url>
+  <url type="website">https://docs.ros.org/en/rolling/p/tf2_tools/</url>
 
   <author email="tfoote@osrfoundation.org">Tully Foote</author>
   <author>Wim Meeussen</author>

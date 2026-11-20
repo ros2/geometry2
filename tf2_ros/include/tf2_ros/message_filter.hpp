@@ -138,7 +138,7 @@ public:
  * If you want to hook a MessageFilter into a ROS topic:
  \verbatim
    message_filters::Subscriber<MessageType> sub(node_, "topic", 10);
-   tf::MessageFilter<MessageType> tf_filter(sub, tf_listener_, "/map", 10);
+   tf2_ros::MessageFilter<MessageType> tf_filter(sub, tf_buffer_, "map", 10, *node_);
    tf_filter.registerCallback(&MyClass::myCallback, this);
  \endverbatim
  */
@@ -579,7 +579,7 @@ private:
       if (dropped_pct > 0.95) {
         TF2_ROS_MESSAGEFILTER_WARN(
           "Dropped %.2f%% of messages so far. Please turn the "
-          "[tf2_ros_message_filter.message_notifier] rosconsole logger to DEBUG for more "
+          "[tf2_ros_message_filter] logger to DEBUG for more "
           "information.",
           dropped_pct * 100);
         next_failure_warning_ = node_interfaces_.get_node_clock_interface()->get_clock()->now() +

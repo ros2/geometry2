@@ -1,16 +1,15 @@
 /**
 \mainpage
-\htmlinclude manifest.html
 
 \b tf2_geometry_msgs contains functions for converting between various geometry_msgs data types.
 
-This library is an implementation of the templated conversion interface specified in tf/convert.h.
+This library is an implementation of the templated conversion interface specified in tf2/convert.hpp.
 It offers conversion and transform convenience functions between various geometry_msgs data types,
 such as Vector, Point, Pose, Transform, Quaternion, etc.
 
 \section codeapi Code API
 
 This library consists of one header only, tf2_geometry_msgs/tf2_geometry_msgs.hpp, which consists mostly of
-specializations of template functions defined in tf2/convert.h.
+specializations of template functions defined in tf2/convert.hpp.
 
 */

@@ -59,8 +59,7 @@ enum class TF2Error : std::uint8_t
 };
 
 /** \brief A base class for all tf2 exceptions
- * This inherits from ros::exception
- * which inherits from std::runtime_exception
+ * This inherits from std::runtime_error
  */
 class TransformException : public std::runtime_error
 {

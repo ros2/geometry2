@@ -151,10 +151,10 @@ Unlike in tf, there is no period argument, and a latched topic is used.
 
   ros2 run tf2_ros static_transform_publisher [--x X] [--y Y] [--z Z] [--qx QX] [--qy QY] [--qz QZ] [--qw QW] --frame_id Frame --child_frame_id Child_Frame
 
-``static_transform_publisher`` is designed both as a command-line tool for manual use, as well as for use within roslaunch files for setting static transforms. For example:
+``static_transform_publisher`` is designed both as a command-line tool for manual use, as well as for use within launch files for setting static transforms. For example:
 
-.. code-block:: yaml
+.. code-block:: xml
 
   <launch>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="1 0 0 0 0 0 1 link1_parent link1" />
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="link1_broadcaster" args="--x 1 --frame-id link1_parent --child-frame-id link1" />
   </launch>
