@@ -208,6 +208,45 @@ class PointCloudConversions(unittest.TestCase):
         # Checking for no modification in input cloud
         self.assertEqual(old_data, point_cloud.data)
 
+    def test_keeps_cloud_layout(self):
+        # An organized, dense cloud whose points are padded to 16 bytes,
+        # as produced for pcl::PointXYZ
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1)]
+        points = np.zeros(
+            6,
+            dtype=np.dtype({
+                'names': ['x', 'y', 'z'],
+                'formats': ['f4', 'f4', 'f4'],
+                'offsets': [0, 4, 8],
+                'itemsize': 16}))
+        points['x'] = np.arange(6)
+        point_cloud = create_cloud(Header(frame_id='test'), fields, points)
+        point_cloud.height = 2
+        point_cloud.width = 3
+        point_cloud.row_step = 3 * point_cloud.point_step
+        point_cloud.is_dense = True
+
+        transform = TransformStamped()
+        transform.transform.translation.x = 1.0
+        transform.transform.rotation.w = 1.0
+
+        point_cloud_transformed = do_transform_cloud(point_cloud, transform)
+
+        self.assertEqual(point_cloud_transformed.height, 2)
+        self.assertEqual(point_cloud_transformed.width, 3)
+        self.assertEqual(point_cloud_transformed.point_step, 16)
+        self.assertEqual(point_cloud_transformed.row_step, 48)
+        self.assertTrue(point_cloud_transformed.is_dense)
+        self.assertEqual(len(point_cloud_transformed.data), len(point_cloud.data))
+        expected = np.zeros((6, 3), dtype=np.float32)
+        expected[:, 0] = np.arange(6) + 1.0
+        self.assertTrue(np.allclose(
+            read_points_numpy(point_cloud_transformed).reshape(-1, 3),
+            expected))
+
 
 if __name__ == '__main__':
     unittest.main()

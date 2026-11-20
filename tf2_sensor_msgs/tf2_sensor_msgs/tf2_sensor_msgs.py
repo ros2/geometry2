@@ -126,17 +126,21 @@ def do_transform_cloud(
         structured_to_unstructured(points[['x', 'y', 'z']]),
         transform)
 
-    # Check if there are additional fields that need to be merged with the transformed coordinates
-    if required_fields != present_fields:
-        # Merge original array including non coordinate fields with the transformed coordinates
-        # The copy is needed as the original message would be altered otherwise
-        points = points.copy()
-        points[['x', 'y', 'z']] = unstructured_to_structured(transformed_xyz)
-    else:
-        points = transformed_xyz
+    # Write the transformed coordinates back into the structured array, so that any other
+    # fields and the padding of each point are kept
+    # The copy is needed as the original message would be altered otherwise
+    points = points.copy()
+    points[['x', 'y', 'z']] = unstructured_to_structured(transformed_xyz)
 
     # Serialize pointcloud message
-    return create_cloud(new_header, cloud.fields, points)
+    transformed_cloud = create_cloud(new_header, cloud.fields, points)
+
+    # create_cloud lays the points out as a single row, so restore the layout of the input
+    transformed_cloud.height = cloud.height
+    transformed_cloud.width = cloud.width
+    transformed_cloud.row_step = transformed_cloud.point_step * cloud.width
+    transformed_cloud.is_dense = cloud.is_dense
+    return transformed_cloud
 
 
 tf2_ros.TransformRegistration().add(PointCloud2, do_transform_cloud)
