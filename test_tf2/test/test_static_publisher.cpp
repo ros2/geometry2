@@ -68,6 +68,31 @@ static bool waitForTransform(
   return true;
 }
 
+// Owns a SingleThreadedExecutor and the thread spinning it. The thread is joined on scope exit, so
+// a failed ASSERT doesn't destroy a joinable std::thread (which calls std::terminate).
+class ExecutorSpinner
+{
+public:
+  explicit ExecutorSpinner(rclcpp::Node::SharedPtr node)
+  {
+    executor_.add_node(node);
+    thread_ = std::thread([this]() {executor_.spin();});
+  }
+
+  ~ExecutorSpinner()
+  {
+    executor_.cancel();
+    thread_.join();
+  }
+
+  ExecutorSpinner(const ExecutorSpinner &) = delete;
+  ExecutorSpinner & operator=(const ExecutorSpinner &) = delete;
+
+private:
+  rclcpp::executors::SingleThreadedExecutor executor_;
+  std::thread thread_;
+};
+
 TEST(StaticTransformPublisher, a_b_different_times)
 {
   auto node = rclcpp::Node::make_shared("StaticTransformPublisher_a_b_different_times_test");
@@ -76,23 +101,13 @@ TEST(StaticTransformPublisher, a_b_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(100)));
   EXPECT_TRUE(mB.canTransform("a", "b", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, a_c_different_times)
@@ -103,23 +118,13 @@ TEST(StaticTransformPublisher, a_c_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(10)));
   EXPECT_TRUE(mB.canTransform("a", "c", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, a_d_different_times)
@@ -130,13 +135,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
@@ -159,10 +158,6 @@ TEST(StaticTransformPublisher, a_d_different_times)
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1)));
   EXPECT_TRUE(mB.canTransform("a", "d", tf2::timeFromSec(10)));
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(1000)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 TEST(StaticTransformPublisher, multiple_parent_test)
@@ -173,13 +168,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  // Start spinning in a thread
-  std::thread spin_thread = std::thread(
-    [&executor]() {
-      executor.spin();
-    });
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
@@ -211,10 +200,6 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child", tf2::timeFromSec(0)));
   EXPECT_TRUE(mB.canTransform("new_parent", "other_child2", tf2::timeFromSec(0)));
   EXPECT_FALSE(mB.canTransform("a", "d", tf2::timeFromSec(0)));
-
-  executor.cancel();
-  spin_thread.join();
-  node.reset();
 }
 
 // TODO (ahcorde) static_transform_publisher allows to load transforma from yaml files
