@@ -201,6 +201,16 @@ if(BUILD_TESTING)
     #   rclcpp::rclcpp
   )
 
+  ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_transform_listener_context
+    test/test_transform_listener_context.cpp)
+  target_link_libraries(${PROJECT_NAME}_test_transform_listener_context
+    ament_cmake_ros_core::ament_ros_defaults
+    ${PROJECT_NAME}
+    # Used, but not linked to test tf2_ros's exports:
+    #   geometry_msgs::geometry_msgs
+    #   rclcpp::rclcpp
+  )
+
   ament_add_ros_isolated_gtest(${PROJECT_NAME}_test_static_transform_broadcaster test/test_static_transform_broadcaster.cpp)
   target_link_libraries(${PROJECT_NAME}_test_static_transform_broadcaster
     ament_cmake_ros_core::ament_ros_defaults

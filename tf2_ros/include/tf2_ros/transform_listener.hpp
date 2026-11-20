@@ -48,6 +48,7 @@
 #include "rclcpp/callback_group.hpp"
 #include "rclcpp/create_subscription.hpp"
 #include "rclcpp/executor.hpp"
+#include "rclcpp/executor_options.hpp"
 #include "rclcpp/executors/single_threaded_executor.hpp"
 #include "rclcpp/qos.hpp"
 #include "rclcpp/qos_overriding_options.hpp"
@@ -201,8 +202,11 @@ private:
         std::move(static_cb),
         tf_static_options);
 
-      // Create executor with dedicated thread to spin.
-      executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+      // Create executor with dedicated thread to spin, in the node's context
+      // (which isn't necessarily the default one).
+      rclcpp::ExecutorOptions executor_options;
+      executor_options.context = node_interfaces_.get_node_base_interface()->get_context();
+      executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>(executor_options);
       executor_->add_callback_group(callback_group_, node_interfaces_.get_node_base_interface());
       dedicated_listener_thread_ = std::make_unique<std::thread>([&]() {executor_->spin();});
       // Tell the buffer we have a dedicated thread to enable timeouts
