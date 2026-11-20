@@ -37,7 +37,6 @@
 
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <rclcpp/clock.hpp>
-#include <rclcpp/executor.hpp>
 #include <rclcpp/executors/single_threaded_executor.hpp>
 #include <rclcpp/node.hpp>
 #include <rclcpp/utilities.hpp>
@@ -69,13 +68,16 @@ static bool waitForTransform(
   return true;
 }
 
-// Joins the spin thread on scope exit, so a failed ASSERT doesn't destroy a joinable
-// std::thread (which calls std::terminate).
+// Owns a SingleThreadedExecutor and the thread spinning it. The thread is joined on scope exit, so
+// a failed ASSERT doesn't destroy a joinable std::thread (which calls std::terminate).
 class ExecutorSpinner
 {
 public:
-  explicit ExecutorSpinner(rclcpp::Executor & executor)
-  : executor_(executor), thread_([&executor]() {executor.spin();}) {}
+  explicit ExecutorSpinner(rclcpp::Node::SharedPtr node)
+  {
+    executor_.add_node(node);
+    thread_ = std::thread([this]() {executor_.spin();});
+  }
 
   ~ExecutorSpinner()
   {
@@ -87,7 +89,7 @@ public:
   ExecutorSpinner & operator=(const ExecutorSpinner &) = delete;
 
 private:
-  rclcpp::Executor & executor_;
+  rclcpp::executors::SingleThreadedExecutor executor_;
   std::thread thread_;
 };
 
@@ -99,9 +101,7 @@ TEST(StaticTransformPublisher, a_b_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  ExecutorSpinner spinner(executor);
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
@@ -118,9 +118,7 @@ TEST(StaticTransformPublisher, a_c_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  ExecutorSpinner spinner(executor);
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
@@ -137,9 +135,7 @@ TEST(StaticTransformPublisher, a_d_different_times)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  ExecutorSpinner spinner(executor);
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "c"));
 
@@ -172,9 +168,7 @@ TEST(StaticTransformPublisher, multiple_parent_test)
   tf2_ros::Buffer mB(clock);
   tf2_ros::TransformListener tfl(mB, *node, false);
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  ExecutorSpinner spinner(executor);
+  ExecutorSpinner spinner(node);
 
   ASSERT_TRUE(waitForTransform(mB, "a", "b"));
 
