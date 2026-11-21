@@ -308,12 +308,11 @@ def do_transform_vector3(
     :param transform: The transform
     :returns: The transformed vector3
     """
-    transform.transform.translation.x = 0.0
-    transform.transform.translation.y = 0.0
-    transform.transform.translation.z = 0.0
+    # Apply only the rotation, without changing the caller's transform
+    rotation = transform.transform.rotation
     _, point = _decompose_affine(
         np.matmul(
-            _transform_to_affine(transform),
+            _build_affine(rotation=[rotation.w, rotation.x, rotation.y, rotation.z]),
             _build_affine(translation=[
                 vector3.vector.x,
                 vector3.vector.y,
