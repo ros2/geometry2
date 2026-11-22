@@ -32,6 +32,7 @@
 #define TF2_EIGEN__TF2_EIGEN_HPP_
 
 #include <Eigen/Geometry>
+#include <type_traits>
 
 #include "geometry_msgs/msg/accel.hpp"
 #include "geometry_msgs/msg/point.hpp"
@@ -40,6 +41,7 @@
 #include "geometry_msgs/msg/quaternion.hpp"
 #include "geometry_msgs/msg/quaternion_stamped.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/vector3.hpp"
 
 #include "tf2/convert.hpp"
 #include "tf2_ros/buffer_interface.hpp"
@@ -179,9 +181,9 @@ void doTransform(
   t_out = twist_transform * t_in;
 }
 
-/** \brief Convert a Eigen Vector3d type to a Point message.
+/** \brief Convert an Eigen Vector3d type to a Point message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
- * \param in The timestamped Eigen Vector3d to convert.
+ * \param in The Eigen Vector3d to convert.
  * \return The vector converted to a Point message.
  */
 inline
@@ -194,10 +196,29 @@ geometry_msgs::msg::Point toMsg(const Eigen::Vector3d & in)
   return msg;
 }
 
-/** \brief Convert a Point message type to a Eigen-specific Vector3d type.
+/** \brief Convert an Eigen vector or block expression to a Point message.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in The Eigen vector or block expression to convert.
+ * \return The vector converted to a Point message.
+ */
+template<typename Derived>
+inline
+geometry_msgs::msg::Point toMsg(const Eigen::MatrixBase<Derived> & in)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Input matrix must be a 3x1 vector");
+  geometry_msgs::msg::Point msg;
+  msg.x = static_cast<double>(in(0));
+  msg.y = static_cast<double>(in(1));
+  msg.z = static_cast<double>(in(2));
+  return msg;
+}
+
+/** \brief Convert a Point message type to an Eigen-specific Vector3d type.
  * This function is a specialization of the fromMsg template defined in tf2/convert.h
  * \param msg The Point message to convert.
- * \param out The point converted to a Eigen Vector3d.
+ * \param out The point converted to an Eigen-specific Vector3d type.
  */
 inline
 void fromMsg(const geometry_msgs::msg::Point & msg, Eigen::Vector3d & out)
@@ -207,13 +228,48 @@ void fromMsg(const geometry_msgs::msg::Point & msg, Eigen::Vector3d & out)
   out.z() = msg.z;
 }
 
+/** \brief Convert a Point message type to an Eigen vector or block expression.
+ * This function is a specialization of the fromMsg template defined in tf2/convert.h
+ * \param msg The Point message to convert.
+ * \param out The point converted to an Eigen vector or block expression.
+ */
+template<typename Derived>
+inline
+void fromMsg(const geometry_msgs::msg::Point & msg, const Eigen::MatrixBase<Derived> & out)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Output matrix must be a 3x1 vector");
+  auto & non_const_out = const_cast<Eigen::MatrixBase<Derived> &>(out).derived();
+  non_const_out(0) = static_cast<typename Derived::Scalar>(msg.x);
+  non_const_out(1) = static_cast<typename Derived::Scalar>(msg.y);
+  non_const_out(2) = static_cast<typename Derived::Scalar>(msg.z);
+}
+
+template<typename Derived,
+  typename std::enable_if<std::is_base_of<Eigen::MatrixBase<Derived>, Derived>::value,
+  int>::type = 0>
+inline
+void fromMsg(const geometry_msgs::msg::Point & msg, Derived & out)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Output matrix must be a 3x1 vector");
+  out(0) = static_cast<typename Derived::Scalar>(msg.x);
+  out(1) = static_cast<typename Derived::Scalar>(msg.y);
+  out(2) = static_cast<typename Derived::Scalar>(msg.z);
+}
+
 /** \brief Convert an Eigen Vector3d type to a Vector3 message.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * \param in The Eigen Vector3d to convert.
+ * \param out The message populated with the vector.
  * \return The vector converted to a Vector3 message.
  */
 inline
-geometry_msgs::msg::Vector3 & toMsg(const Eigen::Vector3d & in, geometry_msgs::msg::Vector3 & out)
+geometry_msgs::msg::Vector3 & toMsg(
+  const Eigen::Vector3d & in,
+  geometry_msgs::msg::Vector3 & out)
 {
   out.x = in.x();
   out.y = in.y();
@@ -221,10 +277,31 @@ geometry_msgs::msg::Vector3 & toMsg(const Eigen::Vector3d & in, geometry_msgs::m
   return out;
 }
 
-/** \brief Convert a Vector3 message type to a Eigen-specific Vector3d type.
+/** \brief Convert an Eigen vector or block expression to a Vector3 message.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * \param in The Eigen vector or block expression to convert.
+ * \param out The message populated with the vector.
+ * \return The vector converted to a Vector3 message.
+ */
+template<typename Derived>
+inline
+geometry_msgs::msg::Vector3 & toMsg(
+  const Eigen::MatrixBase<Derived> & in,
+  geometry_msgs::msg::Vector3 & out)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Input matrix must be a 3x1 vector");
+  out.x = static_cast<double>(in(0));
+  out.y = static_cast<double>(in(1));
+  out.z = static_cast<double>(in(2));
+  return out;
+}
+
+/** \brief Convert a Vector3 message type to an Eigen-specific Vector3d type.
  * This function is a specialization of the fromMsg template defined in tf2/convert.h
  * \param msg The Vector3 message to convert.
- * \param out The vector converted to a Eigen Vector3d.
+ * \param out The vector converted to an Eigen-specific Vector3d type.
  */
 inline
 void fromMsg(const geometry_msgs::msg::Vector3 & msg, Eigen::Vector3d & out)
@@ -232,6 +309,38 @@ void fromMsg(const geometry_msgs::msg::Vector3 & msg, Eigen::Vector3d & out)
   out.x() = msg.x;
   out.y() = msg.y;
   out.z() = msg.z;
+}
+
+/** \brief Convert a Vector3 message type to an Eigen vector or block expression.
+ * This function is a specialization of the fromMsg template defined in tf2/convert.h
+ * \param msg The Vector3 message to convert.
+ * \param out The vector converted to an Eigen vector or block expression.
+ */
+template<typename Derived>
+inline
+void fromMsg(const geometry_msgs::msg::Vector3 & msg, const Eigen::MatrixBase<Derived> & out)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Output matrix must be a 3x1 vector");
+  auto & non_const_out = const_cast<Eigen::MatrixBase<Derived> &>(out).derived();
+  non_const_out(0) = static_cast<typename Derived::Scalar>(msg.x);
+  non_const_out(1) = static_cast<typename Derived::Scalar>(msg.y);
+  non_const_out(2) = static_cast<typename Derived::Scalar>(msg.z);
+}
+
+template<typename Derived,
+  typename std::enable_if<std::is_base_of<Eigen::MatrixBase<Derived>, Derived>::value,
+  int>::type = 0>
+inline
+void fromMsg(const geometry_msgs::msg::Vector3 & msg, Derived & out)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Output matrix must be a 3x1 vector");
+  out(0) = static_cast<typename Derived::Scalar>(msg.x);
+  out(1) = static_cast<typename Derived::Scalar>(msg.y);
+  out(2) = static_cast<typename Derived::Scalar>(msg.z);
 }
 
 /** \brief Apply a geometry_msgs TransformStamped to an Eigen-specific Vector3d type.
@@ -447,7 +556,7 @@ geometry_msgs::msg::Pose toMsg(const Eigen::Isometry3d & in)
   return msg;
 }
 
-/** \brief Convert a Eigen::Vector3d type to a geometry_msgs::msg::Vector3.
+/** \brief Convert an Eigen::Vector3d type to a geometry_msgs::msg::Vector3.
  * This function is a specialization of the toMsg template defined in tf2/convert.h.
  * The function was renamed to toMsg2 to avoid overloading conflicts with definitions above.
  *
@@ -461,6 +570,27 @@ geometry_msgs::msg::Vector3 toMsg2(const Eigen::Vector3d & in)
   msg.x = in(0);
   msg.y = in(1);
   msg.z = in(2);
+  return msg;
+}
+
+/** \brief Convert an Eigen vector or block expression to a geometry_msgs::msg::Vector3.
+ * This function is a specialization of the toMsg template defined in tf2/convert.h.
+ * The function was renamed to toMsg2 to avoid overloading conflicts with definitions above.
+ *
+ * \param in The Eigen vector or block expression to convert.
+ * \return The Eigen vector or block expression converted to a geometry_msgs::msg::Vector3 message.
+ */
+template<typename Derived>
+inline
+geometry_msgs::msg::Vector3 toMsg2(const Eigen::MatrixBase<Derived> & in)
+{
+  static_assert(
+    Derived::RowsAtCompileTime == 3 && Derived::ColsAtCompileTime == 1,
+    "Input matrix must be a 3x1 vector");
+  geometry_msgs::msg::Vector3 msg;
+  msg.x = static_cast<double>(in(0));
+  msg.y = static_cast<double>(in(1));
+  msg.z = static_cast<double>(in(2));
   return msg;
 }
 
@@ -695,6 +825,68 @@ inline
 geometry_msgs::msg::Point toMsg(const Eigen::Vector3d & in)
 {
   return tf2::toMsg(in);
+}
+
+inline
+void fromMsg(const geometry_msgs::msg::Vector3 & msg, Eigen::Vector3d & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+inline
+geometry_msgs::msg::Vector3 & toMsg(
+  const Eigen::Vector3d & in,
+  geometry_msgs::msg::Vector3 & out)
+{
+  return tf2::toMsg(in, out);
+}
+
+template<typename Derived>
+inline
+void fromMsg(const geometry_msgs::msg::Point & msg, const Eigen::MatrixBase<Derived> & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+template<typename Derived,
+  typename std::enable_if<std::is_base_of<Eigen::MatrixBase<Derived>, Derived>::value,
+  int>::type = 0>
+inline
+void fromMsg(const geometry_msgs::msg::Point & msg, Derived & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+template<typename Derived>
+inline
+void fromMsg(const geometry_msgs::msg::Vector3 & msg, const Eigen::MatrixBase<Derived> & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+template<typename Derived,
+  typename std::enable_if<std::is_base_of<Eigen::MatrixBase<Derived>, Derived>::value,
+  int>::type = 0>
+inline
+void fromMsg(const geometry_msgs::msg::Vector3 & msg, Derived & out)
+{
+  tf2::fromMsg(msg, out);
+}
+
+template<typename Derived>
+inline
+geometry_msgs::msg::Point toMsg(const Eigen::MatrixBase<Derived> & in)
+{
+  return tf2::toMsg(in);
+}
+
+template<typename Derived>
+inline
+geometry_msgs::msg::Vector3 & toMsg(
+  const Eigen::MatrixBase<Derived> & in,
+  geometry_msgs::msg::Vector3 & out)
+{
+  return tf2::toMsg(in, out);
 }
 
 inline

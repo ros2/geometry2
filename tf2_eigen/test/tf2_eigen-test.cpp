@@ -59,6 +59,7 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/vector3.hpp"
 #include "rclcpp/clock.hpp"
 
 #include "tf2/convert.hpp"
@@ -328,6 +329,69 @@ TEST_F(EigenBufferTransform, QuaternionRotZ)
   const Eigen::Quaterniond param{Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())};
   const Eigen::Quaterniond expected{Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitY())};
   EXPECT_TRUE(doTestEigenQuaternion(param, expected));
+}
+
+TEST(TfEigen, BlockOperations)
+{
+  // Test converting 3D messages directly into slices of a 6D wrench vector
+  Eigen::Matrix<double, 6, 1> wrench;
+  wrench.setZero();
+
+  geometry_msgs::msg::Vector3 force_msg;
+  force_msg.x = 1.0;
+  force_msg.y = 2.0;
+  force_msg.z = 3.0;
+
+  geometry_msgs::msg::Vector3 torque_msg;
+  torque_msg.x = 4.0;
+  torque_msg.y = 5.0;
+  torque_msg.z = 6.0;
+
+  tf2::fromMsg(force_msg, wrench.template head<3>());
+  tf2::fromMsg(torque_msg, wrench.template tail<3>());
+
+  EXPECT_DOUBLE_EQ(wrench(0), 1.0);
+  EXPECT_DOUBLE_EQ(wrench(1), 2.0);
+  EXPECT_DOUBLE_EQ(wrench(2), 3.0);
+  EXPECT_DOUBLE_EQ(wrench(3), 4.0);
+  EXPECT_DOUBLE_EQ(wrench(4), 5.0);
+  EXPECT_DOUBLE_EQ(wrench(5), 6.0);
+
+  // Test converting blocks back to messages
+  geometry_msgs::msg::Vector3 converted_force;
+  tf2::toMsg(wrench.template head<3>(), converted_force);
+  EXPECT_DOUBLE_EQ(converted_force.x, 1.0);
+  EXPECT_DOUBLE_EQ(converted_force.y, 2.0);
+  EXPECT_DOUBLE_EQ(converted_force.z, 3.0);
+
+  geometry_msgs::msg::Vector3 converted_torque = tf2::toMsg2(wrench.template tail<3>());
+  EXPECT_DOUBLE_EQ(converted_torque.x, 4.0);
+  EXPECT_DOUBLE_EQ(converted_torque.y, 5.0);
+  EXPECT_DOUBLE_EQ(converted_torque.z, 6.0);
+
+  // Test with Matrix column slices and Point messages
+  geometry_msgs::msg::Point point_msg;
+  point_msg.x = 10.0;
+  point_msg.y = 20.0;
+  point_msg.z = 30.0;
+
+  Eigen::Matrix3d mat = Eigen::Matrix3d::Zero();
+  tf2::fromMsg(point_msg, mat.col(1));
+  EXPECT_DOUBLE_EQ(mat(0, 1), 10.0);
+  EXPECT_DOUBLE_EQ(mat(1, 1), 20.0);
+  EXPECT_DOUBLE_EQ(mat(2, 1), 30.0);
+
+  geometry_msgs::msg::Point converted_point = tf2::toMsg(mat.col(1));
+  EXPECT_DOUBLE_EQ(converted_point.x, 10.0);
+  EXPECT_DOUBLE_EQ(converted_point.y, 20.0);
+  EXPECT_DOUBLE_EQ(converted_point.z, 30.0);
+
+  // Test lvalue block operations
+  auto col0 = mat.col(0);
+  tf2::fromMsg(point_msg, col0);
+  EXPECT_DOUBLE_EQ(mat(0, 0), 10.0);
+  EXPECT_DOUBLE_EQ(mat(1, 0), 20.0);
+  EXPECT_DOUBLE_EQ(mat(2, 0), 30.0);
 }
 
 int main(int argc, char ** argv)
