@@ -473,6 +473,89 @@ TEST(tf2_quaternion, Normalize_Quaternion)
   EXPECT_TRUE(std::isnan(zero_value_q.w()));
 }
 
+TEST(tf2_canTransform, SameFrame_Empty_Invalid_And_Existent)
+{
+  tf2::BufferCore tfc;
+  std::string error_msg;
+
+  // Empty frame_ids should fail validation
+  EXPECT_FALSE(tfc.canTransform("", "", tf2::TimePointZero, &error_msg));
+  EXPECT_NE(error_msg.find("in tf2 frame_ids cannot be empty"), std::string::npos);
+
+  // Frame IDs with leading slashes should fail validation
+  error_msg.clear();
+  EXPECT_FALSE(tfc.canTransform("/slash", "/slash", tf2::TimePointZero, &error_msg));
+  EXPECT_NE(error_msg.find("in tf2 frame_ids cannot start with a '/'"), std::string::npos);
+
+  // Valid frame names with same frame should succeed even without transforms in buffer
+  EXPECT_TRUE(tfc.canTransform("frame1", "frame1", tf2::TimePointZero));
+
+  // Non-existent frames with distinct target and source should fail validation
+  error_msg.clear();
+  EXPECT_FALSE(tfc.canTransform("frame1", "frame2", tf2::TimePointZero, &error_msg));
+  EXPECT_NE(error_msg.find("frame does not exist"), std::string::npos);
+
+  // Once frame exists, canTransform between same frames should succeed
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1"));
+
+  EXPECT_TRUE(tfc.canTransform("foo", "foo", tf2::TimePointZero));
+  EXPECT_TRUE(tfc.canTransform("bar", "bar", tf2::TimePointZero));
+}
+
+TEST(tf2_lookupTransform, SameFrame_Empty_Invalid_And_Existent)
+{
+  tf2::BufferCore tfc;
+
+  // Empty frame IDs should throw InvalidArgumentException
+  EXPECT_THROW(
+    tfc.lookupTransform("", "", tf2::TimePointZero),
+    tf2::InvalidArgumentException);
+
+  // Frame IDs starting with slash should throw InvalidArgumentException
+  EXPECT_THROW(
+    tfc.lookupTransform("/slash", "/slash", tf2::TimePointZero),
+    tf2::InvalidArgumentException);
+
+  // Valid frame names with same frame should succeed with identity transform even if not in buffer
+  geometry_msgs::msg::TransformStamped same_frame_result;
+  EXPECT_NO_THROW(same_frame_result = tfc.lookupTransform("frame1", "frame1", tf2::TimePointZero));
+  EXPECT_EQ(same_frame_result.header.frame_id, "frame1");
+  EXPECT_EQ(same_frame_result.child_frame_id, "frame1");
+  EXPECT_DOUBLE_EQ(same_frame_result.transform.translation.x, 0.0);
+  EXPECT_DOUBLE_EQ(same_frame_result.transform.translation.y, 0.0);
+  EXPECT_DOUBLE_EQ(same_frame_result.transform.translation.z, 0.0);
+  EXPECT_DOUBLE_EQ(same_frame_result.transform.rotation.w, 1.0);
+
+  // Non-existent distinct frames should throw LookupException
+  EXPECT_THROW(
+    tfc.lookupTransform("frame1", "frame2", tf2::TimePointZero),
+    tf2::LookupException);
+
+  // Once frame exists in buffer, looking up transform between same frames should succeed
+  geometry_msgs::msg::TransformStamped st;
+  st.header.frame_id = "foo";
+  st.header.stamp.sec = 1;
+  st.header.stamp.nanosec = 0;
+  st.child_frame_id = "bar";
+  st.transform.rotation.w = 1.0;
+  EXPECT_TRUE(tfc.setTransform(st, "authority1"));
+
+  geometry_msgs::msg::TransformStamped result;
+  EXPECT_NO_THROW(result = tfc.lookupTransform("foo", "foo", tf2::TimePointZero));
+  EXPECT_EQ(result.header.frame_id, "foo");
+  EXPECT_EQ(result.child_frame_id, "foo");
+  EXPECT_DOUBLE_EQ(result.transform.translation.x, 0.0);
+  EXPECT_DOUBLE_EQ(result.transform.translation.y, 0.0);
+  EXPECT_DOUBLE_EQ(result.transform.translation.z, 0.0);
+  EXPECT_DOUBLE_EQ(result.transform.rotation.w, 1.0);
+}
+
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
