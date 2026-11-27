@@ -47,6 +47,8 @@
 #include "tf2/buffer_core.hpp"
 #include "tf2/time.hpp"
 
+#include "tf2/buffer_core_interface.hpp"
+#include "tf2_ros/async_buffer_interface.hpp"
 #include "tf2_ros/buffer.hpp"
 #include "tf2_ros/create_timer_ros.hpp"
 #include "tf2_ros/message_filter.hpp"
@@ -71,6 +73,53 @@ void filter_callback(const geometry_msgs::msg::PointStamped & msg)
   (void)msg;
   filter_callback_fired++;
 }
+
+class ThrowingBuffer : public tf2::BufferCoreInterface, public tf2_ros::AsyncBufferInterface
+{
+public:
+  void clear() override {}
+
+  geometry_msgs::msg::TransformStamped lookupTransform(
+    const std::string &, const std::string &, const tf2::TimePoint &) const override
+  {
+    throw tf2::LookupException("ThrowingBuffer never has transforms");
+  }
+
+  geometry_msgs::msg::TransformStamped lookupTransform(
+    const std::string &, const tf2::TimePoint &, const std::string &,
+    const tf2::TimePoint &, const std::string &) const override
+  {
+    throw tf2::LookupException("ThrowingBuffer never has transforms");
+  }
+
+  bool canTransform(
+    const std::string &, const std::string &, const tf2::TimePoint &,
+    std::string *) const override
+  {
+    return false;
+  }
+
+  bool canTransform(
+    const std::string &, const tf2::TimePoint &, const std::string &,
+    const tf2::TimePoint &, const std::string &, std::string *) const override
+  {
+    return false;
+  }
+
+  std::vector<std::string> getAllFrameNames() const override
+  {
+    return {};
+  }
+
+  tf2_ros::TransformStampedFuture waitForTransform(
+    const std::string &, const std::string &, const tf2::TimePoint &,
+    const tf2::Duration &, tf2_ros::TransformReadyCallback) override
+  {
+    throw tf2::LookupException("synthetic synchronous failure for test");
+  }
+
+  void cancel(const tf2_ros::TransformStampedFuture &) override {}
+};
 
 TEST(tf2_ros_message_filter, construction_and_destruction)
 {
@@ -240,6 +289,34 @@ TEST(tf2_ros_message_filter, multiple_frames_and_time_tolerance)
   }
 
   ASSERT_GT(filter_callback_fired, 0);
+}
+
+TEST(tf2_ros_message_filter, drops_message_on_synchronous_waitfortransform_exception)
+{
+  auto node = rclcpp::Node::make_shared("tf2_ros_message_filter_throwing_buffer");
+
+  ThrowingBuffer buffer;
+  tf2_ros::MessageFilter<geometry_msgs::msg::PointStamped, ThrowingBuffer> filter(
+    buffer, "map", 10, *node);
+
+  // Deliberately using fresh local counter instead of global filter_callback_fired,
+  // since the latter accumulates across every TEST() and could sabotage the assertion.
+  std::atomic<uint8_t> success_count{0};
+  filter.registerCallback(
+    [&success_count](const geometry_msgs::msg::PointStamped::ConstSharedPtr &) {
+      ++success_count;
+    });
+
+  auto point = std::make_shared<geometry_msgs::msg::PointStamped>();
+  point->header.frame_id = "base";
+  point->header.stamp = node->get_clock()->now();
+
+  EXPECT_NO_THROW(filter.add(point));
+  EXPECT_EQ(success_count.load(), 0);
+  // Note: can't assert the failure reason (NoTransformFound) directly here —
+  // registerFailureCallback() is disabled (#if 0) and
+  // signalFailure() only logs. See also the commented-out queueSize test in
+  // test_tf2/test/test_message_filter.cpp, blocked by the same gap.
 }
 
 TEST(tf2_ros_message_filter, failure_reason_string_conversion)
