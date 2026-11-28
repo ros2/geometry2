@@ -278,3 +278,28 @@ def test_spin_thread_exits_cleanly_on_shutdown(listener_class, monkeypatch):
 
     assert not listener.dedicated_listener_thread.is_alive()
     assert uncaught == []
+
+
+@pytest.mark.parametrize('listener_class', [TransformListener, StaticTransformListener])
+def test_spin_thread_uses_node_context(listener_class):
+    # The default context is never initialized here, only the node's own one
+    context = rclpy.Context()
+    rclpy.init(context=context)
+    try:
+        node = rclpy.create_node('test_spin_thread_context', context=context)
+        buffer = Buffer()
+        listener = listener_class(buffer=buffer, node=node, spin_thread=True)
+        assert listener.executor.context is context
+
+        broadcaster = StaticTransformBroadcaster(node)
+        broadcaster.sendTransform(build_transform('foo', 'bar', rclpy.time.Time().to_msg()))
+        deadline = time.monotonic() + 5.0
+        while (not buffer.can_transform('foo', 'bar', rclpy.time.Time())
+               and time.monotonic() < deadline):
+            time.sleep(0.01)
+        assert buffer.can_transform('foo', 'bar', rclpy.time.Time())
+    finally:
+        rclpy.shutdown(context=context)
+    # Shutting down the node's context stops the spin thread
+    listener.dedicated_listener_thread.join(timeout=5.0)
+    assert not listener.dedicated_listener_thread.is_alive()
